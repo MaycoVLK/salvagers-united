@@ -139,12 +139,22 @@
   /* --- SHIP TRACK --- */
   .ship-track{position:relative; height:56px; margin:16px 4px 10px;}
   .ship-track .rail{position:absolute; top:26px; left:0; right:0; height:2px; background:var(--border);}
-  .ship-track .rail-fill{position:absolute; top:26px; left:0; height:2px; background:var(--accent); transition:width .8s ease; box-shadow:0 0 6px var(--accent);}
+  .ship-track .rail-fill{position:absolute; top:26px; left:0; height:2px; background:var(--accent); transition:width .8s ease; box-shadow:0 0 6px var(--accent);
+    background-image:linear-gradient(135deg, rgba(255,255,255,.55) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.55) 50%, rgba(255,255,255,.55) 75%, transparent 75%, transparent);
+    background-size:14px 14px; animation:railStripes 1s linear infinite;}
+  @keyframes railStripes{ 0%{background-position:0 0;} 100%{background-position:14px 0;} }
   .ship-track .stage{position:absolute; top:19px; width:15px; height:15px; border-radius:50%; background:var(--bg2); border:2px solid var(--border); transform:translateX(-50%); z-index:2;}
   .ship-track .stage.done{border-color:var(--accent); background:var(--accent); box-shadow:0 0 6px var(--accent-dim);}
+  .ship-track .stage.current{z-index:1;}
+  .ship-track .stage.current::after{
+    content:''; position:absolute; inset:-6px; border-radius:50%; border:2px solid var(--accent); pointer-events:none;
+    animation:stagePulse 1.6s ease-out infinite;
+  }
+  @keyframes stagePulse{ 0%{transform:scale(.55); opacity:.9;} 100%{transform:scale(2.1); opacity:0;} }
   .ship-track .stage-label{position:absolute; top:38px; transform:translateX(-50%); font-size:.58rem; color:var(--muted); white-space:nowrap; text-transform:uppercase; letter-spacing:.5px;}
   .ship-track .stage-label.done{color:var(--accent);}
-  .ship-icon{position:absolute; top:2px; width:22px; height:22px; transform:translate(-50%,0) rotate(90deg); transition:left 1.1s cubic-bezier(.4,0,.2,1); filter:drop-shadow(0 0 6px var(--accent)); z-index:3; color:var(--accent);}
+  .ship-icon{position:absolute; top:2px; width:22px; height:22px; transform:translate(-50%,0) rotate(90deg); transition:left 1.1s cubic-bezier(.4,0,.2,1); filter:drop-shadow(0 0 6px var(--accent)); z-index:3; color:var(--accent); animation:shipFloat 1.8s ease-in-out infinite;}
+  @keyframes shipFloat{ 0%,100%{ transform:translate(-50%,0) rotate(90deg);} 50%{ transform:translate(-50%,-5px) rotate(90deg);} }
   .ship-icon.warping{animation:shipWarp .9s ease;}
   @keyframes shipWarp{ 0%{filter:drop-shadow(0 0 6px var(--accent));} 40%{filter:drop-shadow(0 0 16px var(--accent)); transform:translate(-50%,0) rotate(90deg) scaleX(1.5);} 100%{filter:drop-shadow(0 0 6px var(--accent)); transform:translate(-50%,0) rotate(90deg) scaleX(1);} }
 
@@ -1028,8 +1038,9 @@ function shipTrackHtml(order){
   const curIdx = STATUS_STEPS.indexOf(order.status);
   const stops = STATUS_STEPS.map((s,i) => {
     const doneClass = i <= curIdx ? 'done' : '';
+    const curClass = i === curIdx ? 'current' : '';
     const leftPct = stagePercent(s);
-    return `<div class="stage ${doneClass}" style="left:${leftPct}%"></div><div class="stage-label ${doneClass}" style="left:${leftPct}%">${d.statusShort[s]}</div>`;
+    return `<div class="stage ${doneClass} ${curClass}" style="left:${leftPct}%"></div><div class="stage-label ${doneClass}" style="left:${leftPct}%">${d.statusShort[s]}</div>`;
   }).join('');
   const pct = stagePercent(order.status);
   return `<div class="ship-track" data-order="${order.id}"><div class="rail"></div><div class="rail-fill" style="width:${pct}%"></div>${stops}

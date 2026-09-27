@@ -117,17 +117,21 @@
   /* --- ORDER CARDS --- */
   .order-card{border:1px solid var(--border); border-radius:4px; padding:14px; margin-bottom:12px; background:var(--bg2);}
   .order-card.big{padding:22px 28px 18px;}
-  .order-card-inner{display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start;}
-  .order-main{flex:1 1 260px; min-width:0;}
-  .courier-box{flex:0 0 190px; max-width:220px; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:12px; cursor:pointer; transition:border-color .2s, transform .2s;}
+  .order-top-row{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:2px;}
+  .order-top-row .status{flex:1; min-width:0;}
+  .courier-box{flex:0 0 168px; max-width:168px; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:10px; cursor:pointer; transition:border-color .2s, transform .2s;}
   .courier-box:hover{border-color:var(--accent); transform:translateY(-1px);}
-  .courier-box .courier-box-name{font-family:'VT323',monospace; font-size:1.1rem; color:var(--accent); text-decoration:underline; margin-bottom:8px; word-break:break-word; line-height:1.2;}
-  .courier-box .rank-badge{margin-bottom:8px;}
-  .courier-box .courier-box-ship{font-size:.72rem; color:var(--muted); line-height:1.4;}
+  .courier-box .courier-box-name{font-family:'VT323',monospace; font-size:1rem; color:var(--accent); text-decoration:underline; margin-bottom:6px; word-break:break-word; line-height:1.2;}
+  .courier-box .rank-badge{margin-bottom:6px;}
+  .courier-box .courier-box-ship{font-size:.7rem; color:var(--muted); line-height:1.35;}
+  .items-toggle{background:none; border:none; color:var(--accent); font-size:.76rem; padding:2px 0; text-decoration:underline; text-transform:none; letter-spacing:0;}
+  .items-toggle:hover{background:none; border:none;}
+  li.extra-item[hidden]{display:none;}
 
-  /* --- GRILLE DES COMMANDES EN COURS (client) : 2 colonnes sur ordinateur, 1 colonne sur mobile --- */
-  #clientCurrentOrders{display:grid; grid-template-columns:1fr; gap:16px; align-items:start;}
-  #clientCurrentOrders .order-card.big{margin-bottom:0;}
+  /* --- GRILLE DES COMMANDES EN COURS (client) : 2 colonnes sur ordinateur, 1 colonne sur mobile, cartes de même hauteur --- */
+  #clientCurrentOrders{display:grid; grid-template-columns:1fr; gap:16px; align-items:stretch;}
+  #clientCurrentOrders .order-card.big{margin-bottom:0; display:flex; flex-direction:column; height:100%;}
+  #clientCurrentOrders .order-card.big .btn-cancel{margin-top:auto;}
   @media (min-width:860px){
     #clientCurrentOrders{grid-template-columns:1fr 1fr;}
     #clientCurrentOrders .order-card.big.single{grid-column:1 / -1;}
@@ -581,6 +585,7 @@ const T = {
     rsiTitle:"Pseudo RSI (Handle)", rsiHint:"Permet aux autres membres de t'ajouter facilement en jeu.", phRsiHandle:"ex: Mayco_SC", savedRsi:"PSEUDO RSI ENREGISTRÉ !",
     rankLabels:{rookie:"Rookie", junior:"Junior", senior:"Senior", master:"Master"}, rankDeliveries:"livraisons",
     lblDeadline:"Date et heure de livraison souhaitée (optionnel)", orderDeadline:"Deadline : ",
+    viewMoreItems:"Voir {n} de plus", viewLessItems:"Voir moins",
     viewProfileBtn:"VOIR PROFIL", marketplaceTitle:"Marketplace personnelle", marketplaceWip:"Bientôt disponible — chaque coursier/crafteur pourra proposer ici ses objets à la vente.",
     noAchvClient:"Pas de succès coursier pour ce membre (rôle client).",
     adminActionsTitle:"Actions admin", resetAchvBtn:"RÉINITIALISER LES SUCCÈS", resetRoleBtn:"RÉINITIALISER LE RÔLE",
@@ -630,6 +635,7 @@ const T = {
     rsiTitle:"RSI Handle", rsiHint:"Lets other members add you easily in-game.", phRsiHandle:"e.g. Mayco_SC", savedRsi:"RSI HANDLE SAVED!",
     rankLabels:{rookie:"Rookie", junior:"Junior", senior:"Senior", master:"Master"}, rankDeliveries:"deliveries",
     lblDeadline:"Desired delivery date & time (optional)", orderDeadline:"Deadline: ",
+    viewMoreItems:"View {n} more", viewLessItems:"View less",
     viewProfileBtn:"VIEW PROFILE", marketplaceTitle:"Personal marketplace", marketplaceWip:"Coming soon — every courier/crafter will be able to list their own items for sale here.",
     noAchvClient:"No courier achievements for this member (client role).",
     adminActionsTitle:"Admin actions", resetAchvBtn:"RESET ACHIEVEMENTS", resetRoleBtn:"RESET ROLE",
@@ -1101,6 +1107,7 @@ async function loadClientDashboard(){
     : '';
 
   const curBox = $('clientCurrentOrders');
+  const MAX_VISIBLE_ITEMS = 3;
   curBox.innerHTML = current.length ? current.map(o => {
     const c = couriers[o.courier_id];
     const shipInfo = c && (c.ship_class || c.ship_name)
@@ -1114,20 +1121,23 @@ async function loadClientDashboard(){
       </div>` : '';
     const deadlineLine = o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : '';
     const singleClass = current.length === 1 ? 'single' : '';
+    const items = o.items || [];
+    const itemsLi = items.map((it,idx) => `<li${idx>=MAX_VISIBLE_ITEMS?' class="extra-item" hidden':''}>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('');
+    const moreCount = items.length - MAX_VISIBLE_ITEMS;
+    const toggleBtn = moreCount > 0 ? `<button type="button" class="items-toggle" data-more-label="${d.viewMoreItems.replace('{n}', moreCount)}" onclick="toggleItemsList(this)">${d.viewMoreItems.replace('{n}', moreCount)}</button>` : '';
     return `
     <div class="order-card big ${singleClass}">
-      <div class="order-card-inner">
-        <div class="order-main">
-          <div class="status">${d.statusLabels[o.status]}</div>
-          <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
-          ${deadlineLine}
-          ${shipTrackHtml(o)}
-          <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
-          <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
-          <button class="btn-cancel" onclick="cancelOrder('${o.id}','${o.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>
-        </div>
+      <div class="order-top-row">
+        <div class="status">${d.statusLabels[o.status]}</div>
         ${courierBox}
       </div>
+      <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
+      ${deadlineLine}
+      ${shipTrackHtml(o)}
+      <ul>${itemsLi}</ul>
+      ${toggleBtn}
+      <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
+      <button class="btn-cancel" onclick="cancelOrder('${o.id}','${o.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>
     </div>
   `;
   }).join('') : `<p class="muted">${d.noCurrentOrders}</p>`;
@@ -1195,6 +1205,14 @@ function toggleHistory(){
   const box = $('clientHistoryList');
   box.hidden = !box.hidden;
   $('historyToggleIcon').textContent = box.hidden ? '▾' : '▴';
+}
+function toggleItemsList(btn){
+  const ul = btn.previousElementSibling;
+  const extras = ul.querySelectorAll('.extra-item');
+  if(!extras.length) return;
+  const isCurrentlyHidden = extras[0].hidden;
+  extras.forEach(li => { li.hidden = !isCurrentlyHidden; });
+  btn.textContent = isCurrentlyHidden ? T[LANG].viewLessItems : btn.dataset.moreLabel;
 }
 
 // --- DASHBOARD COURSIER ---

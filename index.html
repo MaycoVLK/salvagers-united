@@ -298,7 +298,14 @@ const UEX_SECRET_KEY = "d76d4cc1f06bb9764172dff43406640fb5b79b2c";
 let uexCommodities = [];
 let uexItems = [];
 const uexItemPriceCache = {};
-const UEX_ITEM_CATEGORIES = [1,2,3,4,5,7,8,9,10,11,12,13,14,16,17,18];
+const UEX_ITEM_CATEGORIES = [
+  1,2,3,4,5,7,8,9,10,11,12,13,14,16,17,18, // armes/armures/vêtements personnels
+  19,21,22,23,81,84,103, // Systèmes de vaisseau (coolers, power plants, quantum drives, boucliers, batteries...)
+  32,33,34,35,70,79,80,90, // Armes de vaisseau
+  25,26,27,28,29,30,31,67,109,110, // Utilitaires de vaisseau (tractor beams, mining, salvage...)
+  82,83, // Avionique
+  86 // Propulsion (jump modules)
+];
 
 const SUPABASE_URL = "https://hdstkdubotlmlndmuwnl.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhkc3RrZHVib3RsbWxuZG11d25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0OTQ5ODAsImV4cCI6MjEwNjA3MDk4MH0.mcu8_sH5UEmVXROhf12DN2JKjFUG_WgCOeIbZMsDrRI";
@@ -332,7 +339,7 @@ const T = {
     createOrder:"CRÉER", back:"< RETOUR", newOrder:"Nouvelle commande",
     lblSystem:"Système de livraison souhaité", lblLieu:"Lieu exact de livraison", phLieu:"ex: Système Nyx, People's Service Station Theta",
     saveDefaultLoc:"📍 ENREGISTRER COMME LIEU PAR DÉFAUT", savedDefaultLoc:"LIEU PAR DÉFAUT ENREGISTRÉ !",
-    lblItems:"Objets souhaités", uexHint:"Astuce : tape le nom d'une marchandise, arme ou armure pour voir le prix UEX (le plus bas trouvé) se remplir automatiquement (modifiable ensuite).",
+    lblItems:"Objets souhaités", uexHint:"Astuce : tape le nom d'une marchandise, arme, armure ou pièce/composant de vaisseau pour voir le prix UEX (le plus bas trouvé) se remplir automatiquement (modifiable ensuite).",
     addItem:"AJOUTER UN OBJET", itemNamePh:"Nom de l'objet", itemPricePh:"Prix unit.",
     brutLbl:"Prix brut total", commLbl:"Commission (déplacement + risque, 25%)", totalLbl:"TOTAL À PAYER",
     sendBtn:"ENVOYER LA COMMANDE", historyLabel:"Historique", noCurrentOrders:"Aucune commande en cours.", noHistory:"Aucune commande livrée pour l'instant.",
@@ -358,7 +365,7 @@ const T = {
     createOrder:"CREATE", back:"< BACK", newOrder:"New order",
     lblSystem:"Delivery system", lblLieu:"Exact delivery location", phLieu:"e.g. Nyx system, People's Service Station Theta",
     saveDefaultLoc:"📍 SAVE AS DEFAULT LOCATION", savedDefaultLoc:"DEFAULT LOCATION SAVED!",
-    lblItems:"Requested items", uexHint:"Tip: type a commodity, weapon or armor name to auto-fill its lowest UEX price (still editable).",
+    lblItems:"Requested items", uexHint:"Tip: type a commodity, weapon, armor or ship component name to auto-fill its lowest UEX price (still editable).",
     addItem:"ADD AN ITEM", itemNamePh:"Item name", itemPricePh:"Unit price",
     brutLbl:"Gross total price", commLbl:"Commission (travel + risk premium, 25%)", totalLbl:"TOTAL DUE",
     sendBtn:"SEND ORDER", historyLabel:"History", noCurrentOrders:"No orders in progress.", noHistory:"No delivered orders yet.",

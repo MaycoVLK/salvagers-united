@@ -120,11 +120,16 @@
   .order-card.big .status{font-size:1.35rem;}
   .order-card .meta{color:var(--muted); font-size:.82rem; margin:4px 0 8px;}
   .order-card ul{margin:6px 0; padding-left:18px; font-size:.9rem;}
-  .order-card.history{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px; font-size:.82rem; opacity:.85;}
+  .order-card.history{display:flex; flex-direction:column; padding:10px 14px; font-size:.82rem; opacity:.85; cursor:pointer;}
+  .order-card.history .hist-row{display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%;}
   .order-card.history .hist-main{display:flex; flex-direction:column; gap:2px; min-width:0;}
   .order-card.history .hist-total{font-family:'VT323',monospace; color:var(--accent); font-size:1.05rem; flex:none;}
   .order-card.history.cancelled .hist-main span:first-child{text-decoration:line-through; opacity:.6;}
   .order-card.history.cancelled .hist-total{color:var(--danger);}
+  .order-card.history .hist-chevron{flex:none; margin-left:6px; color:var(--muted); font-size:.9rem;}
+  .order-card.history .hist-detail{margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); width:100%; cursor:default;}
+  .order-card.history .hist-detail ul{margin:0 0 8px; padding-left:18px;}
+  .order-card.history .hist-detail .meta{font-size:.8rem; color:var(--muted); margin-bottom:4px;}
   .history-toggle{width:100%; background:none; border:1px dashed var(--border); color:var(--muted); margin-bottom:10px;}
   .history-toggle:hover{border-color:var(--accent); color:var(--accent);}
   .btn-cancel{width:100%; margin-top:12px; border-color:var(--danger); color:var(--danger); font-size:.85rem;}
@@ -920,7 +925,7 @@ async function loadClientDashboard(){
   const history = orders.filter(o => ['delivered','cancelled'].includes(o.status));
   const d = T[LANG];
 
-  const courierIds = [...new Set(current.filter(o=>o.courier_id).map(o=>o.courier_id))];
+  const courierIds = [...new Set(orders.filter(o=>o.courier_id).map(o=>o.courier_id))];
   let couriers = {};
   if(courierIds.length){
     const { data: profs } = await sb.from('profiles').select('id,discord_username,ship_class,ship_name').in('id', courierIds);
@@ -949,16 +954,39 @@ async function loadClientDashboard(){
 
   const histBox = $('clientHistoryList');
   const clearBtn = history.length ? `<button class="btn-secondary" style="width:100%; margin-bottom:8px;" onclick="clearHistory()"><span data-i18n="clearHistory">${d.clearHistory}</span></button>` : '';
-  histBox.innerHTML = clearBtn + (history.length ? history.map(o => `
-    <div class="order-card history ${o.status==='cancelled'?'cancelled':''}">
-      <div class="hist-main">
-        <span>${o.destination_system} — ${o.exact_location||'-'}</span>
-        <span class="muted">${o.status==='cancelled' ? d.statusLabels.cancelled : new Date(o.created_at).toLocaleDateString()}</span>
+  histBox.innerHTML = clearBtn + (history.length ? history.map(o => {
+    const c = couriers[o.courier_id];
+    const shipLine = c && (c.ship_class || c.ship_name)
+      ? `<div class="meta">${d.orderShip}${c.ship_name ? '“'+c.ship_name+'”' : ''}${c.ship_class ? (c.ship_name ? ' — ' : '') + c.ship_class : ''}</div>`
+      : '';
+    return `
+    <div class="order-card history ${o.status==='cancelled'?'cancelled':''}" onclick="toggleHistoryDetail('${o.id}')">
+      <div class="hist-row">
+        <div class="hist-main">
+          <span>${o.destination_system} — ${o.exact_location||'-'}</span>
+          <span class="muted">${o.status==='cancelled' ? d.statusLabels.cancelled : new Date(o.created_at).toLocaleDateString()}</span>
+        </div>
+        <span class="hist-total">${fmt(o.total_price)}</span>
+        <span class="hist-chevron" id="hist-chevron-${o.id}">▾</span>
       </div>
-      <span class="hist-total">${fmt(o.total_price)}</span>
+      <div class="hist-detail" id="hist-detail-${o.id}" hidden>
+        <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
+        ${c ? `<div class="meta">${d.orderCourier}${c.discord_username}</div>` : ''}
+        ${shipLine}
+        <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
+        <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
+      </div>
     </div>
-  `).join('') : `<p class="muted">${d.noHistory}</p>`);
+  `;
+  }).join('') : `<p class="muted">${d.noHistory}</p>`);
   $('historyCount').textContent = history.length;
+}
+function toggleHistoryDetail(id){
+  const box = $('hist-detail-'+id);
+  const chevron = $('hist-chevron-'+id);
+  if(!box) return;
+  box.hidden = !box.hidden;
+  if(chevron) chevron.textContent = box.hidden ? '▾' : '▴';
 }
 
 async function cancelOrder(id, currentStatus){

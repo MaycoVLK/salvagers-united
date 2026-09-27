@@ -92,8 +92,6 @@
   .profile-hero-id{display:flex; flex-direction:column; gap:2px; margin-top:4px;}
   .profile-hero-rsi{font-family:'VT323',monospace; font-size:1.7rem; color:var(--text); letter-spacing:.5px; text-shadow:0 2px 8px rgba(0,0,0,.9); line-height:1.1;}
   .profile-hero-discord{font-size:.78rem; color:var(--muted); text-shadow:0 2px 6px rgba(0,0,0,.9);}
-  .profile-hero-badges{display:flex; align-items:center; gap:14px; margin-top:8px; flex-wrap:wrap; justify-content:center;}
-  .profile-hero-badges .role-badge{justify-content:center; text-shadow:0 2px 6px rgba(0,0,0,.9);}
   .muted{color:var(--muted); font-size:.82rem;}
   .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
   button{padding:12px 16px; border-radius:2px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-family:'VT323',monospace; font-size:1.05rem; letter-spacing:1px; cursor:pointer; text-transform:uppercase; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:background .15s, transform .1s;}
@@ -238,10 +236,10 @@
   .profile-chip{width:100%; display:flex; align-items:center; gap:12px; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:10px 14px; margin-bottom:18px; text-align:left; text-transform:none;}
   .profile-chip:hover{border-color:var(--accent);}
   .avatar-wrap{position:relative; width:40px; height:40px; flex:none;}
-  .avatar-wrap.big{width:84px; height:84px; margin:0 auto 10px;}
+  .avatar-wrap.big{width:130px; height:130px; margin:0 auto 10px;}
   .avatar{width:100%; height:100%; border-radius:50%; object-fit:cover; border:2px solid var(--accent); display:block;}
   .avatar-fallback{display:flex; align-items:center; justify-content:center; background:var(--bg2); color:var(--accent); font-family:'VT323',monospace; font-size:1.3rem;}
-  .avatar-wrap.big .avatar-fallback{font-size:2.4rem;}
+  .avatar-wrap.big .avatar-fallback{font-size:3.6rem;}
   .chip-text{display:flex; flex-direction:column; gap:4px; min-width:0;}
   .chip-name{font-family:'VT323',monospace; font-size:1.1rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .role-badge{display:inline-flex; align-items:center; gap:6px; font-size:.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); width:fit-content;}
@@ -516,13 +514,6 @@
             <div class="profile-hero-rsi" id="profileHeroRsi">—</div>
             <div class="profile-hero-discord" id="profileHeroDiscord">—</div>
           </div>
-          <div class="profile-hero-badges">
-            <div class="role-badge">
-              <span id="profileRoleAnimWrap"></span>
-              <span id="profileRoleLabel"></span>
-            </div>
-            <div id="profileRankWrap"></div>
-          </div>
         </div>
       </div>
       <div class="card" id="careerStatsCard" hidden></div>
@@ -583,13 +574,6 @@
           <div class="profile-hero-id">
             <div class="profile-hero-rsi" id="pubHeroRsi">—</div>
             <div class="profile-hero-discord" id="pubHeroDiscord">—</div>
-          </div>
-          <div class="profile-hero-badges">
-            <div class="role-badge">
-              <span id="pubRoleAnimWrap"></span>
-              <span id="pubRoleLabel"></span>
-            </div>
-            <div id="pubRankWrap"></div>
           </div>
         </div>
       </div>
@@ -1370,7 +1354,7 @@ async function loadClientDashboard(){
   }).join('') : `
     <div class="empty-cta">
       <svg class="empty-cta-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-        <rect x="7" y="2" width="2" height="8"/><rect x="2" y="7" width="12" height="2"/>
+        <rect x="7" y="3" width="2" height="10"/><rect x="3" y="7" width="10" height="2"/>
       </g></svg>
       <div class="empty-cta-text">${d.emptyCtaText}</div>
       <button class="btn-primary" onclick="openCreateOrder()">${d.emptyCtaBtn}</button>
@@ -1731,21 +1715,21 @@ function openProfile(){
 function renderHeroNames(rsiEl, discordEl, p){
   const rsi = (p.rsi_handle || '').trim();
   const discordName = p.discord_username || '';
+  const roleTxt = roleWord(p.role);
   if(rsi){
     rsiEl.textContent = rsi;
-    discordEl.textContent = discordName ? '@'+discordName : '';
-    discordEl.hidden = !discordName;
+    discordEl.textContent = discordName ? `@${discordName} — ${roleTxt}` : roleTxt;
+    discordEl.hidden = false;
   } else {
     rsiEl.textContent = discordName || '—';
-    discordEl.hidden = true;
+    discordEl.textContent = roleTxt;
+    discordEl.hidden = false;
   }
 }
 function renderProfileView(){
   if(!profile) return;
   fillAvatar($('profileAvatarImg'), $('profileAvatarFallback'));
   renderHeroNames($('profileHeroRsi'), $('profileHeroDiscord'), profile);
-  const wrap = $('profileRoleAnimWrap'); if(wrap) wrap.innerHTML = roleAnimSvg(profile.role, 20);
-  $('profileRoleLabel').textContent = roleWord(profile.role);
   $('profileRsiHandle').value = profile.rsi_handle || '';
   $('profileSystem').value = profile.default_system || 'Stanton';
   $('profileLocation').value = profile.default_location || '';
@@ -1757,14 +1741,12 @@ function renderProfileView(){
   if(showShip){
     $('profileShipClass').value = profile.ship_class || '';
     $('profileShipName').value = profile.ship_name || '';
-    fetchDeliveredCount(session.user.id).then(count => { $('profileRankWrap').innerHTML = rankShowcaseHtml(count); });
     setHeroPhoto($('profileHeroBg'), profile.ship_photo_url);
     fetchCourierCareerStats(session.user.id).then(stats => renderCareerStats($('careerStatsCard'), stats));
     Promise.all([loadUnlockedAchievements(), fetchCourierStats()]).then(([unlockedSet, stats]) => {
       renderAchievements(unlockedSet, stats ? stats.deliveredCount : 0, 'profileAchvCard');
     });
   } else {
-    $('profileRankWrap').innerHTML = '';
     setHeroPhoto($('profileHeroBg'), null);
   }
   renderCourierRequestCard();
@@ -2003,18 +1985,13 @@ async function openPublicProfile(id){
   if(p.avatar_url){ img.src = p.avatar_url; img.hidden = false; fb.hidden = true; }
   else{ img.hidden = true; fb.hidden = false; fb.textContent = (name[0]||'?').toUpperCase(); }
   renderHeroNames($('pubHeroRsi'), $('pubHeroDiscord'), p);
-  const wrap = $('pubRoleAnimWrap'); if(wrap) wrap.innerHTML = roleAnimSvg(p.role, 20);
-  $('pubRoleLabel').textContent = roleWord(p.role);
-  $('pubRankWrap').innerHTML = '';
   $('pubCareerStatsCard').hidden = true;
   const achvGrid = $('pubAchvGrid');
   if(p.role !== 'client'){
-    const [count, unlockedRows, stats] = await Promise.all([
-      fetchDeliveredCount(p.id),
+    const [unlockedRows, stats] = await Promise.all([
       sb.from('courier_achievements').select('key').eq('courier_id', id).then(r => r.data || []),
       fetchCourierCareerStats(p.id)
     ]);
-    $('pubRankWrap').innerHTML = rankShowcaseHtml(count);
     const unlockedSet = new Set(unlockedRows.map(r=>r.key));
     achvGrid.innerHTML = `<div class="achv-grid">${ACHIEVEMENTS.map(a => `
       <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" title="${d.achvDesc[a.key]}">${ACHV_ICONS[a.key]}<span>${d.achvLabels[a.key]}</span></div>

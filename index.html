@@ -383,6 +383,16 @@
           <span data-i18n="saveDefaultLoc2">ENREGISTRER</span>
         </button>
       </div>
+      <div class="card" id="shipInfoCard" hidden>
+        <h3 data-i18n="shipInfoTitle">Vaisseau livreur par défaut</h3>
+        <label for="profileShipClass" data-i18n="lblShipClass">Classe de transporteur (modèle)</label>
+        <input id="profileShipClass" type="text" data-i18n-ph="phShipClass" placeholder="ex: Freelancer MAX, Caterpillar, Constellation Taurus">
+        <label for="profileShipName" data-i18n="lblShipName">Nom du vaisseau</label>
+        <input id="profileShipName" type="text" data-i18n-ph="phShipName" placeholder="ex: L'Étoile Vagabonde">
+        <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="saveShipInfo()">
+          <span data-i18n="saveDefaultLoc2">ENREGISTRER</span>
+        </button>
+      </div>
       <div class="card" id="courierRequestCard"></div>
     </section>
   </div>
@@ -460,7 +470,10 @@ const T = {
     achvDesc:{first_delivery:"Termine ta première commande.", five_deliveries:"Termine 5 commandes.", veteran:"Termine 20 commandes.", lightning:"Livre une commande en moins de 10 minutes après l'avoir acceptée."},
     statusLabels:{pending:"En attente d'un coursier",accepted:"Acceptée",purchased:"Marchandise achetée",in_transit:"En transit",delivered:"Livrée",cancelled:"Annulée"},
     statusShort:{pending:"Attente",accepted:"Acceptée",purchased:"Achetée",in_transit:"Transit",delivered:"Livrée"},
-    orderSystem:"Système : ", orderLieu:"Lieu : ", orderTotal:"Total : ", orderCourier:"Coursier : ", orderClient:"Client : ",
+    orderSystem:"Système : ", orderLieu:"Lieu : ", orderTotal:"Total : ", orderCourier:"Coursier : ", orderClient:"Client : ", orderShip:"Vaisseau : ",
+    clearHistory:"VIDER L'HISTORIQUE", confirmClearHistory:"Es-tu sûr de vouloir supprimer définitivement tout ton historique de commandes ?",
+    shipInfoTitle:"Vaisseau livreur par défaut", lblShipClass:"Classe de transporteur (modèle)", phShipClass:"ex: Freelancer MAX, Caterpillar, Constellation Taurus",
+    lblShipName:"Nom du vaisseau", phShipName:"ex: L'Étoile Vagabonde", savedShipInfo:"VAISSEAU ENREGISTRÉ !",
     bootLogin:["SALVAGER'S UNITED — AUTHENTIFICATION","VÉRIFICATION IDENTITÉ DISCORD.......OK","CHARGEMENT DU PROFIL................OK"],
     bootClient:["CHARGEMENT MODULE CLIENT.SYS.........OK","SYNCHRONISATION DES COMMANDES........OK"],
     bootCourier:["CHARGEMENT MODULE COURSIER.SYS.......OK","VÉRIFICATION BADGE D'ACCÈS...........OK"],
@@ -496,7 +509,10 @@ const T = {
     achvDesc:{first_delivery:"Complete your first order.", five_deliveries:"Complete 5 orders.", veteran:"Complete 20 orders.", lightning:"Deliver an order within 10 minutes of accepting it."},
     statusLabels:{pending:"Waiting for a courier",accepted:"Accepted",purchased:"Purchased",in_transit:"In transit",delivered:"Delivered",cancelled:"Cancelled"},
     statusShort:{pending:"Waiting",accepted:"Accepted",purchased:"Purchased",in_transit:"Transit",delivered:"Delivered"},
-    orderSystem:"System: ", orderLieu:"Location: ", orderTotal:"Total: ", orderCourier:"Courier: ", orderClient:"Client: ",
+    orderSystem:"System: ", orderLieu:"Location: ", orderTotal:"Total: ", orderCourier:"Courier: ", orderClient:"Client: ", orderShip:"Ship: ",
+    clearHistory:"CLEAR HISTORY", confirmClearHistory:"Are you sure you want to permanently delete your entire order history?",
+    shipInfoTitle:"Default delivery ship", lblShipClass:"Transporter class (model)", phShipClass:"e.g. Freelancer MAX, Caterpillar, Constellation Taurus",
+    lblShipName:"Ship name", phShipName:"e.g. The Wandering Star", savedShipInfo:"SHIP SAVED!",
     bootLogin:["SALVAGER'S UNITED — AUTHENTICATION","CHECKING DISCORD IDENTITY...........OK","LOADING PROFILE.....................OK"],
     bootClient:["LOADING MODULE CLIENT.SYS............OK","SYNCING ORDERS.......................OK"],
     bootCourier:["LOADING MODULE COURIER.SYS...........OK","CHECKING ACCESS BADGE................OK"],
@@ -852,25 +868,33 @@ async function loadClientDashboard(){
   const courierIds = [...new Set(current.filter(o=>o.courier_id).map(o=>o.courier_id))];
   let couriers = {};
   if(courierIds.length){
-    const { data: profs } = await sb.from('profiles').select('id,discord_username').in('id', courierIds);
-    (profs||[]).forEach(p => couriers[p.id]=p.discord_username);
+    const { data: profs } = await sb.from('profiles').select('id,discord_username,ship_class,ship_name').in('id', courierIds);
+    (profs||[]).forEach(p => couriers[p.id]=p);
   }
 
   const curBox = $('clientCurrentOrders');
-  curBox.innerHTML = current.length ? current.map(o => `
+  curBox.innerHTML = current.length ? current.map(o => {
+    const c = couriers[o.courier_id];
+    const shipLine = c && (c.ship_class || c.ship_name)
+      ? `<div class="meta ship-meta">${d.orderShip}${c.ship_name ? '“'+c.ship_name+'”' : ''}${c.ship_class ? (c.ship_name ? ' — ' : '') + c.ship_class : ''}</div>`
+      : '';
+    return `
     <div class="order-card big">
       <div class="status">${d.statusLabels[o.status]}</div>
-      <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}${couriers[o.courier_id] ? ' — '+d.orderCourier+couriers[o.courier_id] : ''}</div>
+      <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}${c ? ' — '+d.orderCourier+c.discord_username : ''}</div>
+      ${shipLine}
       ${shipTrackHtml(o)}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
       <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
       <button class="btn-cancel" onclick="cancelOrder('${o.id}','${o.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>
     </div>
-  `).join('') : `<p class="muted">${d.noCurrentOrders}</p>`;
+  `;
+  }).join('') : `<p class="muted">${d.noCurrentOrders}</p>`;
   animateShipTracks(curBox);
 
   const histBox = $('clientHistoryList');
-  histBox.innerHTML = history.length ? history.map(o => `
+  const clearBtn = history.length ? `<button class="btn-secondary" style="width:100%; margin-bottom:8px;" onclick="clearHistory()"><span data-i18n="clearHistory">${d.clearHistory}</span></button>` : '';
+  histBox.innerHTML = clearBtn + (history.length ? history.map(o => `
     <div class="order-card history ${o.status==='cancelled'?'cancelled':''}">
       <div class="hist-main">
         <span>${o.destination_system} — ${o.exact_location||'-'}</span>
@@ -878,7 +902,7 @@ async function loadClientDashboard(){
       </div>
       <span class="hist-total">${fmt(o.total_price)}</span>
     </div>
-  `).join('') : `<p class="muted">${d.noHistory}</p>`;
+  `).join('') : `<p class="muted">${d.noHistory}</p>`);
   $('historyCount').textContent = history.length;
 }
 
@@ -890,6 +914,14 @@ async function cancelOrder(id, currentStatus){
   } else {
     ({ error } = await sb.from('orders').update({ status:'cancelled', updated_at: new Date().toISOString() }).eq('id', id));
   }
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep();
+  loadClientDashboard();
+}
+async function clearHistory(){
+  if(!session) return;
+  if(!confirm(T[LANG].confirmClearHistory)) return;
+  const { error } = await sb.from('orders').delete().eq('client_id', session.user.id).in('status',['delivered','cancelled']);
   if(error){ alert('Erreur : '+error.message); return; }
   sweep();
   loadClientDashboard();
@@ -1110,7 +1142,24 @@ function renderProfileView(){
   $('profileRoleLabel').textContent = discordDisplayName() + '_' + roleWord(profile.role);
   $('profileSystem').value = profile.default_system || 'Stanton';
   $('profileLocation').value = profile.default_location || '';
+  const showShip = profile.role === 'courier' || profile.role === 'admin';
+  $('shipInfoCard').hidden = !showShip;
+  if(showShip){
+    $('profileShipClass').value = profile.ship_class || '';
+    $('profileShipName').value = profile.ship_name || '';
+  }
   renderCourierRequestCard();
+}
+async function saveShipInfo(){
+  if(!session) return;
+  const { error } = await sb.from('profiles').update({
+    ship_class: $('profileShipClass').value.trim(),
+    ship_name: $('profileShipName').value.trim()
+  }).eq('id', session.user.id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  await loadProfile();
+  sweep();
+  toastShow(T[LANG].savedShipInfo);
 }
 async function saveProfileDefaults(){
   if(!session) return;

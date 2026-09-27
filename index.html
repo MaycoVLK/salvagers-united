@@ -684,6 +684,7 @@
           <span data-i18n="uploadShipPhoto">CHOISIR UNE PHOTO</span>
         </button>
       </div>
+      <div class="card" id="crewStatusCard" hidden></div>
       <div class="card" id="courierRequestCard"></div>
       <div class="card" id="sellerRequestCard"></div>
     </section>
@@ -908,6 +909,7 @@ const T = {
     becomeCourierBtn:"DEMANDER À DEVENIR COURSIER", courierPending:"Ta candidature est en attente de validation par l'administrateur.",
     courierRejectedNote:"Ta précédente candidature n'a pas été retenue. Tu peux retenter ta chance.",
     alreadyRoleNote:"Tu fais déjà partie de l'équipage !",
+    crewStatusCourier:"Tu fais déjà partie de l'équipage coursier !", crewStatusSeller:"Tu fais déjà partie de l'équipage vendeur !", crewStatusBoth:"Tu fais déjà partie de l'équipage coursier et vendeur !",
     courierAccepted:"🎉 Ta demande pour devenir coursier a été acceptée !", courierRejected:"Ta demande pour devenir coursier a été refusée.",
     courierApplications:"Candidatures Coursier", noApplications:"Aucune candidature en attente.", acceptApp:"ACCEPTER", rejectApp:"REFUSER",
     achvTitle:"Succès", achvUnlocked:"Nouveau succès débloqué :",
@@ -998,6 +1000,7 @@ const T = {
     becomeCourierBtn:"REQUEST TO BECOME A COURIER", courierPending:"Your application is pending admin review.",
     courierRejectedNote:"Your previous application wasn't accepted. You can try again.",
     alreadyRoleNote:"You're already part of the crew!",
+    crewStatusCourier:"You're already part of the courier crew!", crewStatusSeller:"You're already part of the seller crew!", crewStatusBoth:"You're already part of the courier and seller crew!",
     courierAccepted:"🎉 Your courier application was accepted!", courierRejected:"Your courier application was rejected.",
     courierApplications:"Courier Applications", noApplications:"No pending applications.", acceptApp:"ACCEPT", rejectApp:"REJECT",
     achvTitle:"Achievements", achvUnlocked:"New achievement unlocked:",
@@ -2576,6 +2579,7 @@ function renderProfileView(){
     fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('shopStatsProfileCard'), stats));
     checkAndRenderSellerAchievements('sellerAchvCard');
   }
+  renderCrewStatusCard();
   renderCourierRequestCard();
   renderSellerRequestCard();
 }
@@ -2855,13 +2859,34 @@ async function saveProfileDefaults(){
   sweep();
   toastShow(T[LANG].savedDefaultLoc);
 }
+// Message unique récapitulant les équipages déjà rejoints (coursier et/ou vendeur), au lieu de
+// répéter le même "tu fais déjà partie de l'équipage" dans chaque encadré de demande de rôle.
+function renderCrewStatusCard(){
+  const box = $('crewStatusCard'); if(!box || !profile) return;
+  const d = T[LANG];
+  if(profile.role === 'admin'){ box.hidden = true; return; }
+  if(profile.is_courier && profile.is_seller){
+    box.hidden = false;
+    box.innerHTML = `<p class="muted">${d.crewStatusBoth}</p>`;
+  } else if(profile.is_courier){
+    box.hidden = false;
+    box.innerHTML = `<p class="muted">${d.crewStatusCourier}</p>`;
+  } else if(profile.is_seller){
+    box.hidden = false;
+    box.innerHTML = `<p class="muted">${d.crewStatusSeller}</p>`;
+  } else {
+    box.hidden = true;
+    box.innerHTML = '';
+  }
+}
 function renderCourierRequestCard(){
   const box = $('courierRequestCard'); if(!box || !profile) return;
   const d = T[LANG];
   if(profile.role === 'admin' || profile.is_courier){
-    box.innerHTML = `<p class="muted">${d.alreadyRoleNote}</p>`;
+    box.hidden = true; box.innerHTML = '';
     return;
   }
+  box.hidden = false;
   if(profile.courier_request === 'pending'){
     box.innerHTML = `<p>${d.courierPending}</p>`;
   } else if(profile.courier_request === 'rejected'){
@@ -2873,11 +2898,11 @@ function renderCourierRequestCard(){
 function renderSellerRequestCard(){
   const box = $('sellerRequestCard'); if(!box || !profile) return;
   const d = T[LANG];
-  box.hidden = false;
   if(profile.role === 'admin' || profile.is_seller){
-    box.innerHTML = `<p class="muted">${d.alreadyRoleNote}</p>`;
+    box.hidden = true; box.innerHTML = '';
     return;
   }
+  box.hidden = false;
   if(profile.seller_request === 'pending'){
     box.innerHTML = `<p>${d.sellerPending}</p>`;
   } else if(profile.seller_request === 'rejected'){

@@ -192,6 +192,25 @@
   .mkt-price{font-family:'VT323',monospace; font-size:1.3rem; color:var(--accent);}
   .mkt-qty{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
   .mkt-info .courier-box{flex:none; max-width:none; width:100%; margin-top:auto;}
+  .mkt-interest-btn{width:100%; font-size:.76rem;}
+  .mkt-inquiry-form{display:flex; flex-direction:column; gap:6px; margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);}
+  .mkt-inquiry-form textarea{width:100%; min-height:60px; padding:8px 10px; border-radius:2px; border:1px solid var(--border); background:var(--bg2); color:var(--text); font-family:inherit; font-size:.85rem; resize:vertical;}
+  .mkt-delivery-choice{display:flex; gap:14px; font-size:.78rem; color:var(--muted); align-items:center;}
+  .mkt-delivery-choice label{display:flex; align-items:center; gap:5px; cursor:pointer;}
+  .mkt-delivery-choice input{width:auto;}
+
+  .inquiry-row{border:1px solid var(--border); border-radius:4px; padding:10px 12px; margin-bottom:10px;}
+  .inquiry-row .inquiry-head{display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;}
+  .inquiry-row .inquiry-item{font-family:'VT323',monospace; font-size:1.05rem; color:var(--text);}
+  .inquiry-row .inquiry-status{font-size:.68rem; text-transform:uppercase; letter-spacing:.5px; padding:2px 8px; border-radius:3px; border:1px solid var(--border); color:var(--muted);}
+  .inquiry-row .inquiry-status.pending{color:var(--accent); border-color:var(--accent);}
+  .inquiry-row .inquiry-status.accepted{color:var(--accent); border-color:var(--accent); background:var(--accent-dim);}
+  .inquiry-row .inquiry-status.completed{color:var(--muted);}
+  .inquiry-row .inquiry-status.rejected{color:var(--danger); border-color:var(--danger);}
+  .inquiry-row .inquiry-meta{font-size:.72rem; color:var(--muted); margin-bottom:6px;}
+  .inquiry-row .inquiry-msg{font-size:.82rem; color:var(--text); background:var(--bg2); border-radius:4px; padding:8px 10px; margin-bottom:8px; white-space:pre-wrap;}
+  .inquiry-row .inquiry-actions{display:flex; gap:6px; flex-wrap:wrap;}
+  .inquiry-row .inquiry-actions button{width:auto; flex:none; font-size:.72rem; padding:8px 10px;}
 
   .listing-row{display:flex; gap:10px; align-items:flex-start; border:1px solid var(--border); border-radius:4px; padding:10px; margin-bottom:10px; flex-wrap:wrap;}
   .listing-thumb{width:48px; height:48px; object-fit:cover; border:1px solid var(--border); flex:none; background:var(--panel);}
@@ -465,6 +484,8 @@
       <div id="clientTabMarketplace" hidden>
         <h3 data-i18n="marketplaceFeedTitle" style="margin-top:0;">Derniers objets en vente</h3>
         <div id="marketplaceFeed" class="marketplace-grid"></div>
+        <h3 data-i18n="myInquiriesTitle" style="margin-top:26px;">Mes demandes</h3>
+        <div id="myInquiriesList"></div>
       </div>
     </section>
 
@@ -665,7 +686,7 @@
         <div id="pubAchvGrid"></div>
       </div>
       <div class="card" id="pubShopCard" hidden>
-        <h3 id="pubShopName" data-i18n="shopSettingsTitle">Ma boutique</h3>
+        <h3 id="pubShopName">Ma boutique</h3>
         <button class="btn-secondary" style="width:100%" onclick="openSellerShop(viewingProfileId)">
           <span data-i18n="visitShopBtn">VOIR LA MARKETPLACE</span>
         </button>
@@ -712,6 +733,10 @@
           <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createListing()">
             <span data-i18n="addListingBtn">METTRE EN VENTE</span>
           </button>
+        </div>
+        <div class="card">
+          <h3 data-i18n="receivedInquiriesTitle">Propositions reçues</h3>
+          <div id="receivedInquiriesList"></div>
         </div>
         <div class="card">
           <h3 data-i18n="myListingsTitle">Mes annonces</h3>
@@ -769,7 +794,7 @@ function setClientTab(tab){
   $('clientTabDeliveries').hidden = tab !== 'deliveries';
   $('clientTabMarketplace').hidden = tab !== 'marketplace';
   if(tab === 'deliveries') loadClientDashboard();
-  else loadMarketplaceFeed();
+  else { loadMarketplaceFeed(); loadMyInquiries(); }
 }
 let hasBooted = false;
 let trackedShipPct = {}; // orderId -> pourcentage précédemment affiché (pour l'animation)
@@ -852,6 +877,17 @@ const T = {
     requestDeliveryBtn:"DEMANDER UNE LIVRAISON", requestDeliveryTitle:"Demander une livraison coursier", buyerHandleLbl:"Pseudo RSI de l'acheteur (optionnel)", phBuyerHandle:"ex: Mayco_SC", deliveryRequested:"LIVRAISON DEMANDÉE !", cancelRequest:"ANNULER", confirmDeliveryBtn:"CONFIRMER LA DEMANDE",
     marketplaceDeliveryBadge:"LIVRAISON MARKETPLACE", marketplaceDeliveryNote:"Livraison Marketplace : l'objet part de chez un VENDEUR pour être livré à un client, contrairement aux commandes classiques (client → coursier).",
     sellerFrom:"Vendeur : ", buyerTo:"Acheteur : ", shopPageEmpty:"Cette boutique ne propose aucun objet pour le moment.", noShopYet:"Ce vendeur n'a pas encore configuré sa boutique.",
+    imInterested:"JE SUIS INTÉRESSÉ(E)", inquiryMsgLbl:"Message au vendeur (prix ok, contre-offre, etc.)", phInquiryMsg:"ex: Ok pour le prix, je peux passer ce soir vers 20h.",
+    deliveryMethodLbl:"Mode de livraison souhaité", deliveryMethodCourier:"Livraison par un coursier", deliveryMethodPickup:"Je viens le chercher sur place",
+    sendInquiryBtn:"ENVOYER LA DEMANDE", inquirySent:"DEMANDE ENVOYÉE !",
+    myInquiriesTitle:"Mes demandes", noInquiries:"Tu n'as envoyé aucune demande pour le moment.",
+    receivedInquiriesTitle:"Propositions reçues", noReceivedInquiries:"Aucune proposition reçue pour le moment.",
+    inquiryStatus:{pending:"En attente", accepted:"Acceptée", rejected:"Refusée", completed:"Terminée"},
+    acceptInquiryBtn:"ACCEPTER", rejectInquiryBtn:"REFUSER",
+    markPickedUpBtn:"MARQUER COMME RÉCUPÉRÉ", handToCourierBtn:"REMETTRE À UN COURSIER",
+    inquiryAcceptedNotif:"🎉 Le vendeur a accepté ta demande !", inquiryRejectedNotif:"Le vendeur a refusé ta demande.",
+    inquiryFrom:"De la part de : ", inquiryDeliveryVia:"Via : ", pickupDoneNote:"Objet récupéré en main propre.",
+    waitingCourierHandoff:"En attente que le vendeur remette l'objet à un coursier.",
     bootLogin:["SALVAGER'S UNITED — AUTHENTIFICATION","VÉRIFICATION IDENTITÉ DISCORD.......OK","CHARGEMENT DU PROFIL................OK"],
     bootClient:["CHARGEMENT MODULE CLIENT.SYS.........OK","SYNCHRONISATION DES COMMANDES........OK"],
     bootCourier:["CHARGEMENT MODULE COURSIER.SYS.......OK","VÉRIFICATION BADGE D'ACCÈS...........OK"],
@@ -924,6 +960,17 @@ const T = {
     requestDeliveryBtn:"REQUEST A DELIVERY", requestDeliveryTitle:"Request a courier delivery", buyerHandleLbl:"Buyer's RSI handle (optional)", phBuyerHandle:"e.g. Mayco_SC", deliveryRequested:"DELIVERY REQUESTED!", cancelRequest:"CANCEL", confirmDeliveryBtn:"CONFIRM REQUEST",
     marketplaceDeliveryBadge:"MARKETPLACE DELIVERY", marketplaceDeliveryNote:"Marketplace delivery: the item ships from a SELLER to a client, unlike classic orders (client → courier).",
     sellerFrom:"Seller: ", buyerTo:"Buyer: ", shopPageEmpty:"This shop has no items for sale right now.", noShopYet:"This seller hasn't set up their shop yet.",
+    imInterested:"I'M INTERESTED", inquiryMsgLbl:"Message to the seller (price ok, counter-offer, etc.)", phInquiryMsg:"e.g. Price works for me, I can drop by around 8pm.",
+    deliveryMethodLbl:"Preferred delivery method", deliveryMethodCourier:"Courier delivery", deliveryMethodPickup:"I'll pick it up myself",
+    sendInquiryBtn:"SEND REQUEST", inquirySent:"REQUEST SENT!",
+    myInquiriesTitle:"My requests", noInquiries:"You haven't sent any requests yet.",
+    receivedInquiriesTitle:"Received offers", noReceivedInquiries:"No offers received yet.",
+    inquiryStatus:{pending:"Pending", accepted:"Accepted", rejected:"Rejected", completed:"Completed"},
+    acceptInquiryBtn:"ACCEPT", rejectInquiryBtn:"REJECT",
+    markPickedUpBtn:"MARK AS PICKED UP", handToCourierBtn:"HAND TO A COURIER",
+    inquiryAcceptedNotif:"🎉 The seller accepted your request!", inquiryRejectedNotif:"The seller rejected your request.",
+    inquiryFrom:"From: ", inquiryDeliveryVia:"Via: ", pickupDoneNote:"Item picked up in person.",
+    waitingCourierHandoff:"Waiting for the seller to hand the item to a courier.",
     bootLogin:["SALVAGER'S UNITED — AUTHENTICATION","CHECKING DISCORD IDENTITY...........OK","LOADING PROFILE.....................OK"],
     bootClient:["LOADING MODULE CLIENT.SYS............OK","SYNCING ORDERS.......................OK"],
     bootCourier:["LOADING MODULE COURIER.SYS...........OK","CHECKING ACCESS BADGE................OK"],
@@ -1620,6 +1667,20 @@ function mktCardHtml(listing, sellerMap){
   const d = T[LANG];
   const seller = sellerMap[listing.seller_id];
   const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  const canBuy = session && session.user.id !== listing.seller_id;
+  const interestBlock = canBuy ? `
+        <button type="button" class="btn-secondary mkt-interest-btn" onclick="toggleInquiryForm('${listing.id}')">${d.imInterested}</button>
+        <div class="mkt-inquiry-form" id="iform-${listing.id}" hidden>
+          <textarea id="imsg-${listing.id}" data-i18n-ph="phInquiryMsg" placeholder="${d.phInquiryMsg}"></textarea>
+          <div class="mkt-delivery-choice">
+            <span>${d.deliveryMethodLbl}</span>
+          </div>
+          <div class="mkt-delivery-choice">
+            <label><input type="radio" name="dmethod-${listing.id}" value="courier" checked> ${d.deliveryMethodCourier}</label>
+            <label><input type="radio" name="dmethod-${listing.id}" value="pickup"> ${d.deliveryMethodPickup}</label>
+          </div>
+          <button type="button" class="btn-primary" onclick="sendMarketplaceInquiry('${listing.id}')">${d.sendInquiryBtn}</button>
+        </div>` : '';
   return `
     <div class="mkt-card">
       <div class="mkt-photo-wrap">${photo}</div>
@@ -1629,8 +1690,30 @@ function mktCardHtml(listing, sellerMap){
         <div class="courier-box" onclick="openPublicProfile('${listing.seller_id}')" title="${d.viewProfileBtn}">
           <div class="courier-box-name">${d.mktByLbl} ${seller ? displayName(seller) : '—'}</div>
         </div>
+        ${interestBlock}
       </div>
     </div>`;
+}
+function toggleInquiryForm(listingId){
+  const form = $('iform-'+listingId); if(!form) return;
+  form.hidden = !form.hidden;
+}
+async function sendMarketplaceInquiry(listingId){
+  if(!session) return;
+  const d = T[LANG];
+  const message = $('imsg-'+listingId).value.trim();
+  const methodInput = document.querySelector(`input[name="dmethod-${listingId}"]:checked`);
+  const delivery_method = methodInput ? methodInput.value : 'courier';
+  const { data: listing, error: lErr } = await sb.from('marketplace_listings').select('seller_id').eq('id', listingId).single();
+  if(lErr || !listing){ alert('Erreur : objet introuvable.'); return; }
+  const { error } = await sb.from('marketplace_inquiries').insert({
+    listing_id: listingId, seller_id: listing.seller_id, buyer_id: session.user.id,
+    message, delivery_method, status: 'pending'
+  });
+  if(error){ alert('Erreur : '+error.message); return; }
+  toastShow(d.inquirySent);
+  toggleInquiryForm(listingId);
+  loadMyInquiries();
 }
 async function loadMarketplaceFeed(){
   const box = $('marketplaceFeed'); if(!box) return;
@@ -1644,6 +1727,51 @@ async function loadMarketplaceFeed(){
   const { data: sellers } = await sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds);
   const sellerMap = {}; (sellers||[]).forEach(s=>sellerMap[s.id]=s);
   box.innerHTML = listings.map(l => mktCardHtml(l, sellerMap)).join('');
+}
+function inquiryStatusBadge(status){
+  const d = T[LANG];
+  return `<span class="inquiry-status ${status}">${(d.inquiryStatus && d.inquiryStatus[status]) || status}</span>`;
+}
+async function loadMyInquiries(){
+  const box = $('myInquiriesList'); if(!box || !session) return;
+  const d = T[LANG];
+  const { data, error } = await sb.from('marketplace_inquiries').select('*').eq('buyer_id', session.user.id).order('created_at',{ascending:false});
+  if(error){ box.textContent = error.message; return; }
+  const rows = data || [];
+  if(!rows.length){ box.innerHTML = `<p class="muted">${d.noInquiries}</p>`; return; }
+  const listingIds=[...new Set(rows.map(r=>r.listing_id))];
+  const sellerIds=[...new Set(rows.map(r=>r.seller_id))];
+  const orderIds=rows.filter(r=>r.order_id).map(r=>r.order_id);
+  const [listings, sellers, orders] = await Promise.all([
+    listingIds.length ? sb.from('marketplace_listings').select('id,item_name').in('id', listingIds).then(r=>r.data||[]) : Promise.resolve([]),
+    sellerIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds).then(r=>r.data||[]) : Promise.resolve([]),
+    orderIds.length ? sb.from('orders').select('*').in('id', orderIds).then(r=>r.data||[]) : Promise.resolve([])
+  ]);
+  const lMap={}; listings.forEach(l=>lMap[l.id]=l);
+  const sMap={}; sellers.forEach(s=>sMap[s.id]=s);
+  const oMap={}; orders.forEach(o=>oMap[o.id]=o);
+  box.innerHTML = rows.map(r => {
+    const listing = lMap[r.listing_id];
+    const seller = sMap[r.seller_id];
+    const order = r.order_id ? oMap[r.order_id] : null;
+    let body = '';
+    if(r.status === 'accepted' && r.delivery_method === 'courier'){
+      body = order ? shipTrackHtml(order) : `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
+    } else if(r.status === 'completed' && r.delivery_method === 'pickup'){
+      body = `<div class="inquiry-meta">${d.pickupDoneNote}</div>`;
+    }
+    return `
+      <div class="inquiry-row">
+        <div class="inquiry-head">
+          <div class="inquiry-item">${listing ? listing.item_name : '—'}</div>
+          ${inquiryStatusBadge(r.status)}
+        </div>
+        <div class="inquiry-meta">${d.inquiryFrom}${seller ? displayName(seller) : '—'} — ${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
+        ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
+        ${body}
+      </div>`;
+  }).join('');
+  animateShipTracks(box);
 }
 
 // --- DASHBOARD VENDEUR ---
@@ -1682,6 +1810,7 @@ async function loadSellerDashboard(){
   selectedShopColor = shop?.theme_color || 'orange';
   initShopThemePicker();
   await loadMyListings();
+  await loadReceivedInquiries();
 }
 let pendingListingPhotoFile = null;
 function onListingPhotoSelected(inputEl){
@@ -1776,6 +1905,97 @@ async function requestMarketplaceDelivery(listingId){
   sweep();
   toastShow(d.deliveryRequested);
   toggleDeliveryForm(listingId);
+}
+
+async function loadReceivedInquiries(){
+  const box = $('receivedInquiriesList'); if(!box || !session) return;
+  const d = T[LANG];
+  const { data, error } = await sb.from('marketplace_inquiries').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
+  if(error){ box.textContent = error.message; return; }
+  const rows = data || [];
+  if(!rows.length){ box.innerHTML = `<p class="muted">${d.noReceivedInquiries}</p>`; return; }
+  const listingIds=[...new Set(rows.map(r=>r.listing_id))];
+  const buyerIds=[...new Set(rows.map(r=>r.buyer_id))];
+  const [listings, buyers] = await Promise.all([
+    listingIds.length ? sb.from('marketplace_listings').select('id,item_name,price,quantity').in('id', listingIds).then(r=>r.data||[]) : Promise.resolve([]),
+    buyerIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', buyerIds).then(r=>r.data||[]) : Promise.resolve([])
+  ]);
+  const lMap={}; listings.forEach(l=>lMap[l.id]=l);
+  const bMap={}; buyers.forEach(b=>bMap[b.id]=b);
+  box.innerHTML = rows.map(r => {
+    const listing = lMap[r.listing_id];
+    const buyer = bMap[r.buyer_id];
+    let actions = '';
+    if(r.status === 'pending'){
+      actions = `<div class="inquiry-actions">
+        <button class="btn-secondary" onclick="acceptInquiry('${r.id}')">${d.acceptInquiryBtn}</button>
+        <button class="btn-logout" onclick="rejectInquiry('${r.id}')">${d.rejectInquiryBtn}</button>
+      </div>`;
+    } else if(r.status === 'accepted'){
+      if(r.delivery_method === 'pickup'){
+        actions = `<div class="inquiry-actions"><button class="btn-secondary" onclick="markPickedUp('${r.id}')">${d.markPickedUpBtn}</button></div>`;
+      } else {
+        actions = r.order_id
+          ? `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`
+          : `<div class="inquiry-actions"><button class="btn-secondary" onclick="handToCourier('${r.id}')">${d.handToCourierBtn}</button></div>`;
+      }
+    }
+    return `
+      <div class="inquiry-row">
+        <div class="inquiry-head">
+          <div class="inquiry-item">${listing ? listing.item_name : '—'}</div>
+          ${inquiryStatusBadge(r.status)}
+        </div>
+        <div class="inquiry-meta">${d.inquiryFrom}${buyer ? displayName(buyer) : '—'} — ${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
+        ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
+        ${actions}
+      </div>`;
+  }).join('');
+}
+async function acceptInquiry(id){
+  const { error } = await sb.from('marketplace_inquiries').update({ status:'accepted', updated_at: new Date().toISOString() }).eq('id', id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep(); loadReceivedInquiries();
+}
+async function rejectInquiry(id){
+  const { error } = await sb.from('marketplace_inquiries').update({ status:'rejected', updated_at: new Date().toISOString() }).eq('id', id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep(); loadReceivedInquiries();
+}
+async function markPickedUp(id){
+  const { error } = await sb.from('marketplace_inquiries').update({ status:'completed', updated_at: new Date().toISOString() }).eq('id', id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep(); loadReceivedInquiries();
+}
+async function handToCourier(id){
+  if(!session) return;
+  const d = T[LANG];
+  const { data: inquiry, error: iErr } = await sb.from('marketplace_inquiries').select('*').eq('id', id).single();
+  if(iErr || !inquiry){ alert('Erreur : demande introuvable.'); return; }
+  const { data: listing, error: lErr } = await sb.from('marketplace_listings').select('*').eq('id', inquiry.listing_id).single();
+  if(lErr || !listing){ alert('Erreur : objet introuvable.'); return; }
+  const { data: buyer } = await sb.from('profiles').select('id,discord_username,rsi_handle,default_system,default_location').eq('id', inquiry.buyer_id).single();
+  const gross = listing.price * listing.quantity;
+  const commission = gross * 0.25;
+  const total = gross + commission;
+  const payload = {
+    order_type: 'marketplace',
+    client_id: inquiry.buyer_id,
+    seller_id: session.user.id,
+    listing_id: listing.id,
+    buyer_handle: buyer ? displayName(buyer) : null,
+    destination_system: (buyer && buyer.default_system) || 'Stanton',
+    exact_location: (buyer && buyer.default_location) || '',
+    items: [{ name: listing.item_name, price: listing.price, qty: listing.quantity }],
+    gross_price: gross, commission, total_price: total,
+    status: 'pending'
+  };
+  const { data: order, error } = await sb.from('orders').insert(payload).select().single();
+  if(error){ alert('Erreur : '+error.message); return; }
+  await sb.from('marketplace_inquiries').update({ order_id: order.id, updated_at: new Date().toISOString() }).eq('id', id);
+  sweep();
+  toastShow(d.deliveryRequested);
+  loadReceivedInquiries();
 }
 
 // --- BOUTIQUE PUBLIQUE D'UN VENDEUR ---
@@ -2465,7 +2685,8 @@ async function openPublicProfile(id){
   $('pubAchvCard').hidden = true;
   $('pubShopCard').hidden = true;
   const achvGrid = $('pubAchvGrid');
-  if(p.role === 'courier' || p.role === 'admin'){
+  const isCourierLike = (p.role === 'courier' || p.role === 'admin');
+  if(isCourierLike){
     $('pubAchvCard').hidden = false;
     const [unlockedRows, stats] = await Promise.all([
       sb.from('courier_achievements').select('key').eq('courier_id', id).then(r => r.data || []),
@@ -2478,15 +2699,16 @@ async function openPublicProfile(id){
     setHeroPhoto('pub', p);
     renderCareerStats($('pubCareerStatsCard'), stats);
     $('pubCareerStatsCard').hidden = false;
-  } else if(p.role === 'seller'){
-    setHeroPhoto('pub', null);
-    const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', id).maybeSingle();
-    $('pubShopName').textContent = (shop && shop.shop_name) || d.shopSettingsTitle;
-    $('pubShopCard').hidden = false;
   } else {
-    $('pubAchvCard').hidden = false;
-    achvGrid.innerHTML = `<p class="muted">${d.noAchvClient}</p>`;
     setHeroPhoto('pub', null);
+    achvGrid.innerHTML = `<p class="muted">${d.noAchvClient}</p>`;
+  }
+  // Le bouton boutique se base sur l'EXISTENCE d'une boutique (pas seulement le rôle) : un admin qui teste
+  // la vue vendeur avec son propre compte a une boutique alors que son rôle reste "admin".
+  const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', id).maybeSingle();
+  if(shop && (p.role === 'seller' || p.role === 'admin')){
+    $('pubShopName').textContent = shop.shop_name || d.shopSettingsTitle;
+    $('pubShopCard').hidden = false;
   }
   $('pubAdminActions').hidden = !(profile && profile.role === 'admin');
 }
@@ -2584,6 +2806,14 @@ async function initAuth(){
       const v = effectiveView();
       if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'marketplace') loadMarketplaceFeed();
       if(v === 'seller' && !$('view-seller-dash').hidden) loadMyListings();
+    })
+    .subscribe();
+
+  sb.channel('inquiries-realtime')
+    .on('postgres_changes', { event:'*', schema:'public', table:'marketplace_inquiries' }, () => {
+      const v = effectiveView();
+      if((v === 'client' || v === 'admin') && !$('view-client-dash').hidden && clientTab === 'marketplace') loadMyInquiries();
+      if((v === 'seller' || v === 'admin') && !$('view-seller-dash').hidden) loadReceivedInquiries();
     })
     .subscribe();
 }

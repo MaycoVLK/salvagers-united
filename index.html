@@ -33,7 +33,7 @@
   }
   @keyframes flicker{ 0%,100%{opacity:.55;} 50%{opacity:.75;} 92%{opacity:.3;} }
   h1,h2,h3{font-family:'VT323',monospace; margin:0 0 4px; letter-spacing:1px; text-shadow:0 0 8px var(--accent-dim);}
-  .wrap{max-width:760px; margin:0 auto; position:relative; z-index:1;}
+  .wrap{max-width:900px; margin:0 auto; position:relative; z-index:1;}
   .card{background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:20px; margin-bottom:16px; position:relative; box-shadow:0 0 0 1px var(--border) inset, 0 0 18px rgba(0,0,0,.4);}
   .card::before,.card::after{content:""; position:absolute; width:10px; height:10px; border:2px solid var(--accent); opacity:.7;}
   .card::before{top:-1px; left:-1px; border-right:none; border-bottom:none;}
@@ -116,7 +116,22 @@
 
   /* --- ORDER CARDS --- */
   .order-card{border:1px solid var(--border); border-radius:4px; padding:14px; margin-bottom:12px; background:var(--bg2);}
-  .order-card.big{padding:20px 18px 16px;}
+  .order-card.big{padding:22px 28px 18px;}
+  .order-card-inner{display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start;}
+  .order-main{flex:1 1 260px; min-width:0;}
+  .courier-box{flex:0 0 190px; max-width:220px; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:12px; cursor:pointer; transition:border-color .2s, transform .2s;}
+  .courier-box:hover{border-color:var(--accent); transform:translateY(-1px);}
+  .courier-box .courier-box-name{font-family:'VT323',monospace; font-size:1.1rem; color:var(--accent); text-decoration:underline; margin-bottom:8px; word-break:break-word; line-height:1.2;}
+  .courier-box .rank-badge{margin-bottom:8px;}
+  .courier-box .courier-box-ship{font-size:.72rem; color:var(--muted); line-height:1.4;}
+
+  /* --- GRILLE DES COMMANDES EN COURS (client) : 2 colonnes sur ordinateur, 1 colonne sur mobile --- */
+  #clientCurrentOrders{display:grid; grid-template-columns:1fr; gap:16px; align-items:start;}
+  #clientCurrentOrders .order-card.big{margin-bottom:0;}
+  @media (min-width:860px){
+    #clientCurrentOrders{grid-template-columns:1fr 1fr;}
+    #clientCurrentOrders .order-card.big.single{grid-column:1 / -1;}
+  }
   .order-card .status{font-family:'VT323',monospace; color:var(--accent); font-size:1.05rem; text-transform:uppercase;}
   .order-card.big .status{font-size:1.35rem;}
   .order-card .meta{color:var(--muted); font-size:.82rem; margin:4px 0 8px;}
@@ -137,7 +152,7 @@
   .btn-cancel:hover{background:var(--danger-dim);}
 
   /* --- SHIP TRACK --- */
-  .ship-track{position:relative; height:56px; margin:16px 4px 10px;}
+  .ship-track{position:relative; height:56px; margin:16px 14px 10px;}
   .ship-track .rail{position:absolute; top:26px; left:0; right:0; height:2px; background:var(--border);}
   .ship-track .rail-fill{position:absolute; top:26px; left:0; height:2px; background:var(--accent); transition:width .8s ease; box-shadow:0 0 6px var(--accent);
     background-image:linear-gradient(135deg, rgba(255,255,255,.55) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.55) 50%, rgba(255,255,255,.55) 75%, transparent 75%, transparent);
@@ -1088,21 +1103,31 @@ async function loadClientDashboard(){
   const curBox = $('clientCurrentOrders');
   curBox.innerHTML = current.length ? current.map(o => {
     const c = couriers[o.courier_id];
-    const shipLine = c && (c.ship_class || c.ship_name)
-      ? `<div class="meta ship-meta">${d.orderShip}${c.ship_name ? '“'+c.ship_name+'”' : ''}${c.ship_class ? (c.ship_name ? ' — ' : '') + c.ship_class : ''}</div>`
+    const shipInfo = c && (c.ship_class || c.ship_name)
+      ? `<div class="courier-box-ship">${d.orderShip}${c.ship_name ? '“'+c.ship_name+'”' : ''}${c.ship_class ? (c.ship_name ? ' — ' : '') + c.ship_class : ''}</div>`
       : '';
+    const courierBox = c ? `
+      <div class="courier-box" onclick="openPublicProfile('${c.id}')" title="${d.viewProfileBtn}">
+        <div class="courier-box-name">${displayName(c)}</div>
+        ${rankBadgeHtml(c.deliveredCount,'md')}
+        ${shipInfo}
+      </div>` : '';
     const deadlineLine = o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : '';
+    const singleClass = current.length === 1 ? 'single' : '';
     return `
-    <div class="order-card big">
-      <div class="status">${d.statusLabels[o.status]}</div>
-      <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}${c ? ' — '+d.orderCourier+courierLinkHtml(c) : ''}</div>
-      ${c ? `<div class="courier-rank-row">${rankBadgeHtml(c.deliveredCount,'md')}</div>` : ''}
-      ${shipLine}
-      ${deadlineLine}
-      ${shipTrackHtml(o)}
-      <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
-      <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
-      <button class="btn-cancel" onclick="cancelOrder('${o.id}','${o.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>
+    <div class="order-card big ${singleClass}">
+      <div class="order-card-inner">
+        <div class="order-main">
+          <div class="status">${d.statusLabels[o.status]}</div>
+          <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
+          ${deadlineLine}
+          ${shipTrackHtml(o)}
+          <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
+          <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
+          <button class="btn-cancel" onclick="cancelOrder('${o.id}','${o.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>
+        </div>
+        ${courierBox}
+      </div>
     </div>
   `;
   }).join('') : `<p class="muted">${d.noCurrentOrders}</p>`;

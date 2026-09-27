@@ -742,19 +742,23 @@
         <p data-i18n="notSeller">Ton compte n'a pas encore le rôle vendeur. Contacte l'administrateur pour être ajouté.</p>
       </div>
       <div id="sellerDash" hidden>
-        <div class="card">
-          <h3 data-i18n="shopSettingsTitle">Ma boutique</h3>
-          <label for="shopNameInput" data-i18n="shopNameLbl">Nom de la marketplace</label>
-          <input id="shopNameInput" type="text" data-i18n-ph="phShopName" placeholder="ex: Le Comptoir de Mayco">
-          <label data-i18n="shopThemeLbl">Couleur de la boutique</label>
-          <div class="theme-row" id="shopThemePicker"></div>
-          <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="saveShopSettings()">
-            <span data-i18n="saveShopBtn">ENREGISTRER LA BOUTIQUE</span>
-          </button>
-          <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="openSellerShop(session.user.id)">
-            <span data-i18n="viewMyShopBtn">VOIR MA BOUTIQUE</span>
-          </button>
+        <div class="card shop-hero-card">
+          <div class="shop-hero-row">
+            <div class="shop-hero-icon" id="sellerDashHeroIcon"></div>
+            <div class="shop-hero-text shop-preview-head">
+              <h1 id="sellerDashShopName">—</h1>
+              <button class="gear-btn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique">
+                <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                  <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
+                  <rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/>
+                  <rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/>
+                </g></svg>
+              </button>
+            </div>
+          </div>
         </div>
+        <div class="card" id="sellerDashStatsCard"></div>
+        <div class="card" id="sellerDashAchvCard"></div>
         <div class="card">
           <h3 data-i18n="newListingTitle">Ajouter un objet en vente</h3>
           <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
@@ -773,14 +777,30 @@
             <span data-i18n="addListingBtn">METTRE EN VENTE</span>
           </button>
         </div>
-        <div class="card">
-          <h3 data-i18n="receivedInquiriesTitle">Propositions reçues</h3>
-          <div id="receivedInquiriesList"></div>
+        <div class="tabs">
+          <button class="tab-btn active" id="tab-listings" onclick="switchSellerTab('listings')" data-i18n="myListingsTitle">MES ANNONCES</button>
+          <button class="tab-btn" id="tab-inquiries" onclick="switchSellerTab('inquiries')" data-i18n="receivedInquiriesTitle">PROPOSITIONS REÇUES</button>
         </div>
-        <div class="card">
-          <h3 data-i18n="myListingsTitle">Mes annonces</h3>
-          <div id="myListingsList"></div>
-        </div>
+        <div id="sellerListingsPane"><div id="myListingsList"></div></div>
+        <div id="sellerInquiriesPane" hidden><div id="receivedInquiriesList"></div></div>
+      </div>
+    </section>
+
+    <!-- MODIFICATION DE LA BOUTIQUE (nom, couleur) -->
+    <section id="view-seller-shop-edit" hidden>
+      <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
+      <header><h1 data-i18n="shopSettingsTitle">Ma boutique</h1></header>
+      <div class="card">
+        <label for="shopNameInput" data-i18n="shopNameLbl">Nom de la marketplace</label>
+        <input id="shopNameInput" type="text" data-i18n-ph="phShopName" placeholder="ex: Le Comptoir de Mayco">
+        <label data-i18n="shopThemeLbl">Couleur de la boutique</label>
+        <div class="theme-row" id="shopThemePicker"></div>
+        <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="saveShopSettings()">
+          <span data-i18n="saveShopBtn">ENREGISTRER LA BOUTIQUE</span>
+        </button>
+        <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="openSellerShop(session.user.id)">
+          <span data-i18n="viewMyShopBtn">VOIR MA BOUTIQUE</span>
+        </button>
       </div>
     </section>
 
@@ -836,8 +856,10 @@ const fmt = n => new Intl.NumberFormat('fr-FR').format(Math.round(n)) + " aUEC";
 let itemCount = 0;
 let session = null;
 let profile = null;
-let adminViewMode = 'client'; // 'admin' | 'client' | 'courier' | 'seller' — vue par défaut d'un admin : client (la gestion reste accessible via la roue crantée, jamais un passage obligatoire)
-const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-dash','view-seller-shop'];
+// Un membre peut cumuler plusieurs casquettes (client + coursier + vendeur) : currentView retient
+// l'onglet actuellement affiché parmi celles disponibles pour ce compte. 'client' reste le point de départ par défaut.
+let currentView = 'client'; // 'client' | 'courier' | 'seller' | 'admin'
+const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-dash','view-seller-shop','view-seller-shop-edit'];
 function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); }
 let clientTab = 'deliveries'; // 'deliveries' | 'marketplace'
 function setClientTab(tab){
@@ -1098,10 +1120,21 @@ function doLogout(){ $('settingsPanel').hidden = true; sb.auth.signOut(); }
 function sweep(){ const s=$('sweep'); s.classList.remove('run'); void s.offsetWidth; s.classList.add('run'); }
 
 // --- ROUTAGE PRINCIPAL ---
+// Onglets accessibles pour ce compte : 'client' toujours, + 'courier'/'seller' selon les casquettes
+// obtenues, + les 4 pour un admin (accès de test complet, quelles que soient ses propres casquettes).
+function availableViews(){
+  if(!profile) return ['client'];
+  if(profile.role === 'admin') return ['client','courier','seller','admin'];
+  const views = ['client'];
+  if(profile.is_courier) views.push('courier');
+  if(profile.is_seller) views.push('seller');
+  return views;
+}
 function effectiveView(){
   if(!profile) return null;
-  if(profile.role === 'admin') return adminViewMode;
-  return profile.role; // 'client' | 'courier' | 'seller'
+  const views = availableViews();
+  if(!views.includes(currentView)) currentView = views[0];
+  return currentView;
 }
 
 function updatePageTitle(){
@@ -1121,12 +1154,13 @@ function routeApp(){
   hideAllViews();
   updateProfileChip();
 
+  const views = availableViews();
   const v = effectiveView();
-  const isAdmin = profile && profile.role === 'admin';
-  $('adminViewBar').hidden = !isAdmin;
-  if(isAdmin){
-    document.querySelectorAll('.admin-view-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === v));
-  }
+  $('adminViewBar').hidden = views.length <= 1;
+  document.querySelectorAll('.admin-view-btn').forEach(btn => {
+    btn.hidden = !views.includes(btn.dataset.view);
+    btn.classList.toggle('active', btn.dataset.view === v);
+  });
   $('createOrderBtn').hidden = !(v === 'client');
   updatePageTitle();
 
@@ -1136,13 +1170,13 @@ function routeApp(){
   else if(v === 'admin'){ $('view-admin-dash').hidden = false; loadAdmin(); }
 }
 
-function setAdminView(v){ adminViewMode = v; $('settingsPanel').hidden = true; routeApp(); }
+function setAdminView(v){ currentView = v; $('settingsPanel').hidden = true; routeApp(); }
 
 function goHome(){
   $('settingsPanel').hidden = true;
   viewingProfileId = null;
   clientTab = 'deliveries';
-  if(profile && profile.role === 'admin') adminViewMode = 'client';
+  currentView = 'client';
   routeApp();
 }
 
@@ -1877,20 +1911,32 @@ async function saveShopSettings(){
   const { error } = await sb.from('marketplace_shops').upsert({ id: session.user.id, shop_name, theme_color: selectedShopColor });
   if(error){ alert('Erreur : '+error.message); return; }
   toastShow(d.shopSaved);
+  routeApp();
 }
-async function loadSellerDashboard(){
+async function openSellerShopEdit(){
   if(!session) return;
-  if(!profile || !['seller','admin'].includes(profile.role)){
-    $('sellerBlocked').hidden = false; $('sellerDash').hidden = true; return;
-  }
-  $('sellerBlocked').hidden = true; $('sellerDash').hidden = false;
+  hideAllViews();
+  $('view-seller-shop-edit').hidden = false;
   const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle();
   $('shopNameInput').value = shop?.shop_name || '';
   selectedShopColor = shop?.theme_color || 'orange';
   initShopThemePicker();
+}
+async function loadSellerDashboard(){
+  if(!session) return;
+  if(!profile || !(profile.is_seller || profile.role === 'admin')){
+    $('sellerBlocked').hidden = false; $('sellerDash').hidden = true; return;
+  }
+  $('sellerBlocked').hidden = true; $('sellerDash').hidden = false;
+  const d = T[LANG];
+  $('sellerDashHeroIcon').innerHTML = roleAnimSvg('seller', 40);
+  const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle();
+  $('sellerDashShopName').textContent = (shop && shop.shop_name) || d.shopSettingsTitle;
   await loadMyListings();
   await loadReceivedInquiries();
-  checkAndRenderSellerAchievements();
+  const stats = await fetchSellerShopStats(session.user.id);
+  renderShopStats($('sellerDashStatsCard'), stats);
+  checkAndRenderSellerAchievements('sellerDashAchvCard');
 }
 let pendingListingPhotoFile = null;
 function onListingPhotoSelected(inputEl){
@@ -2045,7 +2091,9 @@ async function rejectInquiry(id){
 async function markPickedUp(id){
   const { error } = await sb.from('marketplace_inquiries').update({ status:'completed', updated_at: new Date().toISOString() }).eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
-  sweep(); loadReceivedInquiries(); checkAndRenderSellerAchievements();
+  sweep(); loadReceivedInquiries();
+  checkAndRenderSellerAchievements('sellerDashAchvCard');
+  fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('sellerDashStatsCard'), stats));
 }
 async function handToCourier(id){
   if(!session) return;
@@ -2129,7 +2177,7 @@ async function loadSellerApplications(){
   `).join('');
 }
 async function acceptSellerApp(id){
-  const { error } = await sb.from('profiles').update({ role:'seller', seller_request:'accepted' }).eq('id', id);
+  const { error } = await sb.from('profiles').update({ is_seller:true, seller_request:'accepted' }).eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
   sweep(); loadSellerApplications(); loadAdmin();
 }
@@ -2146,9 +2194,15 @@ function switchCourierTab(tab){
   $('courierPendingPane').hidden = tab!=='pending';
   $('courierMinePane').hidden = tab!=='mine';
 }
+function switchSellerTab(tab){
+  $('tab-listings').classList.toggle('active', tab==='listings');
+  $('tab-inquiries').classList.toggle('active', tab==='inquiries');
+  $('sellerListingsPane').hidden = tab!=='listings';
+  $('sellerInquiriesPane').hidden = tab!=='inquiries';
+}
 async function loadCourierData(){
   if(!session) return;
-  if(!profile || !['courier','admin'].includes(profile.role)){
+  if(!profile || !(profile.is_courier || profile.role === 'admin')){
     $('courierBlocked').hidden = false; $('courierDash').hidden = true; return;
   }
   $('courierBlocked').hidden = true; $('courierDash').hidden = false;
@@ -2280,7 +2334,7 @@ function announceAchievement(key){
   pixelBurst(badgeEl || $('courierAchievementsCard'), 20);
 }
 async function checkAndRenderAchievements(){
-  if(!profile || !['courier','admin'].includes(profile.role) || !session) return;
+  if(!profile || !(profile.is_courier || profile.role === 'admin') || !session) return;
   const stats = await fetchCourierStats();
   if(!stats) return;
   const unlocked = await loadUnlockedAchievements();
@@ -2454,24 +2508,34 @@ function fillAvatar(imgEl, fallbackEl){
   if(url){ imgEl.src = url; imgEl.hidden = false; fallbackEl.hidden = true; }
   else{ imgEl.hidden = true; fallbackEl.hidden = false; fallbackEl.textContent = (name[0] || '?').toUpperCase(); }
 }
+// Libellé de rôle combiné : un membre peut être client + coursier + vendeur en même temps.
+function memberRoleLabel(p){
+  if(p.role === 'admin') return roleWord('admin');
+  const parts = [];
+  if(p.is_courier) parts.push(roleWord('courier'));
+  if(p.is_seller) parts.push(roleWord('seller'));
+  if(!parts.length) return roleWord('client');
+  return parts.join(' & ');
+}
 function updateProfileChip(){
   if(!profile || !session) return;
   fillAvatar($('chipAvatarImg'), $('chipAvatarFallback'));
   $('chipName').textContent = discordDisplayName();
-  const wrap = $('chipRoleAnimWrap'); if(wrap) wrap.innerHTML = roleAnimSvg(profile.role, 18);
-  $('chipRoleLabel').textContent = discordDisplayName() + '_' + roleWord(profile.role);
+  const v = effectiveView() || profile.role;
+  const wrap = $('chipRoleAnimWrap'); if(wrap) wrap.innerHTML = roleAnimSvg(v, 18);
+  $('chipRoleLabel').textContent = discordDisplayName() + '_' + roleWord(v);
 }
 function openProfile(){
   $('settingsPanel').hidden = true;
   hideAllViews();
   $('view-profile').hidden = false;
   renderProfileView();
-  if(profile && (profile.role === 'courier' || profile.role === 'admin')) loadUexVehicles();
+  if(profile && (profile.is_courier || profile.role === 'admin')) loadUexVehicles();
 }
 function renderHeroNames(rsiEl, discordEl, p){
   const rsi = (p.rsi_handle || '').trim();
   const discordName = p.discord_username || '';
-  const roleTxt = roleWord(p.role);
+  const roleTxt = memberRoleLabel(p);
   if(rsi){
     rsiEl.textContent = rsi;
     discordEl.textContent = discordName ? `@${discordName} — ${roleTxt}` : roleTxt;
@@ -2489,8 +2553,8 @@ function renderProfileView(){
   $('profileRsiHandle').value = profile.rsi_handle || '';
   $('profileSystem').value = profile.default_system || 'Stanton';
   $('profileLocation').value = profile.default_location || '';
-  const showShip = profile.role === 'courier' || profile.role === 'admin';
-  const showSeller = profile.role === 'seller' || profile.role === 'admin';
+  const showShip = profile.is_courier || profile.role === 'admin';
+  const showSeller = profile.is_seller || profile.role === 'admin';
   $('shipInfoCard').hidden = !showShip;
   $('shipPhotoCard').hidden = !showShip;
   $('careerStatsCard').hidden = !showShip;
@@ -2765,7 +2829,7 @@ function announceSellerAchievement(key){
   pixelBurst(badgeEl || $('sellerAchvCard'), 20);
 }
 async function checkAndRenderSellerAchievements(boxId){
-  if(!profile || !['seller','admin'].includes(profile.role) || !session) return;
+  if(!profile || !(profile.is_seller || profile.role === 'admin') || !session) return;
   const stats = await fetchSellerShopStats(session.user.id);
   if(!stats) return;
   const unlocked = await fetchUnlockedSellerAchievements(session.user.id);
@@ -2794,7 +2858,7 @@ async function saveProfileDefaults(){
 function renderCourierRequestCard(){
   const box = $('courierRequestCard'); if(!box || !profile) return;
   const d = T[LANG];
-  if(profile.role !== 'client'){
+  if(profile.role === 'admin' || profile.is_courier){
     box.innerHTML = `<p class="muted">${d.alreadyRoleNote}</p>`;
     return;
   }
@@ -2809,8 +2873,11 @@ function renderCourierRequestCard(){
 function renderSellerRequestCard(){
   const box = $('sellerRequestCard'); if(!box || !profile) return;
   const d = T[LANG];
-  if(profile.role !== 'client'){ box.hidden = true; box.innerHTML=''; return; }
   box.hidden = false;
+  if(profile.role === 'admin' || profile.is_seller){
+    box.innerHTML = `<p class="muted">${d.alreadyRoleNote}</p>`;
+    return;
+  }
   if(profile.seller_request === 'pending'){
     box.innerHTML = `<p>${d.sellerPending}</p>`;
   } else if(profile.seller_request === 'rejected'){
@@ -2838,7 +2905,7 @@ async function requestCourier(){
 // --- PUB "DEVENIR COURSIER" (bannière sur le dashboard client) ---
 function renderCourierAd(){
   const box = $('courierAdCard'); if(!box || !profile) return;
-  if(profile.role !== 'client'){ box.hidden = true; return; }
+  if(profile.role === 'admin' || profile.is_courier){ box.hidden = true; return; }
   const d = T[LANG];
   box.hidden = false;
   if(profile.courier_request === 'pending'){
@@ -2902,10 +2969,14 @@ async function loadAdmin(){
     <div class="order-card" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
       <div style="flex:1; min-width:140px;">${p.discord_username || p.id}${p.rsi_handle ? ' — RSI: '+p.rsi_handle : ''}</div>
       <button class="btn-secondary" onclick="openPublicProfile('${p.id}')">${d.viewProfileBtn}</button>
+      <label style="display:flex; align-items:center; gap:4px; font-size:.75rem; color:var(--muted);">
+        <input type="checkbox" ${p.is_courier?'checked':''} onchange="toggleMemberFlag('${p.id}','is_courier',this.checked)"> courier
+      </label>
+      <label style="display:flex; align-items:center; gap:4px; font-size:.75rem; color:var(--muted);">
+        <input type="checkbox" ${p.is_seller?'checked':''} onchange="toggleMemberFlag('${p.id}','is_seller',this.checked)"> seller
+      </label>
       <select data-id="${p.id}" onchange="updateRole('${p.id}', this.value)" style="width:auto;">
         <option value="client" ${p.role==='client'?'selected':''}>client</option>
-        <option value="courier" ${p.role==='courier'?'selected':''}>courier</option>
-        <option value="seller" ${p.role==='seller'?'selected':''}>seller</option>
         <option value="admin" ${p.role==='admin'?'selected':''}>admin</option>
       </select>
     </div>
@@ -2926,7 +2997,7 @@ async function loadCourierApplications(){
   `).join('');
 }
 async function acceptCourierApp(id){
-  const { error } = await sb.from('profiles').update({ role:'courier', courier_request:'accepted' }).eq('id', id);
+  const { error } = await sb.from('profiles').update({ is_courier:true, courier_request:'accepted' }).eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
   sweep(); loadCourierApplications(); loadAdmin();
 }
@@ -2956,7 +3027,7 @@ async function openPublicProfile(id){
   $('pubAchvCard').hidden = true;
   $('pubShopCard').hidden = true;
   const achvGrid = $('pubAchvGrid');
-  const isCourierLike = (p.role === 'courier' || p.role === 'admin');
+  const isCourierLike = (p.is_courier || p.role === 'admin');
   if(isCourierLike){
     $('pubAchvCard').hidden = false;
     const [unlockedRows, stats] = await Promise.all([
@@ -2974,10 +3045,10 @@ async function openPublicProfile(id){
     setHeroPhoto('pub', null);
     achvGrid.innerHTML = `<p class="muted">${d.noAchvClient}</p>`;
   }
-  // Le bouton boutique se base sur l'EXISTENCE d'une boutique (pas seulement le rôle) : un admin qui teste
-  // la vue vendeur avec son propre compte a une boutique alors que son rôle reste "admin".
+  // Le bouton boutique se base sur l'EXISTENCE d'une boutique (pas seulement la casquette) : un admin qui teste
+  // la vue vendeur avec son propre compte a une boutique alors qu'il n'a pas forcément is_seller=true.
   const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', id).maybeSingle();
-  if(shop && (p.role === 'seller' || p.role === 'admin')){
+  if(shop && (p.is_seller || p.role === 'admin')){
     $('pubShopName').textContent = shop.shop_name || d.shopSettingsTitle;
     $('pubShopCard').hidden = false;
     const { data: previewListings } = await sb.from('marketplace_listings').select('*').eq('seller_id', id).order('created_at',{ascending:false}).limit(3);
@@ -3016,7 +3087,7 @@ async function adminResetAchievements(){
 async function adminResetRole(){
   if(!viewingProfileId || !profile || profile.role !== 'admin') return;
   if(!confirm(T[LANG].confirmResetRole)) return;
-  const { error } = await sb.from('profiles').update({ role:'client', courier_request:null }).eq('id', viewingProfileId);
+  const { error } = await sb.from('profiles').update({ role:'client', is_courier:false, is_seller:false, courier_request:null, seller_request:null }).eq('id', viewingProfileId);
   if(error){ alert('Erreur : '+error.message); return; }
   sweep();
   toastShow(T[LANG].toastUpdated);
@@ -3025,6 +3096,12 @@ async function adminResetRole(){
 }
 async function updateRole(id, role){
   const { error } = await sb.from('profiles').update({ role }).eq('id', id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep();
+  if(id === session?.user?.id) await loadProfile();
+}
+async function toggleMemberFlag(id, field, value){
+  const { error } = await sb.from('profiles').update({ [field]: value }).eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
   sweep();
   if(id === session?.user?.id) await loadProfile();
@@ -3086,7 +3163,7 @@ async function initAuth(){
       const v = effectiveView();
       if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'deliveries') loadClientDashboard();
       if(v === 'courier' && !$('view-courier-dash').hidden) loadCourierData();
-      if((v === 'seller' || v === 'admin') && !$('view-seller-dash').hidden) checkAndRenderSellerAchievements();
+      if((v === 'seller' || v === 'admin') && !$('view-seller-dash').hidden){ checkAndRenderSellerAchievements('sellerDashAchvCard'); fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('sellerDashStatsCard'), stats)); }
     })
     .subscribe();
 

@@ -119,8 +119,12 @@
   .order-card.history{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px; font-size:.82rem; opacity:.85;}
   .order-card.history .hist-main{display:flex; flex-direction:column; gap:2px; min-width:0;}
   .order-card.history .hist-total{font-family:'VT323',monospace; color:var(--accent); font-size:1.05rem; flex:none;}
+  .order-card.history.cancelled .hist-main span:first-child{text-decoration:line-through; opacity:.6;}
+  .order-card.history.cancelled .hist-total{color:var(--danger);}
   .history-toggle{width:100%; background:none; border:1px dashed var(--border); color:var(--muted); margin-bottom:10px;}
   .history-toggle:hover{border-color:var(--accent); color:var(--accent);}
+  .btn-cancel{width:100%; margin-top:12px; border-color:var(--danger); color:var(--danger); font-size:.85rem;}
+  .btn-cancel:hover{background:var(--danger-dim);}
 
   /* --- SHIP TRACK --- */
   .ship-track{position:relative; height:56px; margin:16px 4px 10px;}
@@ -207,9 +211,9 @@
             <div class="nav-row" id="adminNavRow" hidden>
               <hr>
               <div class="row-label" data-i18n="adminViewLabel">Vue</div>
-              <button onclick="setAdminView('admin')" data-i18n="navAdmin">GESTION</button>
               <button onclick="setAdminView('client')" data-i18n="navClient">CLIENT</button>
               <button onclick="setAdminView('courier')" data-i18n="navCourier">COURSIER</button>
+              <button onclick="setAdminView('admin')" data-i18n="navAdmin">GESTION</button>
             </div>
             <hr>
             <button class="btn-logout" onclick="doLogout()" data-i18n="logout">DÉCONNEXION</button>
@@ -305,7 +309,7 @@ const fmt = n => new Intl.NumberFormat('fr-FR').format(Math.round(n)) + " aUEC";
 let itemCount = 0;
 let session = null;
 let profile = null;
-let adminViewMode = 'admin'; // 'admin' | 'client' | 'courier' (admin uniquement)
+let adminViewMode = 'client'; // 'admin' | 'client' | 'courier' — vue par défaut d'un admin : client (la gestion reste accessible via la roue crantée, jamais un passage obligatoire)
 let hasBooted = false;
 let trackedShipPct = {}; // orderId -> pourcentage précédemment affiché (pour l'animation)
 
@@ -332,12 +336,13 @@ const T = {
     addItem:"AJOUTER UN OBJET", itemNamePh:"Nom de l'objet", itemPricePh:"Prix unit.",
     brutLbl:"Prix brut total", commLbl:"Commission (déplacement + risque, 25%)", totalLbl:"TOTAL À PAYER",
     sendBtn:"ENVOYER LA COMMANDE", historyLabel:"Historique", noCurrentOrders:"Aucune commande en cours.", noHistory:"Aucune commande livrée pour l'instant.",
+    cancelBtn:"ANNULER", confirmCancel:"Es-tu sûr de vouloir annuler cette commande ?",
     notCourier:"Ton compte n'a pas encore le rôle coursier. Contacte l'administrateur pour être ajouté.",
     tabPending:"À TRAITER", tabMine:"ATTRIBUÉES", noAvailable:"Aucune commande disponible pour le moment.", noDeliveries:"Aucune livraison en cours.",
     accept:"ACCEPTER", markPurchased:"MARCHANDISE ACHETÉE", markTransit:"MARQUER EN TRANSIT", markDelivered:"MARQUER LIVRÉE",
     members:"Membres", footer:"SALVAGER'S UNITED // RISQUES INCLUS DANS LA COMMISSION // PAIEMENT À LA REMISE",
     toastSent:"COMMANDE ENVOYÉE !", toastUpdated:"MIS À JOUR !",
-    statusLabels:{pending:"En attente d'un coursier",accepted:"Acceptée",purchased:"Marchandise achetée",in_transit:"En transit",delivered:"Livrée"},
+    statusLabels:{pending:"En attente d'un coursier",accepted:"Acceptée",purchased:"Marchandise achetée",in_transit:"En transit",delivered:"Livrée",cancelled:"Annulée"},
     statusShort:{pending:"Attente",accepted:"Acceptée",purchased:"Achetée",in_transit:"Transit",delivered:"Livrée"},
     orderSystem:"Système : ", orderLieu:"Lieu : ", orderTotal:"Total : ", orderCourier:"Coursier : ", orderClient:"Client : ",
     bootLogin:["SALVAGER'S UNITED — AUTHENTIFICATION","VÉRIFICATION IDENTITÉ DISCORD.......OK","CHARGEMENT DU PROFIL................OK"],
@@ -357,12 +362,13 @@ const T = {
     addItem:"ADD AN ITEM", itemNamePh:"Item name", itemPricePh:"Unit price",
     brutLbl:"Gross total price", commLbl:"Commission (travel + risk premium, 25%)", totalLbl:"TOTAL DUE",
     sendBtn:"SEND ORDER", historyLabel:"History", noCurrentOrders:"No orders in progress.", noHistory:"No delivered orders yet.",
+    cancelBtn:"CANCEL", confirmCancel:"Are you sure you want to cancel this order?",
     notCourier:"Your account doesn't have courier access yet. Contact the admin to be added.",
     tabPending:"PENDING", tabMine:"ASSIGNED", noAvailable:"No orders available right now.", noDeliveries:"No deliveries in progress.",
     accept:"ACCEPT", markPurchased:"MARK PURCHASED", markTransit:"MARK IN TRANSIT", markDelivered:"MARK DELIVERED",
     members:"Members", footer:"SALVAGER'S UNITED // RISK INCLUDED IN THE COMMISSION // PAYMENT ON DELIVERY",
     toastSent:"ORDER SENT!", toastUpdated:"UPDATED!",
-    statusLabels:{pending:"Waiting for a courier",accepted:"Accepted",purchased:"Purchased",in_transit:"In transit",delivered:"Delivered"},
+    statusLabels:{pending:"Waiting for a courier",accepted:"Accepted",purchased:"Purchased",in_transit:"In transit",delivered:"Delivered",cancelled:"Cancelled"},
     statusShort:{pending:"Waiting",accepted:"Accepted",purchased:"Purchased",in_transit:"Transit",delivered:"Delivered"},
     orderSystem:"System: ", orderLieu:"Location: ", orderTotal:"Total: ", orderCourier:"Courier: ", orderClient:"Client: ",
     bootLogin:["SALVAGER'S UNITED — AUTHENTICATION","CHECKING DISCORD IDENTITY...........OK","LOADING PROFILE.....................OK"],
@@ -671,8 +677,8 @@ async function loadClientDashboard(){
   const { data, error } = await sb.from('orders').select('*').eq('client_id', session.user.id).order('created_at',{ascending:false});
   if(error){ $('clientCurrentOrders').textContent = error.message; return; }
   const orders = data || [];
-  const current = orders.filter(o => o.status !== 'delivered');
-  const history = orders.filter(o => o.status === 'delivered');
+  const current = orders.filter(o => !['delivered','cancelled'].includes(o.status));
+  const history = orders.filter(o => ['delivered','cancelled'].includes(o.status));
   const d = T[LANG];
 
   const courierIds = [...new Set(current.filter(o=>o.courier_id).map(o=>o.courier_id))];
@@ -690,21 +696,35 @@ async function loadClientDashboard(){
       ${shipTrackHtml(o)}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
       <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
+      <button class="btn-cancel" onclick="cancelOrder('${o.id}','${o.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>
     </div>
   `).join('') : `<p class="muted">${d.noCurrentOrders}</p>`;
   animateShipTracks(curBox);
 
   const histBox = $('clientHistoryList');
   histBox.innerHTML = history.length ? history.map(o => `
-    <div class="order-card history">
+    <div class="order-card history ${o.status==='cancelled'?'cancelled':''}">
       <div class="hist-main">
         <span>${o.destination_system} — ${o.exact_location||'-'}</span>
-        <span class="muted">${new Date(o.created_at).toLocaleDateString()}</span>
+        <span class="muted">${o.status==='cancelled' ? d.statusLabels.cancelled : new Date(o.created_at).toLocaleDateString()}</span>
       </div>
       <span class="hist-total">${fmt(o.total_price)}</span>
     </div>
   `).join('') : `<p class="muted">${d.noHistory}</p>`;
   $('historyCount').textContent = history.length;
+}
+
+async function cancelOrder(id, currentStatus){
+  if(!confirm(T[LANG].confirmCancel)) return;
+  let error;
+  if(currentStatus === 'pending'){
+    ({ error } = await sb.from('orders').delete().eq('id', id).eq('status','pending'));
+  } else {
+    ({ error } = await sb.from('orders').update({ status:'cancelled', updated_at: new Date().toISOString() }).eq('id', id));
+  }
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep();
+  loadClientDashboard();
 }
 function toggleHistory(){
   const box = $('clientHistoryList');
@@ -726,7 +746,7 @@ async function loadCourierData(){
   }
   $('courierBlocked').hidden = true; $('courierDash').hidden = false;
   const { data: pending } = await sb.from('orders').select('*').eq('status','pending').order('created_at',{ascending:true});
-  const { data: mine } = await sb.from('orders').select('*').eq('courier_id', session.user.id).neq('status','delivered').order('created_at',{ascending:true});
+  const { data: mine } = await sb.from('orders').select('*').eq('courier_id', session.user.id).in('status',['accepted','purchased','in_transit']).order('created_at',{ascending:true});
   await renderAvailable(pending || []);
   renderMyDeliveries(mine || []);
 }

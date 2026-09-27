@@ -59,6 +59,10 @@
   footer{text-align:center; margin-top:20px; color:var(--muted); font-size:.75rem; letter-spacing:1px;}
   .item-row{display:flex; gap:8px; align-items:flex-end; margin-bottom:10px;}
   .item-row .name{flex:2;} .item-row .prix,.item-row .qte{flex:1;}
+  .suggest-box{position:absolute; top:100%; left:0; right:0; background:var(--panel); border:1px solid var(--accent); border-top:none; max-height:190px; overflow-y:auto; z-index:30; border-radius:0 0 4px 4px; box-shadow:0 8px 18px rgba(0,0,0,.5);}
+  .suggest-item{padding:8px 10px; font-size:.85rem; cursor:pointer; border-bottom:1px solid var(--border); color:var(--text);}
+  .suggest-item:last-child{border-bottom:none;}
+  .suggest-item:hover{background:var(--accent-dim); color:var(--accent);}
   .item-row button{padding:10px 12px; flex:none; border-color:var(--border); color:var(--muted);}
   .item-row button:hover{border-color:var(--danger); color:var(--danger); background:transparent;}
   .back{background:none; border:none; color:var(--accent); font-family:'VT323',monospace; font-size:1.1rem; cursor:pointer; padding:0 0 14px; text-transform:uppercase;}
@@ -575,7 +579,10 @@ function addItem(){
   div.className='item-row item-enter'; div.id=id;
   const d = T[LANG];
   div.innerHTML = `
-    <div class="name"><input type="text" list="uexList" placeholder="${d.itemNamePh}" oninput="onItemNameInput(this)"></div>
+    <div class="name" style="position:relative;">
+      <input type="text" autocomplete="off" placeholder="${d.itemNamePh}" oninput="onItemNameInput(this)" onblur="onItemNameBlur(this)">
+      <div class="suggest-box" hidden></div>
+    </div>
     <div class="prix"><input type="number" min="0" step="1" placeholder="${d.itemPricePh}" oninput="calc()"></div>
     <div class="qte"><input type="number" min="1" step="1" value="1" oninput="calc()"></div>
     <button type="button" onclick="document.getElementById('${id}').remove(); calc();">${ICON_CLOSE}</button>
@@ -586,7 +593,44 @@ function flashPriceField(priceInput){
   priceInput.style.borderColor = 'var(--accent)';
   setTimeout(() => { priceInput.style.borderColor = ''; }, 700);
 }
+
+// Cherche des correspondances partielles (à partir de 2 lettres), max 8 résultats
+function buildSuggestions(query){
+  const q = query.trim().toLowerCase();
+  if(q.length < 2) return [];
+  const names = [...uexCommodities.map(c=>c.name), ...uexItems.map(i=>i.name)];
+  const seen = new Set(); const results = [];
+  for(const n of names){
+    if(seen.has(n)) continue;
+    if(n.toLowerCase().includes(q)){ seen.add(n); results.push(n); if(results.length >= 8) break; }
+  }
+  return results;
+}
+function renderSuggestions(nameInput, list){
+  const box = nameInput.parentElement.querySelector('.suggest-box');
+  if(!list.length){ box.hidden = true; box.innerHTML=''; return; }
+  box.innerHTML = list.map(n => `<div class="suggest-item" onmousedown="selectSuggestion(this,'${n.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">${n.replace(/</g,'&lt;')}</div>`).join('');
+  box.hidden = false;
+}
+function selectSuggestion(el, name){
+  const box = el.closest('.suggest-box');
+  const nameInput = box.parentElement.querySelector('input');
+  nameInput.value = name;
+  box.hidden = true; box.innerHTML = '';
+  lookupAndFillPrice(nameInput);
+}
+function onItemNameBlur(nameInput){
+  // léger délai pour laisser le clic sur une suggestion (onmousedown) s'exécuter avant fermeture
+  setTimeout(() => {
+    const box = nameInput.parentElement.querySelector('.suggest-box');
+    if(box) box.hidden = true;
+  }, 150);
+}
 async function onItemNameInput(nameInput){
+  renderSuggestions(nameInput, buildSuggestions(nameInput.value));
+  await lookupAndFillPrice(nameInput);
+}
+async function lookupAndFillPrice(nameInput){
   const row = nameInput.closest('.item-row');
   const priceInput = row.querySelector('.prix input');
   const commoPrice = findUexCommodityPrice(nameInput.value);

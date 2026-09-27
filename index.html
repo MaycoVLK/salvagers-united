@@ -386,7 +386,10 @@
       <div class="card" id="shipInfoCard" hidden>
         <h3 data-i18n="shipInfoTitle">Vaisseau livreur par défaut</h3>
         <label for="profileShipClass" data-i18n="lblShipClass">Classe de transporteur (modèle)</label>
-        <input id="profileShipClass" type="text" data-i18n-ph="phShipClass" placeholder="ex: Freelancer MAX, Caterpillar, Constellation Taurus">
+        <div style="position:relative;">
+          <input id="profileShipClass" type="text" autocomplete="off" data-i18n-ph="phShipClass" placeholder="ex: Freelancer MAX, Caterpillar, Constellation Taurus" oninput="onShipClassInput(this)" onblur="onShipClassBlur(this)">
+          <div class="suggest-box" hidden></div>
+        </div>
         <label for="profileShipName" data-i18n="lblShipName">Nom du vaisseau</label>
         <input id="profileShipName" type="text" data-i18n-ph="phShipName" placeholder="ex: L'Étoile Vagabonde">
         <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="saveShipInfo()">
@@ -701,6 +704,58 @@ async function fetchUexItemMinPrice(itemId){
     uexItemPriceCache[itemId] = min;
     return min;
   }catch(e){ uexItemPriceCache[itemId] = null; return null; }
+}
+
+// --- UEX CORP : catalogue vaisseaux (pour le "vaisseau livreur par défaut" en profil) ---
+let uexVehicles = [];
+let uexVehiclesLoading = null;
+async function loadUexVehicles(){
+  if(uexVehiclesLoading) return uexVehiclesLoading;
+  uexVehiclesLoading = (async () => {
+    try{
+      const res = await fetch("https://uexcorp.space/api/2.0/vehicles", { headers: { "secret_key": UEX_SECRET_KEY } });
+      const data = await res.json();
+      if(data && data.data){
+        const seen = new Set();
+        uexVehicles = data.data
+          .map(v => v.name_full || v.name)
+          .filter(n => n && !seen.has(n) && seen.add(n))
+          .sort((a,b) => a.localeCompare(b));
+      }
+    }catch(e){}
+  })();
+  return uexVehiclesLoading;
+}
+function buildVehicleSuggestions(query){
+  const q = query.trim().toLowerCase();
+  if(q.length < 1) return [];
+  const results = [];
+  for(const n of uexVehicles){
+    if(n.toLowerCase().includes(q)){ results.push(n); if(results.length >= 8) break; }
+  }
+  return results;
+}
+function renderVehicleSuggestions(inputEl, list){
+  const box = inputEl.parentElement.querySelector('.suggest-box');
+  if(!box) return;
+  if(!list.length){ box.hidden = true; box.innerHTML=''; return; }
+  box.innerHTML = list.map(n => `<div class="suggest-item" onmousedown="selectVehicleSuggestion(this,'${n.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">${n.replace(/</g,'&lt;')}</div>`).join('');
+  box.hidden = false;
+}
+function selectVehicleSuggestion(el, name){
+  const box = el.closest('.suggest-box');
+  const inputEl = box.parentElement.querySelector('input');
+  inputEl.value = name;
+  box.hidden = true; box.innerHTML = '';
+}
+function onShipClassInput(inputEl){
+  renderVehicleSuggestions(inputEl, buildVehicleSuggestions(inputEl.value));
+}
+function onShipClassBlur(inputEl){
+  setTimeout(() => {
+    const box = inputEl.parentElement.querySelector('.suggest-box');
+    if(box) box.hidden = true;
+  }, 150);
 }
 
 // --- ITEMS (formulaire de commande) ---
@@ -1133,6 +1188,7 @@ function openProfile(){
   ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile'].forEach(v => $(v).hidden = true);
   $('view-profile').hidden = false;
   renderProfileView();
+  if(profile && (profile.role === 'courier' || profile.role === 'admin')) loadUexVehicles();
 }
 function renderProfileView(){
   if(!profile) return;

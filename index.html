@@ -82,16 +82,19 @@
   .dt-actions{display:flex; gap:8px; margin-top:12px;}
   .dt-actions button{flex:1; font-size:.8rem;}
 
-  /* --- HERO DE PROFIL (privé et public) --- */
-  .profile-hero{position:relative; border:1px solid var(--border); overflow:hidden; margin-bottom:16px; box-shadow:0 0 0 1px var(--border) inset, 0 0 18px rgba(0,0,0,.4);}
-  .profile-hero-bg{position:absolute; inset:0; background-color:var(--panel); background-size:cover; background-position:center; filter:grayscale(55%) brightness(.6) contrast(1.05);}
-  .profile-hero-bg.has-photo{background-color:#000;}
-  .profile-hero-scrim{position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,6,6,.15) 0%, rgba(5,6,6,.55) 55%, var(--bg2) 100%); box-shadow:inset 0 0 60px var(--accent-dim);}
-  .profile-hero-content{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:6px; padding:28px 16px 20px; text-align:center;}
-  .profile-hero-content .avatar-wrap.big{margin:0;}
-  .profile-hero-id{display:flex; flex-direction:column; gap:2px; margin-top:4px;}
-  .profile-hero-rsi{font-family:'VT323',monospace; font-size:1.7rem; color:var(--text); letter-spacing:.5px; text-shadow:0 2px 8px rgba(0,0,0,.9); line-height:1.1;}
-  .profile-hero-discord{font-size:.78rem; color:var(--muted); text-shadow:0 2px 6px rgba(0,0,0,.9);}
+  /* --- EN-TÊTE DE PROFIL (privé et public) : encadré identité + encadré photo vaisseau --- */
+  .profile-header-row{display:flex; gap:16px; flex-wrap:wrap; align-items:stretch; margin-bottom:22px;}
+  .profile-header-row .card{margin-bottom:0;}
+  .profile-id-card{flex:1 1 220px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:4px;}
+  .profile-id-card .avatar-wrap.big{margin:0 0 6px;}
+  .profile-hero-id{display:flex; flex-direction:column; gap:2px;}
+  .profile-hero-rsi{font-family:'VT323',monospace; font-size:1.6rem; color:var(--text); letter-spacing:.5px; line-height:1.1;}
+  .profile-hero-discord{font-size:.78rem; color:var(--muted);}
+  .profile-ship-card{flex:1 1 220px; position:relative; padding:0; overflow:hidden; min-height:200px;}
+  .profile-ship-card .ship-photo-preview-wrap{position:absolute; inset:0; width:100%; height:100%; margin:0; border:none; aspect-ratio:auto;}
+  .ship-photo-caption{position:absolute; right:0; bottom:0; text-align:right; background:linear-gradient(90deg, transparent, rgba(5,6,6,.75) 40%); padding:16px 12px 8px 30px; max-width:100%;}
+  .ship-photo-caption .ship-cap-class{font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
+  .ship-photo-caption .ship-cap-name{font-family:'VT323',monospace; color:var(--accent); font-size:1.05rem; text-shadow:0 2px 6px rgba(0,0,0,.9);}
   .muted{color:var(--muted); font-size:.82rem;}
   .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
   button{padding:12px 16px; border-radius:2px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-family:'VT323',monospace; font-size:1.05rem; letter-spacing:1px; cursor:pointer; text-transform:uppercase; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:background .15s, transform .1s;}
@@ -281,9 +284,21 @@
   }
 
   /* --- ACHIEVEMENTS COURSIER --- */
-  .achv-progress-bar{width:100%; height:10px; background:var(--bg2); border:1px solid var(--border); border-radius:4px; overflow:hidden; margin:8px 0 4px;}
-  .achv-progress-fill{height:100%; background:var(--accent); transition:width 1.1s ease;}
-  .achv-progress-label{font-size:.78rem; color:var(--muted); text-align:right; margin-bottom:10px;}
+  .rank-track{display:flex; align-items:center; gap:10px; margin:10px 2px 4px;}
+  .rank-track-icon{width:26px; height:26px; flex:none; color:var(--muted);}
+  .rank-track-icon.start{color:var(--accent);}
+  .rank-track-icon.maxed{color:var(--accent);}
+  .rank-track-icon svg{width:100%; height:100%; display:block;}
+  .rank-track-bar{position:relative; flex:1; height:12px;}
+  .rank-track-rail{position:absolute; top:5px; left:0; right:0; height:2px; background:var(--border);}
+  .rank-track-fill{position:absolute; top:5px; left:0; height:2px; background:var(--accent); box-shadow:0 0 6px var(--accent); transition:width 1.1s ease;
+    background-image:repeating-linear-gradient(45deg, rgba(255,255,255,.35) 0px, rgba(255,255,255,.35) 2px, transparent 2px, transparent 8px);
+    background-size:14px 14px; animation:railStripes 1s linear infinite;}
+  .rank-track-marker{position:absolute; top:1px; width:10px; height:10px; border-radius:50%; background:var(--accent); transform:translateX(-50%); box-shadow:0 0 8px var(--accent); transition:left 1.1s cubic-bezier(.4,0,.2,1);}
+  .rank-track-marker::after{content:''; position:absolute; inset:-6px; border-radius:50%; border:2px solid var(--accent); animation:stagePulse 1.6s ease-out infinite;}
+  .rank-track-label{display:flex; justify-content:space-between; gap:6px; font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px;}
+  .rank-track-label .current{color:var(--accent);}
+  .rank-track-label span:nth-child(2){flex:1; text-align:center;}
   .achv-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:10px;}
   .achv-badge{display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 6px; border:1px solid var(--border); border-radius:6px; font-size:.66rem; text-align:center; text-transform:uppercase; letter-spacing:.5px; transition:transform .3s, border-color .3s, opacity .3s;}
   .achv-badge svg{width:26px; height:26px;}
@@ -502,10 +517,8 @@
     <section id="view-profile" hidden>
       <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
       <header><h1 data-i18n="profileTitle">Profil</h1></header>
-      <div class="profile-hero" id="profileHero">
-        <div class="profile-hero-bg" id="profileHeroBg"></div>
-        <div class="profile-hero-scrim"></div>
-        <div class="profile-hero-content">
+      <div class="profile-header-row">
+        <div class="card profile-id-card">
           <div class="avatar-wrap big">
             <img class="avatar" id="profileAvatarImg" hidden>
             <div class="avatar-fallback" id="profileAvatarFallback">?</div>
@@ -513,6 +526,16 @@
           <div class="profile-hero-id">
             <div class="profile-hero-rsi" id="profileHeroRsi">—</div>
             <div class="profile-hero-discord" id="profileHeroDiscord">—</div>
+          </div>
+        </div>
+        <div class="card profile-ship-card" id="profileShipHeroCard" hidden>
+          <div class="ship-photo-preview-wrap">
+            <img id="profileShipHeroImg" class="ship-photo-img">
+            <div class="ship-photo-tint" id="profileShipHeroTint"></div>
+            <div class="ship-photo-caption">
+              <div class="ship-cap-class" id="profileShipHeroClass"></div>
+              <div class="ship-cap-name" id="profileShipHeroName"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -563,10 +586,8 @@
     <!-- PROFIL PUBLIC (vu par un client ou par l'admin) -->
     <section id="view-public-profile" hidden>
       <button class="back" onclick="closePublicProfile()" data-i18n="back">&lt; RETOUR</button>
-      <div class="profile-hero" id="pubHero">
-        <div class="profile-hero-bg" id="pubHeroBg"></div>
-        <div class="profile-hero-scrim"></div>
-        <div class="profile-hero-content">
+      <div class="profile-header-row">
+        <div class="card profile-id-card">
           <div class="avatar-wrap big">
             <img class="avatar" id="pubAvatarImg" hidden>
             <div class="avatar-fallback" id="pubAvatarFallback">?</div>
@@ -574,6 +595,16 @@
           <div class="profile-hero-id">
             <div class="profile-hero-rsi" id="pubHeroRsi">—</div>
             <div class="profile-hero-discord" id="pubHeroDiscord">—</div>
+          </div>
+        </div>
+        <div class="card profile-ship-card" id="pubShipHeroCard" hidden>
+          <div class="ship-photo-preview-wrap">
+            <img id="pubShipHeroImg" class="ship-photo-img">
+            <div class="ship-photo-tint" id="pubShipHeroTint"></div>
+            <div class="ship-photo-caption">
+              <div class="ship-cap-class" id="pubShipHeroClass"></div>
+              <div class="ship-cap-name" id="pubShipHeroName"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -680,6 +711,7 @@ const T = {
     courierAdTitle:"Envie de rejoindre les coursiers Salvager's United ?", courierAdSub:"Livre des commandes, gagne des aUEC et débloque des succès.", courierAdBtn:"ENVOYER MA CANDIDATURE",
     rsiTitle:"Pseudo RSI (Handle)", rsiHint:"Permet aux autres membres de t'ajouter facilement en jeu.", phRsiHandle:"ex: Mayco_SC", savedRsi:"PSEUDO RSI ENREGISTRÉ !",
     rankLabels:{rookie:"Rookie", junior:"Junior", senior:"Senior", master:"Master"}, rankDeliveries:"livraisons",
+    rankToNext:"Encore {n} livraison(s) avant {rank}", rankMaxed:"Rang maximum atteint !",
     lblDeadline:"Date et heure de livraison souhaitée (optionnel)", orderDeadline:"Deadline : ",
     viewMoreItems:"Voir {n} de plus", viewLessItems:"Voir moins",
     viewProfileBtn:"VOIR PROFIL", marketplaceTitle:"Marketplace personnelle", marketplaceWip:"Bientôt disponible — chaque coursier/crafteur pourra proposer ici ses objets à la vente.",
@@ -737,6 +769,7 @@ const T = {
     courierAdTitle:"Want to join the Salvager's United couriers?", courierAdSub:"Deliver orders, earn aUEC and unlock achievements.", courierAdBtn:"SEND MY APPLICATION",
     rsiTitle:"RSI Handle", rsiHint:"Lets other members add you easily in-game.", phRsiHandle:"e.g. Mayco_SC", savedRsi:"RSI HANDLE SAVED!",
     rankLabels:{rookie:"Rookie", junior:"Junior", senior:"Senior", master:"Master"}, rankDeliveries:"deliveries",
+    rankToNext:"{n} more deliveries to reach {rank}", rankMaxed:"Maximum rank reached!",
     lblDeadline:"Desired delivery date & time (optional)", orderDeadline:"Deadline: ",
     viewMoreItems:"View {n} more", viewLessItems:"View less",
     viewProfileBtn:"VIEW PROFILE", marketplaceTitle:"Personal marketplace", marketplaceWip:"Coming soon — every courier/crafter will be able to list their own items for sale here.",
@@ -1532,16 +1565,9 @@ function renderAchievements(unlockedSet, deliveredCount, boxId){
   const box = $(boxId || 'courierAchievementsCard'); if(!box) return;
   box.hidden = false;
   const d = T[LANG];
-  const total = ACHIEVEMENTS.length;
-  const done = ACHIEVEMENTS.filter(a=>unlockedSet.has(a.key)).length;
-  const pct = Math.round((done/total)*100);
   box.innerHTML = `
-    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-      <h3 style="margin:0;" data-i18n="achvTitle">${d.achvTitle}</h3>
-      ${deliveredCount !== undefined ? rankBadgeHtml(deliveredCount) : ''}
-    </div>
-    <div class="achv-progress-bar"><div class="achv-progress-fill" style="width:${pct}%"></div></div>
-    <div class="achv-progress-label">${done} / ${total}</div>
+    <h3 style="margin:0 0 4px;" data-i18n="achvTitle">${d.achvTitle}</h3>
+    ${rankProgressHtml(deliveredCount)}
     <div class="achv-grid">
       ${ACHIEVEMENTS.map(a => `
         <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-key="${a.key}" title="${d.achvDesc[a.key]}">
@@ -1679,6 +1705,38 @@ function rankBadgeHtml(deliveredCount, size){
   const cls = size === 'md' ? 'rank-badge md' : 'rank-badge';
   return `<span class="${cls}" title="${label}">${RANK_ICONS[r.key]}<span class="rank-label">${label}</span></span>`;
 }
+// Barre de progression animée (même style visuel que le rail des commandes) vers le rang suivant.
+function rankProgressHtml(deliveredCount){
+  const d = T[LANG];
+  const count = deliveredCount || 0;
+  const r = getRank(count);
+  const idx = COURIER_RANKS.findIndex(x => x.key === r.key);
+  const isMax = idx === COURIER_RANKS.length - 1;
+  const next = isMax ? r : COURIER_RANKS[idx+1];
+  const span = isMax ? 1 : Math.max(1, next.min - r.min);
+  const progressed = isMax ? span : (count - r.min);
+  const pct = Math.min(100, Math.max(0, Math.round((progressed/span)*100)));
+  const remaining = isMax ? 0 : Math.max(0, next.min - count);
+  const curLabel = d.rankLabels[r.key];
+  const nextLabel = isMax ? curLabel : d.rankLabels[next.key];
+  const midText = isMax ? d.rankMaxed : d.rankToNext.replace('{n}', remaining).replace('{rank}', nextLabel);
+  return `
+    <div class="rank-track">
+      <div class="rank-track-icon start" title="${curLabel}">${RANK_ICONS[r.key]}</div>
+      <div class="rank-track-bar">
+        <div class="rank-track-rail"></div>
+        <div class="rank-track-fill" style="width:${pct}%"></div>
+        <div class="rank-track-marker" style="left:${pct}%"></div>
+      </div>
+      <div class="rank-track-icon end ${isMax?'maxed':''}" title="${nextLabel}">${RANK_ICONS[next.key]}</div>
+    </div>
+    <div class="rank-track-label">
+      <span class="current">${curLabel}</span>
+      <span>${midText}</span>
+      <span>${nextLabel}</span>
+    </div>
+  `;
+}
 // Grosse mise en avant du rang (page de profil, profil public) : à la manière d'une médaille.
 function rankShowcaseHtml(deliveredCount){
   const r = getRank(deliveredCount || 0);
@@ -1741,13 +1799,13 @@ function renderProfileView(){
   if(showShip){
     $('profileShipClass').value = profile.ship_class || '';
     $('profileShipName').value = profile.ship_name || '';
-    setHeroPhoto($('profileHeroBg'), profile.ship_photo_url);
+    setHeroPhoto('profile', profile);
     fetchCourierCareerStats(session.user.id).then(stats => renderCareerStats($('careerStatsCard'), stats));
     Promise.all([loadUnlockedAchievements(), fetchCourierStats()]).then(([unlockedSet, stats]) => {
       renderAchievements(unlockedSet, stats ? stats.deliveredCount : 0, 'profileAchvCard');
     });
   } else {
-    setHeroPhoto($('profileHeroBg'), null);
+    setHeroPhoto('profile', null);
   }
   renderCourierRequestCard();
 }
@@ -1762,10 +1820,19 @@ async function saveShipInfo(){
   sweep();
   toastShow(T[LANG].savedShipInfo);
 }
-function setHeroPhoto(bgEl, url){
-  if(!bgEl) return;
-  if(url){ bgEl.style.backgroundImage = `url('${url}')`; bgEl.classList.add('has-photo'); }
-  else{ bgEl.style.backgroundImage = 'none'; bgEl.classList.remove('has-photo'); }
+// Affiche l'encadré "photo du vaisseau" (prefix = 'profile' ou 'pub') : visible seulement s'il y a une photo.
+function setHeroPhoto(prefix, p){
+  const card = $(prefix+'ShipHeroCard'), img = $(prefix+'ShipHeroImg');
+  if(!card || !img) return;
+  const url = p ? p.ship_photo_url : null;
+  if(url){
+    img.src = url;
+    card.hidden = false;
+    $(prefix+'ShipHeroClass').textContent = (p.ship_class || '');
+    $(prefix+'ShipHeroName').textContent = p.ship_name ? '“'+p.ship_name+'”' : '';
+  } else {
+    card.hidden = true;
+  }
 }
 async function onShipPhotoSelected(inputEl){
   if(!session || !inputEl.files || !inputEl.files[0]) return;
@@ -1785,7 +1852,7 @@ async function onShipPhotoSelected(inputEl){
     const { error: updErr } = await sb.from('profiles').update({ ship_photo_url: publicUrl }).eq('id', session.user.id);
     if(updErr) throw updErr;
     await loadProfile();
-    setHeroPhoto($('profileHeroBg'), publicUrl);
+    setHeroPhoto('profile', profile);
     toastShow(d.shipPhotoSaved);
   } catch(e){
     console.error(e);
@@ -1996,12 +2063,12 @@ async function openPublicProfile(id){
     achvGrid.innerHTML = `<div class="achv-grid">${ACHIEVEMENTS.map(a => `
       <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" title="${d.achvDesc[a.key]}">${ACHV_ICONS[a.key]}<span>${d.achvLabels[a.key]}</span></div>
     `).join('')}</div>`;
-    setHeroPhoto($('pubHeroBg'), p.ship_photo_url);
+    setHeroPhoto('pub', p);
     renderCareerStats($('pubCareerStatsCard'), stats);
     $('pubCareerStatsCard').hidden = false;
   } else {
     achvGrid.innerHTML = `<p class="muted">${d.noAchvClient}</p>`;
-    setHeroPhoto($('pubHeroBg'), null);
+    setHeroPhoto('pub', null);
   }
   $('pubAdminActions').hidden = !(profile && profile.role === 'admin');
 }

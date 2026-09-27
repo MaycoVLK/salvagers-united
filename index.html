@@ -175,6 +175,24 @@
   /* --- Cartes candidatures / profil --- */
   .app-list-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
   .toast.danger{background:var(--danger); color:#1a0000;}
+
+  /* --- PIXEL BURST (particules à l'envoi/déblocage) --- */
+  .pixel-particle{position:fixed; width:5px; height:5px; background:var(--accent); pointer-events:none; z-index:9999; image-rendering:pixelated; animation:pixelFly .7s ease-out forwards;}
+  @keyframes pixelFly{
+    0%{transform:translate(-50%,-50%) scale(1); opacity:1;}
+    100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0); opacity:0;}
+  }
+
+  /* --- ACHIEVEMENTS COURSIER --- */
+  .achv-progress-bar{width:100%; height:10px; background:var(--bg2); border:1px solid var(--border); border-radius:4px; overflow:hidden; margin:8px 0 4px;}
+  .achv-progress-fill{height:100%; background:var(--accent); transition:width 1.1s ease;}
+  .achv-progress-label{font-size:.78rem; color:var(--muted); text-align:right; margin-bottom:10px;}
+  .achv-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:10px;}
+  .achv-badge{display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 6px; border:1px solid var(--border); border-radius:6px; font-size:.66rem; text-align:center; text-transform:uppercase; letter-spacing:.5px; transition:transform .3s, border-color .3s, opacity .3s;}
+  .achv-badge svg{width:26px; height:26px;}
+  .achv-badge.locked{opacity:.35; filter:grayscale(1);}
+  .achv-badge.unlocked{color:var(--accent); border-color:var(--accent); animation:achvPop .5s ease;}
+  @keyframes achvPop{0%{transform:scale(.6); opacity:0;} 60%{transform:scale(1.15);} 100%{transform:scale(1); opacity:1;}}
 </style>
 </head>
 <body>
@@ -318,6 +336,7 @@
         <p data-i18n="notCourier">Ton compte n'a pas encore le rôle coursier. Contacte l'administrateur pour être ajouté.</p>
       </div>
       <div id="courierDash" hidden>
+        <div class="card" id="courierAchievementsCard"></div>
         <div class="tabs">
           <button class="tab-btn active" id="tab-pending" onclick="switchCourierTab('pending')" data-i18n="tabPending">À TRAITER</button>
           <button class="tab-btn" id="tab-mine" onclick="switchCourierTab('mine')" data-i18n="tabMine">ATTRIBUÉES</button>
@@ -436,6 +455,9 @@ const T = {
     alreadyRoleNote:"Tu fais déjà partie de l'équipage !",
     courierAccepted:"🎉 Ta demande pour devenir coursier a été acceptée !", courierRejected:"Ta demande pour devenir coursier a été refusée.",
     courierApplications:"Candidatures Coursier", noApplications:"Aucune candidature en attente.", acceptApp:"ACCEPTER", rejectApp:"REFUSER",
+    achvTitle:"Succès", achvUnlocked:"Nouveau succès débloqué :",
+    achvLabels:{first_delivery:"Première livraison", five_deliveries:"5 livraisons", veteran:"Coursier fiable", lightning:"Rapide comme l'éclair"},
+    achvDesc:{first_delivery:"Termine ta première commande.", five_deliveries:"Termine 5 commandes.", veteran:"Termine 20 commandes.", lightning:"Livre une commande en moins de 10 minutes après l'avoir acceptée."},
     statusLabels:{pending:"En attente d'un coursier",accepted:"Acceptée",purchased:"Marchandise achetée",in_transit:"En transit",delivered:"Livrée",cancelled:"Annulée"},
     statusShort:{pending:"Attente",accepted:"Acceptée",purchased:"Achetée",in_transit:"Transit",delivered:"Livrée"},
     orderSystem:"Système : ", orderLieu:"Lieu : ", orderTotal:"Total : ", orderCourier:"Coursier : ", orderClient:"Client : ",
@@ -469,6 +491,9 @@ const T = {
     alreadyRoleNote:"You're already part of the crew!",
     courierAccepted:"🎉 Your courier application was accepted!", courierRejected:"Your courier application was rejected.",
     courierApplications:"Courier Applications", noApplications:"No pending applications.", acceptApp:"ACCEPT", rejectApp:"REJECT",
+    achvTitle:"Achievements", achvUnlocked:"New achievement unlocked:",
+    achvLabels:{first_delivery:"First delivery", five_deliveries:"5 deliveries", veteran:"Reliable courier", lightning:"Lightning fast"},
+    achvDesc:{first_delivery:"Complete your first order.", five_deliveries:"Complete 5 orders.", veteran:"Complete 20 orders.", lightning:"Deliver an order within 10 minutes of accepting it."},
     statusLabels:{pending:"Waiting for a courier",accepted:"Accepted",purchased:"Purchased",in_transit:"In transit",delivered:"Delivered",cancelled:"Cancelled"},
     statusShort:{pending:"Waiting",accepted:"Accepted",purchased:"Purchased",in_transit:"Transit",delivered:"Delivered"},
     orderSystem:"System: ", orderLieu:"Location: ", orderTotal:"Total: ", orderCourier:"Courier: ", orderClient:"Client: ",
@@ -774,6 +799,7 @@ $('sendBtn').addEventListener('click', async ()=>{
   if(error){ alert('Erreur : ' + error.message); return; }
   notifyDiscord(payload);
   sweep();
+  pixelBurst($('sendBtn'));
   const t=$('toast'); t.textContent=T[LANG].toastSent; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800);
   $('items').innerHTML=''; itemCount=0; addItem(); calc();
   routeApp();
@@ -891,6 +917,7 @@ async function loadCourierData(){
   const { data: mine } = await sb.from('orders').select('*').eq('courier_id', session.user.id).in('status',['accepted','purchased','in_transit']).order('created_at',{ascending:true});
   await renderAvailable(pending || []);
   renderMyDeliveries(mine || []);
+  checkAndRenderAchievements();
 }
 async function renderAvailable(orders){
   const d=T[LANG]; const box=$('courierPendingPane');
@@ -928,7 +955,7 @@ function renderMyDeliveries(orders){
   animateShipTracks(box);
 }
 async function acceptOrder(id){
-  const { error } = await sb.from('orders').update({ status:'accepted', courier_id: session.user.id }).eq('id', id).eq('status','pending');
+  const { error } = await sb.from('orders').update({ status:'accepted', courier_id: session.user.id, accepted_at: new Date().toISOString() }).eq('id', id).eq('status','pending');
   if(error){ alert('Erreur : '+error.message); return; }
   sweep(); loadCourierData();
 }
@@ -936,6 +963,94 @@ async function advanceOrder(id, next){
   const { error } = await sb.from('orders').update({ status: next, updated_at: new Date().toISOString() }).eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
   sweep(); loadCourierData();
+}
+
+// --- ACHIEVEMENTS COURSIER ---
+const ACHV_ICONS = {
+  first_delivery: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="5" y="2" width="6" height="2"/><rect x="4" y="4" width="8" height="4"/><rect x="6" y="8" width="4" height="2"/><rect x="5" y="10" width="6" height="2"/><rect x="3" y="12" width="10" height="2"/></g></svg>`,
+  five_deliveries: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="1" width="2" height="2"/><rect x="7" y="13" width="2" height="2"/><rect x="1" y="7" width="2" height="2"/><rect x="13" y="7" width="2" height="2"/><rect x="5" y="5" width="6" height="6"/></g></svg>`,
+  veteran: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="4" y="2" width="8" height="2"/><rect x="3" y="4" width="10" height="6"/><rect x="4" y="10" width="8" height="2"/><rect x="6" y="12" width="4" height="2"/></g></svg>`,
+  lightning: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="8" y="1" width="3" height="3"/><rect x="6" y="4" width="3" height="3"/><rect x="4" y="7" width="4" height="2"/><rect x="7" y="9" width="3" height="3"/><rect x="5" y="12" width="3" height="3"/></g></svg>`
+};
+const ACHIEVEMENTS = [
+  { key:'first_delivery', check: s => s.deliveredCount >= 1 },
+  { key:'five_deliveries', check: s => s.deliveredCount >= 5 },
+  { key:'veteran', check: s => s.deliveredCount >= 20 },
+  { key:'lightning', check: s => s.hasFastDelivery }
+];
+async function fetchCourierStats(){
+  if(!session) return null;
+  const { data } = await sb.from('orders').select('accepted_at,updated_at,status').eq('courier_id', session.user.id).eq('status','delivered');
+  const rows = data || [];
+  const deliveredCount = rows.length;
+  const hasFastDelivery = rows.some(o => o.accepted_at && (new Date(o.updated_at) - new Date(o.accepted_at)) <= 10*60*1000);
+  return { deliveredCount, hasFastDelivery };
+}
+async function loadUnlockedAchievements(){
+  if(!session) return new Set();
+  const { data } = await sb.from('courier_achievements').select('key').eq('courier_id', session.user.id);
+  return new Set((data||[]).map(r=>r.key));
+}
+function renderAchievements(unlockedSet){
+  const box = $('courierAchievementsCard'); if(!box) return;
+  const d = T[LANG];
+  const total = ACHIEVEMENTS.length;
+  const done = ACHIEVEMENTS.filter(a=>unlockedSet.has(a.key)).length;
+  const pct = Math.round((done/total)*100);
+  box.innerHTML = `
+    <h3 data-i18n="achvTitle">${d.achvTitle}</h3>
+    <div class="achv-progress-bar"><div class="achv-progress-fill" style="width:${pct}%"></div></div>
+    <div class="achv-progress-label">${done} / ${total}</div>
+    <div class="achv-grid">
+      ${ACHIEVEMENTS.map(a => `
+        <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-key="${a.key}" title="${d.achvDesc[a.key]}">
+          ${ACHV_ICONS[a.key]}
+          <span>${d.achvLabels[a.key]}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+function announceAchievement(key){
+  const d = T[LANG];
+  toastShow('🏆 ' + d.achvUnlocked + ' ' + d.achvLabels[key]);
+  const badgeEl = document.querySelector(`.achv-badge[data-key="${key}"]`);
+  pixelBurst(badgeEl || $('courierAchievementsCard'), 20);
+}
+async function checkAndRenderAchievements(){
+  if(!profile || !['courier','admin'].includes(profile.role) || !session) return;
+  const stats = await fetchCourierStats();
+  if(!stats) return;
+  const unlocked = await loadUnlockedAchievements();
+  const newlyUnlocked = [];
+  for(const a of ACHIEVEMENTS){
+    if(!unlocked.has(a.key) && a.check(stats)){
+      const { error, data } = await sb.from('courier_achievements').insert({ courier_id: session.user.id, key: a.key }).select();
+      if(!error && data && data.length){ unlocked.add(a.key); newlyUnlocked.push(a.key); }
+    }
+  }
+  renderAchievements(unlocked);
+  newlyUnlocked.forEach(key => setTimeout(() => announceAchievement(key), 400));
+}
+
+// --- PIXEL BURST ---
+function pixelBurst(el, count){
+  if(!el) return;
+  const rect = el.getBoundingClientRect();
+  const originX = rect.left + rect.width/2;
+  const originY = rect.top + rect.height/2;
+  const n = count || 14;
+  for(let i=0;i<n;i++){
+    const p = document.createElement('div');
+    p.className = 'pixel-particle';
+    const angle = (Math.PI*2*i/n) + (Math.random()*0.5);
+    const dist = 35 + Math.random()*55;
+    p.style.left = originX+'px'; p.style.top = originY+'px';
+    p.style.setProperty('--dx', (Math.cos(angle)*dist)+'px');
+    p.style.setProperty('--dy', (Math.sin(angle)*dist)+'px');
+    document.body.appendChild(p);
+    p.addEventListener('animationend', () => p.remove());
+  }
 }
 
 // --- TOAST ---

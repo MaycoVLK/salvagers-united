@@ -63,6 +63,7 @@
   .suggest-item{padding:8px 10px; font-size:.85rem; cursor:pointer; border-bottom:1px solid var(--border); color:var(--text);}
   .suggest-item:last-child{border-bottom:none;}
   .suggest-item:hover{background:var(--accent-dim); color:var(--accent);}
+  .item-row .craft-note{font-size:.72rem; color:var(--accent); margin-top:4px; line-height:1.3;}
   .item-row button{padding:10px 12px; flex:none; border-color:var(--border); color:var(--muted);}
   .item-row button:hover{border-color:var(--danger); color:var(--danger); background:transparent;}
   .back{background:none; border:none; color:var(--accent); font-family:'VT323',monospace; font-size:1.1rem; cursor:pointer; padding:0 0 14px; text-transform:uppercase;}
@@ -421,8 +422,10 @@ const UEX_ITEM_CATEGORIES = [
   32,33,34,35,70,79,80,90, // Armes de vaisseau
   25,26,27,28,29,30,31,67,109,110, // Utilitaires de vaisseau (tractor beams, mining, salvage...)
   82,83, // Avionique
-  86 // Propulsion (jump modules)
+  86, // Propulsion (jump modules)
+  75 // Décorations
 ];
+let uexCatalogReady = false;
 
 const SUPABASE_URL = "https://hdstkdubotlmlndmuwnl.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhkc3RrZHVib3RsbWxuZG11d25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0OTQ5ODAsImV4cCI6MjEwNjA3MDk4MH0.mcu8_sH5UEmVXROhf12DN2JKjFUG_WgCOeIbZMsDrRI";
@@ -482,6 +485,8 @@ const T = {
     clearHistory:"VIDER L'HISTORIQUE", confirmClearHistory:"Es-tu sûr de vouloir supprimer définitivement tout ton historique de commandes ?",
     shipInfoTitle:"Vaisseau livreur par défaut", lblShipClass:"Classe de transporteur (modèle)", phShipClass:"ex: Freelancer MAX, Caterpillar, Constellation Taurus",
     lblShipName:"Nom du vaisseau", phShipName:"ex: L'Étoile Vagabonde", savedShipInfo:"VAISSEAU ENREGISTRÉ !",
+    craftOnlyNote:"Objet non vendu en boutique — prix à négocier directement avec un crafteur/looter.",
+    craftOnlyNotice:"Cet objet n'est pas disponible en boutique. Rapproche-toi d'un crafteur ou d'un looter, le prix sera à définir avec lui.",
     bootLogin:["SALVAGER'S UNITED — AUTHENTIFICATION","VÉRIFICATION IDENTITÉ DISCORD.......OK","CHARGEMENT DU PROFIL................OK"],
     bootClient:["CHARGEMENT MODULE CLIENT.SYS.........OK","SYNCHRONISATION DES COMMANDES........OK"],
     bootCourier:["CHARGEMENT MODULE COURSIER.SYS.......OK","VÉRIFICATION BADGE D'ACCÈS...........OK"],
@@ -521,6 +526,8 @@ const T = {
     clearHistory:"CLEAR HISTORY", confirmClearHistory:"Are you sure you want to permanently delete your entire order history?",
     shipInfoTitle:"Default delivery ship", lblShipClass:"Transporter class (model)", phShipClass:"e.g. Freelancer MAX, Caterpillar, Constellation Taurus",
     lblShipName:"Ship name", phShipName:"e.g. The Wandering Star", savedShipInfo:"SHIP SAVED!",
+    craftOnlyNote:"Not sold in shops — price to negotiate directly with a crafter/looter.",
+    craftOnlyNotice:"This item isn't available in shops. Reach out to a crafter or a looter — the price will need to be set with them directly.",
     bootLogin:["SALVAGER'S UNITED — AUTHENTICATION","CHECKING DISCORD IDENTITY...........OK","LOADING PROFILE.....................OK"],
     bootClient:["LOADING MODULE CLIENT.SYS............OK","SYNCING ORDERS.......................OK"],
     bootCourier:["LOADING MODULE COURIER.SYS...........OK","CHECKING ACCESS BADGE................OK"],
@@ -536,6 +543,7 @@ function applyLang(){
   document.querySelectorAll('.item-row').forEach(row => {
     row.querySelector('.name input').placeholder = d.itemNamePh;
     row.querySelector('.prix input').placeholder = d.itemPricePh;
+    const note = row.querySelector('.craft-note'); if(note) note.textContent = d.craftOnlyNote;
   });
   ['lang-fr','lang-en','panel-lang-fr','panel-lang-en'].forEach(id => {
     const el = $(id); if(!el) return;
@@ -687,6 +695,7 @@ async function loadUexCatalog(){
     const list = $('uexList');
     const allNames = [...uexCommodities.map(c=>c.name), ...uexItems.map(i=>i.name)];
     list.innerHTML = allNames.map(n => `<option value="${n.replace(/"/g,'&quot;')}">`).join('');
+    uexCatalogReady = true;
   })();
   return uexLoading;
 }
@@ -774,6 +783,7 @@ function addItem(){
     <div class="name" style="position:relative;">
       <input type="text" autocomplete="off" placeholder="${d.itemNamePh}" oninput="onItemNameInput(this)" onblur="onItemNameBlur(this)">
       <div class="suggest-box" hidden></div>
+      <div class="craft-note" hidden>${d.craftOnlyNote}</div>
     </div>
     <div class="prix"><input type="number" min="0" step="1" placeholder="${d.itemPricePh}" oninput="calc()"></div>
     <div class="qte"><input type="number" min="1" step="1" value="1" oninput="calc()"></div>
@@ -816,9 +826,14 @@ function onItemNameBlur(nameInput){
   setTimeout(() => {
     const box = nameInput.parentElement.querySelector('.suggest-box');
     if(box) box.hidden = true;
+    checkCraftOnly(nameInput);
   }, 150);
 }
 async function onItemNameInput(nameInput){
+  const row = nameInput.closest('.item-row');
+  const note = row.querySelector('.craft-note');
+  if(note) note.hidden = true;
+  row.classList.remove('craft-item');
   renderSuggestions(nameInput, buildSuggestions(nameInput.value));
   await lookupAndFillPrice(nameInput);
 }
@@ -833,6 +848,30 @@ async function lookupAndFillPrice(nameInput){
     if(min !== null && nameInput.value.trim().toLowerCase() === item.name.toLowerCase()){
       priceInput.value = min; flashPriceField(priceInput); calc();
     }
+  }
+}
+// Vérifie, une fois le champ quitté, si l'objet tapé existe bien dans le catalogue UEX avec un prix.
+// Si non, c'est un objet non vendu en boutique (loot/craft) : on prévient le client qu'il faudra passer par un crafteur/looter.
+async function checkCraftOnly(nameInput){
+  const row = nameInput.closest('.item-row');
+  const note = row.querySelector('.craft-note');
+  const val = nameInput.value.trim();
+  if(!val || !uexCatalogReady){ if(note) note.hidden = true; row.classList.remove('craft-item'); return; }
+  const commoPrice = findUexCommodityPrice(val);
+  if(commoPrice !== null){ if(note) note.hidden = true; row.classList.remove('craft-item'); return; }
+  const item = findUexItem(val);
+  let available = false;
+  if(item){
+    const min = await fetchUexItemMinPrice(item.id);
+    if(min !== null) available = true;
+  }
+  if(nameInput.value.trim() !== val) return; // la valeur a changé pendant l'appel réseau
+  if(available){ if(note) note.hidden = true; row.classList.remove('craft-item'); return; }
+  if(note) note.hidden = false;
+  row.classList.add('craft-item');
+  if(nameInput.dataset.lastNotified !== val){
+    nameInput.dataset.lastNotified = val;
+    toastShow(T[LANG].craftOnlyNotice, true);
   }
 }
 function calc(){

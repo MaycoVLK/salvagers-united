@@ -54,6 +54,46 @@
   .career-stat{border:1px solid var(--border); padding:10px 12px; text-align:center;}
   .career-stat .val{font-family:'VT323',monospace; font-size:1.6rem; color:var(--accent); line-height:1.1;}
   .career-stat .lbl{font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;}
+
+  /* --- CUSTOM DATE/TIME PICKER (deadline) --- */
+  .dt-field{position:relative; display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid var(--border); background:var(--bg2); color:var(--text); padding:10px 12px; cursor:pointer; font-family:'VT323',monospace; font-size:1.05rem;}
+  .dt-field:hover{border-color:var(--accent);}
+  .dt-field-text.placeholder{color:var(--muted);}
+  .dt-field-icon{width:18px; height:18px; flex:none; color:var(--muted);}
+  .dt-popup{position:relative; z-index:40; margin-top:8px; border:1px solid var(--accent); background:var(--panel); box-shadow:0 0 0 1px var(--border) inset, 0 0 20px rgba(0,0,0,.5); padding:12px; width:100%; max-width:320px;}
+  .dt-cal-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; font-family:'VT323',monospace; font-size:1.1rem; color:var(--accent);}
+  .dt-nav{background:none; border:1px solid var(--border); color:var(--accent); width:28px; height:28px; padding:0; font-size:1rem; line-height:1; cursor:pointer;}
+  .dt-nav:hover{border-color:var(--accent);}
+  .dt-cal-weekdays{display:grid; grid-template-columns:repeat(7,1fr); gap:2px; margin-bottom:4px;}
+  .dt-cal-weekdays span{text-align:center; font-size:.68rem; color:var(--muted); text-transform:uppercase;}
+  .dt-cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:2px;}
+  .dt-day{aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:.85rem; cursor:pointer; border:1px solid transparent; color:var(--text); background:var(--bg2);}
+  .dt-day:hover:not(.disabled):not(.empty){border-color:var(--accent);}
+  .dt-day.empty{background:none; cursor:default;}
+  .dt-day.today{color:var(--accent); font-weight:bold;}
+  .dt-day.selected{background:var(--accent); color:var(--bg); border-color:var(--accent);}
+  .dt-day.disabled{color:var(--muted); opacity:.35; cursor:not-allowed;}
+  .dt-time-row{display:flex; align-items:center; justify-content:center; gap:6px; margin-top:12px;}
+  .dt-time-row select{width:auto; padding:6px 8px; font-family:'VT323',monospace; font-size:1.1rem;}
+  .dt-colon{font-family:'VT323',monospace; font-size:1.2rem; color:var(--muted);}
+  .dt-ampm-toggle{display:flex; margin-left:8px; border:1px solid var(--border);}
+  .dt-ampm-btn{background:none; border:none; color:var(--muted); padding:6px 10px; font-family:'VT323',monospace; font-size:.9rem; cursor:pointer;}
+  .dt-ampm-btn.active{background:var(--accent); color:var(--bg);}
+  .dt-actions{display:flex; gap:8px; margin-top:12px;}
+  .dt-actions button{flex:1; font-size:.8rem;}
+
+  /* --- HERO DE PROFIL (privé et public) --- */
+  .profile-hero{position:relative; border:1px solid var(--border); overflow:hidden; margin-bottom:16px; box-shadow:0 0 0 1px var(--border) inset, 0 0 18px rgba(0,0,0,.4);}
+  .profile-hero-bg{position:absolute; inset:0; background-color:var(--panel); background-size:cover; background-position:center; filter:grayscale(55%) brightness(.6) contrast(1.05);}
+  .profile-hero-bg.has-photo{background-color:#000;}
+  .profile-hero-scrim{position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,6,6,.15) 0%, rgba(5,6,6,.55) 55%, var(--bg2) 100%); box-shadow:inset 0 0 60px var(--accent-dim);}
+  .profile-hero-content{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:6px; padding:28px 16px 20px; text-align:center;}
+  .profile-hero-content .avatar-wrap.big{margin:0;}
+  .profile-hero-id{display:flex; flex-direction:column; gap:2px; margin-top:4px;}
+  .profile-hero-rsi{font-family:'VT323',monospace; font-size:1.7rem; color:var(--text); letter-spacing:.5px; text-shadow:0 2px 8px rgba(0,0,0,.9); line-height:1.1;}
+  .profile-hero-discord{font-size:.78rem; color:var(--muted); text-shadow:0 2px 6px rgba(0,0,0,.9);}
+  .profile-hero-badges{display:flex; align-items:center; gap:14px; margin-top:8px; flex-wrap:wrap; justify-content:center;}
+  .profile-hero-badges .role-badge{justify-content:center; text-shadow:0 2px 6px rgba(0,0,0,.9);}
   .muted{color:var(--muted); font-size:.82rem;}
   .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
   button{padding:12px 16px; border-radius:2px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-family:'VT323',monospace; font-size:1.05rem; letter-spacing:1px; cursor:pointer; text-transform:uppercase; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:background .15s, transform .1s;}
@@ -229,6 +269,12 @@
   .courier-ad-text p{margin:0; font-size:.8rem; color:var(--muted);}
   .courier-ad button{flex:none;}
 
+  /* --- EMPTY STATE CTA (dashboard client sans commande) --- */
+  .empty-cta{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; text-align:center; border:1px dashed var(--border); padding:36px 20px; margin-bottom:16px;}
+  .empty-cta-icon{width:34px; height:34px; color:var(--accent); opacity:.8;}
+  .empty-cta-text{font-family:'VT323',monospace; font-size:1.3rem; color:var(--text); letter-spacing:.5px;}
+  .empty-cta button{min-width:200px;}
+
   /* --- PIXEL BURST (particules à l'envoi/déblocage) --- */
   .pixel-particle{position:fixed; width:5px; height:5px; background:var(--accent); pointer-events:none; z-index:9999; image-rendering:pixelated; animation:pixelFly .7s ease-out forwards;}
   @keyframes pixelFly{
@@ -377,8 +423,36 @@
         <button class="btn-secondary" style="width:100%; margin-top:8px; font-size:.82rem;" onclick="saveDefaultLocation()">
           <span data-i18n="saveDefaultLoc">📍 ENREGISTRER COMME LIEU PAR DÉFAUT</span>
         </button>
-        <label for="deadline" data-i18n="lblDeadline">Date et heure de livraison souhaitée (optionnel)</label>
-        <input id="deadline" type="datetime-local">
+        <label data-i18n="lblDeadline">Date et heure de livraison souhaitée (optionnel)</label>
+        <div class="dt-field" id="deadlineField" onclick="openDeadlinePicker()">
+          <span id="deadlineDisplay" class="dt-field-text placeholder">Choisir une date et une heure</span>
+          <svg class="dt-field-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+            <rect x="1" y="2" width="14" height="12"/><rect x="1" y="2" width="14" height="3" fill="var(--accent)"/>
+            <rect x="3" y="0" width="2" height="3" fill="var(--bg)"/><rect x="11" y="0" width="2" height="3" fill="var(--bg)"/>
+          </g></svg>
+        </div>
+        <div class="dt-popup" id="deadlinePopup" hidden>
+          <div class="dt-cal-header">
+            <button type="button" class="dt-nav" onclick="dpChangeMonth(-1)">‹</button>
+            <span id="dpMonthYear">—</span>
+            <button type="button" class="dt-nav" onclick="dpChangeMonth(1)">›</button>
+          </div>
+          <div class="dt-cal-weekdays" id="dpWeekdays"></div>
+          <div class="dt-cal-grid" id="dpGrid"></div>
+          <div class="dt-time-row">
+            <select id="dpHour"></select>
+            <span class="dt-colon">:</span>
+            <select id="dpMinute"></select>
+            <div class="dt-ampm-toggle">
+              <button type="button" id="dpAM" class="dt-ampm-btn" onclick="dpSetAmpm('AM')">AM</button>
+              <button type="button" id="dpPM" class="dt-ampm-btn" onclick="dpSetAmpm('PM')">PM</button>
+            </div>
+          </div>
+          <div class="dt-actions">
+            <button type="button" class="btn-secondary" onclick="dpClear()" data-i18n="dtClear">EFFACER</button>
+            <button type="button" class="btn-primary" onclick="dpConfirm()" data-i18n="dtConfirm">VALIDER</button>
+          </div>
+        </div>
         <label data-i18n="lblItems">Objets souhaités</label>
         <p class="muted" data-i18n="uexHint" style="margin:-6px 0 8px;">Astuce : tape le nom d'une marchandise, arme ou armure pour voir le prix UEX (le plus bas trouvé) se remplir automatiquement (modifiable ensuite).</p>
         <div id="items"></div>
@@ -430,18 +504,29 @@
     <section id="view-profile" hidden>
       <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
       <header><h1 data-i18n="profileTitle">Profil</h1></header>
-      <div class="card" style="text-align:center;">
-        <div class="avatar-wrap big" style="margin:0 auto 10px;">
-          <img class="avatar" id="profileAvatarImg" hidden>
-          <div class="avatar-fallback" id="profileAvatarFallback">?</div>
+      <div class="profile-hero" id="profileHero">
+        <div class="profile-hero-bg" id="profileHeroBg"></div>
+        <div class="profile-hero-scrim"></div>
+        <div class="profile-hero-content">
+          <div class="avatar-wrap big">
+            <img class="avatar" id="profileAvatarImg" hidden>
+            <div class="avatar-fallback" id="profileAvatarFallback">?</div>
+          </div>
+          <div class="profile-hero-id">
+            <div class="profile-hero-rsi" id="profileHeroRsi">—</div>
+            <div class="profile-hero-discord" id="profileHeroDiscord">—</div>
+          </div>
+          <div class="profile-hero-badges">
+            <div class="role-badge">
+              <span id="profileRoleAnimWrap"></span>
+              <span id="profileRoleLabel"></span>
+            </div>
+            <div id="profileRankWrap"></div>
+          </div>
         </div>
-        <div class="chip-name" id="profileName" style="font-size:1.4rem; text-align:center;">—</div>
-        <div class="role-badge" style="justify-content:center; margin-top:6px;">
-          <span id="profileRoleAnimWrap"></span>
-          <span id="profileRoleLabel"></span>
-        </div>
-        <div id="profileRankWrap" style="margin-top:6px; display:flex; justify-content:center;"></div>
       </div>
+      <div class="card" id="careerStatsCard" hidden></div>
+      <div class="card" id="profileAchvCard" hidden></div>
       <div class="card">
         <h3 data-i18n="rsiTitle">Pseudo RSI (Handle)</h3>
         <p class="muted" data-i18n="rsiHint" style="margin:-4px 0 8px;">Permet aux autres membres de t'ajouter facilement en jeu.</p>
@@ -476,41 +561,39 @@
       <div class="card" id="shipPhotoCard" hidden>
         <h3 data-i18n="shipPhotoTitle">Photo du vaisseau livreur</h3>
         <p class="muted" data-i18n="shipPhotoHint" style="margin:-4px 0 8px;">Ajoute une photo de ton vaisseau pour l'immersion — visible sur ton profil public.</p>
-        <div class="ship-photo-preview-wrap" id="shipPhotoPreviewWrap" hidden>
-          <img id="shipPhotoPreviewImg" class="ship-photo-img">
-          <div class="ship-photo-tint" id="shipPhotoTint"></div>
-        </div>
         <input type="file" id="shipPhotoInput" accept="image/*" hidden onchange="onShipPhotoSelected(this)">
         <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="$('shipPhotoInput').click()" id="shipPhotoBtn">
           <span data-i18n="uploadShipPhoto">CHOISIR UNE PHOTO</span>
         </button>
       </div>
-      <div class="card" id="careerStatsCard" hidden></div>
       <div class="card" id="courierRequestCard"></div>
     </section>
 
     <!-- PROFIL PUBLIC (vu par un client ou par l'admin) -->
     <section id="view-public-profile" hidden>
       <button class="back" onclick="closePublicProfile()" data-i18n="back">&lt; RETOUR</button>
-      <div class="card" style="text-align:center;">
-        <div class="avatar-wrap big" style="margin:0 auto 10px;">
-          <img class="avatar" id="pubAvatarImg" hidden>
-          <div class="avatar-fallback" id="pubAvatarFallback">?</div>
+      <div class="profile-hero" id="pubHero">
+        <div class="profile-hero-bg" id="pubHeroBg"></div>
+        <div class="profile-hero-scrim"></div>
+        <div class="profile-hero-content">
+          <div class="avatar-wrap big">
+            <img class="avatar" id="pubAvatarImg" hidden>
+            <div class="avatar-fallback" id="pubAvatarFallback">?</div>
+          </div>
+          <div class="profile-hero-id">
+            <div class="profile-hero-rsi" id="pubHeroRsi">—</div>
+            <div class="profile-hero-discord" id="pubHeroDiscord">—</div>
+          </div>
+          <div class="profile-hero-badges">
+            <div class="role-badge">
+              <span id="pubRoleAnimWrap"></span>
+              <span id="pubRoleLabel"></span>
+            </div>
+            <div id="pubRankWrap"></div>
+          </div>
         </div>
-        <div class="chip-name" id="pubName" style="font-size:1.4rem; text-align:center;">—</div>
-        <div class="role-badge" style="justify-content:center; margin-top:6px;">
-          <span id="pubRoleAnimWrap"></span>
-          <span id="pubRoleLabel"></span>
-        </div>
-        <div id="pubRankWrap" style="margin-top:6px; display:flex; justify-content:center;"></div>
       </div>
-      <div class="card" id="pubShipPhotoCard" hidden>
-        <h3 data-i18n="shipPhotoTitle">Photo du vaisseau livreur</h3>
-        <div class="ship-photo-preview-wrap">
-          <img id="pubShipPhotoImg" class="ship-photo-img">
-          <div class="ship-photo-tint" id="pubShipPhotoTint"></div>
-        </div>
-      </div>
+      <div class="card" id="pubCareerStatsCard" hidden></div>
       <div class="card">
         <h3 data-i18n="achvTitle">Succès</h3>
         <div id="pubAchvGrid"></div>
@@ -622,6 +705,10 @@ const T = {
     courierMarginLbl:"Ta marge (commission)",
     careerStatsTitle:"Statistiques de carrière", careerTotalEarned:"aUEC gagnés au total", careerTopItem:"Objet le plus transporté", careerDeliveries:"Livraisons effectuées", careerAvgMargin:"Marge moyenne / commande", careerNoData:"Pas encore de statistiques — effectue ta première livraison !",
     shipPhotoTitle:"Photo du vaisseau livreur", shipPhotoHint:"Ajoute une photo de ton vaisseau pour l'immersion — visible sur ton profil public.", uploadShipPhoto:"CHOISIR UNE PHOTO", uploadingPhoto:"ENVOI EN COURS...", shipPhotoSaved:"PHOTO ENREGISTRÉE !", shipPhotoError:"Erreur lors de l'envoi de la photo.",
+    emptyCtaText:"Besoin de quelque chose ? Commande maintenant !", emptyCtaBtn:"CRÉER UNE COMMANDE",
+    dtClear:"EFFACER", dtConfirm:"VALIDER", dtPlaceholder:"Choisir une date et une heure",
+    dtMonths:["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
+    dtWeekdays:["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"],
     bootLogin:["SALVAGER'S UNITED — AUTHENTIFICATION","VÉRIFICATION IDENTITÉ DISCORD.......OK","CHARGEMENT DU PROFIL................OK"],
     bootClient:["CHARGEMENT MODULE CLIENT.SYS.........OK","SYNCHRONISATION DES COMMANDES........OK"],
     bootCourier:["CHARGEMENT MODULE COURSIER.SYS.......OK","VÉRIFICATION BADGE D'ACCÈS...........OK"],
@@ -675,6 +762,10 @@ const T = {
     courierMarginLbl:"Your margin (commission)",
     careerStatsTitle:"Career stats", careerTotalEarned:"Total aUEC earned", careerTopItem:"Most transported item", careerDeliveries:"Deliveries completed", careerAvgMargin:"Avg margin / delivery", careerNoData:"No stats yet — complete your first delivery!",
     shipPhotoTitle:"Delivery ship photo", shipPhotoHint:"Add a photo of your ship for immersion — visible on your public profile.", uploadShipPhoto:"CHOOSE A PHOTO", uploadingPhoto:"UPLOADING...", shipPhotoSaved:"PHOTO SAVED!", shipPhotoError:"Error uploading photo.",
+    emptyCtaText:"Need something? Order now!", emptyCtaBtn:"CREATE AN ORDER",
+    dtClear:"CLEAR", dtConfirm:"CONFIRM", dtPlaceholder:"Choose a date & time",
+    dtMonths:["January","February","March","April","May","June","July","August","September","October","November","December"],
+    dtWeekdays:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
     bootLogin:["SALVAGER'S UNITED — AUTHENTICATION","CHECKING DISCORD IDENTITY...........OK","LOADING PROFILE.....................OK"],
     bootClient:["LOADING MODULE CLIENT.SYS............OK","SYNCING ORDERS.......................OK"],
     bootCourier:["LOADING MODULE COURIER.SYS...........OK","CHECKING ACCESS BADGE................OK"],
@@ -775,23 +866,124 @@ function openCreateOrder(){
   $('view-create').hidden = false;
   if(profile?.default_system) $('arrivee').value = profile.default_system;
   if(profile?.default_location) $('lieu').value = profile.default_location;
-  // Empêche de choisir une deadline dans le passé (calculée dans le fuseau horaire local du visiteur)
-  const now = new Date();
-  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  $('deadline').min = now.toISOString().slice(0,16);
-  $('deadline').value = '';
+  resetDeadlinePicker();
   loadUexCatalog();
 }
-// Convertit la valeur du <input type="datetime-local"> (heure locale du visiteur) en horodatage UTC universel.
-function deadlineInputToIso(){
-  const val = $('deadline').value;
-  return val ? new Date(val).toISOString() : null;
-}
-// Affiche une deadline stockée (UTC) dans le fuseau horaire et la langue du navigateur de la personne qui regarde.
+// Affiche une deadline stockée (UTC) dans le fuseau horaire du navigateur de la personne qui regarde, toujours en format AM/PM.
 function formatDeadline(iso){
   if(!iso) return '';
-  try{ return new Date(iso).toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short' }); }
+  try{ return new Date(iso).toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short', hour12:true }); }
   catch(e){ return iso; }
+}
+
+// --- SÉLECTEUR DE DATE/HEURE PERSONNALISÉ (deadline de commande) ---
+let deadlineIso = null;
+let dpState = null; // {y, m (0-11), d, hh (0-23), mm}
+let dpViewY, dpViewM;
+function dpPad(n){ return String(n).padStart(2,'0'); }
+function dpTodayStripped(){ const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); }
+function openDeadlinePicker(){
+  const now = new Date();
+  const base = dpState || { y: now.getFullYear(), m: now.getMonth(), d: now.getDate(), hh: 12, mm: 0 };
+  dpViewY = base.y; dpViewM = base.m;
+  populateDpTimeSelects();
+  dpRenderCalendar();
+  $('deadlinePopup').hidden = false;
+  document.removeEventListener('click', dpOutsideClick);
+  setTimeout(() => document.addEventListener('click', dpOutsideClick), 0);
+}
+function dpOutsideClick(e){
+  const popup = $('deadlinePopup'), field = $('deadlineField');
+  if(popup && !popup.contains(e.target) && field && !field.contains(e.target)){
+    closeDeadlinePicker();
+  }
+}
+function closeDeadlinePicker(){
+  $('deadlinePopup').hidden = true;
+  document.removeEventListener('click', dpOutsideClick);
+}
+function dpChangeMonth(delta){
+  dpViewM += delta;
+  if(dpViewM < 0){ dpViewM = 11; dpViewY--; }
+  else if(dpViewM > 11){ dpViewM = 0; dpViewY++; }
+  dpRenderCalendar();
+}
+function dpRenderCalendar(){
+  const d = T[LANG];
+  $('dpMonthYear').textContent = `${d.dtMonths[dpViewM]} ${dpViewY}`;
+  $('dpWeekdays').innerHTML = d.dtWeekdays.map(w=>`<span>${w}</span>`).join('');
+  const firstOfMonth = new Date(dpViewY, dpViewM, 1);
+  let startOffset = firstOfMonth.getDay() - 1; // lundi = 0
+  if(startOffset < 0) startOffset = 6;
+  const daysInMonth = new Date(dpViewY, dpViewM+1, 0).getDate();
+  const today = dpTodayStripped();
+  let cells = '';
+  for(let i=0; i<startOffset; i++) cells += `<div class="dt-day empty"></div>`;
+  for(let day=1; day<=daysInMonth; day++){
+    const cellDate = new Date(dpViewY, dpViewM, day);
+    const isPast = cellDate < today;
+    const isToday = cellDate.getTime() === today.getTime();
+    const isSelected = dpState && dpState.y===dpViewY && dpState.m===dpViewM && dpState.d===day;
+    const cls = ['dt-day', isPast?'disabled':'', isToday?'today':'', isSelected?'selected':''].filter(Boolean).join(' ');
+    cells += `<div class="${cls}" ${isPast?'':`onclick="dpSelectDay(${dpViewY},${dpViewM},${day})"`}>${day}</div>`;
+  }
+  $('dpGrid').innerHTML = cells;
+}
+function dpSelectDay(y,m,day){
+  if(!dpState) dpState = { y, m, d: day, hh: 12, mm: 0 };
+  else { dpState.y = y; dpState.m = m; dpState.d = day; }
+  dpRenderCalendar();
+}
+function populateDpTimeSelects(){
+  const base = dpState || { hh: 12, mm: 0 };
+  let h24 = base.hh, mm = base.mm;
+  let h12 = h24 % 12; if(h12 === 0) h12 = 12;
+  const ampm = h24 < 12 ? 'AM' : 'PM';
+  const hourSel = $('dpHour'), minSel = $('dpMinute');
+  hourSel.innerHTML = Array.from({length:12},(_,i)=>i+1).map(h=>`<option value="${h}" ${h===h12?'selected':''}>${dpPad(h)}</option>`).join('');
+  minSel.innerHTML = [0,15,30,45].map(m=>`<option value="${m}" ${m===mm?'selected':''}>${dpPad(m)}</option>`).join('');
+  hourSel.onchange = dpTimeChanged; minSel.onchange = dpTimeChanged;
+  $('dpAM').classList.toggle('active', ampm==='AM');
+  $('dpPM').classList.toggle('active', ampm==='PM');
+}
+function dpEnsureState(){
+  if(!dpState){ const now = new Date(); dpState = { y: dpViewY, m: dpViewM, d: now.getDate(), hh: 12, mm: 0 }; }
+}
+function dpTimeChanged(){
+  dpEnsureState();
+  const h12 = parseInt($('dpHour').value,10);
+  const mm = parseInt($('dpMinute').value,10);
+  const isPM = $('dpPM').classList.contains('active');
+  let h24 = h12 % 12; if(isPM) h24 += 12;
+  dpState.hh = h24; dpState.mm = mm;
+}
+function dpSetAmpm(which){
+  dpEnsureState();
+  $('dpAM').classList.toggle('active', which==='AM');
+  $('dpPM').classList.toggle('active', which==='PM');
+  dpTimeChanged();
+}
+function dpConfirm(){
+  if(!dpState || dpState.d === undefined){ closeDeadlinePicker(); return; }
+  dpTimeChanged();
+  const jsDate = new Date(dpState.y, dpState.m, dpState.d, dpState.hh, dpState.mm, 0);
+  deadlineIso = jsDate.toISOString();
+  $('deadlineDisplay').textContent = formatDeadline(deadlineIso);
+  $('deadlineDisplay').classList.remove('placeholder');
+  closeDeadlinePicker();
+}
+function dpClear(){
+  dpState = null;
+  deadlineIso = null;
+  $('deadlineDisplay').textContent = T[LANG].dtPlaceholder;
+  $('deadlineDisplay').classList.add('placeholder');
+  closeDeadlinePicker();
+}
+function resetDeadlinePicker(){
+  dpState = null;
+  deadlineIso = null;
+  const disp = $('deadlineDisplay');
+  if(disp){ disp.textContent = T[LANG].dtPlaceholder; disp.classList.add('placeholder'); }
 }
 
 async function saveDefaultLocation(){
@@ -1067,7 +1259,7 @@ $('sendBtn').addEventListener('click', async ()=>{
     client_id: session.user.id,
     destination_system: $('arrivee').value,
     exact_location: $('lieu').value.trim(),
-    deadline: deadlineInputToIso(),
+    deadline: deadlineIso,
     items: items,
     gross_price: brut, commission: comm, total_price: total,
     status: 'pending'
@@ -1080,7 +1272,7 @@ $('sendBtn').addEventListener('click', async ()=>{
   sweep();
   pixelBurst($('sendBtn'));
   const t=$('toast'); t.textContent=T[LANG].toastSent; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800);
-  $('items').innerHTML=''; itemCount=0; addItem(); calc(); $('deadline').value='';
+  $('items').innerHTML=''; itemCount=0; addItem(); calc(); resetDeadlinePicker();
   routeApp();
 });
 
@@ -1175,7 +1367,14 @@ async function loadClientDashboard(){
       <button class="btn-cancel" onclick="cancelOrder('${o.id}','${o.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>
     </div>
   `;
-  }).join('') : `<p class="muted">${d.noCurrentOrders}</p>`;
+  }).join('') : `
+    <div class="empty-cta">
+      <svg class="empty-cta-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+        <rect x="7" y="2" width="2" height="8"/><rect x="2" y="7" width="12" height="2"/>
+      </g></svg>
+      <div class="empty-cta-text">${d.emptyCtaText}</div>
+      <button class="btn-primary" onclick="openCreateOrder()">${d.emptyCtaBtn}</button>
+    </div>`;
   animateShipTracks(curBox);
 
   const histBox = $('clientHistoryList');
@@ -1345,8 +1544,9 @@ async function loadUnlockedAchievements(){
   const { data } = await sb.from('courier_achievements').select('key').eq('courier_id', session.user.id);
   return new Set((data||[]).map(r=>r.key));
 }
-function renderAchievements(unlockedSet, deliveredCount){
-  const box = $('courierAchievementsCard'); if(!box) return;
+function renderAchievements(unlockedSet, deliveredCount, boxId){
+  const box = $(boxId || 'courierAchievementsCard'); if(!box) return;
+  box.hidden = false;
   const d = T[LANG];
   const total = ACHIEVEMENTS.length;
   const done = ACHIEVEMENTS.filter(a=>unlockedSet.has(a.key)).length;
@@ -1528,12 +1728,24 @@ function openProfile(){
   renderProfileView();
   if(profile && (profile.role === 'courier' || profile.role === 'admin')) loadUexVehicles();
 }
+function renderHeroNames(rsiEl, discordEl, p){
+  const rsi = (p.rsi_handle || '').trim();
+  const discordName = p.discord_username || '';
+  if(rsi){
+    rsiEl.textContent = rsi;
+    discordEl.textContent = discordName ? '@'+discordName : '';
+    discordEl.hidden = !discordName;
+  } else {
+    rsiEl.textContent = discordName || '—';
+    discordEl.hidden = true;
+  }
+}
 function renderProfileView(){
   if(!profile) return;
   fillAvatar($('profileAvatarImg'), $('profileAvatarFallback'));
-  $('profileName').textContent = discordDisplayName();
+  renderHeroNames($('profileHeroRsi'), $('profileHeroDiscord'), profile);
   const wrap = $('profileRoleAnimWrap'); if(wrap) wrap.innerHTML = roleAnimSvg(profile.role, 20);
-  $('profileRoleLabel').textContent = discordDisplayName() + '_' + roleWord(profile.role);
+  $('profileRoleLabel').textContent = roleWord(profile.role);
   $('profileRsiHandle').value = profile.rsi_handle || '';
   $('profileSystem').value = profile.default_system || 'Stanton';
   $('profileLocation').value = profile.default_location || '';
@@ -1541,14 +1753,19 @@ function renderProfileView(){
   $('shipInfoCard').hidden = !showShip;
   $('shipPhotoCard').hidden = !showShip;
   $('careerStatsCard').hidden = !showShip;
+  $('profileAchvCard').hidden = !showShip;
   if(showShip){
     $('profileShipClass').value = profile.ship_class || '';
     $('profileShipName').value = profile.ship_name || '';
     fetchDeliveredCount(session.user.id).then(count => { $('profileRankWrap').innerHTML = rankShowcaseHtml(count); });
-    renderShipPhotoPreview(profile.ship_photo_url, $('shipPhotoPreviewWrap'), $('shipPhotoPreviewImg'), $('shipPhotoTint'));
+    setHeroPhoto($('profileHeroBg'), profile.ship_photo_url);
     fetchCourierCareerStats(session.user.id).then(stats => renderCareerStats($('careerStatsCard'), stats));
+    Promise.all([loadUnlockedAchievements(), fetchCourierStats()]).then(([unlockedSet, stats]) => {
+      renderAchievements(unlockedSet, stats ? stats.deliveredCount : 0, 'profileAchvCard');
+    });
   } else {
     $('profileRankWrap').innerHTML = '';
+    setHeroPhoto($('profileHeroBg'), null);
   }
   renderCourierRequestCard();
 }
@@ -1563,15 +1780,10 @@ async function saveShipInfo(){
   sweep();
   toastShow(T[LANG].savedShipInfo);
 }
-function renderShipPhotoPreview(url, wrapEl, imgEl, tintEl){
-  if(!wrapEl || !imgEl) return;
-  if(url){
-    imgEl.src = url;
-    wrapEl.hidden = false;
-    if(tintEl) tintEl.style.background = 'var(--accent)';
-  } else {
-    wrapEl.hidden = true;
-  }
+function setHeroPhoto(bgEl, url){
+  if(!bgEl) return;
+  if(url){ bgEl.style.backgroundImage = `url('${url}')`; bgEl.classList.add('has-photo'); }
+  else{ bgEl.style.backgroundImage = 'none'; bgEl.classList.remove('has-photo'); }
 }
 async function onShipPhotoSelected(inputEl){
   if(!session || !inputEl.files || !inputEl.files[0]) return;
@@ -1591,7 +1803,7 @@ async function onShipPhotoSelected(inputEl){
     const { error: updErr } = await sb.from('profiles').update({ ship_photo_url: publicUrl }).eq('id', session.user.id);
     if(updErr) throw updErr;
     await loadProfile();
-    renderShipPhotoPreview(publicUrl, $('shipPhotoPreviewWrap'), $('shipPhotoPreviewImg'), $('shipPhotoTint'));
+    setHeroPhoto($('profileHeroBg'), publicUrl);
     toastShow(d.shipPhotoSaved);
   } catch(e){
     console.error(e);
@@ -1790,26 +2002,29 @@ async function openPublicProfile(id){
   const img = $('pubAvatarImg'), fb = $('pubAvatarFallback');
   if(p.avatar_url){ img.src = p.avatar_url; img.hidden = false; fb.hidden = true; }
   else{ img.hidden = true; fb.hidden = false; fb.textContent = (name[0]||'?').toUpperCase(); }
-  $('pubName').textContent = name;
+  renderHeroNames($('pubHeroRsi'), $('pubHeroDiscord'), p);
   const wrap = $('pubRoleAnimWrap'); if(wrap) wrap.innerHTML = roleAnimSvg(p.role, 20);
-  $('pubRoleLabel').textContent = name + '_' + roleWord(p.role);
+  $('pubRoleLabel').textContent = roleWord(p.role);
   $('pubRankWrap').innerHTML = '';
+  $('pubCareerStatsCard').hidden = true;
   const achvGrid = $('pubAchvGrid');
   if(p.role !== 'client'){
-    const [count, unlockedRows] = await Promise.all([
+    const [count, unlockedRows, stats] = await Promise.all([
       fetchDeliveredCount(p.id),
-      sb.from('courier_achievements').select('key').eq('courier_id', id).then(r => r.data || [])
+      sb.from('courier_achievements').select('key').eq('courier_id', id).then(r => r.data || []),
+      fetchCourierCareerStats(p.id)
     ]);
     $('pubRankWrap').innerHTML = rankShowcaseHtml(count);
     const unlockedSet = new Set(unlockedRows.map(r=>r.key));
     achvGrid.innerHTML = `<div class="achv-grid">${ACHIEVEMENTS.map(a => `
       <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" title="${d.achvDesc[a.key]}">${ACHV_ICONS[a.key]}<span>${d.achvLabels[a.key]}</span></div>
     `).join('')}</div>`;
-    $('pubShipPhotoCard').hidden = !p.ship_photo_url;
-    if(p.ship_photo_url) renderShipPhotoPreview(p.ship_photo_url, $('pubShipPhotoCard'), $('pubShipPhotoImg'), $('pubShipPhotoTint'));
+    setHeroPhoto($('pubHeroBg'), p.ship_photo_url);
+    renderCareerStats($('pubCareerStatsCard'), stats);
+    $('pubCareerStatsCard').hidden = false;
   } else {
     achvGrid.innerHTML = `<p class="muted">${d.noAchvClient}</p>`;
-    $('pubShipPhotoCard').hidden = true;
+    setHeroPhoto($('pubHeroBg'), null);
   }
   $('pubAdminActions').hidden = !(profile && profile.role === 'admin');
 }

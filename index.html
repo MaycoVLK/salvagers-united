@@ -136,6 +136,9 @@
     </div>
     <div class="theme-picker" id="themePicker"></div>
     <p class="muted" id="authState" style="text-align:center; margin-top:14px;"></p>
+    <div style="text-align:center; margin-top:10px;">
+      <button class="small-btn" id="adminBtn" onclick="showView('admin'); loadAdmin();" hidden data-i18n="adminBtn">⚙ ADMIN</button>
+    </div>
   </section>
 
   <section id="view-client" hidden>
@@ -186,10 +189,22 @@
     </div>
   </section>
 
+  <section id="view-admin" hidden>
+    <button class="back" onclick="showView('home')" data-i18n="back">&lt; RETOUR</button>
+    <header><h1 data-i18n="adminArea">Panneau Admin</h1></header>
+    <div class="card">
+      <h3 data-i18n="members">Membres</h3>
+      <div id="membersList"></div>
+    </div>
+  </section>
+
   <footer data-i18n="footer">SALVAGER'S UNITED // RISQUES INCLUS DANS LA COMMISSION // PAIEMENT À LA REMISE</footer>
 </div>
 
 <script>
+// Colle ici l'URL de ton webhook Discord (Paramètres du salon > Intégrations > Webhooks > Nouveau Webhook > Copier l'URL)
+const DISCORD_WEBHOOK_URL = "";
+
 const SUPABASE_URL = "https://hdstkdubotlmlndmuwnl.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhkc3RrZHVib3RsbWxuZG11d25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0OTQ5ODAsImV4cCI6MjEwNjA3MDk4MH0.mcu8_sH5UEmVXROhf12DN2JKjFUG_WgCOeIbZMsDrRI";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -225,6 +240,7 @@ const T = {
     toastSent:"COMMANDE ENVOYÉE !", toastUpdated:"MIS À JOUR !", connecting:"Connexion à Discord en cours...",
     connectedAs:"Connecté en tant que : ", statusLabels:{pending:"En attente d'un coursier",accepted:"Acceptée",purchased:"Marchandise achetée",in_transit:"En transit",delivered:"Livrée"},
     orderSystem:"Système : ", orderLieu:"Lieu : ", orderTotal:"Total : ", orderCourier:"Coursier : ", orderClient:"Client : ",
+    adminBtn:"⚙ ADMIN", adminArea:"Panneau Admin", members:"Membres",
     bootClient:["SALVAGER'S UNITED — TERMINAL DE COMMANDE v2.0","INITIALISATION DU TERMINAL...........OK","CONNEXION À LA BASE DE DONNÉES......OK","CHARGEMENT MODULE CLIENT.SYS.........OK"],
     bootCourier:["SALVAGER'S UNITED — TERMINAL COURSIER v2.0","INITIALISATION DU TERMINAL...........OK","CONNEXION À LA BASE DE DONNÉES......OK","CHARGEMENT MODULE COURSIER.SYS.......OK"]
   },
@@ -243,6 +259,7 @@ const T = {
     toastSent:"ORDER SENT!", toastUpdated:"UPDATED!", connecting:"Connecting to Discord...",
     connectedAs:"Signed in as: ", statusLabels:{pending:"Waiting for a courier",accepted:"Accepted",purchased:"Purchased",in_transit:"In transit",delivered:"Delivered"},
     orderSystem:"System: ", orderLieu:"Location: ", orderTotal:"Total: ", orderCourier:"Courier: ", orderClient:"Client: ",
+    adminBtn:"⚙ ADMIN", adminArea:"Admin Panel", members:"Members",
     bootClient:["SALVAGER'S UNITED — ORDER TERMINAL v2.0","INITIALIZING TERMINAL................OK","CONNECTING TO DATABASE..............OK","LOADING MODULE CLIENT.SYS............OK"],
     bootCourier:["SALVAGER'S UNITED — COURIER TERMINAL v2.0","INITIALIZING TERMINAL................OK","CONNECTING TO DATABASE..............OK","LOADING MODULE COURIER.SYS...........OK"]
   }
@@ -283,7 +300,7 @@ function applyColor(c){
 })();
 
 function showView(name){
-  ['home','client','coursier'].forEach(v => $('view-'+v).hidden = (v !== name));
+  ['home','client','coursier','admin'].forEach(v => $('view-'+v).hidden = (v !== name));
   window.scrollTo(0,0);
   if(name==='client') loadClientOrders();
   if(name==='coursier') loadCourierData();
@@ -313,6 +330,7 @@ function sweep(){ const s=$('sweep'); s.classList.remove('run'); void s.offsetWi
 function renderAuthState(){
   $('authState').textContent = session ? (T[LANG].connectedAs + (profile?.discord_username || session.user.email || '')) : '';
   $('logoutBtn').hidden = !session;
+  $('adminBtn').hidden = !(profile && profile.role === 'admin');
 }
 function doLogout(){ sb.auth.signOut(); }
 
@@ -369,6 +387,7 @@ $('sendBtn').addEventListener('click', async ()=>{
   const { error } = await sb.from('orders').insert(payload);
   $('sendBtn').disabled = false;
   if(error){ alert('Erreur : ' + error.message); return; }
+  notifyDiscord(payload);
   sweep();
   const t=$('toast'); t.textContent=T[LANG].toastSent; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800);
   $('items').innerHTML=''; itemCount=0; addItem(); $('lieu').value=''; calc();
@@ -459,6 +478,50 @@ function orderCardHtml(o, extra){
     <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
     <div class="steps">${stepsHtml}</div>
   </div>`;
+}
+
+// --- ADMIN ---
+async function loadAdmin(){
+  if(!profile || profile.role !== 'admin') return;
+  const { data, error } = await sb.from('profiles').select('*').order('discord_username');
+  const box = $('membersList');
+  if(error){ box.textContent = error.message; return; }
+  box.innerHTML = (data||[]).map(p => `
+    <div class="order-card" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:140px;">${p.discord_username || p.id}</div>
+      <select data-id="${p.id}" onchange="updateRole('${p.id}', this.value)" style="width:auto;">
+        <option value="client" ${p.role==='client'?'selected':''}>client</option>
+        <option value="courier" ${p.role==='courier'?'selected':''}>courier</option>
+        <option value="admin" ${p.role==='admin'?'selected':''}>admin</option>
+      </select>
+    </div>
+  `).join('');
+}
+async function updateRole(id, role){
+  const { error } = await sb.from('profiles').update({ role }).eq('id', id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep();
+  if(id === session?.user?.id) await loadProfile();
+  renderAuthState();
+}
+
+// --- DISCORD WEBHOOK ---
+async function notifyDiscord(order){
+  if(!DISCORD_WEBHOOK_URL) return;
+  const d = T[LANG];
+  const lines = (order.items||[]).map(it => `• ${it.name} x${it.qty} — ${fmt(it.price*it.qty)}`).join('\n') || '-';
+  const content = [
+    `📦 **Nouvelle commande** — ${order.destination_system}${order.exact_location ? ' ('+order.exact_location+')' : ''}`,
+    lines,
+    `Total : ${fmt(order.total_price)}`
+  ].join('\n');
+  try{
+    await fetch(DISCORD_WEBHOOK_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ content })
+    });
+  }catch(e){ /* silencieux : la commande est déjà enregistrée en base, la notif est secondaire */ }
 }
 
 // --- AUTH BOOTSTRAP ---

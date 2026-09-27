@@ -150,7 +150,9 @@
       <label for="lieu" data-i18n="lblLieu">Lieu exact de livraison</label>
       <input id="lieu" type="text" data-i18n-ph="phLieu" placeholder="ex: Système Nyx, People's Service Station Theta">
       <label data-i18n="lblItems">Objets souhaités</label>
+      <p class="muted" data-i18n="uexHint" style="margin:-6px 0 8px;">Astuce : tape le nom d'une marchandise pour voir le prix UEX se remplir automatiquement (modifiable ensuite).</p>
       <div id="items"></div>
+      <datalist id="uexList"></datalist>
       <button class="btn-secondary" style="width:100%" onclick="addItem()">
         <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="2" width="2" height="12"/><rect x="2" y="7" width="12" height="2"/></g></svg>
         <span data-i18n="addItem">AJOUTER UN OBJET</span>
@@ -204,6 +206,9 @@
 <script>
 // Colle ici l'URL de ton webhook Discord (Paramètres du salon > Intégrations > Webhooks > Nouveau Webhook > Copier l'URL)
 const DISCORD_WEBHOOK_URL = "";
+// Clé secrète UEX Corp (uexcorp.space) — utilisée uniquement en lecture pour suggérer les prix des marchandises
+const UEX_SECRET_KEY = "d76d4cc1f06bb9764172dff43406640fb5b79b2c";
+let uexCommodities = []; // [{name, price_buy}]
 
 const SUPABASE_URL = "https://hdstkdubotlmlndmuwnl.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhkc3RrZHVib3RsbWxuZG11d25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0OTQ5ODAsImV4cCI6MjEwNjA3MDk4MH0.mcu8_sH5UEmVXROhf12DN2JKjFUG_WgCOeIbZMsDrRI";
@@ -230,7 +235,7 @@ const T = {
     btnClient:"CLIENT", btnClientSub:"Passer une commande", btnCourier:"COURSIER", btnCourierSub:"Espace livreur",
     back:"< RETOUR", newOrder:"Nouvelle commande",
     lblSystem:"Système de livraison souhaité", lblLieu:"Lieu exact de livraison", phLieu:"ex: Système Nyx, People's Service Station Theta",
-    lblItems:"Objets souhaités", addItem:"AJOUTER UN OBJET", itemNamePh:"Nom de l'objet", itemPricePh:"Prix unit.",
+    lblItems:"Objets souhaités", uexHint:"Astuce : tape le nom d'une marchandise pour voir le prix UEX se remplir automatiquement (modifiable ensuite).", addItem:"AJOUTER UN OBJET", itemNamePh:"Nom de l'objet", itemPricePh:"Prix unit.",
     brutLbl:"Prix brut total", commLbl:"Commission (déplacement + risque, 25%)", totalLbl:"TOTAL À PAYER",
     sendBtn:"ENVOYER LA COMMANDE", myOrders:"Mes commandes", noOrders:"Aucune commande pour l'instant.",
     courierArea:"Espace Coursier", notCourier:"Ton compte n'a pas encore le rôle coursier. Contacte l'administrateur pour être ajouté.",
@@ -249,7 +254,7 @@ const T = {
     btnClient:"CLIENT", btnClientSub:"Place an order", btnCourier:"COURIER", btnCourierSub:"Courier area",
     back:"< BACK", newOrder:"New order",
     lblSystem:"Delivery system", lblLieu:"Exact delivery location", phLieu:"e.g. Nyx system, People's Service Station Theta",
-    lblItems:"Requested items", addItem:"ADD AN ITEM", itemNamePh:"Item name", itemPricePh:"Unit price",
+    lblItems:"Requested items", uexHint:"Tip: type a commodity name to auto-fill its UEX price (still editable).", addItem:"ADD AN ITEM", itemNamePh:"Item name", itemPricePh:"Unit price",
     brutLbl:"Gross total price", commLbl:"Commission (travel + risk premium, 25%)", totalLbl:"TOTAL DUE",
     sendBtn:"SEND ORDER", myOrders:"My orders", noOrders:"No orders yet.",
     courierArea:"Courier Area", notCourier:"Your account doesn't have courier access yet. Contact the admin to be added.",
@@ -334,6 +339,32 @@ function renderAuthState(){
 }
 function doLogout(){ sb.auth.signOut(); }
 
+// --- UEX CORP : catalogue des marchandises (prix suggérés) ---
+async function loadUexCommodities(){
+  if(uexCommodities.length) return; // déjà chargé
+  try{
+    const res = await fetch("https://uexcorp.space/api/2.0/commodities", {
+      headers: { "secret_key": UEX_SECRET_KEY }
+    });
+    const data = await res.json();
+    if(data && data.data){
+      uexCommodities = data.data
+        .filter(c => c.is_buyable && c.price_buy > 0)
+        .map(c => ({ name: c.name, price_buy: c.price_buy }));
+      const list = $('uexList');
+      list.innerHTML = uexCommodities.map(c => `<option value="${c.name.replace(/"/g,'&quot;')}">`).join('');
+    }
+  }catch(e){
+    // Silencieux : si UEX est indisponible, le client saisit le prix à la main comme avant
+  }
+}
+
+function findUexPrice(name){
+  const n = name.trim().toLowerCase();
+  const match = uexCommodities.find(c => c.name.toLowerCase() === n);
+  return match ? match.price_buy : null;
+}
+
 // --- ITEMS (client order form) ---
 function addItem(){
   itemCount++;
@@ -342,12 +373,25 @@ function addItem(){
   div.className='item-row item-enter'; div.id=id;
   const d = T[LANG];
   div.innerHTML = `
-    <div class="name"><input type="text" placeholder="${d.itemNamePh}" oninput="calc()"></div>
+    <div class="name"><input type="text" list="uexList" placeholder="${d.itemNamePh}" oninput="onItemNameInput(this)"></div>
     <div class="prix"><input type="number" min="0" step="1" placeholder="${d.itemPricePh}" oninput="calc()"></div>
     <div class="qte"><input type="number" min="1" step="1" value="1" oninput="calc()"></div>
     <button type="button" onclick="document.getElementById('${id}').remove(); calc();">${ICON_CLOSE}</button>
   `;
   $('items').appendChild(div); sweep(); calc();
+  loadUexCommodities();
+}
+
+function onItemNameInput(nameInput){
+  const row = nameInput.closest('.item-row');
+  const priceInput = row.querySelector('.prix input');
+  const price = findUexPrice(nameInput.value);
+  if(price !== null){
+    priceInput.value = price;
+    priceInput.style.borderColor = 'var(--accent)';
+    setTimeout(() => { priceInput.style.borderColor = ''; }, 700);
+  }
+  calc();
 }
 function calc(){
   let brut=0;

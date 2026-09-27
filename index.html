@@ -34,7 +34,7 @@
   @keyframes flicker{ 0%,100%{opacity:.55;} 50%{opacity:.75;} 92%{opacity:.3;} }
   h1,h2,h3{font-family:'VT323',monospace; margin:0 0 4px; letter-spacing:1px; text-shadow:0 0 8px var(--accent-dim);}
   .wrap{max-width:900px; margin:0 auto; position:relative; z-index:1;}
-  .card{background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:20px; margin-bottom:16px; position:relative; box-shadow:0 0 0 1px var(--border) inset, 0 0 18px rgba(0,0,0,.4);}
+  .card{background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:20px; margin-bottom:22px; position:relative; box-shadow:0 0 0 1px var(--border) inset, 0 0 18px rgba(0,0,0,.4);}
   .card::before,.card::after{content:""; position:absolute; width:10px; height:10px; border:2px solid var(--accent); opacity:.7;}
   .card::before{top:-1px; left:-1px; border-right:none; border-bottom:none;}
   .card::after{bottom:-1px; right:-1px; border-left:none; border-top:none;}
@@ -45,6 +45,15 @@
   .breakdown{margin-top:18px; border-top:1px dashed var(--border); padding-top:14px;}
   .line{display:flex; justify-content:space-between; padding:5px 0; font-size:.95rem;}
   .line.total{font-family:'VT323',monospace; font-size:1.4rem; color:var(--accent); border-top:1px solid var(--border); margin-top:6px; padding-top:10px; text-shadow:0 0 8px var(--accent-dim);}
+  .line.margin-line{font-family:'VT323',monospace; font-size:1.1rem; color:var(--accent); border-top:1px dashed var(--border); margin-top:4px; padding-top:8px;}
+  .ship-photo-preview-wrap{position:relative; width:100%; aspect-ratio:16/9; border:1px solid var(--border); overflow:hidden; margin-bottom:8px; background:#000;}
+  .ship-photo-img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:grayscale(70%) contrast(1.05) brightness(0.95);}
+  .ship-photo-tint{position:absolute; inset:0; background:var(--accent); mix-blend-mode:color; opacity:0.45; pointer-events:none;}
+  .career-stats-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px;}
+  @media (max-width:520px){ .career-stats-grid{grid-template-columns:1fr;} }
+  .career-stat{border:1px solid var(--border); padding:10px 12px; text-align:center;}
+  .career-stat .val{font-family:'VT323',monospace; font-size:1.6rem; color:var(--accent); line-height:1.1;}
+  .career-stat .lbl{font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;}
   .muted{color:var(--muted); font-size:.82rem;}
   .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
   button{padding:12px 16px; border-radius:2px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-family:'VT323',monospace; font-size:1.05rem; letter-spacing:1px; cursor:pointer; text-transform:uppercase; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:background .15s, transform .1s;}
@@ -150,7 +159,7 @@
   .order-card.history .hist-detail{margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); width:100%; cursor:default;}
   .order-card.history .hist-detail ul{margin:0 0 8px; padding-left:18px;}
   .order-card.history .hist-detail .meta{font-size:.8rem; color:var(--muted); margin-bottom:4px;}
-  .history-toggle{width:100%; background:none; border:1px dashed var(--border); color:var(--muted); margin-bottom:10px;}
+  .history-toggle{width:100%; background:none; border:1px dashed var(--border); color:var(--muted); margin:26px 0 12px;}
   .history-toggle:hover{border-color:var(--accent); color:var(--accent);}
   .btn-cancel{width:100%; margin-top:12px; border-color:var(--danger); color:var(--danger); font-size:.85rem;}
   .btn-cancel:hover{background:var(--danger-dim);}
@@ -464,6 +473,19 @@
           <span data-i18n="saveDefaultLoc2">ENREGISTRER</span>
         </button>
       </div>
+      <div class="card" id="shipPhotoCard" hidden>
+        <h3 data-i18n="shipPhotoTitle">Photo du vaisseau livreur</h3>
+        <p class="muted" data-i18n="shipPhotoHint" style="margin:-4px 0 8px;">Ajoute une photo de ton vaisseau pour l'immersion — visible sur ton profil public.</p>
+        <div class="ship-photo-preview-wrap" id="shipPhotoPreviewWrap" hidden>
+          <img id="shipPhotoPreviewImg" class="ship-photo-img">
+          <div class="ship-photo-tint" id="shipPhotoTint"></div>
+        </div>
+        <input type="file" id="shipPhotoInput" accept="image/*" hidden onchange="onShipPhotoSelected(this)">
+        <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="$('shipPhotoInput').click()" id="shipPhotoBtn">
+          <span data-i18n="uploadShipPhoto">CHOISIR UNE PHOTO</span>
+        </button>
+      </div>
+      <div class="card" id="careerStatsCard" hidden></div>
       <div class="card" id="courierRequestCard"></div>
     </section>
 
@@ -481,6 +503,13 @@
           <span id="pubRoleLabel"></span>
         </div>
         <div id="pubRankWrap" style="margin-top:6px; display:flex; justify-content:center;"></div>
+      </div>
+      <div class="card" id="pubShipPhotoCard" hidden>
+        <h3 data-i18n="shipPhotoTitle">Photo du vaisseau livreur</h3>
+        <div class="ship-photo-preview-wrap">
+          <img id="pubShipPhotoImg" class="ship-photo-img">
+          <div class="ship-photo-tint" id="pubShipPhotoTint"></div>
+        </div>
       </div>
       <div class="card">
         <h3 data-i18n="achvTitle">Succès</h3>
@@ -590,6 +619,9 @@ const T = {
     noAchvClient:"Pas de succès coursier pour ce membre (rôle client).",
     adminActionsTitle:"Actions admin", resetAchvBtn:"RÉINITIALISER LES SUCCÈS", resetRoleBtn:"RÉINITIALISER LE RÔLE",
     confirmResetAchv:"Es-tu sûr de vouloir réinitialiser tous les succès de ce membre ?", confirmResetRole:"Es-tu sûr de vouloir remettre ce membre au rôle client (perte du rôle coursier/admin) ?",
+    courierMarginLbl:"Ta marge (commission)",
+    careerStatsTitle:"Statistiques de carrière", careerTotalEarned:"aUEC gagnés au total", careerTopItem:"Objet le plus transporté", careerDeliveries:"Livraisons effectuées", careerAvgMargin:"Marge moyenne / commande", careerNoData:"Pas encore de statistiques — effectue ta première livraison !",
+    shipPhotoTitle:"Photo du vaisseau livreur", shipPhotoHint:"Ajoute une photo de ton vaisseau pour l'immersion — visible sur ton profil public.", uploadShipPhoto:"CHOISIR UNE PHOTO", uploadingPhoto:"ENVOI EN COURS...", shipPhotoSaved:"PHOTO ENREGISTRÉE !", shipPhotoError:"Erreur lors de l'envoi de la photo.",
     bootLogin:["SALVAGER'S UNITED — AUTHENTIFICATION","VÉRIFICATION IDENTITÉ DISCORD.......OK","CHARGEMENT DU PROFIL................OK"],
     bootClient:["CHARGEMENT MODULE CLIENT.SYS.........OK","SYNCHRONISATION DES COMMANDES........OK"],
     bootCourier:["CHARGEMENT MODULE COURSIER.SYS.......OK","VÉRIFICATION BADGE D'ACCÈS...........OK"],
@@ -640,6 +672,9 @@ const T = {
     noAchvClient:"No courier achievements for this member (client role).",
     adminActionsTitle:"Admin actions", resetAchvBtn:"RESET ACHIEVEMENTS", resetRoleBtn:"RESET ROLE",
     confirmResetAchv:"Are you sure you want to reset all of this member's achievements?", confirmResetRole:"Are you sure you want to set this member back to the client role (removing courier/admin access)?",
+    courierMarginLbl:"Your margin (commission)",
+    careerStatsTitle:"Career stats", careerTotalEarned:"Total aUEC earned", careerTopItem:"Most transported item", careerDeliveries:"Deliveries completed", careerAvgMargin:"Avg margin / delivery", careerNoData:"No stats yet — complete your first delivery!",
+    shipPhotoTitle:"Delivery ship photo", shipPhotoHint:"Add a photo of your ship for immersion — visible on your public profile.", uploadShipPhoto:"CHOOSE A PHOTO", uploadingPhoto:"UPLOADING...", shipPhotoSaved:"PHOTO SAVED!", shipPhotoError:"Error uploading photo.",
     bootLogin:["SALVAGER'S UNITED — AUTHENTICATION","CHECKING DISCORD IDENTITY...........OK","LOADING PROFILE.....................OK"],
     bootClient:["LOADING MODULE CLIENT.SYS............OK","SYNCING ORDERS.......................OK"],
     bootCourier:["LOADING MODULE COURIER.SYS...........OK","CHECKING ACCESS BADGE................OK"],
@@ -1247,6 +1282,7 @@ async function renderAvailable(orders){
       ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
       <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
+      <div class="line margin-line"><span>${d.courierMarginLbl}</span><span>${fmt(o.commission)}</span></div>
       <button onclick="acceptOrder('${o.id}')">${d.accept}</button>
     </div>
   `).join('');
@@ -1266,6 +1302,7 @@ function renderMyDeliveries(orders){
       ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
       ${shipTrackHtml(o)}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty}</li>`).join('')}</ul>
+      <div class="line margin-line"><span>${d.courierMarginLbl}</span><span>${fmt(o.commission)}</span></div>
       ${btn}
     </div>`;
   }).join('');
@@ -1502,10 +1539,14 @@ function renderProfileView(){
   $('profileLocation').value = profile.default_location || '';
   const showShip = profile.role === 'courier' || profile.role === 'admin';
   $('shipInfoCard').hidden = !showShip;
+  $('shipPhotoCard').hidden = !showShip;
+  $('careerStatsCard').hidden = !showShip;
   if(showShip){
     $('profileShipClass').value = profile.ship_class || '';
     $('profileShipName').value = profile.ship_name || '';
     fetchDeliveredCount(session.user.id).then(count => { $('profileRankWrap').innerHTML = rankShowcaseHtml(count); });
+    renderShipPhotoPreview(profile.ship_photo_url, $('shipPhotoPreviewWrap'), $('shipPhotoPreviewImg'), $('shipPhotoTint'));
+    fetchCourierCareerStats(session.user.id).then(stats => renderCareerStats($('careerStatsCard'), stats));
   } else {
     $('profileRankWrap').innerHTML = '';
   }
@@ -1521,6 +1562,85 @@ async function saveShipInfo(){
   await loadProfile();
   sweep();
   toastShow(T[LANG].savedShipInfo);
+}
+function renderShipPhotoPreview(url, wrapEl, imgEl, tintEl){
+  if(!wrapEl || !imgEl) return;
+  if(url){
+    imgEl.src = url;
+    wrapEl.hidden = false;
+    if(tintEl) tintEl.style.background = 'var(--accent)';
+  } else {
+    wrapEl.hidden = true;
+  }
+}
+async function onShipPhotoSelected(inputEl){
+  if(!session || !inputEl.files || !inputEl.files[0]) return;
+  const file = inputEl.files[0];
+  const d = T[LANG];
+  const btn = $('shipPhotoBtn');
+  const origLabel = btn.innerHTML;
+  btn.innerHTML = `<span>${d.uploadingPhoto}</span>`;
+  btn.disabled = true;
+  try{
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `${session.user.id}/ship.${ext}`;
+    const { error: upErr } = await sb.storage.from('ship-photos').upload(path, file, { upsert: true, cacheControl: '3600' });
+    if(upErr) throw upErr;
+    const { data: urlData } = sb.storage.from('ship-photos').getPublicUrl(path);
+    const publicUrl = urlData.publicUrl + '?t=' + Date.now();
+    const { error: updErr } = await sb.from('profiles').update({ ship_photo_url: publicUrl }).eq('id', session.user.id);
+    if(updErr) throw updErr;
+    await loadProfile();
+    renderShipPhotoPreview(publicUrl, $('shipPhotoPreviewWrap'), $('shipPhotoPreviewImg'), $('shipPhotoTint'));
+    toastShow(d.shipPhotoSaved);
+  } catch(e){
+    console.error(e);
+    toastShow(d.shipPhotoError, true);
+  } finally {
+    btn.innerHTML = origLabel;
+    btn.disabled = false;
+    inputEl.value = '';
+  }
+}
+async function fetchCourierCareerStats(courierId){
+  if(!courierId) return null;
+  const { data } = await sb.from('orders').select('items,commission,status').eq('courier_id', courierId).eq('status','delivered');
+  const rows = data || [];
+  if(!rows.length) return null;
+  let totalEarned = 0;
+  const itemCounts = {};
+  rows.forEach(o => {
+    totalEarned += Number(o.commission) || 0;
+    (o.items||[]).forEach(it => {
+      const key = it.name;
+      itemCounts[key] = (itemCounts[key]||0) + (Number(it.qty)||0);
+    });
+  });
+  let topItem = null, topQty = 0;
+  Object.entries(itemCounts).forEach(([name, qty]) => { if(qty > topQty){ topQty = qty; topItem = name; } });
+  return {
+    deliveries: rows.length,
+    totalEarned,
+    avgMargin: totalEarned / rows.length,
+    topItem, topQty
+  };
+}
+function renderCareerStats(box, stats){
+  if(!box) return;
+  const d = T[LANG];
+  if(!stats){
+    box.innerHTML = `<h3 data-i18n="careerStatsTitle">${d.careerStatsTitle}</h3><p class="muted">${d.careerNoData}</p>`;
+    return;
+  }
+  box.innerHTML = `
+    <h3 data-i18n="careerStatsTitle">${d.careerStatsTitle}</h3>
+    <div class="career-stats-grid">
+      <div class="career-stat"><div class="val">${fmt(stats.totalEarned)}</div><div class="lbl">${d.careerTotalEarned}</div></div>
+      <div class="career-stat"><div class="val">${stats.deliveries}</div><div class="lbl">${d.careerDeliveries}</div></div>
+      <div class="career-stat"><div class="val">${fmt(Math.round(stats.avgMargin))}</div><div class="lbl">${d.careerAvgMargin}</div></div>
+      <div class="career-stat"><div class="val" style="font-size:1.1rem;">${stats.topItem ? stats.topItem + ' ×' + stats.topQty : '—'}</div><div class="lbl">${d.careerTopItem}</div></div>
+    </div>
+  `;
 }
 async function saveProfileDefaults(){
   if(!session) return;
@@ -1685,8 +1805,11 @@ async function openPublicProfile(id){
     achvGrid.innerHTML = `<div class="achv-grid">${ACHIEVEMENTS.map(a => `
       <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" title="${d.achvDesc[a.key]}">${ACHV_ICONS[a.key]}<span>${d.achvLabels[a.key]}</span></div>
     `).join('')}</div>`;
+    $('pubShipPhotoCard').hidden = !p.ship_photo_url;
+    if(p.ship_photo_url) renderShipPhotoPreview(p.ship_photo_url, $('pubShipPhotoCard'), $('pubShipPhotoImg'), $('pubShipPhotoTint'));
   } else {
     achvGrid.innerHTML = `<p class="muted">${d.noAchvClient}</p>`;
+    $('pubShipPhotoCard').hidden = true;
   }
   $('pubAdminActions').hidden = !(profile && profile.role === 'admin');
 }

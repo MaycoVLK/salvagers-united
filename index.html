@@ -182,6 +182,15 @@
   .app-list-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
   .toast.danger{background:var(--danger); color:#1a0000;}
 
+  /* --- PUB "DEVENIR COURSIER" (dashboard client) --- */
+  .courier-ad{display:flex; align-items:center; gap:14px; flex-wrap:wrap; border:1px dashed var(--accent); margin-bottom:16px;}
+  .courier-ad-icon{width:32px; height:32px; flex:none; color:var(--accent);}
+  .courier-ad-icon svg{width:100%; height:100%;}
+  .courier-ad-text{flex:1; min-width:180px;}
+  .courier-ad-text strong{display:block; font-family:'VT323',monospace; font-size:1.15rem; color:var(--accent); margin-bottom:2px; letter-spacing:.5px;}
+  .courier-ad-text p{margin:0; font-size:.8rem; color:var(--muted);}
+  .courier-ad button{flex:none;}
+
   /* --- PIXEL BURST (particules à l'envoi/déblocage) --- */
   .pixel-particle{position:fixed; width:5px; height:5px; background:var(--accent); pointer-events:none; z-index:9999; image-rendering:pixelated; animation:pixelFly .7s ease-out forwards;}
   @keyframes pixelFly{
@@ -296,6 +305,7 @@
 
     <!-- DASHBOARD CLIENT -->
     <section id="view-client-dash" hidden>
+      <div class="card courier-ad" id="courierAdCard" hidden></div>
       <div id="clientCurrentOrders"></div>
       <button class="history-toggle" onclick="toggleHistory()">
         <span data-i18n="historyLabel">Historique</span> (<span id="historyCount">0</span>) <span id="historyToggleIcon">▾</span>
@@ -487,6 +497,7 @@ const T = {
     lblShipName:"Nom du vaisseau", phShipName:"ex: L'Étoile Vagabonde", savedShipInfo:"VAISSEAU ENREGISTRÉ !",
     craftOnlyNote:"Objet non vendu en boutique — prix à négocier directement avec un crafteur/looter.",
     craftOnlyNotice:"Cet objet n'est pas disponible en boutique. Rapproche-toi d'un crafteur ou d'un looter, le prix sera à définir avec lui.",
+    courierAdTitle:"Envie de rejoindre les coursiers Salvager's United ?", courierAdSub:"Livre des commandes, gagne des aUEC et débloque des succès.", courierAdBtn:"ENVOYER MA CANDIDATURE",
     bootLogin:["SALVAGER'S UNITED — AUTHENTIFICATION","VÉRIFICATION IDENTITÉ DISCORD.......OK","CHARGEMENT DU PROFIL................OK"],
     bootClient:["CHARGEMENT MODULE CLIENT.SYS.........OK","SYNCHRONISATION DES COMMANDES........OK"],
     bootCourier:["CHARGEMENT MODULE COURSIER.SYS.......OK","VÉRIFICATION BADGE D'ACCÈS...........OK"],
@@ -528,6 +539,7 @@ const T = {
     lblShipName:"Ship name", phShipName:"e.g. The Wandering Star", savedShipInfo:"SHIP SAVED!",
     craftOnlyNote:"Not sold in shops — price to negotiate directly with a crafter/looter.",
     craftOnlyNotice:"This item isn't available in shops. Reach out to a crafter or a looter — the price will need to be set with them directly.",
+    courierAdTitle:"Want to join the Salvager's United couriers?", courierAdSub:"Deliver orders, earn aUEC and unlock achievements.", courierAdBtn:"SEND MY APPLICATION",
     bootLogin:["SALVAGER'S UNITED — AUTHENTICATION","CHECKING DISCORD IDENTITY...........OK","LOADING PROFILE.....................OK"],
     bootClient:["LOADING MODULE CLIENT.SYS............OK","SYNCING ORDERS.......................OK"],
     bootCourier:["LOADING MODULE COURIER.SYS...........OK","CHECKING ACCESS BADGE................OK"],
@@ -957,6 +969,7 @@ function animateShipTracks(container){
 // --- DASHBOARD CLIENT ---
 async function loadClientDashboard(){
   if(!session) return;
+  renderCourierAd();
   const { data, error } = await sb.from('orders').select('*').eq('client_id', session.user.id).order('created_at',{ascending:false});
   if(error){ $('clientCurrentOrders').textContent = error.message; return; }
   const orders = data || [];
@@ -1316,7 +1329,27 @@ async function requestCourier(){
   if(error){ alert('Erreur : '+error.message); return; }
   await loadProfile();
   renderCourierRequestCard();
+  renderCourierAd();
   sweep();
+}
+// --- PUB "DEVENIR COURSIER" (bannière sur le dashboard client) ---
+function renderCourierAd(){
+  const box = $('courierAdCard'); if(!box || !profile) return;
+  if(profile.role !== 'client'){ box.hidden = true; return; }
+  const d = T[LANG];
+  box.hidden = false;
+  if(profile.courier_request === 'pending'){
+    box.innerHTML = `
+      <div class="courier-ad-icon">${SHIP_SVG}</div>
+      <div class="courier-ad-text"><strong>${d.courierAdTitle}</strong><p>${d.courierPending}</p></div>
+    `;
+  } else {
+    box.innerHTML = `
+      <div class="courier-ad-icon">${SHIP_SVG}</div>
+      <div class="courier-ad-text"><strong>${d.courierAdTitle}</strong><p>${d.courierAdSub}</p></div>
+      <button class="btn-secondary" onclick="requestCourier()">${d.courierAdBtn}</button>
+    `;
+  }
 }
 
 // --- NOTIFICATIONS TEMPS RÉEL (candidature coursier) ---
@@ -1329,6 +1362,7 @@ function subscribeProfileChannel(){
       checkCourierNotification();
       updateProfileChip();
       if(!$('view-profile').hidden) renderProfileView();
+      if(!$('view-client-dash').hidden) renderCourierAd();
       if(profile && profile.role === 'admin' && !$('view-admin-dash').hidden){ loadAdmin(); }
     })
     .subscribe();

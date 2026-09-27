@@ -209,6 +209,10 @@ const DISCORD_WEBHOOK_URL = "";
 // Clé secrète UEX Corp (uexcorp.space) — utilisée uniquement en lecture pour suggérer les prix des marchandises
 const UEX_SECRET_KEY = "d76d4cc1f06bb9764172dff43406640fb5b79b2c";
 let uexCommodities = []; // [{name, price_buy}]
+let uexItems = []; // [{id, name}] armes, armures, attachements...
+const uexItemPriceCache = {}; // id_item -> prix minimum trouvé
+// Catégories UEX couvrant armes, armures, vêtements/équipement personnel
+const UEX_ITEM_CATEGORIES = [1,2,3,4,5,7,8,9,10,11,12,13,14,16,17,18];
 
 const SUPABASE_URL = "https://hdstkdubotlmlndmuwnl.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhkc3RrZHVib3RsbWxuZG11d25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0OTQ5ODAsImV4cCI6MjEwNjA3MDk4MH0.mcu8_sH5UEmVXROhf12DN2JKjFUG_WgCOeIbZMsDrRI";
@@ -235,7 +239,7 @@ const T = {
     btnClient:"CLIENT", btnClientSub:"Passer une commande", btnCourier:"COURSIER", btnCourierSub:"Espace livreur",
     back:"< RETOUR", newOrder:"Nouvelle commande",
     lblSystem:"Système de livraison souhaité", lblLieu:"Lieu exact de livraison", phLieu:"ex: Système Nyx, People's Service Station Theta",
-    lblItems:"Objets souhaités", uexHint:"Astuce : tape le nom d'une marchandise pour voir le prix UEX se remplir automatiquement (modifiable ensuite).", addItem:"AJOUTER UN OBJET", itemNamePh:"Nom de l'objet", itemPricePh:"Prix unit.",
+    lblItems:"Objets souhaités", uexHint:"Astuce : tape le nom d'une marchandise, arme ou armure pour voir le prix UEX (le plus bas trouvé) se remplir automatiquement (modifiable ensuite).", addItem:"AJOUTER UN OBJET", itemNamePh:"Nom de l'objet", itemPricePh:"Prix unit.",
     brutLbl:"Prix brut total", commLbl:"Commission (déplacement + risque, 25%)", totalLbl:"TOTAL À PAYER",
     sendBtn:"ENVOYER LA COMMANDE", myOrders:"Mes commandes", noOrders:"Aucune commande pour l'instant.",
     courierArea:"Espace Coursier", notCourier:"Ton compte n'a pas encore le rôle coursier. Contacte l'administrateur pour être ajouté.",
@@ -254,7 +258,7 @@ const T = {
     btnClient:"CLIENT", btnClientSub:"Place an order", btnCourier:"COURIER", btnCourierSub:"Courier area",
     back:"< BACK", newOrder:"New order",
     lblSystem:"Delivery system", lblLieu:"Exact delivery location", phLieu:"e.g. Nyx system, People's Service Station Theta",
-    lblItems:"Requested items", uexHint:"Tip: type a commodity name to auto-fill its UEX price (still editable).", addItem:"ADD AN ITEM", itemNamePh:"Item name", itemPricePh:"Unit price",
+    lblItems:"Requested items", uexHint:"Tip: type a commodity, weapon or armor name to auto-fill its lowest UEX price (still editable).", addItem:"ADD AN ITEM", itemNamePh:"Item name", itemPricePh:"Unit price",
     brutLbl:"Gross total price", commLbl:"Commission (travel + risk premium, 25%)", totalLbl:"TOTAL DUE",
     sendBtn:"SEND ORDER", myOrders:"My orders", noOrders:"No orders yet.",
     courierArea:"Courier Area", notCourier:"Your account doesn't have courier access yet. Contact the admin to be added.",
@@ -339,30 +343,80 @@ function renderAuthState(){
 }
 function doLogout(){ sb.auth.signOut(); }
 
-// --- UEX CORP : catalogue des marchandises (prix suggérés) ---
-async function loadUexCommodities(){
-  if(uexCommodities.length) return; // déjà chargé
-  try{
-    const res = await fetch("https://uexcorp.space/api/2.0/commodities", {
-      headers: { "secret_key": UEX_SECRET_KEY }
-    });
-    const data = await res.json();
-    if(data && data.data){
-      uexCommodities = data.data
-        .filter(c => c.is_buyable && c.price_buy > 0)
-        .map(c => ({ name: c.name, price_buy: c.price_buy }));
-      const list = $('uexList');
-      list.innerHTML = uexCommodities.map(c => `<option value="${c.name.replace(/"/g,'&quot;')}">`).join('');
-    }
-  }catch(e){
-    // Silencieux : si UEX est indisponible, le client saisit le prix à la main comme avant
-  }
+// --- UEX CORP : catalogue des marchandises + objets (prix suggérés) ---
+let uexLoading = null;
+async function loadUexCatalog(){
+  if(uexLoading) return uexLoading; // déjà en cours ou fait
+  uexLoading = (async () => {
+    try{
+      const commoRes = await fetch("https://uexcorp.space/api/2.0/commodities", {
+        headers: { "secret_key": UEX_SECRET_KEY }
+      });
+      const commoData = await commoRes.json();
+      if(commoData && commoData.data){
+        uexCommodities = commoData.data
+          .filter(c => c.is_buyable && c.price_buy > 0)
+          .map(c => ({ name: c.name, price_buy: c.price_buy }));
+      }
+    }catch(e){ /* silencieux */ }
+
+    try{
+      const itemResults = await Promise.all(UEX_ITEM_CATEGORIES.map(async id => {
+        try{
+          const res = await fetch(`https://uexcorp.space/api/2.0/items?id_category=${id}`, {
+            headers: { "secret_key": UEX_SECRET_KEY }
+          });
+          const data = await res.json();
+          return (data && data.data) ? data.data : [];
+        }catch(e){ return []; }
+      }));
+      const seen = new Set();
+      itemResults.flat().forEach(it => {
+        if(!seen.has(it.id)){ seen.add(it.id); uexItems.push({ id: it.id, name: it.name }); }
+      });
+    }catch(e){ /* silencieux */ }
+
+    const list = $('uexList');
+    const allNames = [
+      ...uexCommodities.map(c => c.name),
+      ...uexItems.map(i => i.name)
+    ];
+    list.innerHTML = allNames.map(n => `<option value="${n.replace(/"/g,'&quot;')}">`).join('');
+  })();
+  return uexLoading;
 }
 
-function findUexPrice(name){
+// Cherche un prix de commodité (instantané, déjà en mémoire)
+function findUexCommodityPrice(name){
   const n = name.trim().toLowerCase();
   const match = uexCommodities.find(c => c.name.toLowerCase() === n);
   return match ? match.price_buy : null;
+}
+
+// Cherche un objet (arme/armure/etc.) par nom exact
+function findUexItem(name){
+  const n = name.trim().toLowerCase();
+  return uexItems.find(i => i.name.toLowerCase() === n) || null;
+}
+
+// Va chercher le prix le plus bas d'un objet parmi tous les magasins (mis en cache)
+async function fetchUexItemMinPrice(itemId){
+  if(uexItemPriceCache[itemId] !== undefined) return uexItemPriceCache[itemId];
+  try{
+    const res = await fetch(`https://uexcorp.space/api/2.0/items_prices?id_item=${itemId}`, {
+      headers: { "secret_key": UEX_SECRET_KEY }
+    });
+    const data = await res.json();
+    let min = null;
+    (data?.data || []).forEach(row => {
+      if(row.price_buy && (min === null || row.price_buy < min)) min = row.price_buy;
+    });
+    uexItemPriceCache[itemId] = min;
+    return min;
+  }catch(e){
+    uexItemPriceCache[itemId] = null;
+    return null;
+  }
 }
 
 // --- ITEMS (client order form) ---
@@ -379,19 +433,36 @@ function addItem(){
     <button type="button" onclick="document.getElementById('${id}').remove(); calc();">${ICON_CLOSE}</button>
   `;
   $('items').appendChild(div); sweep(); calc();
-  loadUexCommodities();
+  loadUexCatalog();
 }
 
-function onItemNameInput(nameInput){
+function flashPriceField(priceInput){
+  priceInput.style.borderColor = 'var(--accent)';
+  setTimeout(() => { priceInput.style.borderColor = ''; }, 700);
+}
+
+async function onItemNameInput(nameInput){
   const row = nameInput.closest('.item-row');
   const priceInput = row.querySelector('.prix input');
-  const price = findUexPrice(nameInput.value);
-  if(price !== null){
-    priceInput.value = price;
-    priceInput.style.borderColor = 'var(--accent)';
-    setTimeout(() => { priceInput.style.borderColor = ''; }, 700);
+
+  const commoPrice = findUexCommodityPrice(nameInput.value);
+  if(commoPrice !== null){
+    priceInput.value = commoPrice;
+    flashPriceField(priceInput);
+    calc();
+    return;
   }
-  calc();
+
+  const item = findUexItem(nameInput.value);
+  if(item){
+    const min = await fetchUexItemMinPrice(item.id);
+    // on vérifie que le champ contient toujours le même nom (l'utilisateur n'a pas continué à taper)
+    if(min !== null && nameInput.value.trim().toLowerCase() === item.name.toLowerCase()){
+      priceInput.value = min;
+      flashPriceField(priceInput);
+      calc();
+    }
+  }
 }
 function calc(){
   let brut=0;

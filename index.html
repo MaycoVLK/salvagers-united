@@ -234,6 +234,28 @@
   #view-seller-shop[data-shop-color="blanc"]{ --accent:#f2f2f2; --accent-dim:#f2f2f255; }
   #view-seller-shop[data-shop-color="jaune"]{ --accent:#ffcf40; --accent-dim:#ffcf4055; }
 
+  /* Aperçu boutique (profil public) */
+  .shop-preview-head{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;}
+  .shop-preview-head h3{margin:0;}
+  .shop-see-more{width:auto; flex:none; font-size:.72rem; padding:8px 12px; white-space:nowrap;}
+  .shop-preview-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:10px;}
+  .shop-preview-card{cursor:pointer; border:1px solid var(--border); border-radius:4px; background:var(--bg2); overflow:hidden; transition:border-color .2s, transform .2s;}
+  .shop-preview-card:hover{border-color:var(--accent); transform:translateY(-1px);}
+  .shop-preview-photo{width:100%; aspect-ratio:4/3; background:var(--panel); display:flex; align-items:center; justify-content:center; overflow:hidden;}
+  .shop-preview-photo img{width:100%; height:100%; object-fit:cover;}
+  .shop-preview-name{font-size:.7rem; padding:6px 7px 0; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .shop-preview-price{font-family:'VT323',monospace; font-size:.9rem; color:var(--accent); padding:0 7px 7px;}
+
+  /* Page boutique dédiée d'un vendeur */
+  .shop-hero-card{display:flex; flex-direction:column; gap:4px;}
+  .shop-hero-row{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .shop-hero-icon{width:44px; height:44px; flex:none; color:var(--accent);}
+  .shop-hero-icon svg{width:100%; height:100%;}
+  .shop-hero-text{flex:1; min-width:0;}
+  .shop-hero-text h1{margin:0 0 8px; font-size:1.4rem;}
+  .shop-owner-box{display:inline-flex; width:auto; max-width:none; flex:none;}
+  #shopRankShowcase{margin-top:6px;}
+
   /* --- GRILLE DES COMMANDES EN COURS (client) : 2 colonnes sur ordinateur, 1 colonne sur mobile, cartes de même hauteur --- */
   #clientCurrentOrders{display:grid; grid-template-columns:1fr; gap:16px; align-items:stretch;}
   #clientCurrentOrders .order-card.big{margin-bottom:0; display:flex; flex-direction:column; height:100%;}
@@ -614,6 +636,8 @@
       </div>
       <div class="card" id="careerStatsCard" hidden></div>
       <div class="card" id="profileAchvCard" hidden></div>
+      <div class="card" id="shopStatsProfileCard" hidden></div>
+      <div class="card" id="sellerAchvCard" hidden></div>
       <div class="card">
         <h3 data-i18n="rsiTitle">Pseudo RSI (Handle)</h3>
         <p class="muted" data-i18n="rsiHint" style="margin:-4px 0 8px;">Permet aux autres membres de t'ajouter facilement en jeu.</p>
@@ -688,10 +712,13 @@
         <div id="pubAchvGrid"></div>
       </div>
       <div class="card" id="pubShopCard" hidden>
-        <h3 id="pubShopName">Ma boutique</h3>
-        <button class="btn-secondary" style="width:100%" onclick="openSellerShop(viewingProfileId)">
-          <span data-i18n="visitShopBtn">VOIR LA MARKETPLACE</span>
-        </button>
+        <div class="shop-preview-head">
+          <h3 id="pubShopName">Ma boutique</h3>
+          <button class="btn-secondary shop-see-more" onclick="openSellerShop(viewingProfileId)">
+            <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
+          </button>
+        </div>
+        <div class="shop-preview-grid" id="pubShopPreviewGrid"></div>
       </div>
       <div class="card" id="pubAdminActions" hidden>
         <h3 data-i18n="adminActionsTitle">Actions admin</h3>
@@ -716,6 +743,9 @@
           <div class="theme-row" id="shopThemePicker"></div>
           <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="saveShopSettings()">
             <span data-i18n="saveShopBtn">ENREGISTRER LA BOUTIQUE</span>
+          </button>
+          <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="openSellerShop(session.user.id)">
+            <span data-i18n="viewMyShopBtn">VOIR MA BOUTIQUE</span>
           </button>
         </div>
         <div class="card">
@@ -750,7 +780,21 @@
     <!-- BOUTIQUE PUBLIQUE D'UN VENDEUR -->
     <section id="view-seller-shop" hidden>
       <button class="back" onclick="closeSellerShop()" data-i18n="back">&lt; RETOUR</button>
-      <header><h1 id="shopPageTitle">—</h1></header>
+      <div class="card shop-hero-card">
+        <div class="shop-hero-row">
+          <div class="shop-hero-icon" id="shopHeroIcon"></div>
+          <div class="shop-hero-text">
+            <h1 id="shopPageTitle">—</h1>
+            <div class="courier-box shop-owner-box" id="shopOwnerBox" onclick="openPublicProfile(shopViewingSellerId)">
+              <div class="courier-box-name" id="shopOwnerName">—</div>
+            </div>
+          </div>
+        </div>
+        <div id="shopRankShowcase"></div>
+      </div>
+      <div class="card" id="shopStatsCard"></div>
+      <div class="card" id="shopAchvCard" hidden></div>
+      <h3 data-i18n="shopListingsTitle" style="margin:20px 0 10px;">Objets en vente</h3>
       <div id="shopListingsGrid" class="marketplace-grid"></div>
     </section>
   </div>
@@ -874,6 +918,13 @@ const T = {
     sellerApplications:"Candidatures Vendeur", noSellerApplications:"Aucune candidature vendeur en attente.",
     sellerAccepted:"🎉 Ta demande pour devenir vendeur a été acceptée !", sellerRejected:"Ta demande pour devenir vendeur a été refusée.",
     shopSettingsTitle:"Ma boutique", shopNameLbl:"Nom de la marketplace", phShopName:"ex: Le Comptoir de Mayco", shopThemeLbl:"Couleur de la boutique", saveShopBtn:"ENREGISTRER LA BOUTIQUE", shopSaved:"BOUTIQUE ENREGISTRÉE !",
+    viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
+    shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopMostExpensive:"Objet le plus cher vendu", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
+    sellerAchvTitle:"Succès vendeur",
+    sellerAchvLabels:{first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées"},
+    sellerAchvDesc:{first_sale:"Conclus ta première vente.", first_courier_sale:"Fais livrer une vente par un coursier.", five_sales:"Conclus 5 ventes."},
+    sellerRankLabels:{novice:"Novice", trader:"Négociant", merchant:"Marchand", tycoon:"Magnat"}, rankSales:"ventes",
+    rankToNextSales:"Encore {n} vente(s) avant {rank}",
     newListingTitle:"Ajouter un objet en vente", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", listingSaved:"OBJET MIS EN VENTE !",
     myListingsTitle:"Mes annonces", noListings:"Tu n'as encore aucune annonce.", deleteListingBtn:"SUPPRIMER", confirmDeleteListing:"Supprimer cette annonce définitivement ?",
     requestDeliveryBtn:"DEMANDER UNE LIVRAISON", requestDeliveryTitle:"Demander une livraison coursier", buyerHandleLbl:"Pseudo RSI de l'acheteur (optionnel)", phBuyerHandle:"ex: Mayco_SC", deliveryRequested:"LIVRAISON DEMANDÉE !", cancelRequest:"ANNULER", confirmDeliveryBtn:"CONFIRMER LA DEMANDE",
@@ -957,6 +1008,13 @@ const T = {
     sellerApplications:"Seller Applications", noSellerApplications:"No pending seller applications.",
     sellerAccepted:"🎉 Your seller application was accepted!", sellerRejected:"Your seller application was rejected.",
     shopSettingsTitle:"My shop", shopNameLbl:"Marketplace name", phShopName:"e.g. Mayco's Trading Post", shopThemeLbl:"Shop color", saveShopBtn:"SAVE SHOP", shopSaved:"SHOP SAVED!",
+    viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
+    shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopMostExpensive:"Most expensive item sold", shopStatsNoData:"No sales yet — your first sale will show up here!",
+    sellerAchvTitle:"Seller achievements",
+    sellerAchvLabels:{first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made"},
+    sellerAchvDesc:{first_sale:"Close your first sale.", first_courier_sale:"Have a sale delivered by a courier.", five_sales:"Close 5 sales."},
+    sellerRankLabels:{novice:"Novice", trader:"Trader", merchant:"Merchant", tycoon:"Tycoon"}, rankSales:"sales",
+    rankToNextSales:"{n} more sale(s) to reach {rank}",
     newListingTitle:"List an item for sale", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", listingSaved:"ITEM LISTED!",
     myListingsTitle:"My listings", noListings:"You have no listings yet.", deleteListingBtn:"DELETE", confirmDeleteListing:"Permanently delete this listing?",
     requestDeliveryBtn:"REQUEST A DELIVERY", requestDeliveryTitle:"Request a courier delivery", buyerHandleLbl:"Buyer's RSI handle (optional)", phBuyerHandle:"e.g. Mayco_SC", deliveryRequested:"DELIVERY REQUESTED!", cancelRequest:"CANCEL", confirmDeliveryBtn:"CONFIRM REQUEST",
@@ -1813,6 +1871,7 @@ async function loadSellerDashboard(){
   initShopThemePicker();
   await loadMyListings();
   await loadReceivedInquiries();
+  checkAndRenderSellerAchievements();
 }
 let pendingListingPhotoFile = null;
 function onListingPhotoSelected(inputEl){
@@ -1967,7 +2026,7 @@ async function rejectInquiry(id){
 async function markPickedUp(id){
   const { error } = await sb.from('marketplace_inquiries').update({ status:'completed', updated_at: new Date().toISOString() }).eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
-  sweep(); loadReceivedInquiries();
+  sweep(); loadReceivedInquiries(); checkAndRenderSellerAchievements();
 }
 async function handToCourier(id){
   if(!session) return;
@@ -2003,10 +2062,15 @@ async function handToCourier(id){
 // --- BOUTIQUE PUBLIQUE D'UN VENDEUR ---
 async function openSellerShop(sellerId){
   if(!sellerId) return;
+  shopViewingSellerId = sellerId;
   hideAllViews();
   $('view-seller-shop').hidden = false;
   const d = T[LANG];
   const shopEl = $('view-seller-shop');
+  $('shopHeroIcon').innerHTML = roleAnimSvg('seller', 40);
+  $('shopStatsCard').innerHTML = '';
+  $('shopAchvCard').hidden = true;
+  $('shopRankShowcase').innerHTML = '';
   const [{ data: shop }, { data: p }, { data: listings }] = await Promise.all([
     sb.from('marketplace_shops').select('*').eq('id', sellerId).maybeSingle(),
     sb.from('profiles').select('*').eq('id', sellerId).single(),
@@ -2014,8 +2078,15 @@ async function openSellerShop(sellerId){
   ]);
   shopEl.setAttribute('data-shop-color', (shop && shop.theme_color) || 'orange');
   $('shopPageTitle').textContent = (shop && shop.shop_name) || (p ? displayName(p) : '—');
+  $('shopOwnerName').textContent = d.shopOwnerLbl + (p ? displayName(p) : '—');
   const grid = $('shopListingsGrid');
   if(!shop){ grid.innerHTML = `<p class="muted">${d.noShopYet}</p>`; return; }
+  const stats = await fetchSellerShopStats(sellerId);
+  $('shopRankShowcase').innerHTML = sellerRankShowcaseHtml(stats ? stats.salesCount : 0);
+  renderShopStats($('shopStatsCard'), stats);
+  const unlockedSet = await fetchUnlockedSellerAchievements(sellerId);
+  renderSellerAchievements(unlockedSet, stats, 'shopAchvCard');
+  if(session && session.user.id === sellerId) checkAndRenderSellerAchievements('shopAchvCard');
   const list = listings || [];
   if(!list.length){ grid.innerHTML = `<p class="muted">${d.shopPageEmpty}</p>`; return; }
   const sellerMap = { [sellerId]: p };
@@ -2400,10 +2471,13 @@ function renderProfileView(){
   $('profileSystem').value = profile.default_system || 'Stanton';
   $('profileLocation').value = profile.default_location || '';
   const showShip = profile.role === 'courier' || profile.role === 'admin';
+  const showSeller = profile.role === 'seller' || profile.role === 'admin';
   $('shipInfoCard').hidden = !showShip;
   $('shipPhotoCard').hidden = !showShip;
   $('careerStatsCard').hidden = !showShip;
   $('profileAchvCard').hidden = !showShip;
+  $('shopStatsProfileCard').hidden = !showSeller;
+  $('sellerAchvCard').hidden = !showSeller;
   if(showShip){
     $('profileShipClass').value = profile.ship_class || '';
     $('profileShipName').value = profile.ship_name || '';
@@ -2414,6 +2488,10 @@ function renderProfileView(){
     });
   } else {
     setHeroPhoto('profile', null);
+  }
+  if(showSeller){
+    fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('shopStatsProfileCard'), stats));
+    checkAndRenderSellerAchievements('sellerAchvCard');
   }
   renderCourierRequestCard();
   renderSellerRequestCard();
@@ -2512,6 +2590,177 @@ function renderCareerStats(box, stats){
     </div>
   `;
 }
+
+// --- RANGS VENDEUR (même système que les coursiers, icône marteau) ---
+const SELLER_RANKS = [
+  { key:'novice', min:0, max:4 },
+  { key:'trader', min:5, max:14 },
+  { key:'merchant', min:15, max:24 },
+  { key:'tycoon', min:25, max:Infinity }
+];
+const RANK_HAMMER = `<rect x="9" y="8" width="2" height="10"/><rect x="4" y="2" width="12" height="5"/>`;
+const SELLER_RANK_ICONS = {
+  novice: `<svg viewBox="0 0 20 20" shape-rendering="crispEdges"><g fill="currentColor">${RANK_HAMMER}</g></svg>`,
+  trader: `<svg viewBox="0 0 20 20" shape-rendering="crispEdges"><g fill="currentColor">${RANK_HAMMER}${RANK_STAR_C}</g></svg>`,
+  merchant: `<svg viewBox="0 0 20 20" shape-rendering="crispEdges"><g fill="currentColor">${RANK_HAMMER}${RANK_STAR_L}${RANK_STAR_R}</g></svg>`,
+  tycoon: `<svg viewBox="-4 -2 28 22" shape-rendering="crispEdges"><g fill="currentColor">
+    ${RANK_HAMMER}${RANK_STAR_C}${RANK_STAR_L}${RANK_STAR_R}
+    <rect x="-4" y="10" width="4" height="2"/><rect x="-3" y="12" width="3" height="2"/><rect x="-2" y="14" width="2" height="2"/>
+    <rect x="20" y="10" width="4" height="2"/><rect x="19" y="12" width="3" height="2"/><rect x="18" y="14" width="2" height="2"/>
+  </g></svg>`
+};
+function getSellerRank(salesCount){
+  return SELLER_RANKS.find(r => salesCount >= r.min && salesCount <= r.max) || SELLER_RANKS[0];
+}
+function sellerRankBadgeHtml(salesCount, size){
+  const r = getSellerRank(salesCount || 0);
+  const label = (T[LANG].sellerRankLabels && T[LANG].sellerRankLabels[r.key]) || r.key;
+  const cls = size === 'md' ? 'rank-badge md' : 'rank-badge';
+  return `<span class="${cls}" title="${label}">${SELLER_RANK_ICONS[r.key]}<span class="rank-label">${label}</span></span>`;
+}
+function sellerRankProgressHtml(salesCount){
+  const d = T[LANG];
+  const count = salesCount || 0;
+  const r = getSellerRank(count);
+  const idx = SELLER_RANKS.findIndex(x => x.key === r.key);
+  const isMax = idx === SELLER_RANKS.length - 1;
+  const next = isMax ? r : SELLER_RANKS[idx+1];
+  const span = isMax ? 1 : Math.max(1, next.min - r.min);
+  const progressed = isMax ? span : (count - r.min);
+  const pct = Math.min(100, Math.max(0, Math.round((progressed/span)*100)));
+  const remaining = isMax ? 0 : Math.max(0, next.min - count);
+  const curLabel = d.sellerRankLabels[r.key];
+  const nextLabel = isMax ? curLabel : d.sellerRankLabels[next.key];
+  const midText = isMax ? d.rankMaxed : d.rankToNextSales.replace('{n}', remaining).replace('{rank}', nextLabel);
+  return `
+    <div class="rank-track">
+      <div class="rank-track-icon start" title="${curLabel}">${SELLER_RANK_ICONS[r.key]}</div>
+      <div class="rank-track-bar">
+        <div class="rank-track-rail"></div>
+        <div class="rank-track-fill" style="width:${pct}%"></div>
+        <div class="rank-track-marker" style="left:${pct}%"></div>
+      </div>
+      <div class="rank-track-icon end ${isMax?'maxed':''}" title="${nextLabel}">${SELLER_RANK_ICONS[next.key]}</div>
+    </div>
+    <div class="rank-track-label">
+      <span class="current">${curLabel}</span>
+      <span>${midText}</span>
+      <span>${nextLabel}</span>
+    </div>
+  `;
+}
+function sellerRankShowcaseHtml(salesCount){
+  const r = getSellerRank(salesCount || 0);
+  const label = (T[LANG].sellerRankLabels && T[LANG].sellerRankLabels[r.key]) || r.key;
+  const d = T[LANG];
+  return `<div class="rank-showcase">${SELLER_RANK_ICONS[r.key]}<div class="rank-name">${label}</div><div class="rank-sub">${salesCount||0} ${d.rankSales}</div></div>`;
+}
+
+// --- STATISTIQUES & SUCCÈS DE BOUTIQUE (vendeur) ---
+async function fetchSellerShopStats(sellerId){
+  if(!sellerId) return null;
+  const [ordersRes, inquiriesRes] = await Promise.all([
+    sb.from('orders').select('items,gross_price,status').eq('seller_id', sellerId).eq('order_type','marketplace').eq('status','delivered'),
+    sb.from('marketplace_inquiries').select('listing_id,status,delivery_method').eq('seller_id', sellerId).eq('status','completed').eq('delivery_method','pickup')
+  ]);
+  const orderRows = ordersRes.data || [];
+  const inquiryRows = inquiriesRes.data || [];
+  let itemsSold = 0, totalEarned = 0, mostExpensive = null;
+  orderRows.forEach(o => {
+    totalEarned += Number(o.gross_price) || 0;
+    (o.items||[]).forEach(it => {
+      itemsSold += Number(it.qty) || 0;
+      if(!mostExpensive || Number(it.price) > mostExpensive.price) mostExpensive = { name: it.name, price: Number(it.price) };
+    });
+  });
+  let listingMap = {};
+  if(inquiryRows.length){
+    const listingIds = [...new Set(inquiryRows.map(r=>r.listing_id))];
+    const { data: listings } = await sb.from('marketplace_listings').select('id,item_name,price,quantity').in('id', listingIds);
+    (listings||[]).forEach(l => listingMap[l.id]=l);
+  }
+  inquiryRows.forEach(r => {
+    const l = listingMap[r.listing_id];
+    if(!l) return;
+    itemsSold += Number(l.quantity) || 0;
+    totalEarned += (Number(l.price)||0) * (Number(l.quantity)||0);
+    if(!mostExpensive || Number(l.price) > mostExpensive.price) mostExpensive = { name: l.item_name, price: Number(l.price) };
+  });
+  const salesCount = orderRows.length + inquiryRows.length;
+  return { salesCount, courierSalesCount: orderRows.length, itemsSold, totalEarned, mostExpensive };
+}
+function renderShopStats(box, stats){
+  if(!box) return;
+  const d = T[LANG];
+  if(!stats || !stats.salesCount){
+    box.innerHTML = `<h3 data-i18n="shopStatsTitle">${d.shopStatsTitle}</h3><p class="muted">${d.shopStatsNoData}</p>`;
+    return;
+  }
+  box.innerHTML = `
+    <h3 data-i18n="shopStatsTitle">${d.shopStatsTitle}</h3>
+    <div class="career-stats-grid">
+      <div class="career-stat"><div class="val">${fmt(stats.totalEarned)}</div><div class="lbl">${d.shopTotalEarned}</div></div>
+      <div class="career-stat"><div class="val">${stats.salesCount}</div><div class="lbl">${d.shopSalesCount}</div></div>
+      <div class="career-stat"><div class="val">${stats.itemsSold}</div><div class="lbl">${d.shopItemsSold}</div></div>
+      <div class="career-stat"><div class="val" style="font-size:1.1rem;">${stats.mostExpensive ? stats.mostExpensive.name + ' ('+fmt(stats.mostExpensive.price)+')' : '—'}</div><div class="lbl">${d.shopMostExpensive}</div></div>
+    </div>
+  `;
+}
+const SELLER_ACHV_ICONS = {
+  first_sale: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="6" width="10" height="8"/><rect x="5" y="3" width="6" height="3"/><rect x="6" y="1" width="4" height="2"/><rect x="6" y="9" width="4" height="2" fill="var(--panel)"/></g></svg>`,
+  first_courier_sale: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="1" y="7" width="6" height="6"/><rect x="0" y="5" width="8" height="2"/><rect x="9" y="9" width="2" height="2"/><rect x="11" y="7" width="2" height="2"/><rect x="13" y="5" width="2" height="2"/></g></svg>`,
+  five_sales: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="10" width="12" height="3"/><rect x="3" y="7" width="10" height="3"/><rect x="4" y="4" width="8" height="3"/></g></svg>`
+};
+const SELLER_ACHIEVEMENTS = [
+  { key:'first_sale', check: s => s.salesCount >= 1 },
+  { key:'first_courier_sale', check: s => s.courierSalesCount >= 1 },
+  { key:'five_sales', check: s => s.salesCount >= 5 }
+];
+async function fetchUnlockedSellerAchievements(sellerId){
+  if(!sellerId) return new Set();
+  const { data } = await sb.from('seller_achievements').select('key').eq('seller_id', sellerId);
+  return new Set((data||[]).map(r=>r.key));
+}
+function renderSellerAchievements(unlockedSet, stats, boxId){
+  const box = $(boxId); if(!box) return;
+  box.hidden = false;
+  const d = T[LANG];
+  const salesCount = stats ? stats.salesCount : 0;
+  box.innerHTML = `
+    <h3 style="margin:0 0 4px;" data-i18n="sellerAchvTitle">${d.sellerAchvTitle}</h3>
+    ${sellerRankProgressHtml(salesCount)}
+    <div class="achv-grid">
+      ${SELLER_ACHIEVEMENTS.map(a => `
+        <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-skey="${a.key}" title="${d.sellerAchvDesc[a.key]}">
+          ${SELLER_ACHV_ICONS[a.key]}
+          <span>${d.sellerAchvLabels[a.key]}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+function announceSellerAchievement(key){
+  const d = T[LANG];
+  toastShow('🏆 ' + d.achvUnlocked + ' ' + d.sellerAchvLabels[key]);
+  const badgeEl = document.querySelector(`.achv-badge[data-skey="${key}"]`);
+  pixelBurst(badgeEl || $('sellerAchvCard'), 20);
+}
+async function checkAndRenderSellerAchievements(boxId){
+  if(!profile || !['seller','admin'].includes(profile.role) || !session) return;
+  const stats = await fetchSellerShopStats(session.user.id);
+  if(!stats) return;
+  const unlocked = await fetchUnlockedSellerAchievements(session.user.id);
+  const newlyUnlocked = [];
+  for(const a of SELLER_ACHIEVEMENTS){
+    if(!unlocked.has(a.key) && a.check(stats)){
+      const { error, data } = await sb.from('seller_achievements').insert({ seller_id: session.user.id, key: a.key }).select();
+      if(!error && data && data.length){ unlocked.add(a.key); newlyUnlocked.push(a.key); }
+    }
+  }
+  if(boxId) renderSellerAchievements(unlocked, stats, boxId);
+  newlyUnlocked.forEach(key => setTimeout(() => announceSellerAchievement(key), 400));
+}
+
 async function saveProfileDefaults(){
   if(!session) return;
   const { error } = await sb.from('profiles').update({
@@ -2670,6 +2919,7 @@ async function rejectCourierApp(id){
 
 // --- PROFIL PUBLIC (consulté depuis une commande ou par l'admin) ---
 let viewingProfileId = null;
+let shopViewingSellerId = null;
 async function openPublicProfile(id){
   if(!id) return;
   viewingProfileId = id;
@@ -2711,8 +2961,24 @@ async function openPublicProfile(id){
   if(shop && (p.role === 'seller' || p.role === 'admin')){
     $('pubShopName').textContent = shop.shop_name || d.shopSettingsTitle;
     $('pubShopCard').hidden = false;
+    const { data: previewListings } = await sb.from('marketplace_listings').select('*').eq('seller_id', id).order('created_at',{ascending:false}).limit(3);
+    const previewGrid = $('pubShopPreviewGrid');
+    if(previewListings && previewListings.length){
+      previewGrid.innerHTML = previewListings.map(l => shopPreviewCardHtml(l)).join('');
+    } else {
+      previewGrid.innerHTML = `<p class="muted" style="grid-column:1/-1;">${d.shopPageEmpty}</p>`;
+    }
   }
   $('pubAdminActions').hidden = !(profile && profile.role === 'admin');
+}
+function shopPreviewCardHtml(listing){
+  const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  return `
+    <div class="shop-preview-card" onclick="openSellerShop(viewingProfileId)">
+      <div class="shop-preview-photo">${photo}</div>
+      <div class="shop-preview-name">${listing.item_name}</div>
+      <div class="shop-preview-price">${fmt(listing.price)}</div>
+    </div>`;
 }
 function closePublicProfile(){
   viewingProfileId = null;
@@ -2721,8 +2987,9 @@ function closePublicProfile(){
 async function adminResetAchievements(){
   if(!viewingProfileId || !profile || profile.role !== 'admin') return;
   if(!confirm(T[LANG].confirmResetAchv)) return;
-  const { error } = await sb.from('courier_achievements').delete().eq('courier_id', viewingProfileId);
-  if(error){ alert('Erreur : '+error.message); return; }
+  const { error: e1 } = await sb.from('courier_achievements').delete().eq('courier_id', viewingProfileId);
+  const { error: e2 } = await sb.from('seller_achievements').delete().eq('seller_id', viewingProfileId);
+  if(e1 && e2){ alert('Erreur : '+e1.message); return; }
   sweep();
   toastShow(T[LANG].toastUpdated);
   openPublicProfile(viewingProfileId);
@@ -2800,6 +3067,7 @@ async function initAuth(){
       const v = effectiveView();
       if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'deliveries') loadClientDashboard();
       if(v === 'courier' && !$('view-courier-dash').hidden) loadCourierData();
+      if((v === 'seller' || v === 'admin') && !$('view-seller-dash').hidden) checkAndRenderSellerAchievements();
     })
     .subscribe();
 

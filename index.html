@@ -178,6 +178,41 @@
   .items-toggle:hover{background:none; border:none;}
   li.extra-item[hidden]{display:none;}
 
+  /* --- MARKETPLACE --- */
+  .marketplace-grid{display:grid; grid-template-columns:1fr; gap:16px;}
+  @media (min-width:640px){ .marketplace-grid{grid-template-columns:1fr 1fr;} }
+  @media (min-width:960px){ .marketplace-grid{grid-template-columns:1fr 1fr 1fr;} }
+  .mkt-card{border:1px solid var(--border); border-radius:4px; background:var(--bg2); overflow:hidden; display:flex; flex-direction:column;}
+  .mkt-photo-wrap{position:relative; width:100%; aspect-ratio:4/3; background:var(--panel); display:flex; align-items:center; justify-content:center; overflow:hidden;}
+  .mkt-photo-wrap img{width:100%; height:100%; object-fit:cover;}
+  .mkt-photo-placeholder{width:34px; height:34px; color:var(--muted); opacity:.4;}
+  .mkt-info{padding:12px 14px 14px; display:flex; flex-direction:column; gap:8px; flex:1;}
+  .mkt-item-name{font-family:'VT323',monospace; font-size:1.15rem; color:var(--text); line-height:1.2;}
+  .mkt-price-row{display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
+  .mkt-price{font-family:'VT323',monospace; font-size:1.3rem; color:var(--accent);}
+  .mkt-qty{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
+  .mkt-info .courier-box{flex:none; max-width:none; width:100%; margin-top:auto;}
+
+  .listing-row{display:flex; gap:10px; align-items:flex-start; border:1px solid var(--border); border-radius:4px; padding:10px; margin-bottom:10px; flex-wrap:wrap;}
+  .listing-thumb{width:48px; height:48px; object-fit:cover; border:1px solid var(--border); flex:none; background:var(--panel);}
+  .listing-thumb-placeholder{width:48px; height:48px; flex:none; background:var(--panel); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted); opacity:.5;}
+  .listing-info{flex:1; min-width:140px;}
+  .listing-name{font-family:'VT323',monospace; font-size:1.05rem; color:var(--text);}
+  .listing-meta{font-size:.72rem; color:var(--muted);}
+  .listing-actions{display:flex; gap:6px; flex-wrap:wrap; width:100%;}
+  .listing-actions button{width:auto; flex:none; font-size:.72rem; padding:8px 10px;}
+  .delivery-request-form{width:100%; margin-top:8px; padding-top:8px; border-top:1px dashed var(--border); display:flex; flex-direction:column; gap:6px;}
+
+  .mkt-delivery-badge{display:inline-block; background:var(--accent); color:var(--bg); font-family:'VT323',monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.5px; padding:2px 8px; border-radius:3px; margin-bottom:6px;}
+  .mkt-delivery-note{font-size:.68rem; color:var(--muted); border-left:2px solid var(--accent); padding-left:8px; margin:6px 0;}
+
+  /* Thème de boutique vendeur : indépendant du thème global du site */
+  #view-seller-shop[data-shop-color="vert"]{ --accent:#39ff6a; --accent-dim:#39ff6a55; }
+  #view-seller-shop[data-shop-color="bleu"]{ --accent:#4fc8ff; --accent-dim:#4fc8ff55; }
+  #view-seller-shop[data-shop-color="violet"]{ --accent:#c07bff; --accent-dim:#c07bff55; }
+  #view-seller-shop[data-shop-color="blanc"]{ --accent:#f2f2f2; --accent-dim:#f2f2f255; }
+  #view-seller-shop[data-shop-color="jaune"]{ --accent:#ffcf40; --accent-dim:#ffcf4055; }
+
   /* --- GRILLE DES COMMANDES EN COURS (client) : 2 colonnes sur ordinateur, 1 colonne sur mobile, cartes de même hauteur --- */
   #clientCurrentOrders{display:grid; grid-template-columns:1fr; gap:16px; align-items:stretch;}
   #clientCurrentOrders .order-card.big{margin-bottom:0; display:flex; flex-direction:column; height:100%;}
@@ -389,6 +424,7 @@
               <div class="row-label" data-i18n="adminViewLabel">Vue</div>
               <button onclick="setAdminView('client')" data-i18n="navClient">CLIENT</button>
               <button onclick="setAdminView('courier')" data-i18n="navCourier">COURSIER</button>
+              <button onclick="setAdminView('seller')" data-i18n="navSeller">VENDEUR</button>
               <button onclick="setAdminView('admin')" data-i18n="navAdmin">GESTION</button>
             </div>
             <hr>
@@ -414,12 +450,22 @@
 
     <!-- DASHBOARD CLIENT -->
     <section id="view-client-dash" hidden>
-      <div class="card courier-ad" id="courierAdCard" hidden></div>
-      <div id="clientCurrentOrders"></div>
-      <button class="history-toggle" onclick="toggleHistory()">
-        <span data-i18n="historyLabel">Historique</span> (<span id="historyCount">0</span>) <span id="historyToggleIcon">▾</span>
-      </button>
-      <div id="clientHistoryList" hidden></div>
+      <div class="tabs">
+        <button class="tab-btn active" id="tabBtnDeliveries" onclick="setClientTab('deliveries')" data-i18n="tabDeliveries">LIVRAISONS</button>
+        <button class="tab-btn" id="tabBtnMarketplace" onclick="setClientTab('marketplace')" data-i18n="tabMarketplace">MARKETPLACE</button>
+      </div>
+      <div id="clientTabDeliveries">
+        <div class="card courier-ad" id="courierAdCard" hidden></div>
+        <div id="clientCurrentOrders"></div>
+        <button class="history-toggle" onclick="toggleHistory()">
+          <span data-i18n="historyLabel">Historique</span> (<span id="historyCount">0</span>) <span id="historyToggleIcon">▾</span>
+        </button>
+        <div id="clientHistoryList" hidden></div>
+      </div>
+      <div id="clientTabMarketplace" hidden>
+        <h3 data-i18n="marketplaceFeedTitle" style="margin-top:0;">Derniers objets en vente</h3>
+        <div id="marketplaceFeed" class="marketplace-grid"></div>
+      </div>
     </section>
 
     <!-- CRÉER UNE COMMANDE -->
@@ -508,6 +554,10 @@
         <div id="courierAppsList"></div>
       </div>
       <div class="card">
+        <h3 data-i18n="sellerApplications">Candidatures Vendeur</h3>
+        <div id="sellerAppsList"></div>
+      </div>
+      <div class="card">
         <h3 data-i18n="members">Membres</h3>
         <div id="membersList"></div>
       </div>
@@ -581,6 +631,7 @@
         </button>
       </div>
       <div class="card" id="courierRequestCard"></div>
+      <div class="card" id="sellerRequestCard"></div>
     </section>
 
     <!-- PROFIL PUBLIC (vu par un client ou par l'admin) -->
@@ -609,13 +660,15 @@
         </div>
       </div>
       <div class="card" id="pubCareerStatsCard" hidden></div>
-      <div class="card">
+      <div class="card" id="pubAchvCard" hidden>
         <h3 data-i18n="achvTitle">Succès</h3>
         <div id="pubAchvGrid"></div>
       </div>
-      <div class="card">
-        <h3 data-i18n="marketplaceTitle">Marketplace personnelle</h3>
-        <p class="muted" data-i18n="marketplaceWip">Bientôt disponible — chaque coursier/crafteur pourra proposer ici ses objets à la vente.</p>
+      <div class="card" id="pubShopCard" hidden>
+        <h3 id="pubShopName" data-i18n="shopSettingsTitle">Ma boutique</h3>
+        <button class="btn-secondary" style="width:100%" onclick="openSellerShop(viewingProfileId)">
+          <span data-i18n="visitShopBtn">VOIR LA MARKETPLACE</span>
+        </button>
       </div>
       <div class="card" id="pubAdminActions" hidden>
         <h3 data-i18n="adminActionsTitle">Actions admin</h3>
@@ -624,6 +677,54 @@
           <button class="btn-logout" onclick="adminResetRole()" data-i18n="resetRoleBtn">RÉINITIALISER LE RÔLE</button>
         </div>
       </div>
+    </section>
+
+    <!-- DASHBOARD VENDEUR -->
+    <section id="view-seller-dash" hidden>
+      <div id="sellerBlocked" class="card" hidden>
+        <p data-i18n="notSeller">Ton compte n'a pas encore le rôle vendeur. Contacte l'administrateur pour être ajouté.</p>
+      </div>
+      <div id="sellerDash" hidden>
+        <div class="card">
+          <h3 data-i18n="shopSettingsTitle">Ma boutique</h3>
+          <label for="shopNameInput" data-i18n="shopNameLbl">Nom de la marketplace</label>
+          <input id="shopNameInput" type="text" data-i18n-ph="phShopName" placeholder="ex: Le Comptoir de Mayco">
+          <label data-i18n="shopThemeLbl">Couleur de la boutique</label>
+          <div class="theme-row" id="shopThemePicker"></div>
+          <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="saveShopSettings()">
+            <span data-i18n="saveShopBtn">ENREGISTRER LA BOUTIQUE</span>
+          </button>
+        </div>
+        <div class="card">
+          <h3 data-i18n="newListingTitle">Ajouter un objet en vente</h3>
+          <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
+          <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute">
+          <label for="listingPrice" data-i18n="listingPriceLbl">Prix de vente (aUEC)</label>
+          <input id="listingPrice" type="number" min="0" step="1">
+          <label for="listingQty" data-i18n="listingQtyLbl">Quantité</label>
+          <input id="listingQty" type="number" min="1" step="1" value="1">
+          <label data-i18n="listingPhotoLbl">Photo (optionnel)</label>
+          <input type="file" id="listingPhotoInput" accept="image/*" hidden onchange="onListingPhotoSelected(this)">
+          <button type="button" class="btn-secondary" style="width:100%; margin-top:4px;" onclick="$('listingPhotoInput').click()" id="listingPhotoBtn">
+            <span data-i18n="uploadListingPhoto">CHOISIR UNE PHOTO</span>
+          </button>
+          <div id="listingPhotoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
+          <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createListing()">
+            <span data-i18n="addListingBtn">METTRE EN VENTE</span>
+          </button>
+        </div>
+        <div class="card">
+          <h3 data-i18n="myListingsTitle">Mes annonces</h3>
+          <div id="myListingsList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOUTIQUE PUBLIQUE D'UN VENDEUR -->
+    <section id="view-seller-shop" hidden>
+      <button class="back" onclick="closeSellerShop()" data-i18n="back">&lt; RETOUR</button>
+      <header><h1 id="shopPageTitle">—</h1></header>
+      <div id="shopListingsGrid" class="marketplace-grid"></div>
     </section>
   </div>
 
@@ -657,7 +758,19 @@ const fmt = n => new Intl.NumberFormat('fr-FR').format(Math.round(n)) + " aUEC";
 let itemCount = 0;
 let session = null;
 let profile = null;
-let adminViewMode = 'client'; // 'admin' | 'client' | 'courier' — vue par défaut d'un admin : client (la gestion reste accessible via la roue crantée, jamais un passage obligatoire)
+let adminViewMode = 'client'; // 'admin' | 'client' | 'courier' | 'seller' — vue par défaut d'un admin : client (la gestion reste accessible via la roue crantée, jamais un passage obligatoire)
+const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-dash','view-seller-shop'];
+function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); }
+let clientTab = 'deliveries'; // 'deliveries' | 'marketplace'
+function setClientTab(tab){
+  clientTab = tab;
+  $('tabBtnDeliveries').classList.toggle('active', tab === 'deliveries');
+  $('tabBtnMarketplace').classList.toggle('active', tab === 'marketplace');
+  $('clientTabDeliveries').hidden = tab !== 'deliveries';
+  $('clientTabMarketplace').hidden = tab !== 'marketplace';
+  if(tab === 'deliveries') loadClientDashboard();
+  else loadMarketplaceFeed();
+}
 let hasBooted = false;
 let trackedShipPct = {}; // orderId -> pourcentage précédemment affiché (pour l'animation)
 
@@ -675,8 +788,8 @@ const T = {
   fr: {
     tagline:"Livraisons inter-système · Stanton · Nyx · Pyro", logout:"DÉCONNEXION",
     loginTitle:"Accès Terminal", loginSub:"Connecte-toi avec Discord pour accéder à ton espace.", loginBtn:"SE CONNECTER AVEC DISCORD",
-    languageLabel:"Langue", themeLabel:"Thème", adminViewLabel:"Vue", navAdmin:"GESTION", navClient:"CLIENT", navCourier:"COURSIER",
-    dashClient:"Mes commandes", dashCourier:"Espace Coursier", dashAdmin:"Panneau Admin",
+    languageLabel:"Langue", themeLabel:"Thème", adminViewLabel:"Vue", navAdmin:"GESTION", navClient:"CLIENT", navCourier:"COURSIER", navSeller:"VENDEUR",
+    dashClient:"Mes commandes", dashCourier:"Espace Coursier", dashAdmin:"Panneau Admin", dashSeller:"Ma Marketplace",
     createOrder:"CRÉER", back:"< RETOUR", newOrder:"Nouvelle commande",
     lblSystem:"Système de livraison souhaité", lblLieu:"Lieu exact de livraison", phLieu:"ex: Système Nyx, People's Service Station Theta",
     saveDefaultLoc:"📍 ENREGISTRER COMME LIEU PAR DÉFAUT", savedDefaultLoc:"LIEU PAR DÉFAUT ENREGISTRÉ !",
@@ -686,12 +799,12 @@ const T = {
     sendBtn:"ENVOYER LA COMMANDE", historyLabel:"Historique", noCurrentOrders:"Aucune commande en cours.", noHistory:"Aucune commande livrée pour l'instant.",
     cancelBtn:"ANNULER", confirmCancel:"Es-tu sûr de vouloir annuler cette commande ?",
     notCourier:"Ton compte n'a pas encore le rôle coursier. Contacte l'administrateur pour être ajouté.",
+    notSeller:"Ton compte n'a pas encore le rôle vendeur. Contacte l'administrateur pour être ajouté.",
     tabPending:"À TRAITER", tabMine:"ATTRIBUÉES", noAvailable:"Aucune commande disponible pour le moment.", noDeliveries:"Aucune livraison en cours.",
     accept:"ACCEPTER", markPurchased:"MARCHANDISE ACHETÉE", markTransit:"MARQUER EN TRANSIT", markDelivered:"MARQUER LIVRÉE",
     members:"Membres", footer:"SALVAGER'S UNITED // RISQUES INCLUS DANS LA COMMISSION // PAIEMENT À LA REMISE",
     toastSent:"COMMANDE ENVOYÉE !", toastUpdated:"MIS À JOUR !",
     navProfile:"PROFIL", profileTitle:"Profil", defaultLocTitle:"Lieu de livraison par défaut", saveDefaultLoc2:"ENREGISTRER",
-    roleWords:{client:"client", courier:"coursier", admin:"admin"},
     becomeCourierBtn:"DEMANDER À DEVENIR COURSIER", courierPending:"Ta candidature est en attente de validation par l'administrateur.",
     courierRejectedNote:"Ta précédente candidature n'a pas été retenue. Tu peux retenter ta chance.",
     alreadyRoleNote:"Tu fais déjà partie de l'équipage !",
@@ -725,6 +838,20 @@ const T = {
     dtClear:"EFFACER", dtConfirm:"VALIDER", dtPlaceholder:"Choisir une date et une heure",
     dtMonths:["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
     dtWeekdays:["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"],
+    tabDeliveries:"LIVRAISONS", tabMarketplace:"MARKETPLACE",
+    marketplaceFeedTitle:"Derniers objets en vente", marketplaceEmpty:"Aucun objet en vente pour le moment.",
+    mktByLbl:"Vendu par", visitShopBtn:"VOIR LA MARKETPLACE",
+    roleWords:{client:"client", courier:"coursier", admin:"admin", seller:"vendeur"},
+    becomeSellerBtn:"DEMANDER À DEVENIR VENDEUR", sellerPending:"Ta candidature vendeur est en attente de validation par l'administrateur.",
+    sellerRejectedNote:"Ta précédente candidature vendeur n'a pas été retenue. Tu peux retenter ta chance.",
+    sellerApplications:"Candidatures Vendeur", noSellerApplications:"Aucune candidature vendeur en attente.",
+    sellerAccepted:"🎉 Ta demande pour devenir vendeur a été acceptée !", sellerRejected:"Ta demande pour devenir vendeur a été refusée.",
+    shopSettingsTitle:"Ma boutique", shopNameLbl:"Nom de la marketplace", phShopName:"ex: Le Comptoir de Mayco", shopThemeLbl:"Couleur de la boutique", saveShopBtn:"ENREGISTRER LA BOUTIQUE", shopSaved:"BOUTIQUE ENREGISTRÉE !",
+    newListingTitle:"Ajouter un objet en vente", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", listingSaved:"OBJET MIS EN VENTE !",
+    myListingsTitle:"Mes annonces", noListings:"Tu n'as encore aucune annonce.", deleteListingBtn:"SUPPRIMER", confirmDeleteListing:"Supprimer cette annonce définitivement ?",
+    requestDeliveryBtn:"DEMANDER UNE LIVRAISON", requestDeliveryTitle:"Demander une livraison coursier", buyerHandleLbl:"Pseudo RSI de l'acheteur (optionnel)", phBuyerHandle:"ex: Mayco_SC", deliveryRequested:"LIVRAISON DEMANDÉE !", cancelRequest:"ANNULER", confirmDeliveryBtn:"CONFIRMER LA DEMANDE",
+    marketplaceDeliveryBadge:"LIVRAISON MARKETPLACE", marketplaceDeliveryNote:"Livraison Marketplace : l'objet part de chez un VENDEUR pour être livré à un client, contrairement aux commandes classiques (client → coursier).",
+    sellerFrom:"Vendeur : ", buyerTo:"Acheteur : ", shopPageEmpty:"Cette boutique ne propose aucun objet pour le moment.", noShopYet:"Ce vendeur n'a pas encore configuré sa boutique.",
     bootLogin:["SALVAGER'S UNITED — AUTHENTIFICATION","VÉRIFICATION IDENTITÉ DISCORD.......OK","CHARGEMENT DU PROFIL................OK"],
     bootClient:["CHARGEMENT MODULE CLIENT.SYS.........OK","SYNCHRONISATION DES COMMANDES........OK"],
     bootCourier:["CHARGEMENT MODULE COURSIER.SYS.......OK","VÉRIFICATION BADGE D'ACCÈS...........OK"],
@@ -733,8 +860,8 @@ const T = {
   en: {
     tagline:"Inter-system deliveries · Stanton · Nyx · Pyro", logout:"LOG OUT",
     loginTitle:"Terminal Access", loginSub:"Sign in with Discord to reach your dashboard.", loginBtn:"SIGN IN WITH DISCORD",
-    languageLabel:"Language", themeLabel:"Theme", adminViewLabel:"View", navAdmin:"MANAGE", navClient:"CLIENT", navCourier:"COURIER",
-    dashClient:"My orders", dashCourier:"Courier Area", dashAdmin:"Admin Panel",
+    languageLabel:"Language", themeLabel:"Theme", adminViewLabel:"View", navAdmin:"MANAGE", navClient:"CLIENT", navCourier:"COURIER", navSeller:"SELLER",
+    dashClient:"My orders", dashCourier:"Courier Area", dashAdmin:"Admin Panel", dashSeller:"My Marketplace",
     createOrder:"CREATE", back:"< BACK", newOrder:"New order",
     lblSystem:"Delivery system", lblLieu:"Exact delivery location", phLieu:"e.g. Nyx system, People's Service Station Theta",
     saveDefaultLoc:"📍 SAVE AS DEFAULT LOCATION", savedDefaultLoc:"DEFAULT LOCATION SAVED!",
@@ -744,12 +871,12 @@ const T = {
     sendBtn:"SEND ORDER", historyLabel:"History", noCurrentOrders:"No orders in progress.", noHistory:"No delivered orders yet.",
     cancelBtn:"CANCEL", confirmCancel:"Are you sure you want to cancel this order?",
     notCourier:"Your account doesn't have courier access yet. Contact the admin to be added.",
+    notSeller:"Your account doesn't have seller access yet. Contact the admin to be added.",
     tabPending:"PENDING", tabMine:"ASSIGNED", noAvailable:"No orders available right now.", noDeliveries:"No deliveries in progress.",
     accept:"ACCEPT", markPurchased:"MARK PURCHASED", markTransit:"MARK IN TRANSIT", markDelivered:"MARK DELIVERED",
     members:"Members", footer:"SALVAGER'S UNITED // RISK INCLUDED IN THE COMMISSION // PAYMENT ON DELIVERY",
     toastSent:"ORDER SENT!", toastUpdated:"UPDATED!",
     navProfile:"PROFILE", profileTitle:"Profile", defaultLocTitle:"Default delivery location", saveDefaultLoc2:"SAVE",
-    roleWords:{client:"client", courier:"courier", admin:"admin"},
     becomeCourierBtn:"REQUEST TO BECOME A COURIER", courierPending:"Your application is pending admin review.",
     courierRejectedNote:"Your previous application wasn't accepted. You can try again.",
     alreadyRoleNote:"You're already part of the crew!",
@@ -783,6 +910,20 @@ const T = {
     dtClear:"CLEAR", dtConfirm:"CONFIRM", dtPlaceholder:"Choose a date & time",
     dtMonths:["January","February","March","April","May","June","July","August","September","October","November","December"],
     dtWeekdays:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+    tabDeliveries:"DELIVERIES", tabMarketplace:"MARKETPLACE",
+    marketplaceFeedTitle:"Latest items for sale", marketplaceEmpty:"No items for sale right now.",
+    mktByLbl:"Sold by", visitShopBtn:"VIEW MARKETPLACE",
+    roleWords:{client:"client", courier:"courier", admin:"admin", seller:"seller"},
+    becomeSellerBtn:"REQUEST TO BECOME A SELLER", sellerPending:"Your seller application is pending admin review.",
+    sellerRejectedNote:"Your previous seller application wasn't accepted. You can try again.",
+    sellerApplications:"Seller Applications", noSellerApplications:"No pending seller applications.",
+    sellerAccepted:"🎉 Your seller application was accepted!", sellerRejected:"Your seller application was rejected.",
+    shopSettingsTitle:"My shop", shopNameLbl:"Marketplace name", phShopName:"e.g. Mayco's Trading Post", shopThemeLbl:"Shop color", saveShopBtn:"SAVE SHOP", shopSaved:"SHOP SAVED!",
+    newListingTitle:"List an item for sale", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", listingSaved:"ITEM LISTED!",
+    myListingsTitle:"My listings", noListings:"You have no listings yet.", deleteListingBtn:"DELETE", confirmDeleteListing:"Permanently delete this listing?",
+    requestDeliveryBtn:"REQUEST A DELIVERY", requestDeliveryTitle:"Request a courier delivery", buyerHandleLbl:"Buyer's RSI handle (optional)", phBuyerHandle:"e.g. Mayco_SC", deliveryRequested:"DELIVERY REQUESTED!", cancelRequest:"CANCEL", confirmDeliveryBtn:"CONFIRM REQUEST",
+    marketplaceDeliveryBadge:"MARKETPLACE DELIVERY", marketplaceDeliveryNote:"Marketplace delivery: the item ships from a SELLER to a client, unlike classic orders (client → courier).",
+    sellerFrom:"Seller: ", buyerTo:"Buyer: ", shopPageEmpty:"This shop has no items for sale right now.", noShopYet:"This seller hasn't set up their shop yet.",
     bootLogin:["SALVAGER'S UNITED — AUTHENTICATION","CHECKING DISCORD IDENTITY...........OK","LOADING PROFILE.....................OK"],
     bootClient:["LOADING MODULE CLIENT.SYS............OK","SYNCING ORDERS.......................OK"],
     bootCourier:["LOADING MODULE COURIER.SYS...........OK","CHECKING ACCESS BADGE................OK"],
@@ -846,13 +987,13 @@ function sweep(){ const s=$('sweep'); s.classList.remove('run'); void s.offsetWi
 function effectiveView(){
   if(!profile) return null;
   if(profile.role === 'admin') return adminViewMode;
-  return profile.role; // 'client' | 'courier'
+  return profile.role; // 'client' | 'courier' | 'seller'
 }
 
 function updatePageTitle(){
   const v = effectiveView();
   const d = T[LANG];
-  $('pageTitle').textContent = v==='client' ? d.dashClient : v==='courier' ? d.dashCourier : d.dashAdmin;
+  $('pageTitle').textContent = v==='client' ? d.dashClient : v==='courier' ? d.dashCourier : v==='seller' ? d.dashSeller : d.dashAdmin;
 }
 
 function routeApp(){
@@ -863,7 +1004,7 @@ function routeApp(){
   }
   $('view-login').hidden = true;
   $('app').hidden = false;
-  ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile'].forEach(v => $(v).hidden = true);
+  hideAllViews();
   $('adminNavRow').hidden = !(profile && profile.role === 'admin');
   updateProfileChip();
 
@@ -871,15 +1012,16 @@ function routeApp(){
   $('createOrderBtn').hidden = !(v === 'client');
   updatePageTitle();
 
-  if(v === 'client'){ $('view-client-dash').hidden = false; loadClientDashboard(); }
+  if(v === 'client'){ $('view-client-dash').hidden = false; setClientTab(clientTab); }
   else if(v === 'courier'){ $('view-courier-dash').hidden = false; loadCourierData(); }
+  else if(v === 'seller'){ $('view-seller-dash').hidden = false; loadSellerDashboard(); }
   else if(v === 'admin'){ $('view-admin-dash').hidden = false; loadAdmin(); }
 }
 
 function setAdminView(v){ adminViewMode = v; $('settingsPanel').hidden = true; routeApp(); }
 
 function openCreateOrder(){
-  ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile'].forEach(v => $(v).hidden = true);
+  hideAllViews();
   $('view-create').hidden = false;
   if(profile?.default_system) $('arrivee').value = profile.default_system;
   if(profile?.default_location) $('lieu').value = profile.default_location;
@@ -1294,20 +1436,24 @@ $('sendBtn').addEventListener('click', async ()=>{
 });
 
 // --- SHIP TRACK (animation de progression) ---
-function stagePercent(status){
-  const idx = STATUS_STEPS.indexOf(status);
-  return (idx / (STATUS_STEPS.length-1)) * 100;
+const STATUS_STEPS_MKT = ['pending','accepted','in_transit','delivered']; // livraison marketplace : pas d'étape "achat" (le vendeur possède déjà l'objet)
+function stepsFor(order){ return order.order_type === 'marketplace' ? STATUS_STEPS_MKT : STATUS_STEPS; }
+function stagePercent(status, steps){
+  steps = steps || STATUS_STEPS;
+  const idx = steps.indexOf(status);
+  return (idx / (steps.length-1)) * 100;
 }
 function shipTrackHtml(order){
   const d = T[LANG];
-  const curIdx = STATUS_STEPS.indexOf(order.status);
-  const stops = STATUS_STEPS.map((s,i) => {
+  const steps = stepsFor(order);
+  const curIdx = steps.indexOf(order.status);
+  const stops = steps.map((s,i) => {
     const doneClass = i <= curIdx ? 'done' : '';
     const curClass = i === curIdx ? 'current' : '';
-    const leftPct = stagePercent(s);
+    const leftPct = stagePercent(s, steps);
     return `<div class="stage ${doneClass} ${curClass}" style="left:${leftPct}%"></div><div class="stage-label ${doneClass}" style="left:${leftPct}%">${d.statusShort[s]}</div>`;
   }).join('');
-  const pct = stagePercent(order.status);
+  const pct = stagePercent(order.status, steps);
   return `<div class="ship-track" data-order="${order.id}"><div class="rail"></div><div class="rail-fill" style="width:${pct}%"></div>${stops}
     <svg class="ship-icon" viewBox="0 0 24 24" style="left:${pct}%"><path fill="currentColor" d="M12 2 L20 20 L12 16 L4 20 Z"/></svg>
   </div>`;
@@ -1466,6 +1612,221 @@ function toggleItemsList(btn){
   btn.textContent = isCurrentlyHidden ? T[LANG].viewLessItems : btn.dataset.moreLabel;
 }
 
+// --- MARKETPLACE (onglet client : parcourir les annonces) ---
+const MKT_PHOTO_PLACEHOLDER = `<svg class="mkt-photo-placeholder" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+  <rect x="2" y="9" width="12" height="4"/><rect x="4" y="4" width="8" height="5"/><rect x="6" y="2" width="4" height="2"/>
+</g></svg>`;
+function mktCardHtml(listing, sellerMap){
+  const d = T[LANG];
+  const seller = sellerMap[listing.seller_id];
+  const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  return `
+    <div class="mkt-card">
+      <div class="mkt-photo-wrap">${photo}</div>
+      <div class="mkt-info">
+        <div class="mkt-item-name">${listing.item_name}</div>
+        <div class="mkt-price-row"><span class="mkt-price">${fmt(listing.price)}</span><span class="mkt-qty">x${listing.quantity}</span></div>
+        <div class="courier-box" onclick="openPublicProfile('${listing.seller_id}')" title="${d.viewProfileBtn}">
+          <div class="courier-box-name">${d.mktByLbl} ${seller ? displayName(seller) : '—'}</div>
+        </div>
+      </div>
+    </div>`;
+}
+async function loadMarketplaceFeed(){
+  const box = $('marketplaceFeed'); if(!box) return;
+  const d = T[LANG];
+  box.innerHTML = `<p class="muted">…</p>`;
+  const { data, error } = await sb.from('marketplace_listings').select('*').order('created_at',{ascending:false}).limit(30);
+  if(error){ box.textContent = error.message; return; }
+  const listings = data || [];
+  if(!listings.length){ box.innerHTML = `<p class="muted">${d.marketplaceEmpty}</p>`; return; }
+  const sellerIds = [...new Set(listings.map(l=>l.seller_id))];
+  const { data: sellers } = await sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds);
+  const sellerMap = {}; (sellers||[]).forEach(s=>sellerMap[s.id]=s);
+  box.innerHTML = listings.map(l => mktCardHtml(l, sellerMap)).join('');
+}
+
+// --- DASHBOARD VENDEUR ---
+let selectedShopColor = 'orange';
+function initShopThemePicker(){
+  const picker = $('shopThemePicker'); if(!picker) return;
+  if(!picker.dataset.built){
+    COLORS.forEach(c => {
+      const b = document.createElement('button'); b.className='swatch'; b.dataset.c=c; b.type='button'; b.title=c;
+      b.addEventListener('click', () => { selectedShopColor = c; highlightShopColorPicker(); });
+      picker.appendChild(b);
+    });
+    picker.dataset.built = '1';
+  }
+  highlightShopColorPicker();
+}
+function highlightShopColorPicker(){
+  document.querySelectorAll('#shopThemePicker .swatch').forEach(s => s.classList.toggle('active', s.dataset.c === selectedShopColor));
+}
+async function saveShopSettings(){
+  if(!session) return;
+  const d = T[LANG];
+  const shop_name = $('shopNameInput').value.trim();
+  const { error } = await sb.from('marketplace_shops').upsert({ id: session.user.id, shop_name, theme_color: selectedShopColor });
+  if(error){ alert('Erreur : '+error.message); return; }
+  toastShow(d.shopSaved);
+}
+async function loadSellerDashboard(){
+  if(!session) return;
+  if(!profile || !['seller','admin'].includes(profile.role)){
+    $('sellerBlocked').hidden = false; $('sellerDash').hidden = true; return;
+  }
+  $('sellerBlocked').hidden = true; $('sellerDash').hidden = false;
+  const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle();
+  $('shopNameInput').value = shop?.shop_name || '';
+  selectedShopColor = shop?.theme_color || 'orange';
+  initShopThemePicker();
+  await loadMyListings();
+}
+let pendingListingPhotoFile = null;
+function onListingPhotoSelected(inputEl){
+  pendingListingPhotoFile = (inputEl.files && inputEl.files[0]) || null;
+  $('listingPhotoPreviewName').textContent = pendingListingPhotoFile ? pendingListingPhotoFile.name : '';
+}
+async function createListing(){
+  if(!session) return;
+  const d = T[LANG];
+  const item_name = $('listingItem').value.trim();
+  const price = parseFloat($('listingPrice').value) || 0;
+  const quantity = parseInt($('listingQty').value,10) || 1;
+  if(!item_name || price <= 0){ alert('Erreur : renseigne un objet et un prix valide.'); return; }
+  const { data, error } = await sb.from('marketplace_listings').insert({ seller_id: session.user.id, item_name, price, quantity }).select().single();
+  if(error){ alert('Erreur : '+error.message); return; }
+  if(pendingListingPhotoFile){
+    const ext = (pendingListingPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `${session.user.id}/${data.id}.${ext}`;
+    const { error: upErr } = await sb.storage.from('marketplace-photos').upload(path, pendingListingPhotoFile, { upsert:true, cacheControl:'3600' });
+    if(!upErr){
+      const { data: urlData } = sb.storage.from('marketplace-photos').getPublicUrl(path);
+      await sb.from('marketplace_listings').update({ photo_url: urlData.publicUrl + '?t=' + Date.now() }).eq('id', data.id);
+    }
+  }
+  $('listingItem').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
+  toastShow(d.listingSaved);
+  loadMyListings();
+}
+async function deleteListing(id){
+  if(!confirm(T[LANG].confirmDeleteListing)) return;
+  const { error } = await sb.from('marketplace_listings').delete().eq('id', id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  loadMyListings();
+}
+async function loadMyListings(){
+  const box = $('myListingsList'); if(!box) return;
+  const d = T[LANG];
+  const { data, error } = await sb.from('marketplace_listings').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
+  if(error){ box.textContent = error.message; return; }
+  const listings = data || [];
+  if(!listings.length){ box.innerHTML = `<p class="muted">${d.noListings}</p>`; return; }
+  box.innerHTML = listings.map(l => {
+    const thumb = l.photo_url ? `<img class="listing-thumb" src="${l.photo_url}">` : `<div class="listing-thumb-placeholder">${MKT_PHOTO_PLACEHOLDER}</div>`;
+    return `
+    <div class="listing-row" data-listing="${l.id}">
+      ${thumb}
+      <div class="listing-info">
+        <div class="listing-name">${l.item_name}</div>
+        <div class="listing-meta">${fmt(l.price)} × ${l.quantity}</div>
+      </div>
+      <div class="listing-actions">
+        <button class="btn-secondary" onclick="toggleDeliveryForm('${l.id}')">${d.requestDeliveryBtn}</button>
+        <button class="btn-logout" onclick="deleteListing('${l.id}')">${d.deleteListingBtn}</button>
+      </div>
+      <div class="delivery-request-form" id="dform-${l.id}" hidden>
+        <select id="dsys-${l.id}"><option value="Stanton">Stanton</option><option value="Nyx">Nyx</option><option value="Pyro">Pyro</option></select>
+        <input type="text" id="dloc-${l.id}" data-i18n-ph="phLieu" placeholder="${d.phLieu}">
+        <input type="text" id="dbuyer-${l.id}" placeholder="${d.phBuyerHandle}">
+        <button class="btn-primary" onclick="requestMarketplaceDelivery('${l.id}')">${d.confirmDeliveryBtn}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleDeliveryForm(id){
+  const form = $('dform-'+id); if(!form) return;
+  form.hidden = !form.hidden;
+}
+async function requestMarketplaceDelivery(listingId){
+  if(!session) return;
+  const d = T[LANG];
+  const { data: listing, error: lErr } = await sb.from('marketplace_listings').select('*').eq('id', listingId).single();
+  if(lErr || !listing){ alert('Erreur : objet introuvable.'); return; }
+  const system = $('dsys-'+listingId).value;
+  const location = $('dloc-'+listingId).value.trim();
+  const buyer = $('dbuyer-'+listingId).value.trim();
+  const gross = listing.price * listing.quantity;
+  const commission = gross * 0.25;
+  const total = gross + commission;
+  const payload = {
+    order_type: 'marketplace',
+    seller_id: session.user.id,
+    listing_id: listingId,
+    buyer_handle: buyer || null,
+    destination_system: system,
+    exact_location: location,
+    items: [{ name: listing.item_name, price: listing.price, qty: listing.quantity }],
+    gross_price: gross, commission, total_price: total,
+    status: 'pending'
+  };
+  const { error } = await sb.from('orders').insert(payload);
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep();
+  toastShow(d.deliveryRequested);
+  toggleDeliveryForm(listingId);
+}
+
+// --- BOUTIQUE PUBLIQUE D'UN VENDEUR ---
+async function openSellerShop(sellerId){
+  if(!sellerId) return;
+  hideAllViews();
+  $('view-seller-shop').hidden = false;
+  const d = T[LANG];
+  const shopEl = $('view-seller-shop');
+  const [{ data: shop }, { data: p }, { data: listings }] = await Promise.all([
+    sb.from('marketplace_shops').select('*').eq('id', sellerId).maybeSingle(),
+    sb.from('profiles').select('*').eq('id', sellerId).single(),
+    sb.from('marketplace_listings').select('*').eq('seller_id', sellerId).order('created_at',{ascending:false})
+  ]);
+  shopEl.setAttribute('data-shop-color', (shop && shop.theme_color) || 'orange');
+  $('shopPageTitle').textContent = (shop && shop.shop_name) || (p ? displayName(p) : '—');
+  const grid = $('shopListingsGrid');
+  if(!shop){ grid.innerHTML = `<p class="muted">${d.noShopYet}</p>`; return; }
+  const list = listings || [];
+  if(!list.length){ grid.innerHTML = `<p class="muted">${d.shopPageEmpty}</p>`; return; }
+  const sellerMap = { [sellerId]: p };
+  grid.innerHTML = list.map(l => mktCardHtml(l, sellerMap)).join('');
+}
+function closeSellerShop(){ routeApp(); }
+
+// --- CANDIDATURES VENDEUR (admin) ---
+async function loadSellerApplications(){
+  const box = $('sellerAppsList'); if(!box) return;
+  const d = T[LANG];
+  const { data, error } = await sb.from('profiles').select('*').eq('seller_request', 'pending');
+  if(error){ box.textContent = error.message; return; }
+  if(!data || !data.length){ box.innerHTML = `<p class="muted">${d.noSellerApplications}</p>`; return; }
+  box.innerHTML = data.map(p => `
+    <div class="order-card app-list-row">
+      <div style="flex:1; min-width:140px;">${displayName(p)}</div>
+      <button class="btn-secondary" onclick="acceptSellerApp('${p.id}')">${d.acceptApp}</button>
+      <button class="btn-logout" onclick="rejectSellerApp('${p.id}')">${d.rejectApp}</button>
+    </div>
+  `).join('');
+}
+async function acceptSellerApp(id){
+  const { error } = await sb.from('profiles').update({ role:'seller', seller_request:'accepted' }).eq('id', id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep(); loadSellerApplications(); loadAdmin();
+}
+async function rejectSellerApp(id){
+  const { error } = await sb.from('profiles').update({ seller_request:'rejected' }).eq('id', id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep(); loadSellerApplications();
+}
+
 // --- DASHBOARD COURSIER ---
 function switchCourierTab(tab){
   $('tab-pending').classList.toggle('active', tab==='pending');
@@ -1488,33 +1849,55 @@ async function loadCourierData(){
 async function renderAvailable(orders){
   const d=T[LANG]; const box=$('courierPendingPane');
   if(!orders.length){ box.innerHTML = `<p class="muted">${d.noAvailable}</p>`; return; }
-  const clientIds=[...new Set(orders.map(o=>o.client_id))];
-  const { data: profs } = await sb.from('profiles').select('id,discord_username,rsi_handle').in('id', clientIds);
-  const clients = {}; (profs||[]).forEach(p=>clients[p.id]=p);
-  box.innerHTML = orders.map(o => `
+  const clientIds=[...new Set(orders.filter(o=>o.order_type!=='marketplace').map(o=>o.client_id))];
+  const sellerIds=[...new Set(orders.filter(o=>o.order_type==='marketplace').map(o=>o.seller_id))];
+  const [profs, sellerProfs] = await Promise.all([
+    clientIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', clientIds).then(r=>r.data||[]) : [],
+    sellerIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds).then(r=>r.data||[]) : []
+  ]);
+  const clients = {}; profs.forEach(p=>clients[p.id]=p);
+  const sellers = {}; sellerProfs.forEach(p=>sellers[p.id]=p);
+  box.innerHTML = orders.map(o => {
+    const isMkt = o.order_type === 'marketplace';
+    const badge = isMkt ? `<div class="mkt-delivery-badge">${d.marketplaceDeliveryBadge}</div>` : '';
+    const note = isMkt ? `<div class="mkt-delivery-note">${d.marketplaceDeliveryNote}</div>` : '';
+    const metaLine = isMkt
+      ? `${d.sellerFrom}${displayName(sellers[o.seller_id])}${o.buyer_handle ? ' — '+d.buyerTo+o.buyer_handle : ''} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`
+      : `${d.orderClient}${displayName(clients[o.client_id])} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`;
+    return `
     <div class="order-card big">
+      ${badge}
       <div class="status">${d.statusLabels[o.status]}</div>
-      <div class="meta">${d.orderClient}${displayName(clients[o.client_id])} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
+      <div class="meta">${metaLine}</div>
+      ${note}
       ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
       <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
       <div class="line margin-line"><span>${d.courierMarginLbl}</span><span>${fmt(o.commission)}</span></div>
       <button onclick="acceptOrder('${o.id}')">${d.accept}</button>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 function renderMyDeliveries(orders){
   const d=T[LANG]; const box=$('courierMinePane');
   if(!orders.length){ box.innerHTML = `<p class="muted">${d.noDeliveries}</p>`; return; }
   box.innerHTML = orders.map(o => {
+    const isMkt = o.order_type === 'marketplace';
     let btn = '';
-    if(o.status==='accepted') btn = `<button onclick="advanceOrder('${o.id}','purchased')">${d.markPurchased}</button>`;
+    if(o.status==='accepted' && !isMkt) btn = `<button onclick="advanceOrder('${o.id}','purchased')">${d.markPurchased}</button>`;
+    else if(o.status==='accepted' && isMkt) btn = `<button onclick="advanceOrder('${o.id}','in_transit')">${d.markTransit}</button>`;
     else if(o.status==='purchased') btn = `<button onclick="advanceOrder('${o.id}','in_transit')">${d.markTransit}</button>`;
     else if(o.status==='in_transit') btn = `<button onclick="advanceOrder('${o.id}','delivered')">${d.markDelivered}</button>`;
+    const badge = isMkt ? `<div class="mkt-delivery-badge">${d.marketplaceDeliveryBadge}</div>` : '';
+    const metaLine = isMkt
+      ? `${o.buyer_handle ? d.buyerTo+o.buyer_handle+' — ' : ''}${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`
+      : `${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`;
     return `
     <div class="order-card big">
+      ${badge}
       <div class="status">${d.statusLabels[o.status]}</div>
-      <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
+      <div class="meta">${metaLine}</div>
       ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
       ${shipTrackHtml(o)}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty}</li>`).join('')}</ul>
@@ -1637,6 +2020,9 @@ function roleAnimSvg(role, size){
   }
   if(role === 'admin'){
     return `<svg class="role-anim admin" viewBox="0 0 16 16" width="${size}" height="${size}"><ellipse cx="8" cy="8" rx="7" ry="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="2" fill="currentColor"/></svg>`;
+  }
+  if(role === 'seller'){
+    return `<svg class="role-anim seller" viewBox="0 0 16 16" width="${size}" height="${size}" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="6" width="12" height="8"/><rect x="1" y="4" width="14" height="2"/><rect x="6" y="9" width="4" height="5" fill="var(--panel)"/></g></svg>`;
   }
   return `<svg class="role-anim client" viewBox="0 0 16 16" width="${size}" height="${size}"><circle cx="8" cy="8" r="6" fill="currentColor"/></svg>`;
 }
@@ -1765,7 +2151,7 @@ function updateProfileChip(){
 }
 function openProfile(){
   $('settingsPanel').hidden = true;
-  ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile'].forEach(v => $(v).hidden = true);
+  hideAllViews();
   $('view-profile').hidden = false;
   renderProfileView();
   if(profile && (profile.role === 'courier' || profile.role === 'admin')) loadUexVehicles();
@@ -1808,6 +2194,7 @@ function renderProfileView(){
     setHeroPhoto('profile', null);
   }
   renderCourierRequestCard();
+  renderSellerRequestCard();
 }
 async function saveShipInfo(){
   if(!session) return;
@@ -1929,6 +2316,26 @@ function renderCourierRequestCard(){
     box.innerHTML = `<button class="btn-secondary" style="width:100%" onclick="requestCourier()">${d.becomeCourierBtn}</button>`;
   }
 }
+function renderSellerRequestCard(){
+  const box = $('sellerRequestCard'); if(!box || !profile) return;
+  const d = T[LANG];
+  if(profile.role !== 'client'){ box.hidden = true; box.innerHTML=''; return; }
+  box.hidden = false;
+  if(profile.seller_request === 'pending'){
+    box.innerHTML = `<p>${d.sellerPending}</p>`;
+  } else if(profile.seller_request === 'rejected'){
+    box.innerHTML = `<p class="muted">${d.sellerRejectedNote}</p><button class="btn-secondary" style="width:100%" onclick="requestSeller()">${d.becomeSellerBtn}</button>`;
+  } else {
+    box.innerHTML = `<button class="btn-secondary" style="width:100%" onclick="requestSeller()">${d.becomeSellerBtn}</button>`;
+  }
+}
+async function requestSeller(){
+  if(!session) return;
+  const { error } = await sb.from('profiles').update({ seller_request: 'pending' }).eq('id', session.user.id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  await loadProfile();
+  sweep();
+}
 async function requestCourier(){
   if(!session) return;
   const { error } = await sb.from('profiles').update({ courier_request: 'pending' }).eq('id', session.user.id);
@@ -1997,6 +2404,7 @@ async function loadAdmin(){
   if(!profile || profile.role !== 'admin') return;
   const d = T[LANG];
   loadCourierApplications();
+  loadSellerApplications();
   const { data, error } = await sb.from('profiles').select('*').order('discord_username');
   const box = $('membersList');
   if(error){ box.textContent = error.message; return; }
@@ -2007,6 +2415,7 @@ async function loadAdmin(){
       <select data-id="${p.id}" onchange="updateRole('${p.id}', this.value)" style="width:auto;">
         <option value="client" ${p.role==='client'?'selected':''}>client</option>
         <option value="courier" ${p.role==='courier'?'selected':''}>courier</option>
+        <option value="seller" ${p.role==='seller'?'selected':''}>seller</option>
         <option value="admin" ${p.role==='admin'?'selected':''}>admin</option>
       </select>
     </div>
@@ -2042,7 +2451,7 @@ let viewingProfileId = null;
 async function openPublicProfile(id){
   if(!id) return;
   viewingProfileId = id;
-  ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile'].forEach(v => $(v).hidden = true);
+  hideAllViews();
   $('view-public-profile').hidden = false;
   const { data: p, error } = await sb.from('profiles').select('*').eq('id', id).single();
   if(error || !p) return;
@@ -2053,8 +2462,11 @@ async function openPublicProfile(id){
   else{ img.hidden = true; fb.hidden = false; fb.textContent = (name[0]||'?').toUpperCase(); }
   renderHeroNames($('pubHeroRsi'), $('pubHeroDiscord'), p);
   $('pubCareerStatsCard').hidden = true;
+  $('pubAchvCard').hidden = true;
+  $('pubShopCard').hidden = true;
   const achvGrid = $('pubAchvGrid');
-  if(p.role !== 'client'){
+  if(p.role === 'courier' || p.role === 'admin'){
+    $('pubAchvCard').hidden = false;
     const [unlockedRows, stats] = await Promise.all([
       sb.from('courier_achievements').select('key').eq('courier_id', id).then(r => r.data || []),
       fetchCourierCareerStats(p.id)
@@ -2066,7 +2478,13 @@ async function openPublicProfile(id){
     setHeroPhoto('pub', p);
     renderCareerStats($('pubCareerStatsCard'), stats);
     $('pubCareerStatsCard').hidden = false;
+  } else if(p.role === 'seller'){
+    setHeroPhoto('pub', null);
+    const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', id).maybeSingle();
+    $('pubShopName').textContent = (shop && shop.shop_name) || d.shopSettingsTitle;
+    $('pubShopCard').hidden = false;
   } else {
+    $('pubAchvCard').hidden = false;
     achvGrid.innerHTML = `<p class="muted">${d.noAchvClient}</p>`;
     setHeroPhoto('pub', null);
   }
@@ -2156,8 +2574,16 @@ async function initAuth(){
   sb.channel('orders-realtime')
     .on('postgres_changes', { event:'*', schema:'public', table:'orders' }, () => {
       const v = effectiveView();
-      if(v === 'client' && !$('view-client-dash').hidden) loadClientDashboard();
+      if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'deliveries') loadClientDashboard();
       if(v === 'courier' && !$('view-courier-dash').hidden) loadCourierData();
+    })
+    .subscribe();
+
+  sb.channel('marketplace-realtime')
+    .on('postgres_changes', { event:'*', schema:'public', table:'marketplace_listings' }, () => {
+      const v = effectiveView();
+      if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'marketplace') loadMarketplaceFeed();
+      if(v === 'seller' && !$('view-seller-dash').hidden) loadMyListings();
     })
     .subscribe();
 }

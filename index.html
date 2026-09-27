@@ -208,6 +208,10 @@
   .achv-badge.locked{opacity:.35; filter:grayscale(1);}
   .achv-badge.unlocked{color:var(--accent); border-color:var(--accent); animation:achvPop .5s ease;}
   @keyframes achvPop{0%{transform:scale(.6); opacity:0;} 60%{transform:scale(1.15);} 100%{transform:scale(1); opacity:1;}}
+
+  /* --- RANGS COURSIER --- */
+  .rank-badge{display:inline-flex; align-items:center; gap:5px; font-size:.72rem; text-transform:uppercase; letter-spacing:.5px; color:var(--accent); white-space:nowrap;}
+  .rank-badge svg{width:17px; height:17px; flex:none;}
 </style>
 </head>
 <body>
@@ -388,6 +392,15 @@
           <span id="profileRoleAnimWrap"></span>
           <span id="profileRoleLabel"></span>
         </div>
+        <div id="profileRankWrap" style="margin-top:6px; display:flex; justify-content:center;"></div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="rsiTitle">Pseudo RSI (Handle)</h3>
+        <p class="muted" data-i18n="rsiHint" style="margin:-4px 0 8px;">Permet aux autres membres de t'ajouter facilement en jeu.</p>
+        <input id="profileRsiHandle" type="text" autocomplete="off" data-i18n-ph="phRsiHandle" placeholder="ex: Mayco_SC">
+        <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="saveRsiHandle()">
+          <span data-i18n="saveDefaultLoc2">ENREGISTRER</span>
+        </button>
       </div>
       <div class="card">
         <h3 data-i18n="defaultLocTitle">Lieu de livraison par défaut</h3>
@@ -413,6 +426,38 @@
         </button>
       </div>
       <div class="card" id="courierRequestCard"></div>
+    </section>
+
+    <!-- PROFIL PUBLIC (vu par un client ou par l'admin) -->
+    <section id="view-public-profile" hidden>
+      <button class="back" onclick="closePublicProfile()" data-i18n="back">&lt; RETOUR</button>
+      <div class="card" style="text-align:center;">
+        <div class="avatar-wrap big" style="margin:0 auto 10px;">
+          <img class="avatar" id="pubAvatarImg" hidden>
+          <div class="avatar-fallback" id="pubAvatarFallback">?</div>
+        </div>
+        <div class="chip-name" id="pubName" style="font-size:1.4rem; text-align:center;">—</div>
+        <div class="role-badge" style="justify-content:center; margin-top:6px;">
+          <span id="pubRoleAnimWrap"></span>
+          <span id="pubRoleLabel"></span>
+        </div>
+        <div id="pubRankWrap" style="margin-top:6px; display:flex; justify-content:center;"></div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="achvTitle">Succès</h3>
+        <div id="pubAchvGrid"></div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="marketplaceTitle">Marketplace personnelle</h3>
+        <p class="muted" data-i18n="marketplaceWip">Bientôt disponible — chaque coursier/crafteur pourra proposer ici ses objets à la vente.</p>
+      </div>
+      <div class="card" id="pubAdminActions" hidden>
+        <h3 data-i18n="adminActionsTitle">Actions admin</h3>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn-secondary" onclick="adminResetAchievements()" data-i18n="resetAchvBtn">RÉINITIALISER LES SUCCÈS</button>
+          <button class="btn-logout" onclick="adminResetRole()" data-i18n="resetRoleBtn">RÉINITIALISER LE RÔLE</button>
+        </div>
+      </div>
     </section>
   </div>
 
@@ -498,6 +543,12 @@ const T = {
     craftOnlyNote:"Objet non vendu en boutique — prix à négocier directement avec un crafteur/looter.",
     craftOnlyNotice:"Cet objet n'est pas disponible en boutique. Rapproche-toi d'un crafteur ou d'un looter, le prix sera à définir avec lui.",
     courierAdTitle:"Envie de rejoindre les coursiers Salvager's United ?", courierAdSub:"Livre des commandes, gagne des aUEC et débloque des succès.", courierAdBtn:"ENVOYER MA CANDIDATURE",
+    rsiTitle:"Pseudo RSI (Handle)", rsiHint:"Permet aux autres membres de t'ajouter facilement en jeu.", phRsiHandle:"ex: Mayco_SC", savedRsi:"PSEUDO RSI ENREGISTRÉ !",
+    rankLabels:{rookie:"Rookie", junior:"Junior", senior:"Senior", master:"Master"},
+    viewProfileBtn:"VOIR PROFIL", marketplaceTitle:"Marketplace personnelle", marketplaceWip:"Bientôt disponible — chaque coursier/crafteur pourra proposer ici ses objets à la vente.",
+    noAchvClient:"Pas de succès coursier pour ce membre (rôle client).",
+    adminActionsTitle:"Actions admin", resetAchvBtn:"RÉINITIALISER LES SUCCÈS", resetRoleBtn:"RÉINITIALISER LE RÔLE",
+    confirmResetAchv:"Es-tu sûr de vouloir réinitialiser tous les succès de ce membre ?", confirmResetRole:"Es-tu sûr de vouloir remettre ce membre au rôle client (perte du rôle coursier/admin) ?",
     bootLogin:["SALVAGER'S UNITED — AUTHENTIFICATION","VÉRIFICATION IDENTITÉ DISCORD.......OK","CHARGEMENT DU PROFIL................OK"],
     bootClient:["CHARGEMENT MODULE CLIENT.SYS.........OK","SYNCHRONISATION DES COMMANDES........OK"],
     bootCourier:["CHARGEMENT MODULE COURSIER.SYS.......OK","VÉRIFICATION BADGE D'ACCÈS...........OK"],
@@ -540,6 +591,12 @@ const T = {
     craftOnlyNote:"Not sold in shops — price to negotiate directly with a crafter/looter.",
     craftOnlyNotice:"This item isn't available in shops. Reach out to a crafter or a looter — the price will need to be set with them directly.",
     courierAdTitle:"Want to join the Salvager's United couriers?", courierAdSub:"Deliver orders, earn aUEC and unlock achievements.", courierAdBtn:"SEND MY APPLICATION",
+    rsiTitle:"RSI Handle", rsiHint:"Lets other members add you easily in-game.", phRsiHandle:"e.g. Mayco_SC", savedRsi:"RSI HANDLE SAVED!",
+    rankLabels:{rookie:"Rookie", junior:"Junior", senior:"Senior", master:"Master"},
+    viewProfileBtn:"VIEW PROFILE", marketplaceTitle:"Personal marketplace", marketplaceWip:"Coming soon — every courier/crafter will be able to list their own items for sale here.",
+    noAchvClient:"No courier achievements for this member (client role).",
+    adminActionsTitle:"Admin actions", resetAchvBtn:"RESET ACHIEVEMENTS", resetRoleBtn:"RESET ROLE",
+    confirmResetAchv:"Are you sure you want to reset all of this member's achievements?", confirmResetRole:"Are you sure you want to set this member back to the client role (removing courier/admin access)?",
     bootLogin:["SALVAGER'S UNITED — AUTHENTICATION","CHECKING DISCORD IDENTITY...........OK","LOADING PROFILE.....................OK"],
     bootClient:["LOADING MODULE CLIENT.SYS............OK","SYNCING ORDERS.......................OK"],
     bootCourier:["LOADING MODULE COURIER.SYS...........OK","CHECKING ACCESS BADGE................OK"],
@@ -620,7 +677,7 @@ function routeApp(){
   }
   $('view-login').hidden = true;
   $('app').hidden = false;
-  ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile'].forEach(v => $(v).hidden = true);
+  ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile'].forEach(v => $(v).hidden = true);
   $('adminNavRow').hidden = !(profile && profile.role === 'admin');
   updateProfileChip();
 
@@ -636,7 +693,7 @@ function routeApp(){
 function setAdminView(v){ adminViewMode = v; $('settingsPanel').hidden = true; routeApp(); }
 
 function openCreateOrder(){
-  ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile'].forEach(v => $(v).hidden = true);
+  ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile'].forEach(v => $(v).hidden = true);
   $('view-create').hidden = false;
   if(profile?.default_system) $('arrivee').value = profile.default_system;
   if(profile?.default_location) $('lieu').value = profile.default_location;
@@ -980,9 +1037,13 @@ async function loadClientDashboard(){
   const courierIds = [...new Set(orders.filter(o=>o.courier_id).map(o=>o.courier_id))];
   let couriers = {};
   if(courierIds.length){
-    const { data: profs } = await sb.from('profiles').select('id,discord_username,ship_class,ship_name').in('id', courierIds);
+    const { data: profs } = await sb.from('profiles').select('id,discord_username,rsi_handle,ship_class,ship_name').in('id', courierIds);
     (profs||[]).forEach(p => couriers[p.id]=p);
+    await Promise.all(courierIds.map(async id => { couriers[id].deliveredCount = await fetchDeliveredCount(id); }));
   }
+  const courierNameHtml = c => c
+    ? `<a href="javascript:void(0)" onclick="event.stopPropagation(); openPublicProfile('${c.id}')" style="color:var(--accent); text-decoration:underline; cursor:pointer;">${displayName(c)}</a> ${rankBadgeHtml(c.deliveredCount)}`
+    : '';
 
   const curBox = $('clientCurrentOrders');
   curBox.innerHTML = current.length ? current.map(o => {
@@ -993,7 +1054,7 @@ async function loadClientDashboard(){
     return `
     <div class="order-card big">
       <div class="status">${d.statusLabels[o.status]}</div>
-      <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}${c ? ' — '+d.orderCourier+c.discord_username : ''}</div>
+      <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}${c ? ' — '+d.orderCourier+courierNameHtml(c) : ''}</div>
       ${shipLine}
       ${shipTrackHtml(o)}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
@@ -1023,7 +1084,7 @@ async function loadClientDashboard(){
       </div>
       <div class="hist-detail" id="hist-detail-${o.id}" hidden>
         <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
-        ${c ? `<div class="meta">${d.orderCourier}${c.discord_username}</div>` : ''}
+        ${c ? `<div class="meta">${d.orderCourier}${courierNameHtml(c)}</div>` : ''}
         ${shipLine}
         <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
         <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
@@ -1090,12 +1151,12 @@ async function renderAvailable(orders){
   const d=T[LANG]; const box=$('courierPendingPane');
   if(!orders.length){ box.innerHTML = `<p class="muted">${d.noAvailable}</p>`; return; }
   const clientIds=[...new Set(orders.map(o=>o.client_id))];
-  const { data: profs } = await sb.from('profiles').select('id,discord_username').in('id', clientIds);
-  const clients = {}; (profs||[]).forEach(p=>clients[p.id]=p.discord_username);
+  const { data: profs } = await sb.from('profiles').select('id,discord_username,rsi_handle').in('id', clientIds);
+  const clients = {}; (profs||[]).forEach(p=>clients[p.id]=p);
   box.innerHTML = orders.map(o => `
     <div class="order-card big">
       <div class="status">${d.statusLabels[o.status]}</div>
-      <div class="meta">${d.orderClient}${clients[o.client_id]||'?'} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
+      <div class="meta">${d.orderClient}${displayName(clients[o.client_id])} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
       <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
       <button onclick="acceptOrder('${o.id}')">${d.accept}</button>
@@ -1158,14 +1219,17 @@ async function loadUnlockedAchievements(){
   const { data } = await sb.from('courier_achievements').select('key').eq('courier_id', session.user.id);
   return new Set((data||[]).map(r=>r.key));
 }
-function renderAchievements(unlockedSet){
+function renderAchievements(unlockedSet, deliveredCount){
   const box = $('courierAchievementsCard'); if(!box) return;
   const d = T[LANG];
   const total = ACHIEVEMENTS.length;
   const done = ACHIEVEMENTS.filter(a=>unlockedSet.has(a.key)).length;
   const pct = Math.round((done/total)*100);
   box.innerHTML = `
-    <h3 data-i18n="achvTitle">${d.achvTitle}</h3>
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+      <h3 style="margin:0;" data-i18n="achvTitle">${d.achvTitle}</h3>
+      ${deliveredCount !== undefined ? rankBadgeHtml(deliveredCount) : ''}
+    </div>
     <div class="achv-progress-bar"><div class="achv-progress-fill" style="width:${pct}%"></div></div>
     <div class="achv-progress-label">${done} / ${total}</div>
     <div class="achv-grid">
@@ -1196,7 +1260,7 @@ async function checkAndRenderAchievements(){
       if(!error && data && data.length){ unlocked.add(a.key); newlyUnlocked.push(a.key); }
     }
   }
-  renderAchievements(unlocked);
+  renderAchievements(unlocked, stats.deliveredCount);
   newlyUnlocked.forEach(key => setTimeout(() => announceAchievement(key), 400));
 }
 
@@ -1247,7 +1311,58 @@ function discordAvatarUrl(){
 }
 function discordDisplayName(){
   const meta = session?.user?.user_metadata || {};
-  return (profile && profile.discord_username) || meta.full_name || meta.name || meta.custom_claims?.global_name || 'user';
+  return (profile && (profile.rsi_handle || profile.discord_username)) || meta.full_name || meta.name || meta.custom_claims?.global_name || 'user';
+}
+// Nom affiché pour un AUTRE profil (courier/client vu depuis une commande, une liste, etc.) : privilégie le pseudo RSI.
+function displayName(p){
+  if(!p) return '?';
+  return p.rsi_handle || p.discord_username || '?';
+}
+async function saveRsiHandle(){
+  if(!session) return;
+  const { error } = await sb.from('profiles').update({ rsi_handle: $('profileRsiHandle').value.trim() }).eq('id', session.user.id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  await loadProfile();
+  updateProfileChip();
+  sweep();
+  toastShow(T[LANG].savedRsi);
+}
+// Synchronise l'avatar Discord (visible uniquement pour soi-même via la session) dans la table profiles,
+// pour qu'il puisse être affiché aux autres (profil public, etc.).
+async function syncAvatarToProfile(){
+  if(!session) return;
+  const url = discordAvatarUrl();
+  if(url && profile && profile.avatar_url !== url){
+    await sb.from('profiles').update({ avatar_url: url }).eq('id', session.user.id);
+    await loadProfile();
+  }
+}
+
+// --- RANGS COURSIER (indépendants des succès) ---
+const COURIER_RANKS = [
+  { key:'rookie', min:0, max:4 },
+  { key:'junior', min:5, max:14 },
+  { key:'senior', min:15, max:24 },
+  { key:'master', min:25, max:Infinity }
+];
+const RANK_ICONS = {
+  rookie: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="6" width="12" height="8"/><rect x="2" y="4" width="12" height="2"/></g></svg>`,
+  junior: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="7" width="12" height="8"/><rect x="2" y="5" width="12" height="2"/><rect x="7" y="1" width="2" height="2"/><rect x="6" y="0" width="4" height="1"/></g></svg>`,
+  senior: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="7" width="12" height="8"/><rect x="2" y="5" width="12" height="2"/><rect x="3" y="1" width="2" height="2"/><rect x="2" y="0" width="4" height="1"/><rect x="11" y="1" width="2" height="2"/><rect x="10" y="0" width="4" height="1"/></g></svg>`,
+  master: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="7" width="10" height="8"/><rect x="3" y="5" width="10" height="2"/><rect x="4" y="1" width="2" height="2"/><rect x="3" y="0" width="4" height="1"/><rect x="7" y="0" width="2" height="2"/><rect x="6" y="-1" width="4" height="1"/><rect x="10" y="1" width="2" height="2"/><rect x="9" y="0" width="4" height="1"/><rect x="0" y="8" width="3" height="5"/><rect x="13" y="8" width="3" height="5"/></g></svg>`
+};
+function getRank(deliveredCount){
+  return COURIER_RANKS.find(r => deliveredCount >= r.min && deliveredCount <= r.max) || COURIER_RANKS[0];
+}
+function rankBadgeHtml(deliveredCount){
+  const r = getRank(deliveredCount || 0);
+  const label = (T[LANG].rankLabels && T[LANG].rankLabels[r.key]) || r.key;
+  return `<span class="rank-badge" title="${label}">${RANK_ICONS[r.key]}<span class="rank-label">${label}</span></span>`;
+}
+async function fetchDeliveredCount(courierId){
+  if(!courierId) return 0;
+  const { count } = await sb.from('orders').select('id', { count:'exact', head:true }).eq('courier_id', courierId).eq('status','delivered');
+  return count || 0;
 }
 function fillAvatar(imgEl, fallbackEl){
   if(!imgEl || !fallbackEl) return;
@@ -1265,7 +1380,7 @@ function updateProfileChip(){
 }
 function openProfile(){
   $('settingsPanel').hidden = true;
-  ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile'].forEach(v => $(v).hidden = true);
+  ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile'].forEach(v => $(v).hidden = true);
   $('view-profile').hidden = false;
   renderProfileView();
   if(profile && (profile.role === 'courier' || profile.role === 'admin')) loadUexVehicles();
@@ -1276,6 +1391,7 @@ function renderProfileView(){
   $('profileName').textContent = discordDisplayName();
   const wrap = $('profileRoleAnimWrap'); if(wrap) wrap.innerHTML = roleAnimSvg(profile.role, 20);
   $('profileRoleLabel').textContent = discordDisplayName() + '_' + roleWord(profile.role);
+  $('profileRsiHandle').value = profile.rsi_handle || '';
   $('profileSystem').value = profile.default_system || 'Stanton';
   $('profileLocation').value = profile.default_location || '';
   const showShip = profile.role === 'courier' || profile.role === 'admin';
@@ -1283,6 +1399,9 @@ function renderProfileView(){
   if(showShip){
     $('profileShipClass').value = profile.ship_class || '';
     $('profileShipName').value = profile.ship_name || '';
+    fetchDeliveredCount(session.user.id).then(count => { $('profileRankWrap').innerHTML = rankBadgeHtml(count); });
+  } else {
+    $('profileRankWrap').innerHTML = '';
   }
   renderCourierRequestCard();
 }
@@ -1389,13 +1508,15 @@ async function checkCourierNotification(){
 // --- ADMIN ---
 async function loadAdmin(){
   if(!profile || profile.role !== 'admin') return;
+  const d = T[LANG];
   loadCourierApplications();
   const { data, error } = await sb.from('profiles').select('*').order('discord_username');
   const box = $('membersList');
   if(error){ box.textContent = error.message; return; }
   box.innerHTML = (data||[]).map(p => `
     <div class="order-card" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-      <div style="flex:1; min-width:140px;">${p.discord_username || p.id}</div>
+      <div style="flex:1; min-width:140px;">${p.discord_username || p.id}${p.rsi_handle ? ' — RSI: '+p.rsi_handle : ''}</div>
+      <button class="btn-secondary" onclick="openPublicProfile('${p.id}')">${d.viewProfileBtn}</button>
       <select data-id="${p.id}" onchange="updateRole('${p.id}', this.value)" style="width:auto;">
         <option value="client" ${p.role==='client'?'selected':''}>client</option>
         <option value="courier" ${p.role==='courier'?'selected':''}>courier</option>
@@ -1412,7 +1533,7 @@ async function loadCourierApplications(){
   if(!data || !data.length){ box.innerHTML = `<p class="muted">${d.noApplications}</p>`; return; }
   box.innerHTML = data.map(p => `
     <div class="order-card app-list-row">
-      <div style="flex:1; min-width:140px;">${p.discord_username || p.id}</div>
+      <div style="flex:1; min-width:140px;">${displayName(p)}</div>
       <button class="btn-secondary" onclick="acceptCourierApp('${p.id}')">${d.acceptApp}</button>
       <button class="btn-logout" onclick="rejectCourierApp('${p.id}')">${d.rejectApp}</button>
     </div>
@@ -1427,6 +1548,64 @@ async function rejectCourierApp(id){
   const { error } = await sb.from('profiles').update({ courier_request:'rejected' }).eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
   sweep(); loadCourierApplications();
+}
+
+// --- PROFIL PUBLIC (consulté depuis une commande ou par l'admin) ---
+let viewingProfileId = null;
+async function openPublicProfile(id){
+  if(!id) return;
+  viewingProfileId = id;
+  ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile'].forEach(v => $(v).hidden = true);
+  $('view-public-profile').hidden = false;
+  const { data: p, error } = await sb.from('profiles').select('*').eq('id', id).single();
+  if(error || !p) return;
+  const d = T[LANG];
+  const name = displayName(p);
+  const img = $('pubAvatarImg'), fb = $('pubAvatarFallback');
+  if(p.avatar_url){ img.src = p.avatar_url; img.hidden = false; fb.hidden = true; }
+  else{ img.hidden = true; fb.hidden = false; fb.textContent = (name[0]||'?').toUpperCase(); }
+  $('pubName').textContent = name;
+  const wrap = $('pubRoleAnimWrap'); if(wrap) wrap.innerHTML = roleAnimSvg(p.role, 20);
+  $('pubRoleLabel').textContent = name + '_' + roleWord(p.role);
+  $('pubRankWrap').innerHTML = '';
+  const achvGrid = $('pubAchvGrid');
+  if(p.role !== 'client'){
+    const [count, unlockedRows] = await Promise.all([
+      fetchDeliveredCount(p.id),
+      sb.from('courier_achievements').select('key').eq('courier_id', id).then(r => r.data || [])
+    ]);
+    $('pubRankWrap').innerHTML = rankBadgeHtml(count);
+    const unlockedSet = new Set(unlockedRows.map(r=>r.key));
+    achvGrid.innerHTML = `<div class="achv-grid">${ACHIEVEMENTS.map(a => `
+      <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" title="${d.achvDesc[a.key]}">${ACHV_ICONS[a.key]}<span>${d.achvLabels[a.key]}</span></div>
+    `).join('')}</div>`;
+  } else {
+    achvGrid.innerHTML = `<p class="muted">${d.noAchvClient}</p>`;
+  }
+  $('pubAdminActions').hidden = !(profile && profile.role === 'admin');
+}
+function closePublicProfile(){
+  viewingProfileId = null;
+  routeApp();
+}
+async function adminResetAchievements(){
+  if(!viewingProfileId || !profile || profile.role !== 'admin') return;
+  if(!confirm(T[LANG].confirmResetAchv)) return;
+  const { error } = await sb.from('courier_achievements').delete().eq('courier_id', viewingProfileId);
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep();
+  toastShow(T[LANG].toastUpdated);
+  openPublicProfile(viewingProfileId);
+}
+async function adminResetRole(){
+  if(!viewingProfileId || !profile || profile.role !== 'admin') return;
+  if(!confirm(T[LANG].confirmResetRole)) return;
+  const { error } = await sb.from('profiles').update({ role:'client', courier_request:null }).eq('id', viewingProfileId);
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep();
+  toastShow(T[LANG].toastUpdated);
+  openPublicProfile(viewingProfileId);
+  loadAdmin();
 }
 async function updateRole(id, role){
   const { error } = await sb.from('profiles').update({ role }).eq('id', id);
@@ -1462,6 +1641,7 @@ async function initAuth(){
   if(session){
     subscribeProfileChannel();
     await checkCourierNotification();
+    await syncAvatarToProfile();
     updateProfileChip();
     enterApp();
   } else {
@@ -1476,6 +1656,7 @@ async function initAuth(){
     if(event === 'SIGNED_IN' && !wasLoggedIn){
       subscribeProfileChannel();
       await checkCourierNotification();
+      await syncAvatarToProfile();
       updateProfileChip();
       enterApp();
       return;

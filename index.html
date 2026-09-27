@@ -212,6 +212,14 @@
   /* --- RANGS COURSIER --- */
   .rank-badge{display:inline-flex; align-items:center; gap:5px; font-size:.72rem; text-transform:uppercase; letter-spacing:.5px; color:var(--accent); white-space:nowrap;}
   .rank-badge svg{width:17px; height:17px; flex:none;}
+  .rank-badge.md{font-size:.85rem; gap:8px;}
+  .rank-badge.md svg{width:32px; height:32px;}
+  .courier-rank-row{margin:4px 0 2px;}
+  .rank-showcase{display:flex; flex-direction:column; align-items:center; gap:2px; padding:14px 20px; margin-top:10px; border:1px solid var(--accent); border-radius:8px; background:var(--bg2);}
+  .rank-showcase svg{width:72px; height:64px;}
+  .rank-showcase .rank-name{font-family:'VT323',monospace; font-size:1.5rem; color:var(--accent); letter-spacing:1.5px; text-transform:uppercase;}
+  .rank-showcase .rank-sub{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
+  .deadline-meta{color:var(--accent) !important;}
 </style>
 </head>
 <body>
@@ -331,6 +339,8 @@
         <button class="btn-secondary" style="width:100%; margin-top:8px; font-size:.82rem;" onclick="saveDefaultLocation()">
           <span data-i18n="saveDefaultLoc">📍 ENREGISTRER COMME LIEU PAR DÉFAUT</span>
         </button>
+        <label for="deadline" data-i18n="lblDeadline">Date et heure de livraison souhaitée (optionnel)</label>
+        <input id="deadline" type="datetime-local">
         <label data-i18n="lblItems">Objets souhaités</label>
         <p class="muted" data-i18n="uexHint" style="margin:-6px 0 8px;">Astuce : tape le nom d'une marchandise, arme ou armure pour voir le prix UEX (le plus bas trouvé) se remplir automatiquement (modifiable ensuite).</p>
         <div id="items"></div>
@@ -544,7 +554,8 @@ const T = {
     craftOnlyNotice:"Cet objet n'est pas disponible en boutique. Rapproche-toi d'un crafteur ou d'un looter, le prix sera à définir avec lui.",
     courierAdTitle:"Envie de rejoindre les coursiers Salvager's United ?", courierAdSub:"Livre des commandes, gagne des aUEC et débloque des succès.", courierAdBtn:"ENVOYER MA CANDIDATURE",
     rsiTitle:"Pseudo RSI (Handle)", rsiHint:"Permet aux autres membres de t'ajouter facilement en jeu.", phRsiHandle:"ex: Mayco_SC", savedRsi:"PSEUDO RSI ENREGISTRÉ !",
-    rankLabels:{rookie:"Rookie", junior:"Junior", senior:"Senior", master:"Master"},
+    rankLabels:{rookie:"Rookie", junior:"Junior", senior:"Senior", master:"Master"}, rankDeliveries:"livraisons",
+    lblDeadline:"Date et heure de livraison souhaitée (optionnel)", orderDeadline:"Deadline : ",
     viewProfileBtn:"VOIR PROFIL", marketplaceTitle:"Marketplace personnelle", marketplaceWip:"Bientôt disponible — chaque coursier/crafteur pourra proposer ici ses objets à la vente.",
     noAchvClient:"Pas de succès coursier pour ce membre (rôle client).",
     adminActionsTitle:"Actions admin", resetAchvBtn:"RÉINITIALISER LES SUCCÈS", resetRoleBtn:"RÉINITIALISER LE RÔLE",
@@ -592,7 +603,8 @@ const T = {
     craftOnlyNotice:"This item isn't available in shops. Reach out to a crafter or a looter — the price will need to be set with them directly.",
     courierAdTitle:"Want to join the Salvager's United couriers?", courierAdSub:"Deliver orders, earn aUEC and unlock achievements.", courierAdBtn:"SEND MY APPLICATION",
     rsiTitle:"RSI Handle", rsiHint:"Lets other members add you easily in-game.", phRsiHandle:"e.g. Mayco_SC", savedRsi:"RSI HANDLE SAVED!",
-    rankLabels:{rookie:"Rookie", junior:"Junior", senior:"Senior", master:"Master"},
+    rankLabels:{rookie:"Rookie", junior:"Junior", senior:"Senior", master:"Master"}, rankDeliveries:"deliveries",
+    lblDeadline:"Desired delivery date & time (optional)", orderDeadline:"Deadline: ",
     viewProfileBtn:"VIEW PROFILE", marketplaceTitle:"Personal marketplace", marketplaceWip:"Coming soon — every courier/crafter will be able to list their own items for sale here.",
     noAchvClient:"No courier achievements for this member (client role).",
     adminActionsTitle:"Admin actions", resetAchvBtn:"RESET ACHIEVEMENTS", resetRoleBtn:"RESET ROLE",
@@ -603,7 +615,7 @@ const T = {
     bootAdmin:["LOADING MODULE ADMIN.SYS.............OK","ADMIN PRIVILEGES GRANTED.............OK"]
   }
 };
-let LANG = 'fr';
+let LANG = 'en';
 
 function applyLang(){
   const d = T[LANG];
@@ -638,7 +650,7 @@ function applyColor(c){
   });
   let saved='orange'; try{ saved = localStorage.getItem('su-color')||'orange'; }catch(e){}
   applyColor(saved);
-  let savedLang='fr'; try{ savedLang = localStorage.getItem('su-lang')||'fr'; }catch(e){}
+  let savedLang='en'; try{ savedLang = localStorage.getItem('su-lang')||'en'; }catch(e){}
   LANG = savedLang;
 })();
 
@@ -697,7 +709,23 @@ function openCreateOrder(){
   $('view-create').hidden = false;
   if(profile?.default_system) $('arrivee').value = profile.default_system;
   if(profile?.default_location) $('lieu').value = profile.default_location;
+  // Empêche de choisir une deadline dans le passé (calculée dans le fuseau horaire local du visiteur)
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  $('deadline').min = now.toISOString().slice(0,16);
+  $('deadline').value = '';
   loadUexCatalog();
+}
+// Convertit la valeur du <input type="datetime-local"> (heure locale du visiteur) en horodatage UTC universel.
+function deadlineInputToIso(){
+  const val = $('deadline').value;
+  return val ? new Date(val).toISOString() : null;
+}
+// Affiche une deadline stockée (UTC) dans le fuseau horaire et la langue du navigateur de la personne qui regarde.
+function formatDeadline(iso){
+  if(!iso) return '';
+  try{ return new Date(iso).toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short' }); }
+  catch(e){ return iso; }
 }
 
 async function saveDefaultLocation(){
@@ -973,6 +1001,7 @@ $('sendBtn').addEventListener('click', async ()=>{
     client_id: session.user.id,
     destination_system: $('arrivee').value,
     exact_location: $('lieu').value.trim(),
+    deadline: deadlineInputToIso(),
     items: items,
     gross_price: brut, commission: comm, total_price: total,
     status: 'pending'
@@ -985,7 +1014,7 @@ $('sendBtn').addEventListener('click', async ()=>{
   sweep();
   pixelBurst($('sendBtn'));
   const t=$('toast'); t.textContent=T[LANG].toastSent; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800);
-  $('items').innerHTML=''; itemCount=0; addItem(); calc();
+  $('items').innerHTML=''; itemCount=0; addItem(); calc(); $('deadline').value='';
   routeApp();
 });
 
@@ -1041,8 +1070,8 @@ async function loadClientDashboard(){
     (profs||[]).forEach(p => couriers[p.id]=p);
     await Promise.all(courierIds.map(async id => { couriers[id].deliveredCount = await fetchDeliveredCount(id); }));
   }
-  const courierNameHtml = c => c
-    ? `<a href="javascript:void(0)" onclick="event.stopPropagation(); openPublicProfile('${c.id}')" style="color:var(--accent); text-decoration:underline; cursor:pointer;">${displayName(c)}</a> ${rankBadgeHtml(c.deliveredCount)}`
+  const courierLinkHtml = c => c
+    ? `<a href="javascript:void(0)" onclick="event.stopPropagation(); openPublicProfile('${c.id}')" style="color:var(--accent); text-decoration:underline; cursor:pointer;">${displayName(c)}</a>`
     : '';
 
   const curBox = $('clientCurrentOrders');
@@ -1051,11 +1080,14 @@ async function loadClientDashboard(){
     const shipLine = c && (c.ship_class || c.ship_name)
       ? `<div class="meta ship-meta">${d.orderShip}${c.ship_name ? '“'+c.ship_name+'”' : ''}${c.ship_class ? (c.ship_name ? ' — ' : '') + c.ship_class : ''}</div>`
       : '';
+    const deadlineLine = o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : '';
     return `
     <div class="order-card big">
       <div class="status">${d.statusLabels[o.status]}</div>
-      <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}${c ? ' — '+d.orderCourier+courierNameHtml(c) : ''}</div>
+      <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}${c ? ' — '+d.orderCourier+courierLinkHtml(c) : ''}</div>
+      ${c ? `<div class="courier-rank-row">${rankBadgeHtml(c.deliveredCount,'md')}</div>` : ''}
       ${shipLine}
+      ${deadlineLine}
       ${shipTrackHtml(o)}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
       <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
@@ -1084,8 +1116,9 @@ async function loadClientDashboard(){
       </div>
       <div class="hist-detail" id="hist-detail-${o.id}" hidden>
         <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
-        ${c ? `<div class="meta">${d.orderCourier}${courierNameHtml(c)}</div>` : ''}
+        ${c ? `<div class="meta">${d.orderCourier}${courierLinkHtml(c)}</div>` : ''}
         ${shipLine}
+        ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
         <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
         <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
       </div>
@@ -1157,6 +1190,7 @@ async function renderAvailable(orders){
     <div class="order-card big">
       <div class="status">${d.statusLabels[o.status]}</div>
       <div class="meta">${d.orderClient}${displayName(clients[o.client_id])} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
+      ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
       <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
       <button onclick="acceptOrder('${o.id}')">${d.accept}</button>
@@ -1175,6 +1209,7 @@ function renderMyDeliveries(orders){
     <div class="order-card big">
       <div class="status">${d.statusLabels[o.status]}</div>
       <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
+      ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
       ${shipTrackHtml(o)}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty}</li>`).join('')}</ul>
       ${btn}
@@ -1345,19 +1380,36 @@ const COURIER_RANKS = [
   { key:'senior', min:15, max:24 },
   { key:'master', min:25, max:Infinity }
 ];
+// Caisse de fret pixel-art (planches suggérées par des bandes en creux couleur --panel), avec 0/1/2/3 étoiles et ailes pour Master.
+const RANK_CRATE = `<rect x="3" y="9" width="14" height="9"/><rect x="2" y="7" width="16" height="2"/><rect x="9" y="9" width="2" height="9" fill="var(--panel)"/><rect x="3" y="12" width="14" height="2" fill="var(--panel)"/>`;
+const RANK_STAR_C = `<rect x="9" y="0" width="2" height="2"/><rect x="7" y="2" width="2" height="2"/><rect x="9" y="2" width="2" height="2"/><rect x="11" y="2" width="2" height="2"/><rect x="9" y="4" width="2" height="2"/>`;
+const RANK_STAR_L = `<rect x="4" y="1" width="2" height="2"/><rect x="2" y="3" width="2" height="2"/><rect x="4" y="3" width="2" height="2"/><rect x="6" y="3" width="2" height="2"/><rect x="4" y="5" width="2" height="2"/>`;
+const RANK_STAR_R = `<rect x="14" y="1" width="2" height="2"/><rect x="12" y="3" width="2" height="2"/><rect x="14" y="3" width="2" height="2"/><rect x="16" y="3" width="2" height="2"/><rect x="14" y="5" width="2" height="2"/>`;
 const RANK_ICONS = {
-  rookie: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="6" width="12" height="8"/><rect x="2" y="4" width="12" height="2"/></g></svg>`,
-  junior: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="7" width="12" height="8"/><rect x="2" y="5" width="12" height="2"/><rect x="7" y="1" width="2" height="2"/><rect x="6" y="0" width="4" height="1"/></g></svg>`,
-  senior: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="7" width="12" height="8"/><rect x="2" y="5" width="12" height="2"/><rect x="3" y="1" width="2" height="2"/><rect x="2" y="0" width="4" height="1"/><rect x="11" y="1" width="2" height="2"/><rect x="10" y="0" width="4" height="1"/></g></svg>`,
-  master: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="7" width="10" height="8"/><rect x="3" y="5" width="10" height="2"/><rect x="4" y="1" width="2" height="2"/><rect x="3" y="0" width="4" height="1"/><rect x="7" y="0" width="2" height="2"/><rect x="6" y="-1" width="4" height="1"/><rect x="10" y="1" width="2" height="2"/><rect x="9" y="0" width="4" height="1"/><rect x="0" y="8" width="3" height="5"/><rect x="13" y="8" width="3" height="5"/></g></svg>`
+  rookie: `<svg viewBox="0 0 20 20" shape-rendering="crispEdges"><g fill="currentColor">${RANK_CRATE}</g></svg>`,
+  junior: `<svg viewBox="0 0 20 20" shape-rendering="crispEdges"><g fill="currentColor">${RANK_CRATE}${RANK_STAR_C}</g></svg>`,
+  senior: `<svg viewBox="0 0 20 20" shape-rendering="crispEdges"><g fill="currentColor">${RANK_CRATE}${RANK_STAR_L}${RANK_STAR_R}</g></svg>`,
+  master: `<svg viewBox="-4 -2 28 22" shape-rendering="crispEdges"><g fill="currentColor">
+    ${RANK_CRATE}${RANK_STAR_C}${RANK_STAR_L}${RANK_STAR_R}
+    <rect x="-4" y="10" width="4" height="2"/><rect x="-3" y="12" width="3" height="2"/><rect x="-2" y="14" width="2" height="2"/>
+    <rect x="20" y="10" width="4" height="2"/><rect x="19" y="12" width="3" height="2"/><rect x="18" y="14" width="2" height="2"/>
+  </g></svg>`
 };
 function getRank(deliveredCount){
   return COURIER_RANKS.find(r => deliveredCount >= r.min && deliveredCount <= r.max) || COURIER_RANKS[0];
 }
-function rankBadgeHtml(deliveredCount){
+function rankBadgeHtml(deliveredCount, size){
   const r = getRank(deliveredCount || 0);
   const label = (T[LANG].rankLabels && T[LANG].rankLabels[r.key]) || r.key;
-  return `<span class="rank-badge" title="${label}">${RANK_ICONS[r.key]}<span class="rank-label">${label}</span></span>`;
+  const cls = size === 'md' ? 'rank-badge md' : 'rank-badge';
+  return `<span class="${cls}" title="${label}">${RANK_ICONS[r.key]}<span class="rank-label">${label}</span></span>`;
+}
+// Grosse mise en avant du rang (page de profil, profil public) : à la manière d'une médaille.
+function rankShowcaseHtml(deliveredCount){
+  const r = getRank(deliveredCount || 0);
+  const label = (T[LANG].rankLabels && T[LANG].rankLabels[r.key]) || r.key;
+  const d = T[LANG];
+  return `<div class="rank-showcase">${RANK_ICONS[r.key]}<div class="rank-name">${label}</div><div class="rank-sub">${deliveredCount||0} ${d.rankDeliveries}</div></div>`;
 }
 async function fetchDeliveredCount(courierId){
   if(!courierId) return 0;
@@ -1399,7 +1451,7 @@ function renderProfileView(){
   if(showShip){
     $('profileShipClass').value = profile.ship_class || '';
     $('profileShipName').value = profile.ship_name || '';
-    fetchDeliveredCount(session.user.id).then(count => { $('profileRankWrap').innerHTML = rankBadgeHtml(count); });
+    fetchDeliveredCount(session.user.id).then(count => { $('profileRankWrap').innerHTML = rankShowcaseHtml(count); });
   } else {
     $('profileRankWrap').innerHTML = '';
   }
@@ -1574,7 +1626,7 @@ async function openPublicProfile(id){
       fetchDeliveredCount(p.id),
       sb.from('courier_achievements').select('key').eq('courier_id', id).then(r => r.data || [])
     ]);
-    $('pubRankWrap').innerHTML = rankBadgeHtml(count);
+    $('pubRankWrap').innerHTML = rankShowcaseHtml(count);
     const unlockedSet = new Set(unlockedRows.map(r=>r.key));
     achvGrid.innerHTML = `<div class="achv-grid">${ACHIEVEMENTS.map(a => `
       <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" title="${d.achvDesc[a.key]}">${ACHV_ICONS[a.key]}<span>${d.achvLabels[a.key]}</span></div>

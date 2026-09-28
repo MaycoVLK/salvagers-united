@@ -191,7 +191,8 @@
   .btn-logout:hover{background:var(--danger-dim);}
 
   /* --- ORDER CARDS --- */
-  .order-card{border:1px solid var(--border); border-radius:4px; padding:14px; margin-bottom:12px; background:var(--bg2);}
+  .order-card{position:relative; border:1px solid var(--border); border-radius:4px; padding:14px; margin-bottom:12px; background:var(--bg2);}
+  .new-order-dot{position:absolute; top:10px; right:14px; width:10px; height:10px; background:var(--danger); border-radius:50%; box-shadow:0 0 0 2px var(--bg2), 0 0 6px var(--danger); animation:notifPulse 1.5s ease-in-out infinite; pointer-events:none;}
   .order-card.big{padding:22px 28px 18px;}
   .order-card.just-accepted{animation:orderAcceptedFlash 1.8s ease-out;}
   @keyframes orderAcceptedFlash{
@@ -2698,7 +2699,6 @@ function switchCourierTab(tab){
   $('tab-mine').classList.toggle('active', tab==='mine');
   $('courierPendingPane').hidden = tab!=='pending';
   $('courierMinePane').hidden = tab!=='mine';
-  if(tab==='pending') markCategoryRead('courier_pending');
 }
 function switchSellerTab(tab){
   $('tab-listings').classList.toggle('active', tab==='listings');
@@ -2716,21 +2716,22 @@ async function loadCourierData(){
   const { data: mine, error: mineErr } = await sb.rpc('my_courier_orders');
   if(mineErr) console.error('my_courier_orders:', mineErr);
   await renderAvailable(pending || []);
-  renderMyDeliveries(mine || []);
+  await renderMyDeliveries(mine || []);
   checkAndRenderAchievements();
-  if(!$('courierPendingPane').hidden) markCategoryRead('courier_pending');
 }
 async function renderAvailable(orders){
   const d=T[LANG]; const box=$('courierPendingPane');
   if(!orders.length){ box.innerHTML = `<p class="muted">${d.noAvailable}</p>`; return; }
   const clientIds=[...new Set(orders.filter(o=>o.order_type!=='marketplace').map(o=>o.client_id))];
   const sellerIds=[...new Set(orders.filter(o=>o.order_type==='marketplace').map(o=>o.seller_id))];
-  const [profs, sellerProfs] = await Promise.all([
+  const [profs, sellerProfs, unreadRows] = await Promise.all([
     clientIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', clientIds).then(r=>r.data||[]) : [],
-    sellerIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds).then(r=>r.data||[]) : []
+    sellerIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds).then(r=>r.data||[]) : [],
+    session ? sb.from('notifications').select('ref_id').eq('user_id',session.user.id).eq('category','courier_pending').eq('read',false).then(r=>r.data||[]) : []
   ]);
   const clients = {}; profs.forEach(p=>clients[p.id]=p);
   const sellers = {}; sellerProfs.forEach(p=>sellers[p.id]=p);
+  const unreadSet = new Set(unreadRows.map(n=>n.ref_id));
   box.innerHTML = orders.map(o => {
     const isMkt = o.order_type === 'marketplace';
     const badge = isMkt ? `<div class="mkt-delivery-badge">${d.marketplaceDeliveryBadge}</div>` : '';
@@ -2738,8 +2739,12 @@ async function renderAvailable(orders){
     const metaLine = isMkt
       ? `${d.sellerFrom}${displayName(sellers[o.seller_id])}${o.buyer_handle ? ' — '+d.buyerTo+o.buyer_handle : ''} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`
       : `${d.orderClient}${displayName(clients[o.client_id])} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`;
+    const isNew = unreadSet.has(o.id);
+    const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
+    const hoverAttr = isNew ? ` onmouseenter="markOrderNotifSeen('${o.id}', this)"` : '';
     return `
-    <div class="order-card big">
+    <div class="order-card big"${hoverAttr}>
+      ${newDot}
       ${badge}
       <div class="status">${d.statusLabels[o.status]}</div>
       <div class="meta">${metaLine}</div>
@@ -2753,10 +2758,22 @@ async function renderAvailable(orders){
   `;
   }).join('');
 }
+async function markOrderNotifSeen(orderId, cardEl){
+  const dot = cardEl.querySelector('.new-order-dot');
+  if(!dot) return;
+  dot.remove();
+  cardEl.onmouseenter = null;
+  if(!session) return;
+  await sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category','courier_pending').eq('ref_id', orderId).eq('read',false);
+  refreshNotifBadges();
+}
 let justAcceptedOrderId = null;
-function renderMyDeliveries(orders){
+async function renderMyDeliveries(orders){
   const d=T[LANG]; const box=$('courierMinePane');
   if(!orders.length){ box.innerHTML = `<p class="muted">${d.noDeliveries}</p>`; return; }
+  const clientIds=[...new Set(orders.filter(o=>o.order_type!=='marketplace').map(o=>o.client_id))];
+  const profs = clientIds.length ? await sb.from('profiles').select('id,discord_username,rsi_handle').in('id', clientIds).then(r=>r.data||[]) : [];
+  const clients = {}; profs.forEach(p=>clients[p.id]=p);
   box.innerHTML = orders.map(o => {
     const isMkt = o.order_type === 'marketplace';
     let btn = '';
@@ -2768,7 +2785,7 @@ function renderMyDeliveries(orders){
     const badge = isMkt ? `<div class="mkt-delivery-badge">${d.marketplaceDeliveryBadge}</div>` : '';
     const metaLine = isMkt
       ? `${o.buyer_handle ? d.buyerTo+o.buyer_handle+' — ' : ''}${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`
-      : `${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`;
+      : `${d.orderClient}${displayName(clients[o.client_id])} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`;
     const justAccepted = o.id === justAcceptedOrderId ? ' just-accepted' : '';
     return `
     <div class="order-card big${justAccepted}">

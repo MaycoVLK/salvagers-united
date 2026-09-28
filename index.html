@@ -605,7 +605,7 @@
           <label><input type="radio" name="offerModalDelivery" value="courier" checked onchange="updateOfferModalTotal()"> <span data-i18n="deliveryMethodCourier">Livraison par un coursier</span></label>
           <label><input type="radio" name="offerModalDelivery" value="pickup" onchange="updateOfferModalTotal()"> <span data-i18n="deliveryMethodPickup">Je viens le chercher sur place</span></label>
         </div>
-        <div class="offer-modal-note" id="offerModalCourierNote" data-i18n="courierSurchargeNote">Une livraison par coursier ajoute 25% au prix (commission).</div>
+        <div class="offer-modal-note" id="offerModalCourierNote" data-i18n="courierSurchargeNote">Une livraison par coursier ajoute 25% au prix (commission, minimum 50 000 aUEC).</div>
         <div class="offer-modal-total"><span data-i18n="offerModalTotalLbl">Total estimé :</span> <strong id="offerModalTotal">—</strong></div>
         <button type="button" class="btn-primary" onclick="submitOfferModal()" data-i18n="sendInquiryBtn">ENVOYER LA DEMANDE</button>
       </div>
@@ -665,7 +665,7 @@
         </button>
         <div class="breakdown">
           <div class="line"><span data-i18n="brutLbl">Prix brut total</span><span id="brut">0 aUEC</span></div>
-          <div class="line"><span data-i18n="commLbl">Commission (déplacement + risque, 25%)</span><span id="comm">0 aUEC</span></div>
+          <div class="line"><span data-i18n="commLbl">Commission (déplacement + risque, 25%, min. 50 000 aUEC)</span><span id="comm">0 aUEC</span></div>
           <div class="line total"><span data-i18n="totalLbl">TOTAL À PAYER</span><span id="total">0 aUEC</span></div>
         </div>
         <div class="actions">
@@ -938,6 +938,12 @@ window.addEventListener('pageshow', (event) => {
   }
 });
 const DISCORD_WEBHOOK_URL = "";
+// Frais minimum garanti au coursier : si 25% du prix brut est inférieur à ce seuil, on facture ce montant fixe à la place.
+const MIN_COMMISSION = 50000;
+function computeCommission(gross){
+  if(!gross || gross <= 0) return 0;
+  return Math.max(gross * 0.25, MIN_COMMISSION);
+}
 const UEX_SECRET_KEY = "d76d4cc1f06bb9764172dff43406640fb5b79b2c";
 let uexCommodities = [];
 let uexItems = [];
@@ -1004,7 +1010,7 @@ const T = {
     saveDefaultLoc:"📍 ENREGISTRER COMME LIEU PAR DÉFAUT", savedDefaultLoc:"LIEU PAR DÉFAUT ENREGISTRÉ !",
     lblItems:"Objets souhaités", uexHint:"Astuce : tape le nom d'une marchandise, arme, armure ou pièce/composant de vaisseau pour voir le prix UEX (le plus bas trouvé) se remplir automatiquement (modifiable ensuite).",
     addItem:"AJOUTER UN OBJET", itemNamePh:"Nom de l'objet", itemPricePh:"Prix unit.",
-    brutLbl:"Prix brut total", commLbl:"Commission (déplacement + risque, 25%)", totalLbl:"TOTAL À PAYER",
+    brutLbl:"Prix brut total", commLbl:"Commission (déplacement + risque, 25%, min. 50 000 aUEC)", totalLbl:"TOTAL À PAYER",
     sendBtn:"ENVOYER LA COMMANDE", historyLabel:"Historique", noCurrentOrders:"Aucune commande en cours.", noHistory:"Aucune commande livrée pour l'instant.",
     cancelBtn:"ANNULER", confirmCancel:"Es-tu sûr de vouloir annuler cette commande ?",
     notCourier:"Ton compte n'a pas encore le rôle coursier. Contacte l'administrateur pour être ajouté.",
@@ -1087,7 +1093,7 @@ const T = {
     counterBtn:"CONTRE-OFFRE", sendCounterBtn:"ENVOYER", counterPricePh:"Nouveau prix",
     acceptCounterBtn:"ACCEPTER LA CONTRE-OFFRE", rejectCounterBtn:"REFUSER", waitingBuyerResponse:"En attente de la réponse de l'acheteur à ta contre-offre.",
     mktHistoryLabel:"Historique des achats", mktHistoryEmpty:"Aucun achat terminé pour le moment.",
-    offerModalTotalLbl:"Total estimé :", courierSurchargeNote:"Une livraison par coursier ajoute 25% au prix (commission).",
+    offerModalTotalLbl:"Total estimé :", courierSurchargeNote:"Une livraison par coursier ajoute 25% au prix (commission, minimum 50 000 aUEC).",
     markPickedUpBtn:"MARQUER COMME RÉCUPÉRÉ", handToCourierBtn:"REMETTRE À UN COURSIER",
     inquiryAcceptedNotif:"🎉 Le vendeur a accepté ta demande !", inquiryRejectedNotif:"Le vendeur a refusé ta demande.",
     inquiryFrom:"De la part de : ", inquiryDeliveryVia:"Via : ", pickupDoneNote:"Objet récupéré en main propre.",
@@ -1107,7 +1113,7 @@ const T = {
     saveDefaultLoc:"📍 SAVE AS DEFAULT LOCATION", savedDefaultLoc:"DEFAULT LOCATION SAVED!",
     lblItems:"Requested items", uexHint:"Tip: type a commodity, weapon, armor or ship component name to auto-fill its lowest UEX price (still editable).",
     addItem:"ADD AN ITEM", itemNamePh:"Item name", itemPricePh:"Unit price",
-    brutLbl:"Gross total price", commLbl:"Commission (travel + risk premium, 25%)", totalLbl:"TOTAL DUE",
+    brutLbl:"Gross total price", commLbl:"Commission (travel + risk premium, 25%, min. 50,000 aUEC)", totalLbl:"TOTAL DUE",
     sendBtn:"SEND ORDER", historyLabel:"History", noCurrentOrders:"No orders in progress.", noHistory:"No delivered orders yet.",
     cancelBtn:"CANCEL", confirmCancel:"Are you sure you want to cancel this order?",
     notCourier:"Your account doesn't have courier access yet. Contact the admin to be added.",
@@ -1190,7 +1196,7 @@ const T = {
     counterBtn:"COUNTER-OFFER", sendCounterBtn:"SEND", counterPricePh:"New price",
     acceptCounterBtn:"ACCEPT COUNTER-OFFER", rejectCounterBtn:"REJECT", waitingBuyerResponse:"Waiting for the buyer's response to your counter-offer.",
     mktHistoryLabel:"Purchase history", mktHistoryEmpty:"No completed purchases yet.",
-    offerModalTotalLbl:"Estimated total:", courierSurchargeNote:"A courier delivery adds 25% to the price (commission).",
+    offerModalTotalLbl:"Estimated total:", courierSurchargeNote:"A courier delivery adds 25% to the price (commission, 50,000 aUEC minimum).",
     markPickedUpBtn:"MARK AS PICKED UP", handToCourierBtn:"HAND TO A COURIER",
     inquiryAcceptedNotif:"🎉 The seller accepted your request!", inquiryRejectedNotif:"The seller rejected your request.",
     inquiryFrom:"From: ", inquiryDeliveryVia:"Via: ", pickupDoneNote:"Item picked up in person.",
@@ -1735,7 +1741,7 @@ function calc(){
     const qte=parseFloat(row.querySelector('.qte input').value)||0;
     brut += prix*qte;
   });
-  const comm = brut*0.25, total = brut+comm;
+  const comm = computeCommission(brut), total = brut+comm;
   $('brut').textContent=fmt(brut); $('comm').textContent=fmt(comm); $('total').textContent=fmt(total);
   return {brut,comm,total};
 }
@@ -2001,7 +2007,7 @@ function updateOfferModalTotal(){
   const base = (!isNaN(offerVal) && offerVal > 0) ? offerVal : offerModalListingPrice;
   const methodInput = document.querySelector('input[name="offerModalDelivery"]:checked');
   const isCourier = !methodInput || methodInput.value === 'courier';
-  const total = isCourier ? base * 1.25 : base;
+  const total = isCourier ? base + computeCommission(base) : base;
   $('offerModalCourierNote').hidden = !isCourier;
   $('offerModalTotal').textContent = fmt(total);
 }
@@ -2281,7 +2287,7 @@ async function requestMarketplaceDelivery(listingId){
   const location = $('dloc-'+listingId).value.trim();
   const buyer = $('dbuyer-'+listingId).value.trim();
   const gross = listing.price * listing.quantity;
-  const commission = gross * 0.25;
+  const commission = computeCommission(gross);
   const total = gross + commission;
   const payload = {
     order_type: 'marketplace',
@@ -2419,7 +2425,7 @@ async function handToCourier(id){
   const { data: buyer } = await sb.from('profiles').select('id,discord_username,rsi_handle,default_system,default_location').eq('id', inquiry.buyer_id).single();
   const unitPrice = inquiry.offer_price != null ? Number(inquiry.offer_price) : Number(listing.price);
   const gross = unitPrice * listing.quantity;
-  const commission = gross * 0.25;
+  const commission = computeCommission(gross);
   const total = gross + commission;
   const payload = {
     order_type: 'marketplace',

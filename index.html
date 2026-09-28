@@ -425,6 +425,14 @@
     100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0); opacity:0;}
   }
 
+  /* --- PIXEL SWOOSH (survol du bouton CTA) --- */
+  .pixel-swoosh-particle{position:fixed; width:4px; height:4px; background:var(--accent); pointer-events:none; z-index:9999; image-rendering:pixelated; animation:pixelSwoosh .55s ease-out forwards;}
+  @keyframes pixelSwoosh{
+    0%{transform:translateX(0) scale(1); opacity:1;}
+    70%{opacity:1;}
+    100%{transform:translateX(var(--dx)) scale(.4); opacity:0;}
+  }
+
   /* --- ACHIEVEMENTS COURSIER --- */
   .rank-track{display:flex; align-items:center; gap:10px; margin:10px 2px 4px;}
   .rank-track-icon{width:26px; height:26px; flex:none; color:var(--muted);}
@@ -1934,7 +1942,7 @@ async function loadClientDashboard(){
         <rect x="7" y="3" width="2" height="10"/><rect x="3" y="7" width="10" height="2"/>
       </g></svg>
       <div class="empty-cta-text">${d.emptyCtaText}</div>
-      <button class="btn-primary" onclick="openCreateOrder()">${d.emptyCtaBtn}</button>
+      <button class="btn-primary" onclick="openCreateOrder()" onmouseenter="pixelSwoosh(this)">${d.emptyCtaBtn}</button>
     </div>`;
   animateShipTracks(curBox);
 
@@ -2880,6 +2888,27 @@ function pixelBurst(el, count){
     p.style.left = originX+'px'; p.style.top = originY+'px';
     p.style.setProperty('--dx', (Math.cos(angle)*dist)+'px');
     p.style.setProperty('--dy', (Math.sin(angle)*dist)+'px');
+    document.body.appendChild(p);
+    p.addEventListener('animationend', () => p.remove());
+  }
+}
+let pixelSwooshLastRun = 0;
+function pixelSwoosh(el){
+  if(!el) return;
+  const now = Date.now();
+  if(now - pixelSwooshLastRun < 400) return; // évite le spam si la souris entre/sort plusieurs fois vite
+  pixelSwooshLastRun = now;
+  const rect = el.getBoundingClientRect();
+  const n = 12;
+  for(let i=0;i<n;i++){
+    const p = document.createElement('div');
+    p.className = 'pixel-swoosh-particle';
+    const y = rect.top + 4 + Math.random()*(rect.height-8);
+    const x = rect.left + 2;
+    p.style.left = x+'px'; p.style.top = y+'px';
+    const dx = rect.width * 0.6 + Math.random()*(rect.width*0.7);
+    p.style.setProperty('--dx', dx+'px');
+    p.style.animationDelay = (i*25)+'ms';
     document.body.appendChild(p);
     p.addEventListener('animationend', () => p.remove());
   }

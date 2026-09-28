@@ -938,11 +938,12 @@ window.addEventListener('pageshow', (event) => {
   }
 });
 const DISCORD_WEBHOOK_URL = "";
-// Frais minimum garanti au coursier : si 25% du prix brut est inférieur à ce seuil, on facture ce montant fixe à la place.
+// Frais minimum garanti au coursier : si le montant de la commande (prix brut) est sous ce seuil,
+// frais fixes à ce montant ; au-dessus de ce seuil, on applique simplement les 25% habituels.
 const MIN_COMMISSION = 50000;
 function computeCommission(gross){
   if(!gross || gross <= 0) return 0;
-  return Math.max(gross * 0.25, MIN_COMMISSION);
+  return gross < MIN_COMMISSION ? MIN_COMMISSION : gross * 0.25;
 }
 const UEX_SECRET_KEY = "d76d4cc1f06bb9764172dff43406640fb5b79b2c";
 let uexCommodities = [];

@@ -2648,7 +2648,7 @@ async function advanceOrder(id, next){
   if(error){ alert('Erreur : '+fullErrText(error)); return; }
   const row = data && data[0];
   if(row) pushNotification(row.client_id, 'client_orders');
-  if(row && next === 'in_transit') notifyDiscordInTransit(row);
+  if(row && next === 'purchased') notifyDiscordPurchased(row);
   if(row && row.order_type === 'marketplace' && next === 'delivered'){
     await sb.from('marketplace_inquiries').update({ status:'completed', updated_at: new Date().toISOString() }).eq('order_id', id);
     if(row.listing_id) await sb.from('marketplace_listings').delete().eq('id', row.listing_id);
@@ -3539,15 +3539,32 @@ async function notifyDiscord(order){
     await fetch(DISCORD_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ content }) });
   }catch(e){}
 }
-async function notifyDiscordInTransit(order){
-  if(!DISCORD_WEBHOOK_URL) return;
+async function notifyDiscordPurchased(order){
+  if(!DISCORD_WEBHOOK_URL){ console.warn('[notifyDiscordPurchased] DISCORD_WEBHOOK_URL empty'); return; }
   try{
-    const { data: clientProfile } = await sb.from('profiles').select('discord_id').eq('id', order.client_id).maybeSingle();
+    const { data: clientProfile, error: profErr } = await sb.from('profiles').select('discord_id').eq('id', order.client_id).maybeSingle();
+    if(profErr) console.error('[notifyDiscordPurchased] error reading client profile:', profErr);
     const mention = clientProfile && clientProfile.discord_id ? `<@${clientProfile.discord_id}>` : '';
-    const dest = order.destination_system ? (order.destination_system + (order.exact_location ? ' ('+order.exact_location+')' : '')) : '';
-    const content = `🚚 **Commande en transit !** ${mention} Le coursier a récupéré tes objets${dest ? ', direction '+dest : ''} — ils arrivent bientôt !`;
-    await fetch(DISCORD_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ content }) });
-  }catch(e){}
+    const dest = order.destination_system ? (order.destination_system + (order.exact_location ? ' ('+order.exact_location+')' : '')) : 'N/A';
+    const courierName = (profile && (profile.discord_username || profile.rsi_handle)) || 'the courier';
+    const items = order.items || [];
+    const itemLines = items.length ? items.map(it => `• ${it.name} x${it.qty}`).join('\n') : '-';
+    const total = order.total_price != null ? fmt(order.total_price)+' aUEC' : 'N/A';
+    const content = [
+      `📦 **Your order has been picked up!**`,
+      `${mention} your courier **${courierName}** has purchased your items and is on the way.`,
+      ``,
+      `**Items:**`,
+      itemLines,
+      `**Total:** ${total}`,
+      `**Delivery location:** ${dest}`,
+      ``,
+      `Get in touch with **${courierName}** on Discord to arrange the handoff.`
+    ].join('\n');
+    const resp = await fetch(DISCORD_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ content }) });
+    if(!resp.ok){ const t = await resp.text(); console.error('[notifyDiscordPurchased] Discord refused the request, status', resp.status, t); }
+    else console.log('[notifyDiscordPurchased] message sent successfully');
+  }catch(e){ console.error('[notifyDiscordPurchased] exception:', e); }
 }
 
 // --- AUTH BOOTSTRAP ---

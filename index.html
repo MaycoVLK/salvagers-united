@@ -739,6 +739,7 @@
       </div>
       <div class="card">
         <h3 data-i18n="members">Membres</h3>
+        <input type="text" id="memberSearchInput" data-i18n-ph="memberSearchPh" placeholder="Rechercher un membre..." oninput="filterMembers(this.value)" style="margin-bottom:10px;">
         <div id="membersList"></div>
       </div>
     </section>
@@ -1088,6 +1089,7 @@ const T = {
     lblDeadline:"Date et heure de livraison souhaitée (optionnel)", orderDeadline:"Deadline : ",
     viewMoreItems:"Voir {n} de plus", viewLessItems:"Voir moins",
     viewProfileBtn:"VOIR PROFIL", marketplaceTitle:"Marketplace personnelle", marketplaceWip:"Bientôt disponible — chaque coursier/crafteur pourra proposer ici ses objets à la vente.",
+    memberSearchPh:"Rechercher un membre...", noMembersFound:"Aucun membre ne correspond à cette recherche.",
     noAchvClient:"Pas de succès coursier pour ce membre (rôle client).",
     adminActionsTitle:"Actions admin", resetAchvBtn:"RÉINITIALISER LES SUCCÈS", resetRoleBtn:"RÉINITIALISER LE RÔLE",
     confirmResetAchv:"Es-tu sûr de vouloir réinitialiser tous les succès de ce membre ?", confirmResetRole:"Es-tu sûr de vouloir remettre ce membre au rôle client (perte du rôle coursier/admin) ?",
@@ -1196,6 +1198,7 @@ const T = {
     lblDeadline:"Desired delivery date & time (optional)", orderDeadline:"Deadline: ",
     viewMoreItems:"View {n} more", viewLessItems:"View less",
     viewProfileBtn:"VIEW PROFILE", marketplaceTitle:"Personal marketplace", marketplaceWip:"Coming soon — every courier/crafter will be able to list their own items for sale here.",
+    memberSearchPh:"Search for a member...", noMembersFound:"No member matches this search.",
     noAchvClient:"No courier achievements for this member (client role).",
     adminActionsTitle:"Admin actions", resetAchvBtn:"RESET ACHIEVEMENTS", resetRoleBtn:"RESET ROLE",
     confirmResetAchv:"Are you sure you want to reset all of this member's achievements?", confirmResetRole:"Are you sure you want to set this member back to the client role (removing courier/admin access)?",
@@ -3541,15 +3544,30 @@ async function checkCourierNotification(){
 }
 
 // --- ADMIN ---
+let allMembersCache = [];
 async function loadAdmin(){
   if(!profile || profile.role !== 'admin') return;
-  const d = T[LANG];
   loadCourierApplications();
   loadSellerApplications();
   const { data, error } = await sb.from('profiles').select('*').order('discord_username');
+  if(error){ $('membersList').textContent = error.message; return; }
+  allMembersCache = data || [];
+  const q = $('memberSearchInput') ? $('memberSearchInput').value : '';
+  renderMembersList(filterMembersList(q));
+}
+function filterMembersList(query){
+  const q = (query || '').trim().toLowerCase();
+  if(!q) return allMembersCache;
+  return allMembersCache.filter(p => ((p.discord_username||'') + ' ' + (p.rsi_handle||'')).toLowerCase().includes(q));
+}
+function filterMembers(query){
+  renderMembersList(filterMembersList(query));
+}
+function renderMembersList(list){
+  const d = T[LANG];
   const box = $('membersList');
-  if(error){ box.textContent = error.message; return; }
-  box.innerHTML = (data||[]).map(p => `
+  if(!list.length){ box.innerHTML = `<p class="muted">${d.noMembersFound}</p>`; return; }
+  box.innerHTML = list.map(p => `
     <div class="order-card" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
       <div style="flex:1; min-width:140px;">${p.discord_username || p.id}${p.rsi_handle ? ' — RSI: '+p.rsi_handle : ''}</div>
       <button class="btn-secondary" onclick="openPublicProfile('${p.id}')">${d.viewProfileBtn}</button>

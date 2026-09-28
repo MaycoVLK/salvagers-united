@@ -3557,20 +3557,18 @@ async function notifyDiscordPurchased(order){
     const { data: clientProfile, error: profErr } = await sb.from('profiles').select('discord_id').eq('id', order.client_id).maybeSingle();
     if(profErr) console.error('[notifyDiscordPurchased] error reading client profile:', profErr);
     const mention = clientProfile && clientProfile.discord_id ? `<@${clientProfile.discord_id}>` : '';
-    const dest = order.destination_system ? (order.destination_system + (order.exact_location ? ' ('+order.exact_location+')' : '')) : 'N/A';
+    const dest = order.exact_location ? `${order.exact_location}, ${order.destination_system}` : (order.destination_system || 'N/A');
     const courierName = (profile && (profile.discord_username || profile.rsi_handle)) || 'the courier';
     const courierMention = (profile && profile.discord_id) ? `<@${profile.discord_id}>` : `**${courierName}**`;
     const items = order.items || [];
     const itemLines = items.length ? items.map(it => `• ${it.name} x${it.qty}`).join('\n') : '-';
     const content = [
-      `📦 **Your order has been picked up!**`,
-      `${mention} your courier ${courierMention} has purchased your items.`,
-      ``,
-      `**Items:**`,
-      itemLines,
-      `**Delivery location:** ${dest}`,
-      ``,
-      `Get in touch with ${courierMention} on Discord to arrange the handoff.`
+      `Oye kopeng!`,
+      `${mention}, ${courierMention} has secured your cargo.`,
+      `Cargo: ${itemLines}`,
+      `Destination: • ${dest}`,
+      `Contact ${courierMention} on Discord to arrange the handoff.`,
+      `Safe haul, beratna.`
     ].join('\n');
     const resp = await fetch(DISCORD_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ content }) });
     if(!resp.ok){ const t = await resp.text(); console.error('[notifyDiscordPurchased] Discord refused the request, status', resp.status, t); }

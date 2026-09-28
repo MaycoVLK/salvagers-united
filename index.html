@@ -704,11 +704,6 @@
         <h3 data-i18n="members">Membres</h3>
         <div id="membersList"></div>
       </div>
-      <div class="card">
-        <h3 data-i18n="dangerZoneTitle">Zone dangereuse</h3>
-        <p class="muted" data-i18n="resetProgressionNote">Réinitialise pour TOUS les membres : statistiques, rangs, succès débloqués et historique des livraisons/ventes. Action irréversible.</p>
-        <button class="btn-logout" onclick="resetAllProgression()" data-i18n="resetProgressionBtn">RESET PROGRESSION</button>
-      </div>
     </section>
 
     <!-- PROFIL -->
@@ -1028,7 +1023,8 @@ const T = {
     resetProgressionNote:"Réinitialise pour TOUS les membres : statistiques, rangs, succès débloqués et historique des livraisons/ventes. Action irréversible.",
     confirmResetProgression:"Es-tu sûr(e) ? Ceci va effacer TOUTES les statistiques, rangs, succès et historiques de livraisons/ventes de TOUS les membres, définitivement.",
     confirmResetProgression2:"Dernière confirmation : cette action est irréversible. Continuer ?",
-    progressionReset:"Progression réinitialisée pour tous les membres.",
+    progressionReset:"Progression réinitialisée.",
+    confirmResetMember:"Réinitialiser toute la progression de {name} ? Statistiques, rangs, succès débloqués et historique des livraisons/ventes seront effacés définitivement.",
     toastSent:"COMMANDE ENVOYÉE !", toastUpdated:"MIS À JOUR !",
     navProfile:"PROFIL", profileTitle:"Profil", defaultLocTitle:"Lieu de livraison par défaut", saveDefaultLoc2:"ENREGISTRER",
     becomeCourierBtn:"DEMANDER À DEVENIR COURSIER", courierPending:"Ta candidature est en attente de validation par l'administrateur.",
@@ -1133,7 +1129,8 @@ const T = {
     resetProgressionNote:"Resets, for ALL members: stats, ranks, unlocked achievements and delivery/sales history. Irreversible action.",
     confirmResetProgression:"Are you sure? This will permanently erase ALL stats, ranks, achievements and delivery/sales history for ALL members.",
     confirmResetProgression2:"Final confirmation: this action cannot be undone. Continue?",
-    progressionReset:"Progression reset for all members.",
+    progressionReset:"Progression reset.",
+    confirmResetMember:"Reset all progression for {name}? Stats, ranks, unlocked achievements and delivery/sales history will be permanently erased.",
     toastSent:"ORDER SENT!", toastUpdated:"UPDATED!",
     navProfile:"PROFILE", profileTitle:"Profile", defaultLocTitle:"Default delivery location", saveDefaultLoc2:"SAVE",
     becomeCourierBtn:"REQUEST TO BECOME A COURIER", courierPending:"Your application is pending admin review.",
@@ -2534,17 +2531,15 @@ async function rejectSellerApp(id){
   sweep(); loadSellerApplications();
 }
 
-// --- RESET PROGRESSION (admin) ---
-const ZERO_UUID = '00000000-0000-0000-0000-000000000000';
-async function resetAllProgression(){
+// --- RESET PROGRESSION (admin, par membre) ---
+async function resetMemberProgression(id, name){
   const d = T[LANG];
-  if(!confirm(d.confirmResetProgression)) return;
-  if(!confirm(d.confirmResetProgression2)) return;
+  if(!confirm(d.confirmResetMember.replace('{name}', name))) return;
   try{
-    await sb.from('courier_achievements').delete().neq('courier_id', ZERO_UUID);
-    await sb.from('seller_achievements').delete().neq('seller_id', ZERO_UUID);
-    await sb.from('orders').delete().neq('id', ZERO_UUID);
-    await sb.from('marketplace_inquiries').delete().neq('id', ZERO_UUID);
+    await sb.from('courier_achievements').delete().eq('courier_id', id);
+    await sb.from('seller_achievements').delete().eq('seller_id', id);
+    await sb.from('orders').delete().or(`client_id.eq.${id},courier_id.eq.${id},seller_id.eq.${id}`);
+    await sb.from('marketplace_inquiries').delete().or(`buyer_id.eq.${id},seller_id.eq.${id}`);
     toastShow(d.progressionReset);
     loadAdmin();
   }catch(e){ alert('Erreur : '+e.message); }
@@ -3406,6 +3401,7 @@ async function loadAdmin(){
         <option value="client" ${p.role==='client'?'selected':''}>client</option>
         <option value="admin" ${p.role==='admin'?'selected':''}>admin</option>
       </select>
+      <button class="btn-cancel" style="width:auto; margin-top:0;" onclick="resetMemberProgression('${p.id}', ${JSON.stringify((p.discord_username || p.rsi_handle || p.id))})">${d.resetProgressionBtn}</button>
     </div>
   `).join('');
 }

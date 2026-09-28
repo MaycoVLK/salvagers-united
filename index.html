@@ -1844,10 +1844,10 @@ $('sendBtn').addEventListener('click', async ()=>{
     status: 'pending'
   };
   $('sendBtn').disabled = true;
-  const { error } = await sb.from('orders').insert(payload);
+  const { data: newOrder, error } = await sb.from('orders').insert(payload).select().single();
   $('sendBtn').disabled = false;
   if(error){ alert('Erreur : ' + error.message); return; }
-  notifyAllCouriers();
+  notifyAllCouriers(newOrder && newOrder.id);
   sweep();
   pixelBurst($('sendBtn'));
   const t=$('toast'); t.textContent=T[LANG].toastSent; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800);
@@ -2471,9 +2471,9 @@ async function requestMarketplaceDelivery(listingId){
     gross_price: gross, commission, total_price: total,
     status: 'pending'
   };
-  const { error } = await sb.from('orders').insert(payload);
+  const { data: newOrder, error } = await sb.from('orders').insert(payload).select().single();
   if(error){ alert('Erreur : '+error.message); return; }
-  notifyAllCouriers();
+  notifyAllCouriers(newOrder && newOrder.id);
   sweep();
   toastShow(d.deliveryRequested);
   toggleDeliveryForm(listingId);
@@ -2616,7 +2616,7 @@ async function handToCourier(id){
     order_id: order.id, updated_at: new Date().toISOString(),
     snap_item_name: listing.item_name, snap_price: unitPrice, snap_qty: listing.quantity
   }).eq('id', id);
-  notifyAllCouriers();
+  notifyAllCouriers(order.id);
   sweep();
   toastShow(d.deliveryRequested);
   loadReceivedInquiries();
@@ -2721,6 +2721,17 @@ async function loadCourierData(){
 }
 async function renderAvailable(orders){
   const d=T[LANG]; const box=$('courierPendingPane');
+  const currentIds = new Set(orders.map(o=>o.id));
+  if(session){
+    // Nettoie les notifications "commande en attente" orphelines (ex: anciennes notifs sans référence,
+    // ou commandes déjà prises entre-temps) pour que la pastille de l'onglet ne reste pas bloquée.
+    const { data: unreadRowsAll } = await sb.from('notifications').select('id,ref_id').eq('user_id',session.user.id).eq('category','courier_pending').eq('read',false);
+    const staleNotifIds = (unreadRowsAll||[]).filter(n => !n.ref_id || !currentIds.has(n.ref_id)).map(n=>n.id);
+    if(staleNotifIds.length){
+      await sb.from('notifications').update({read:true}).in('id', staleNotifIds);
+      refreshNotifBadges();
+    }
+  }
   if(!orders.length){ box.innerHTML = `<p class="muted">${d.noAvailable}</p>`; return; }
   const clientIds=[...new Set(orders.filter(o=>o.order_type!=='marketplace').map(o=>o.client_id))];
   const sellerIds=[...new Set(orders.filter(o=>o.order_type==='marketplace').map(o=>o.seller_id))];

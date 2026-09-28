@@ -1014,6 +1014,7 @@ const T = {
     brutLbl:"Prix brut total", commLbl:"Commission (déplacement + risque, 25% + 50 000 aUEC garantis)", totalLbl:"TOTAL À PAYER",
     sendBtn:"ENVOYER LA COMMANDE", historyLabel:"Historique", noCurrentOrders:"Aucune commande en cours.", noHistory:"Aucune commande livrée pour l'instant.",
     cancelBtn:"ANNULER", confirmCancel:"Es-tu sûr de vouloir annuler cette commande ?",
+    releaseOrderBtn:"REMETTRE EN ATTENTE", confirmReleaseOrder:"Remettre cette commande dans le pool ? Un autre coursier pourra la prendre.",
     notCourier:"Ton compte n'a pas encore le rôle coursier. Contacte l'administrateur pour être ajouté.",
     notSeller:"Ton compte n'a pas encore le rôle vendeur. Contacte l'administrateur pour être ajouté.",
     tabPending:"À TRAITER", tabMine:"ATTRIBUÉES", noAvailable:"Aucune commande disponible pour le moment.", noDeliveries:"Aucune livraison en cours.",
@@ -1117,6 +1118,7 @@ const T = {
     brutLbl:"Gross total price", commLbl:"Commission (travel + risk premium, 25% + 50,000 aUEC guaranteed)", totalLbl:"TOTAL DUE",
     sendBtn:"SEND ORDER", historyLabel:"History", noCurrentOrders:"No orders in progress.", noHistory:"No delivered orders yet.",
     cancelBtn:"CANCEL", confirmCancel:"Are you sure you want to cancel this order?",
+    releaseOrderBtn:"RELEASE TO POOL", confirmReleaseOrder:"Put this order back in the pending pool? Another courier will be able to take it.",
     notCourier:"Your account doesn't have courier access yet. Contact the admin to be added.",
     notSeller:"Your account doesn't have seller access yet. Contact the admin to be added.",
     tabPending:"PENDING", tabMine:"ASSIGNED", noAvailable:"No orders available right now.", noDeliveries:"No deliveries in progress.",
@@ -2600,6 +2602,7 @@ function renderMyDeliveries(orders){
     else if(o.status==='accepted' && isMkt) btn = `<button onclick="advanceOrder('${o.id}','in_transit')">${d.markTransit}</button>`;
     else if(o.status==='purchased') btn = `<button onclick="advanceOrder('${o.id}','in_transit')">${d.markTransit}</button>`;
     else if(o.status==='in_transit') btn = `<button onclick="advanceOrder('${o.id}','delivered')">${d.markDelivered}</button>`;
+    const releaseBtn = `<button class="btn-cancel" onclick="releaseOrder('${o.id}')">${ICON_CLOSE}<span>${d.releaseOrderBtn}</span></button>`;
     const badge = isMkt ? `<div class="mkt-delivery-badge">${d.marketplaceDeliveryBadge}</div>` : '';
     const metaLine = isMkt
       ? `${o.buyer_handle ? d.buyerTo+o.buyer_handle+' — ' : ''}${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`
@@ -2614,6 +2617,7 @@ function renderMyDeliveries(orders){
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty}</li>`).join('')}</ul>
       <div class="line margin-line"><span>${d.courierMarginLbl}</span><span>${fmt(o.commission)}</span></div>
       ${btn}
+      ${releaseBtn}
     </div>`;
   }).join('');
   animateShipTracks(box);
@@ -2638,6 +2642,14 @@ async function advanceOrder(id, next){
     await sb.from('marketplace_inquiries').update({ status:'completed', updated_at: new Date().toISOString() }).eq('order_id', id);
     if(row.listing_id) await sb.from('marketplace_listings').delete().eq('id', row.listing_id);
   }
+  sweep(); loadCourierData();
+}
+async function releaseOrder(id){
+  if(!confirm(T[LANG].confirmReleaseOrder)) return;
+  const { data, error } = await sb.rpc('release_order', { order_id: id });
+  if(error){ alert('Erreur : '+fullErrText(error)); return; }
+  const row = data && data[0];
+  if(row) pushNotification(row.client_id, 'client_orders');
   sweep(); loadCourierData();
 }
 

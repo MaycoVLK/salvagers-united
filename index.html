@@ -2535,14 +2535,10 @@ async function rejectSellerApp(id){
 async function resetMemberProgression(id, name){
   const d = T[LANG];
   if(!confirm(d.confirmResetMember.replace('{name}', name))) return;
-  try{
-    await sb.from('courier_achievements').delete().eq('courier_id', id);
-    await sb.from('seller_achievements').delete().eq('seller_id', id);
-    await sb.from('orders').delete().or(`client_id.eq.${id},courier_id.eq.${id},seller_id.eq.${id}`);
-    await sb.from('marketplace_inquiries').delete().or(`buyer_id.eq.${id},seller_id.eq.${id}`);
-    toastShow(d.progressionReset);
-    loadAdmin();
-  }catch(e){ alert('Erreur : '+e.message); }
+  const { error } = await sb.rpc('admin_reset_member_progression', { target_id: id });
+  if(error){ alert('Erreur : '+fullErrText(error)); return; }
+  toastShow(d.progressionReset);
+  loadAdmin();
 }
 
 // --- DASHBOARD COURSIER ---

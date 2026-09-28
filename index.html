@@ -227,6 +227,18 @@
   .inquiry-row .inquiry-status.accepted{color:var(--accent); border-color:var(--accent); background:var(--accent-dim);}
   .inquiry-row .inquiry-status.completed{color:var(--muted);}
   .inquiry-row .inquiry-status.rejected{color:var(--danger); border-color:var(--danger);}
+  .inquiry-row .inquiry-status.countered{color:var(--text); border-color:var(--accent); border-style:dashed;}
+  .inquiry-price-line{font-size:.8rem; color:var(--text); margin-bottom:6px;}
+  .inquiry-price-line .orig{color:var(--muted); text-decoration:line-through; margin-right:6px;}
+  .mkt-price-negotiate{display:flex; align-items:center; gap:8px; font-size:.78rem; color:var(--muted);}
+  .mkt-price-negotiate input{width:110px; padding:6px 8px; border-radius:2px; border:1px solid var(--border); background:var(--bg2); color:var(--text); font-family:inherit; font-size:.85rem;}
+  .mkt-counter-form{display:flex; align-items:center; gap:8px; margin-top:8px;}
+  .mkt-counter-form input{width:110px; padding:6px 8px; border-radius:2px; border:1px solid var(--border); background:var(--bg2); color:var(--text); font-family:inherit; font-size:.85rem;}
+  .mkt-counter-form button{width:auto; flex:none; font-size:.72rem; padding:8px 10px;}
+  .admin-view-btn, .tab-btn{position:relative;}
+  .notif-dot{position:absolute; top:2px; right:4px; width:9px; height:9px; background:var(--danger); border-radius:50%; box-shadow:0 0 0 2px var(--bg); display:none; animation:notifPulse 1.5s ease-in-out infinite;}
+  .notif-dot.show{display:block;}
+  @keyframes notifPulse{0%,100%{transform:scale(1); opacity:1;} 50%{transform:scale(1.35); opacity:.75;}}
   .inquiry-row .inquiry-meta{font-size:.72rem; color:var(--muted); margin-bottom:6px;}
   .inquiry-row .inquiry-msg{font-size:.82rem; color:var(--text); background:var(--bg2); border-radius:4px; padding:8px 10px; margin-bottom:8px; white-space:pre-wrap;}
   .inquiry-row .inquiry-actions{display:flex; gap:6px; flex-wrap:wrap;}
@@ -507,9 +519,9 @@
     </div>
 
     <div class="admin-view-bar" id="adminViewBar" hidden>
-      <button class="admin-view-btn" data-view="client" onclick="setAdminView('client')" data-i18n="navClient">CLIENT</button>
+      <button class="admin-view-btn" data-view="client" onclick="setAdminView('client')"><span data-i18n="navClient">CLIENT</span><span class="notif-dot" id="dotNavClient"></span></button>
       <button class="admin-view-btn" data-view="courier" onclick="setAdminView('courier')" data-i18n="navCourier">COURSIER</button>
-      <button class="admin-view-btn" data-view="seller" onclick="setAdminView('seller')" data-i18n="navSeller">VENDEUR</button>
+      <button class="admin-view-btn" data-view="seller" onclick="setAdminView('seller')"><span data-i18n="navSeller">VENDEUR</span><span class="notif-dot" id="dotNavSeller"></span></button>
       <button class="admin-view-btn" data-view="admin" onclick="setAdminView('admin')" data-i18n="navAdmin">GESTION</button>
     </div>
 
@@ -530,8 +542,8 @@
     <!-- DASHBOARD CLIENT -->
     <section id="view-client-dash" hidden>
       <div class="tabs">
-        <button class="tab-btn active" id="tabBtnDeliveries" onclick="setClientTab('deliveries')" data-i18n="tabDeliveries">LIVRAISONS</button>
-        <button class="tab-btn" id="tabBtnMarketplace" onclick="setClientTab('marketplace')" data-i18n="tabMarketplace">MARKETPLACE</button>
+        <button class="tab-btn active" id="tabBtnDeliveries" onclick="setClientTab('deliveries')"><span data-i18n="tabDeliveries">LIVRAISONS</span><span class="notif-dot" id="dotTabDeliveries"></span></button>
+        <button class="tab-btn" id="tabBtnMarketplace" onclick="setClientTab('marketplace')"><span data-i18n="tabMarketplace">MARKETPLACE</span><span class="notif-dot" id="dotTabMarketplace"></span></button>
       </div>
       <div id="clientTabDeliveries">
         <div class="card courier-ad" id="courierAdCard" hidden></div>
@@ -898,8 +910,8 @@ function setClientTab(tab){
   $('tabBtnMarketplace').classList.toggle('active', tab === 'marketplace');
   $('clientTabDeliveries').hidden = tab !== 'deliveries';
   $('clientTabMarketplace').hidden = tab !== 'marketplace';
-  if(tab === 'deliveries') loadClientDashboard();
-  else { loadMarketplaceFeed(); loadMyInquiries(); }
+  if(tab === 'deliveries'){ loadClientDashboard(); markCategoryRead('client_orders'); }
+  else { loadMarketplaceFeed(); loadMyInquiries(); markCategoryRead('client_marketplace'); }
 }
 let hasBooted = false;
 let trackedShipPct = {}; // orderId -> pourcentage précédemment affiché (pour l'animation)
@@ -995,8 +1007,11 @@ const T = {
     sendInquiryBtn:"ENVOYER LA DEMANDE", inquirySent:"DEMANDE ENVOYÉE !",
     myInquiriesTitle:"Mes demandes", noInquiries:"Tu n'as envoyé aucune demande pour le moment.",
     receivedInquiriesTitle:"Propositions reçues", noReceivedInquiries:"Aucune proposition reçue pour le moment.",
-    inquiryStatus:{pending:"En attente", accepted:"Acceptée", rejected:"Refusée", completed:"Terminée"},
+    inquiryStatus:{pending:"En attente", accepted:"Acceptée", rejected:"Refusée", completed:"Terminée", countered:"Contre-offre"},
     acceptInquiryBtn:"ACCEPTER", rejectInquiryBtn:"REFUSER",
+    yourOfferLbl:"Ta proposition (aUEC, optionnel) :", listingPriceLbl:"Prix :", offerFrom:"→ proposition de l'acheteur :", counterFrom:"→ contre-offre du vendeur :",
+    counterBtn:"CONTRE-OFFRE", sendCounterBtn:"ENVOYER", counterPricePh:"Nouveau prix",
+    acceptCounterBtn:"ACCEPTER LA CONTRE-OFFRE", rejectCounterBtn:"REFUSER", waitingBuyerResponse:"En attente de la réponse de l'acheteur à ta contre-offre.",
     markPickedUpBtn:"MARQUER COMME RÉCUPÉRÉ", handToCourierBtn:"REMETTRE À UN COURSIER",
     inquiryAcceptedNotif:"🎉 Le vendeur a accepté ta demande !", inquiryRejectedNotif:"Le vendeur a refusé ta demande.",
     inquiryFrom:"De la part de : ", inquiryDeliveryVia:"Via : ", pickupDoneNote:"Objet récupéré en main propre.",
@@ -1086,8 +1101,11 @@ const T = {
     sendInquiryBtn:"SEND REQUEST", inquirySent:"REQUEST SENT!",
     myInquiriesTitle:"My requests", noInquiries:"You haven't sent any requests yet.",
     receivedInquiriesTitle:"Received offers", noReceivedInquiries:"No offers received yet.",
-    inquiryStatus:{pending:"Pending", accepted:"Accepted", rejected:"Rejected", completed:"Completed"},
+    inquiryStatus:{pending:"Pending", accepted:"Accepted", rejected:"Rejected", completed:"Completed", countered:"Countered"},
     acceptInquiryBtn:"ACCEPT", rejectInquiryBtn:"REJECT",
+    yourOfferLbl:"Your offer (aUEC, optional):", listingPriceLbl:"Price:", offerFrom:"→ buyer's offer:", counterFrom:"→ seller's counter-offer:",
+    counterBtn:"COUNTER-OFFER", sendCounterBtn:"SEND", counterPricePh:"New price",
+    acceptCounterBtn:"ACCEPT COUNTER-OFFER", rejectCounterBtn:"REJECT", waitingBuyerResponse:"Waiting for the buyer's response to your counter-offer.",
     markPickedUpBtn:"MARK AS PICKED UP", handToCourierBtn:"HAND TO A COURIER",
     inquiryAcceptedNotif:"🎉 The seller accepted your request!", inquiryRejectedNotif:"The seller rejected your request.",
     inquiryFrom:"From: ", inquiryDeliveryVia:"Via: ", pickupDoneNote:"Item picked up in person.",
@@ -1118,6 +1136,35 @@ function applyLang(){
   if(session) updatePageTitle();
 }
 function setLang(l){ LANG = l; try{ localStorage.setItem('su-lang', l); }catch(e){} applyLang(); }
+
+// --- NOTIFICATIONS (pastilles) ---
+async function pushNotification(userId, category, refId){
+  if(!userId) return;
+  try{ await sb.from('notifications').insert({ user_id:userId, category, ref_id: refId||null }); }catch(e){}
+}
+async function getUnreadCount(category){
+  if(!session) return 0;
+  const { count } = await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',session.user.id).eq('category',category).eq('read',false);
+  return count||0;
+}
+async function markCategoryRead(category){
+  if(!session) return;
+  await sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category',category).eq('read',false);
+  refreshNotifBadges();
+}
+function toggleDot(id, show){ const el = $(id); if(el) el.classList.toggle('show', !!show); }
+async function refreshNotifBadges(){
+  if(!session || !profile) return;
+  const [sellerCnt, mktCnt, ordCnt] = await Promise.all([
+    (profile.is_seller || profile.role==='admin') ? getUnreadCount('seller_marketplace') : Promise.resolve(0),
+    getUnreadCount('client_marketplace'),
+    getUnreadCount('client_orders')
+  ]);
+  toggleDot('dotNavSeller', sellerCnt>0);
+  toggleDot('dotNavClient', (mktCnt+ordCnt)>0);
+  toggleDot('dotTabMarketplace', mktCnt>0);
+  toggleDot('dotTabDeliveries', ordCnt>0);
+}
 
 const COLORS = ['orange','vert','bleu','violet','blanc','jaune'];
 function applyColor(c){
@@ -1200,6 +1247,7 @@ function routeApp(){
   else if(v === 'courier'){ $('view-courier-dash').hidden = false; loadCourierData(); }
   else if(v === 'seller'){ $('view-seller-dash').hidden = false; loadSellerDashboard(); }
   else if(v === 'admin'){ $('view-admin-dash').hidden = false; loadAdmin(); }
+  refreshNotifBadges();
 }
 
 function setAdminView(v){ currentView = v; $('settingsPanel').hidden = true; routeApp(); }
@@ -1817,6 +1865,10 @@ function mktCardHtml(listing, sellerMap){
         <button type="button" class="btn-secondary mkt-interest-btn" onclick="toggleInquiryForm('${listing.id}')">${d.imInterested}</button>
         <div class="mkt-inquiry-form" id="iform-${listing.id}" hidden>
           <textarea id="imsg-${listing.id}" data-i18n-ph="phInquiryMsg" placeholder="${d.phInquiryMsg}"></textarea>
+          <div class="mkt-price-negotiate">
+            <label>${d.yourOfferLbl}</label>
+            <input type="number" id="ioffer-${listing.id}" step="0.01" min="0" placeholder="${listing.price}">
+          </div>
           <div class="mkt-delivery-choice">
             <span>${d.deliveryMethodLbl}</span>
           </div>
@@ -1849,13 +1901,17 @@ async function sendMarketplaceInquiry(listingId){
   const message = $('imsg-'+listingId).value.trim();
   const methodInput = document.querySelector(`input[name="dmethod-${listingId}"]:checked`);
   const delivery_method = methodInput ? methodInput.value : 'courier';
+  const offerInput = $('ioffer-'+listingId);
+  const offerVal = offerInput ? parseFloat(offerInput.value) : NaN;
+  const offer_price = (!isNaN(offerVal) && offerVal > 0) ? offerVal : null;
   const { data: listing, error: lErr } = await sb.from('marketplace_listings').select('seller_id').eq('id', listingId).single();
   if(lErr || !listing){ alert('Erreur : objet introuvable.'); return; }
   const { error } = await sb.from('marketplace_inquiries').insert({
     listing_id: listingId, seller_id: listing.seller_id, buyer_id: session.user.id,
-    message, delivery_method, status: 'pending'
+    message, delivery_method, status: 'pending', offer_price
   });
   if(error){ alert('Erreur : '+error.message); return; }
+  pushNotification(listing.seller_id, 'seller_marketplace');
   toastShow(d.inquirySent);
   toggleInquiryForm(listingId);
   loadMyInquiries();
@@ -1888,7 +1944,7 @@ async function loadMyInquiries(){
   const sellerIds=[...new Set(rows.map(r=>r.seller_id))];
   const orderIds=rows.filter(r=>r.order_id).map(r=>r.order_id);
   const [listings, sellers, orders] = await Promise.all([
-    listingIds.length ? sb.from('marketplace_listings').select('id,item_name').in('id', listingIds).then(r=>r.data||[]) : Promise.resolve([]),
+    listingIds.length ? sb.from('marketplace_listings').select('id,item_name,price').in('id', listingIds).then(r=>r.data||[]) : Promise.resolve([]),
     sellerIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds).then(r=>r.data||[]) : Promise.resolve([]),
     orderIds.length ? sb.from('orders').select('*').in('id', orderIds).then(r=>r.data||[]) : Promise.resolve([])
   ]);
@@ -1900,7 +1956,22 @@ async function loadMyInquiries(){
     const seller = sMap[r.seller_id];
     const order = r.order_id ? oMap[r.order_id] : null;
     let body = '';
-    if(r.status === 'accepted' && r.delivery_method === 'courier'){
+    let priceLine = '';
+    if(listing){
+      if(r.status === 'countered'){
+        priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <span class="orig">${fmt(listing.price)}</span> ${d.counterFrom} <strong>${fmt(r.counter_price)}</strong></div>`;
+      } else if(r.offer_price != null && Number(r.offer_price) !== Number(listing.price)){
+        priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <span class="orig">${fmt(listing.price)}</span> ${d.offerFrom} <strong>${fmt(r.offer_price)}</strong></div>`;
+      } else {
+        priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(listing.price)}</strong></div>`;
+      }
+    }
+    if(r.status === 'countered'){
+      body = `<div class="inquiry-actions">
+        <button class="btn-secondary" onclick="buyerAcceptCounter('${r.id}', ${Number(r.counter_price)})">${d.acceptCounterBtn}</button>
+        <button class="btn-logout" onclick="buyerRejectCounter('${r.id}')">${d.rejectCounterBtn}</button>
+      </div>`;
+    } else if(r.status === 'accepted' && r.delivery_method === 'courier'){
       body = order ? shipTrackHtml(order) : `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
     } else if(r.status === 'completed' && r.delivery_method === 'pickup'){
       body = `<div class="inquiry-meta">${d.pickupDoneNote}</div>`;
@@ -1912,11 +1983,24 @@ async function loadMyInquiries(){
           ${inquiryStatusBadge(r.status)}
         </div>
         <div class="inquiry-meta">${d.inquiryFrom}${seller ? displayName(seller) : '—'} — ${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
+        ${priceLine}
         ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
         ${body}
       </div>`;
   }).join('');
   animateShipTracks(box);
+}
+async function buyerAcceptCounter(id, counterPrice){
+  const { data, error } = await sb.from('marketplace_inquiries').update({ status:'accepted', offer_price: counterPrice, updated_at: new Date().toISOString() }).eq('id', id).select('seller_id').single();
+  if(error){ alert('Erreur : '+error.message); return; }
+  if(data) pushNotification(data.seller_id, 'seller_marketplace');
+  sweep(); loadMyInquiries();
+}
+async function buyerRejectCounter(id){
+  const { data, error } = await sb.from('marketplace_inquiries').update({ status:'rejected', updated_at: new Date().toISOString() }).eq('id', id).select('seller_id').single();
+  if(error){ alert('Erreur : '+error.message); return; }
+  if(data) pushNotification(data.seller_id, 'seller_marketplace');
+  sweep(); loadMyInquiries();
 }
 
 // --- DASHBOARD VENDEUR ---
@@ -1966,6 +2050,7 @@ async function loadSellerDashboard(){
   $('sellerDashShopName').textContent = (shop && shop.shop_name) || d.shopSettingsTitle;
   await loadMyListings();
   await loadReceivedInquiries();
+  markCategoryRead('seller_marketplace');
   const stats = await fetchSellerShopStats(session.user.id);
   renderShopStats($('sellerDashStatsCard'), stats);
   checkAndRenderSellerAchievements('sellerDashAchvCard');
@@ -2084,11 +2169,28 @@ async function loadReceivedInquiries(){
     const listing = lMap[r.listing_id];
     const buyer = bMap[r.buyer_id];
     let actions = '';
+    let priceLine = '';
+    if(listing){
+      if(r.status === 'countered'){
+        priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <span class="orig">${fmt(listing.price)}</span> ${d.counterFrom} <strong>${fmt(r.counter_price)}</strong></div>`;
+      } else if(r.offer_price != null && Number(r.offer_price) !== Number(listing.price)){
+        priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <span class="orig">${fmt(listing.price)}</span> ${d.offerFrom} <strong>${fmt(r.offer_price)}</strong></div>`;
+      } else {
+        priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(listing.price)}</strong></div>`;
+      }
+    }
     if(r.status === 'pending'){
       actions = `<div class="inquiry-actions">
         <button class="btn-secondary" onclick="acceptInquiry('${r.id}')">${d.acceptInquiryBtn}</button>
+        <button class="btn-secondary" onclick="toggleCounterForm('${r.id}')">${d.counterBtn}</button>
         <button class="btn-logout" onclick="rejectInquiry('${r.id}')">${d.rejectInquiryBtn}</button>
+      </div>
+      <div class="mkt-counter-form" id="cform-${r.id}" hidden>
+        <input type="number" id="cprice-${r.id}" step="0.01" min="0" placeholder="${listing ? listing.price : ''}">
+        <button type="button" class="btn-primary" onclick="sendCounter('${r.id}')">${d.sendCounterBtn}</button>
       </div>`;
+    } else if(r.status === 'countered'){
+      actions = `<div class="inquiry-meta">${d.waitingBuyerResponse}</div>`;
     } else if(r.status === 'accepted'){
       if(r.delivery_method === 'pickup'){
         actions = `<div class="inquiry-actions"><button class="btn-secondary" onclick="markPickedUp('${r.id}')">${d.markPickedUpBtn}</button></div>`;
@@ -2105,19 +2207,37 @@ async function loadReceivedInquiries(){
           ${inquiryStatusBadge(r.status)}
         </div>
         <div class="inquiry-meta">${d.inquiryFrom}${buyer ? displayName(buyer) : '—'} — ${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
+        ${priceLine}
         ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
         ${actions}
       </div>`;
   }).join('');
 }
+function toggleCounterForm(id){
+  const f = $('cform-'+id); if(!f) return;
+  f.hidden = !f.hidden;
+}
+async function sendCounter(id){
+  const input = $('cprice-'+id);
+  const val = parseFloat(input.value);
+  if(isNaN(val) || val <= 0){ alert('Erreur : prix invalide.'); return; }
+  await counterInquiry(id, val);
+}
 async function acceptInquiry(id){
-  const { error } = await sb.from('marketplace_inquiries').update({ status:'accepted', updated_at: new Date().toISOString() }).eq('id', id);
+  const { data, error } = await sb.from('marketplace_inquiries').update({ status:'accepted', updated_at: new Date().toISOString() }).eq('id', id).select('buyer_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
+  if(data) pushNotification(data.buyer_id, 'client_marketplace');
   sweep(); loadReceivedInquiries();
 }
 async function rejectInquiry(id){
   const { error } = await sb.from('marketplace_inquiries').update({ status:'rejected', updated_at: new Date().toISOString() }).eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
+  sweep(); loadReceivedInquiries();
+}
+async function counterInquiry(id, price){
+  const { data, error } = await sb.from('marketplace_inquiries').update({ status:'countered', counter_price: price, updated_at: new Date().toISOString() }).eq('id', id).select('buyer_id').single();
+  if(error){ alert('Erreur : '+error.message); return; }
+  if(data) pushNotification(data.buyer_id, 'client_marketplace');
   sweep(); loadReceivedInquiries();
 }
 async function markPickedUp(id){
@@ -2135,7 +2255,8 @@ async function handToCourier(id){
   const { data: listing, error: lErr } = await sb.from('marketplace_listings').select('*').eq('id', inquiry.listing_id).single();
   if(lErr || !listing){ alert('Erreur : objet introuvable.'); return; }
   const { data: buyer } = await sb.from('profiles').select('id,discord_username,rsi_handle,default_system,default_location').eq('id', inquiry.buyer_id).single();
-  const gross = listing.price * listing.quantity;
+  const unitPrice = inquiry.offer_price != null ? Number(inquiry.offer_price) : Number(listing.price);
+  const gross = unitPrice * listing.quantity;
   const commission = gross * 0.25;
   const total = gross + commission;
   const payload = {
@@ -2146,7 +2267,7 @@ async function handToCourier(id){
     buyer_handle: buyer ? displayName(buyer) : null,
     destination_system: (buyer && buyer.default_system) || 'Stanton',
     exact_location: (buyer && buyer.default_location) || '',
-    items: [{ name: listing.item_name, price: listing.price, qty: listing.quantity }],
+    items: [{ name: listing.item_name, price: unitPrice, qty: listing.quantity }],
     gross_price: gross, commission, total_price: total,
     status: 'pending'
   };
@@ -2306,13 +2427,15 @@ function renderMyDeliveries(orders){
   animateShipTracks(box);
 }
 async function acceptOrder(id){
-  const { error } = await sb.from('orders').update({ status:'accepted', courier_id: session.user.id, accepted_at: new Date().toISOString() }).eq('id', id).eq('status','pending');
+  const { data, error } = await sb.from('orders').update({ status:'accepted', courier_id: session.user.id, accepted_at: new Date().toISOString() }).eq('id', id).eq('status','pending').select('client_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
+  if(data) pushNotification(data.client_id, 'client_orders');
   sweep(); loadCourierData();
 }
 async function advanceOrder(id, next){
-  const { error } = await sb.from('orders').update({ status: next, updated_at: new Date().toISOString() }).eq('id', id);
+  const { data, error } = await sb.from('orders').update({ status: next, updated_at: new Date().toISOString() }).eq('id', id).select('client_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
+  if(data) pushNotification(data.client_id, 'client_orders');
   sweep(); loadCourierData();
 }
 
@@ -2777,7 +2900,7 @@ async function fetchSellerShopStats(sellerId){
   if(!sellerId) return null;
   const [ordersRes, inquiriesRes] = await Promise.all([
     sb.from('orders').select('items,gross_price,status').eq('seller_id', sellerId).eq('order_type','marketplace').eq('status','delivered'),
-    sb.from('marketplace_inquiries').select('listing_id,status,delivery_method').eq('seller_id', sellerId).eq('status','completed').eq('delivery_method','pickup')
+    sb.from('marketplace_inquiries').select('listing_id,status,delivery_method,offer_price').eq('seller_id', sellerId).eq('status','completed').eq('delivery_method','pickup')
   ]);
   const orderRows = ordersRes.data || [];
   const inquiryRows = inquiriesRes.data || [];
@@ -2798,9 +2921,10 @@ async function fetchSellerShopStats(sellerId){
   inquiryRows.forEach(r => {
     const l = listingMap[r.listing_id];
     if(!l) return;
+    const unitPrice = r.offer_price != null ? Number(r.offer_price) : Number(l.price);
     itemsSold += Number(l.quantity) || 0;
-    totalEarned += (Number(l.price)||0) * (Number(l.quantity)||0);
-    if(!mostExpensive || Number(l.price) > mostExpensive.price) mostExpensive = { name: l.item_name, price: Number(l.price) };
+    totalEarned += unitPrice * (Number(l.quantity)||0);
+    if(!mostExpensive || unitPrice > mostExpensive.price) mostExpensive = { name: l.item_name, price: unitPrice };
   });
   const salesCount = orderRows.length + inquiryRows.length;
   return { salesCount, courierSalesCount: orderRows.length, itemsSold, totalEarned, mostExpensive };
@@ -2978,6 +3102,18 @@ function renderCourierAd(){
 
 // --- NOTIFICATIONS TEMPS RÉEL (candidature coursier) ---
 let profileChannel = null;
+let notifChannel = null;
+function subscribeNotifChannel(){
+  if(notifChannel || !session) return;
+  notifChannel = sb.channel('notifications-self-'+session.user.id)
+    .on('postgres_changes', { event:'*', schema:'public', table:'notifications', filter:`user_id=eq.${session.user.id}` }, () => {
+      refreshNotifBadges();
+    })
+    .subscribe();
+}
+function unsubscribeNotifChannel(){
+  if(notifChannel){ sb.removeChannel(notifChannel); notifChannel = null; }
+}
 function subscribeProfileChannel(){
   if(profileChannel || !session) return;
   profileChannel = sb.channel('profile-self-'+session.user.id)
@@ -3187,6 +3323,7 @@ async function initAuth(){
   await loadProfile();
   if(session){
     subscribeProfileChannel();
+    subscribeNotifChannel();
     await checkCourierNotification();
     await syncAvatarToProfile();
     updateProfileChip();
@@ -3199,9 +3336,10 @@ async function initAuth(){
     const wasLoggedIn = !!session;
     session = s2;
     await loadProfile();
-    if(event === 'SIGNED_OUT'){ hasBooted = false; unsubscribeProfileChannel(); routeApp(); return; }
+    if(event === 'SIGNED_OUT'){ hasBooted = false; unsubscribeProfileChannel(); unsubscribeNotifChannel(); routeApp(); return; }
     if(event === 'SIGNED_IN' && !wasLoggedIn){
       subscribeProfileChannel();
+      subscribeNotifChannel();
       await checkCourierNotification();
       await syncAvatarToProfile();
       updateProfileChip();
@@ -3236,6 +3374,7 @@ async function initAuth(){
       if((v === 'seller' || v === 'admin') && !$('view-seller-dash').hidden) loadReceivedInquiries();
     })
     .subscribe();
+
 }
 
 addItem();

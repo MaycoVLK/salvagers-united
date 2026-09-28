@@ -2543,7 +2543,8 @@ async function loadCourierData(){
   }
   $('courierBlocked').hidden = true; $('courierDash').hidden = false;
   const { data: pending } = await sb.from('orders').select('*').eq('status','pending').order('created_at',{ascending:true});
-  const { data: mine } = await sb.from('orders').select('*').eq('courier_id', session.user.id).in('status',['accepted','purchased','in_transit']).order('created_at',{ascending:true});
+  const { data: mine, error: mineErr } = await sb.rpc('my_courier_orders');
+  if(mineErr) console.error('my_courier_orders:', mineErr);
   await renderAvailable(pending || []);
   renderMyDeliveries(mine || []);
   checkAndRenderAchievements();

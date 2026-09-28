@@ -115,7 +115,7 @@
   .suggest-item{padding:8px 10px; font-size:.85rem; cursor:pointer; border-bottom:1px solid var(--border); color:var(--text);}
   .suggest-item:last-child{border-bottom:none;}
   .suggest-item:hover{background:var(--accent-dim); color:var(--accent);}
-  .item-row .craft-note{font-size:.72rem; color:var(--accent); margin-top:4px; line-height:1.3;}
+  .item-row .craft-note{position:absolute; top:100%; left:0; right:0; font-size:.7rem; color:var(--accent); line-height:1.3; margin-top:4px; padding:4px 6px; background:var(--bg2); border:1px solid var(--border); border-radius:2px; z-index:5;}
   .item-row button{padding:10px 12px; flex:none; border-color:var(--border); color:var(--muted);}
   .item-row button:hover{border-color:var(--danger); color:var(--danger); background:transparent;}
   .back{background:none; border:none; color:var(--accent); font-family:'VT323',monospace; font-size:1.1rem; cursor:pointer; padding:0 0 14px; text-transform:uppercase;}
@@ -682,7 +682,7 @@
       <div id="courierDash" hidden>
         <div class="card" id="courierAchievementsCard"></div>
         <div class="tabs">
-          <button class="tab-btn active" id="tab-pending" onclick="switchCourierTab('pending')" data-i18n="tabPending">À TRAITER</button>
+          <button class="tab-btn active" id="tab-pending" onclick="switchCourierTab('pending')"><span data-i18n="tabPending">À TRAITER</span><span class="notif-dot" id="dotTabPending"></span></button>
           <button class="tab-btn" id="tab-mine" onclick="switchCourierTab('mine')" data-i18n="tabMine">ATTRIBUÉES</button>
         </div>
         <div id="courierPendingPane"></div>
@@ -1225,6 +1225,14 @@ async function pushNotification(userId, category, refId){
   if(!userId) return;
   try{ await sb.from('notifications').insert({ user_id:userId, category, ref_id: refId||null }); }catch(e){}
 }
+async function notifyAllCouriers(refId){
+  try{
+    const { data: couriers } = await sb.from('profiles').select('id').eq('is_courier', true);
+    if(couriers && couriers.length){
+      await sb.from('notifications').insert(couriers.map(c => ({ user_id:c.id, category:'courier_pending', ref_id: refId||null })));
+    }
+  }catch(e){}
+}
 async function getUnreadCount(category){
   if(!session) return 0;
   const { count } = await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',session.user.id).eq('category',category).eq('read',false);
@@ -1238,15 +1246,17 @@ async function markCategoryRead(category){
 function toggleDot(id, show){ const el = $(id); if(el) el.classList.toggle('show', !!show); }
 async function refreshNotifBadges(){
   if(!session || !profile) return;
-  const [sellerCnt, mktCnt, ordCnt] = await Promise.all([
+  const [sellerCnt, mktCnt, ordCnt, courierCnt] = await Promise.all([
     (profile.is_seller || profile.role==='admin') ? getUnreadCount('seller_marketplace') : Promise.resolve(0),
     getUnreadCount('client_marketplace'),
-    getUnreadCount('client_orders')
+    getUnreadCount('client_orders'),
+    (profile.is_courier || profile.role==='admin') ? getUnreadCount('courier_pending') : Promise.resolve(0)
   ]);
   toggleDot('dotNavSeller', sellerCnt>0);
   toggleDot('dotNavClient', (mktCnt+ordCnt)>0);
   toggleDot('dotTabMarketplace', mktCnt>0);
   toggleDot('dotTabDeliveries', ordCnt>0);
+  toggleDot('dotTabPending', courierCnt>0);
 }
 
 const COLORS = ['orange','vert','bleu','violet','blanc','jaune'];
@@ -1377,7 +1387,11 @@ function openDeadlinePicker(){
 }
 function dpOutsideClick(e){
   const popup = $('deadlinePopup'), field = $('deadlineField');
-  if(popup && !popup.contains(e.target) && field && !field.contains(e.target)){
+  // Use composedPath() (captured at dispatch time) instead of e.target: selecting a day
+  // rebuilds the grid's innerHTML, detaching the clicked cell, which made popup.contains(e.target)
+  // wrongly return false and close the calendar right after picking a date.
+  const path = typeof e.composedPath === 'function' ? e.composedPath() : [e.target];
+  if(popup && field && !path.includes(popup) && !path.includes(field)){
     closeDeadlinePicker();
   }
 }
@@ -1752,6 +1766,7 @@ $('sendBtn').addEventListener('click', async ()=>{
   $('sendBtn').disabled = false;
   if(error){ alert('Erreur : ' + error.message); return; }
   notifyDiscord(payload);
+  notifyAllCouriers();
   sweep();
   pixelBurst($('sendBtn'));
   const t=$('toast'); t.textContent=T[LANG].toastSent; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800);
@@ -2279,6 +2294,7 @@ async function requestMarketplaceDelivery(listingId){
   };
   const { error } = await sb.from('orders').insert(payload);
   if(error){ alert('Erreur : '+error.message); return; }
+  notifyAllCouriers();
   sweep();
   toastShow(d.deliveryRequested);
   toggleDeliveryForm(listingId);
@@ -2421,6 +2437,7 @@ async function handToCourier(id){
     order_id: order.id, updated_at: new Date().toISOString(),
     snap_item_name: listing.item_name, snap_price: unitPrice, snap_qty: listing.quantity
   }).eq('id', id);
+  notifyAllCouriers();
   sweep();
   toastShow(d.deliveryRequested);
   loadReceivedInquiries();
@@ -2509,6 +2526,7 @@ function switchCourierTab(tab){
   $('tab-mine').classList.toggle('active', tab==='mine');
   $('courierPendingPane').hidden = tab!=='pending';
   $('courierMinePane').hidden = tab!=='mine';
+  if(tab==='pending') markCategoryRead('courier_pending');
 }
 function switchSellerTab(tab){
   $('tab-listings').classList.toggle('active', tab==='listings');
@@ -2527,6 +2545,7 @@ async function loadCourierData(){
   await renderAvailable(pending || []);
   renderMyDeliveries(mine || []);
   checkAndRenderAchievements();
+  if(!$('courierPendingPane').hidden) markCategoryRead('courier_pending');
 }
 async function renderAvailable(orders){
   const d=T[LANG]; const box=$('courierPendingPane');

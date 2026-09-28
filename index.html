@@ -3563,12 +3563,18 @@ async function notifyDiscordPurchased(order){
     const items = order.items || [];
     const itemLines = items.length ? items.map(it => `• ${it.name} x${it.qty}`).join('\n') : '-';
     const content = [
-      `Oye kopeng!`,
+      `**Oye kopeng!**`,
+      ``,
       `${mention}, ${courierMention} has secured your cargo.`,
-      `Cargo: ${itemLines}`,
-      `Destination: • ${dest}`,
+      ``,
+      `**📦 Cargo:**`,
+      itemLines,
+      ``,
+      `**Destination:** ${dest}`,
+      ``,
       `Contact ${courierMention} on Discord to arrange the handoff.`,
-      `Safe haul, beratna.`
+      ``,
+      `🛰️ Safe haul, beratna.`
     ].join('\n');
     const resp = await fetch(DISCORD_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ content }) });
     if(!resp.ok){ const t = await resp.text(); console.error('[notifyDiscordPurchased] Discord refused the request, status', resp.status, t); }

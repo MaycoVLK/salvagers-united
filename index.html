@@ -946,7 +946,9 @@ let uexCatalogReady = false;
 
 const SUPABASE_URL = "https://hdstkdubotlmlndmuwnl.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhkc3RrZHVib3RsbWxuZG11d25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0OTQ5ODAsImV4cCI6MjEwNjA3MDk4MH0.mcu8_sH5UEmVXROhf12DN2JKjFUG_WgCOeIbZMsDrRI";
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { flowType: 'implicit', persistSession: true, detectSessionInUrl: true, autoRefreshToken: true }
+});
 
 const $ = id => document.getElementById(id);
 const fmtNum = n => new Intl.NumberFormat('fr-FR').format(Math.round(n)).replace(/[\u202F\u00A0]/g, ' ');
@@ -1264,7 +1266,8 @@ document.addEventListener('click', (e) => {
 });
 
 function loginDiscord(){
-  sb.auth.signInWithOAuth({ provider:'discord', options:{ redirectTo: window.location.href } });
+  const cleanRedirect = window.location.origin + window.location.pathname;
+  sb.auth.signInWithOAuth({ provider:'discord', options:{ redirectTo: cleanRedirect } });
 }
 function doLogout(){ $('settingsPanel').hidden = true; sb.auth.signOut(); }
 

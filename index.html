@@ -187,6 +187,11 @@
   /* --- ORDER CARDS --- */
   .order-card{border:1px solid var(--border); border-radius:4px; padding:14px; margin-bottom:12px; background:var(--bg2);}
   .order-card.big{padding:22px 28px 18px;}
+  .order-card.just-accepted{animation:orderAcceptedFlash 1.8s ease-out;}
+  @keyframes orderAcceptedFlash{
+    0%{box-shadow:0 0 0 2px var(--accent), 0 0 24px var(--accent); border-color:var(--accent); background:var(--accent-dim);}
+    100%{box-shadow:none; border-color:var(--border); background:var(--bg2);}
+  }
   .order-top-row{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:2px;}
   .order-top-row .status{flex:1; min-width:0;}
   .courier-box{flex:0 0 168px; max-width:168px; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:10px; cursor:pointer; transition:border-color .2s, transform .2s;}
@@ -605,7 +610,7 @@
           <label><input type="radio" name="offerModalDelivery" value="courier" checked onchange="updateOfferModalTotal()"> <span data-i18n="deliveryMethodCourier">Livraison par un coursier</span></label>
           <label><input type="radio" name="offerModalDelivery" value="pickup" onchange="updateOfferModalTotal()"> <span data-i18n="deliveryMethodPickup">Je viens le chercher sur place</span></label>
         </div>
-        <div class="offer-modal-note" id="offerModalCourierNote" data-i18n="courierSurchargeNote">Une livraison par coursier ajoute 25% au prix (au moins 50 000 aUEC garantis au coursier).</div>
+        <div class="offer-modal-note" id="offerModalCourierNote" data-i18n="courierSurchargeNote">Une livraison par coursier ajoute 15% au prix (au moins 50 000 aUEC garantis au coursier).</div>
         <div class="offer-modal-total"><span data-i18n="offerModalTotalLbl">Total estimé :</span> <strong id="offerModalTotal">—</strong></div>
         <button type="button" class="btn-primary" onclick="submitOfferModal()" data-i18n="sendInquiryBtn">ENVOYER LA DEMANDE</button>
       </div>
@@ -665,7 +670,7 @@
         </button>
         <div class="breakdown">
           <div class="line"><span data-i18n="brutLbl">Prix brut total</span><span id="brut">0 aUEC</span></div>
-          <div class="line"><span data-i18n="commLbl">Commission (déplacement + risque, 25% + 50 000 aUEC garantis)</span><span id="comm">0 aUEC</span></div>
+          <div class="line"><span data-i18n="commLbl">Commission (déplacement + risque, 15% + 50 000 aUEC garantis)</span><span id="comm">0 aUEC</span></div>
           <div class="line total"><span data-i18n="totalLbl">TOTAL À PAYER</span><span id="total">0 aUEC</span></div>
         </div>
         <div class="actions">
@@ -937,11 +942,11 @@ window.addEventListener('pageshow', (event) => {
 });
 const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1554227281721958440/yOxynZkztwvQoBkk64NL1qcriIucXI6BCaw8kuj3_41ls2Hjnwy2YaCFKbA88B-2Nn1a";
 // Frais minimum garanti au coursier : sous ce seuil, frais fixes à ce montant ;
-// à partir de ce seuil, le coursier touche ce montant fixe EN PLUS des 25% habituels.
+// à partir de ce seuil, le coursier touche ce montant fixe EN PLUS des 15% habituels.
 const MIN_COMMISSION = 50000;
 function computeCommission(gross){
   if(!gross || gross <= 0) return 0;
-  return gross < MIN_COMMISSION ? MIN_COMMISSION : MIN_COMMISSION + gross * 0.25;
+  return gross < MIN_COMMISSION ? MIN_COMMISSION : MIN_COMMISSION + gross * 0.15;
 }
 const UEX_SECRET_KEY = "d76d4cc1f06bb9764172dff43406640fb5b79b2c";
 let uexCommodities = [];
@@ -1010,7 +1015,7 @@ const T = {
     rsiRequiredNote:"Merci de renseigner ton pseudo RSI ci-dessous avant d'accéder au reste du site.",
     lblItems:"Objets souhaités", uexHint:"Astuce : tape le nom d'une marchandise, arme, armure ou pièce/composant de vaisseau pour voir le prix UEX (le plus bas trouvé) se remplir automatiquement (modifiable ensuite).",
     addItem:"AJOUTER UN OBJET", itemNamePh:"Nom de l'objet", itemPricePh:"Prix unit.",
-    brutLbl:"Prix brut total", commLbl:"Commission (déplacement + risque, 25% + 50 000 aUEC garantis)", totalLbl:"TOTAL À PAYER",
+    brutLbl:"Prix brut total", commLbl:"Commission (déplacement + risque, 15% + 50 000 aUEC garantis)", totalLbl:"TOTAL À PAYER",
     sendBtn:"ENVOYER LA COMMANDE", historyLabel:"Historique", noCurrentOrders:"Aucune commande en cours.", noHistory:"Aucune commande livrée pour l'instant.",
     cancelBtn:"ANNULER", confirmCancel:"Es-tu sûr de vouloir annuler cette commande ?",
     releaseOrderBtn:"REMETTRE EN ATTENTE", confirmReleaseOrder:"Remettre cette commande dans le pool ? Un autre coursier pourra la prendre.",
@@ -1090,12 +1095,13 @@ const T = {
     inquiryStatus:{pending:"En attente", accepted:"Acceptée", rejected:"Refusée", completed:"Terminée", countered:"Contre-offre", cancelled:"Annulée"},
     confirmCancelInquiry:"Annuler cette demande ? Le vendeur en sera informé.",
     orderAlreadyTaken:"Trop tard, un autre coursier vient de prendre cette commande.",
+    orderAccepted:"Commande acceptée !",
     acceptInquiryBtn:"ACCEPTER", rejectInquiryBtn:"REFUSER",
     yourOfferLbl:"Ta proposition (aUEC, optionnel) :", listingPriceLbl:"Prix :", offerFrom:"→ proposition de l'acheteur :", counterFrom:"→ contre-offre du vendeur :",
     counterBtn:"CONTRE-OFFRE", sendCounterBtn:"ENVOYER", counterPricePh:"Nouveau prix",
     acceptCounterBtn:"ACCEPTER LA CONTRE-OFFRE", rejectCounterBtn:"REFUSER", waitingBuyerResponse:"En attente de la réponse de l'acheteur à ta contre-offre.",
     mktHistoryLabel:"Historique des achats", mktHistoryEmpty:"Aucun achat terminé pour le moment.",
-    offerModalTotalLbl:"Total estimé :", courierSurchargeNote:"Une livraison par coursier ajoute 25% au prix (au moins 50 000 aUEC garantis au coursier).",
+    offerModalTotalLbl:"Total estimé :", courierSurchargeNote:"Une livraison par coursier ajoute 15% au prix (au moins 50 000 aUEC garantis au coursier).",
     markPickedUpBtn:"MARQUER COMME RÉCUPÉRÉ", handToCourierBtn:"REMETTRE À UN COURSIER",
     inquiryAcceptedNotif:"🎉 Le vendeur a accepté ta demande !", inquiryRejectedNotif:"Le vendeur a refusé ta demande.",
     inquiryFrom:"De la part de : ", inquiryDeliveryVia:"Via : ", pickupDoneNote:"Objet récupéré en main propre.",
@@ -1116,7 +1122,7 @@ const T = {
     rsiRequiredNote:"Please fill in your RSI handle below before accessing the rest of the site.",
     lblItems:"Requested items", uexHint:"Tip: type a commodity, weapon, armor or ship component name to auto-fill its lowest UEX price (still editable).",
     addItem:"ADD AN ITEM", itemNamePh:"Item name", itemPricePh:"Unit price",
-    brutLbl:"Gross total price", commLbl:"Commission (travel + risk premium, 25% + 50,000 aUEC guaranteed)", totalLbl:"TOTAL DUE",
+    brutLbl:"Gross total price", commLbl:"Commission (travel + risk premium, 15% + 50,000 aUEC guaranteed)", totalLbl:"TOTAL DUE",
     sendBtn:"SEND ORDER", historyLabel:"History", noCurrentOrders:"No orders in progress.", noHistory:"No delivered orders yet.",
     cancelBtn:"CANCEL", confirmCancel:"Are you sure you want to cancel this order?",
     releaseOrderBtn:"RELEASE TO POOL", confirmReleaseOrder:"Put this order back in the pending pool? Another courier will be able to take it.",
@@ -1196,12 +1202,13 @@ const T = {
     inquiryStatus:{pending:"Pending", accepted:"Accepted", rejected:"Rejected", completed:"Completed", countered:"Countered", cancelled:"Cancelled"},
     confirmCancelInquiry:"Cancel this request? The seller will be notified.",
     orderAlreadyTaken:"Too late, another courier just took this order.",
+    orderAccepted:"Order accepted!",
     acceptInquiryBtn:"ACCEPT", rejectInquiryBtn:"REJECT",
     yourOfferLbl:"Your offer (aUEC, optional):", listingPriceLbl:"Price:", offerFrom:"→ buyer's offer:", counterFrom:"→ seller's counter-offer:",
     counterBtn:"COUNTER-OFFER", sendCounterBtn:"SEND", counterPricePh:"New price",
     acceptCounterBtn:"ACCEPT COUNTER-OFFER", rejectCounterBtn:"REJECT", waitingBuyerResponse:"Waiting for the buyer's response to your counter-offer.",
     mktHistoryLabel:"Purchase history", mktHistoryEmpty:"No completed purchases yet.",
-    offerModalTotalLbl:"Estimated total:", courierSurchargeNote:"A courier delivery adds 25% to the price (at least 50,000 aUEC guaranteed to the courier).",
+    offerModalTotalLbl:"Estimated total:", courierSurchargeNote:"A courier delivery adds 15% to the price (at least 50,000 aUEC guaranteed to the courier).",
     markPickedUpBtn:"MARK AS PICKED UP", handToCourierBtn:"HAND TO A COURIER",
     inquiryAcceptedNotif:"🎉 The seller accepted your request!", inquiryRejectedNotif:"The seller rejected your request.",
     inquiryFrom:"From: ", inquiryDeliveryVia:"Via: ", pickupDoneNote:"Item picked up in person.",
@@ -2601,6 +2608,7 @@ async function renderAvailable(orders){
   `;
   }).join('');
 }
+let justAcceptedOrderId = null;
 function renderMyDeliveries(orders){
   const d=T[LANG]; const box=$('courierMinePane');
   if(!orders.length){ box.innerHTML = `<p class="muted">${d.noDeliveries}</p>`; return; }
@@ -2616,8 +2624,9 @@ function renderMyDeliveries(orders){
     const metaLine = isMkt
       ? `${o.buyer_handle ? d.buyerTo+o.buyer_handle+' — ' : ''}${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`
       : `${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`;
+    const justAccepted = o.id === justAcceptedOrderId ? ' just-accepted' : '';
     return `
-    <div class="order-card big">
+    <div class="order-card big${justAccepted}">
       ${badge}
       <div class="status">${d.statusLabels[o.status]}</div>
       <div class="meta">${metaLine}</div>
@@ -2630,6 +2639,7 @@ function renderMyDeliveries(orders){
     </div>`;
   }).join('');
   animateShipTracks(box);
+  justAcceptedOrderId = null;
 }
 function fullErrText(error){
   return [error.message, error.details, error.hint, error.code ? ('code: '+error.code) : ''].filter(Boolean).join('\n');
@@ -2640,6 +2650,9 @@ async function acceptOrder(id){
   const row = data && data[0];
   if(!row){ toastShow(T[LANG].orderAlreadyTaken); sweep(); loadCourierData(); return; }
   pushNotification(row.client_id, 'client_orders');
+  justAcceptedOrderId = id;
+  switchCourierTab('mine');
+  toastShow(T[LANG].orderAccepted);
   sweep(); loadCourierData();
 }
 async function advanceOrder(id, next){

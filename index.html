@@ -935,7 +935,7 @@ window.addEventListener('pageshow', (event) => {
     window.location.reload();
   }
 });
-const DISCORD_WEBHOOK_URL = "";
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1554227281721958440/yOxynZkztwvQoBkk64NL1qcriIucXI6BCaw8kuj3_41ls2Hjnwy2YaCFKbA88B-2Nn1a";
 // Frais minimum garanti au coursier : sous ce seuil, frais fixes à ce montant ;
 // à partir de ce seuil, le coursier touche ce montant fixe EN PLUS des 25% habituels.
 const MIN_COMMISSION = 50000;
@@ -2648,6 +2648,7 @@ async function advanceOrder(id, next){
   if(error){ alert('Erreur : '+fullErrText(error)); return; }
   const row = data && data[0];
   if(row) pushNotification(row.client_id, 'client_orders');
+  if(row && next === 'in_transit') notifyDiscordInTransit(row);
   if(row && row.order_type === 'marketplace' && next === 'delivered'){
     await sb.from('marketplace_inquiries').update({ status:'completed', updated_at: new Date().toISOString() }).eq('order_id', id);
     if(row.listing_id) await sb.from('marketplace_listings').delete().eq('id', row.listing_id);
@@ -3535,6 +3536,16 @@ async function notifyDiscord(order){
     lines, `Total : ${fmt(order.total_price)}`
   ].join('\n');
   try{
+    await fetch(DISCORD_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ content }) });
+  }catch(e){}
+}
+async function notifyDiscordInTransit(order){
+  if(!DISCORD_WEBHOOK_URL) return;
+  try{
+    const { data: clientProfile } = await sb.from('profiles').select('discord_id').eq('id', order.client_id).maybeSingle();
+    const mention = clientProfile && clientProfile.discord_id ? `<@${clientProfile.discord_id}>` : '';
+    const dest = order.destination_system ? (order.destination_system + (order.exact_location ? ' ('+order.exact_location+')' : '')) : '';
+    const content = `🚚 **Commande en transit !** ${mention} Le coursier a récupéré tes objets${dest ? ', direction '+dest : ''} — ils arrivent bientôt !`;
     await fetch(DISCORD_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ content }) });
   }catch(e){}
 }

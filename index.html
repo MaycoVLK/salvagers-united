@@ -713,8 +713,11 @@
 
     <!-- PROFIL -->
     <section id="view-profile" hidden>
-      <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
+      <button class="back" id="profileBackBtn" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
       <header><h1 data-i18n="profileTitle">Profil</h1></header>
+      <div class="card" id="rsiRequiredBanner" hidden style="border-color:var(--danger);">
+        <p style="color:var(--danger); margin:0; font-weight:700;" data-i18n="rsiRequiredNote">Merci de renseigner ton pseudo RSI ci-dessous avant d'accéder au reste du site.</p>
+      </div>
       <div class="profile-header-row">
         <div class="card profile-id-card">
           <div class="avatar-wrap big">
@@ -1009,6 +1012,7 @@ const T = {
     createOrder:"CRÉER", back:"< RETOUR", newOrder:"Nouvelle commande",
     lblSystem:"Système de livraison souhaité", lblLieu:"Lieu exact de livraison", phLieu:"ex: Système Nyx, People's Service Station Theta",
     saveDefaultLoc:"📍 ENREGISTRER COMME LIEU PAR DÉFAUT", savedDefaultLoc:"LIEU PAR DÉFAUT ENREGISTRÉ !",
+    rsiRequiredNote:"Merci de renseigner ton pseudo RSI ci-dessous avant d'accéder au reste du site.",
     lblItems:"Objets souhaités", uexHint:"Astuce : tape le nom d'une marchandise, arme, armure ou pièce/composant de vaisseau pour voir le prix UEX (le plus bas trouvé) se remplir automatiquement (modifiable ensuite).",
     addItem:"AJOUTER UN OBJET", itemNamePh:"Nom de l'objet", itemPricePh:"Prix unit.",
     brutLbl:"Prix brut total", commLbl:"Commission (déplacement + risque, 25% + 50 000 aUEC garantis)", totalLbl:"TOTAL À PAYER",
@@ -1113,6 +1117,7 @@ const T = {
     createOrder:"CREATE", back:"< BACK", newOrder:"New order",
     lblSystem:"Delivery system", lblLieu:"Exact delivery location", phLieu:"e.g. Nyx system, People's Service Station Theta",
     saveDefaultLoc:"📍 SAVE AS DEFAULT LOCATION", savedDefaultLoc:"DEFAULT LOCATION SAVED!",
+    rsiRequiredNote:"Please fill in your RSI handle below before accessing the rest of the site.",
     lblItems:"Requested items", uexHint:"Tip: type a commodity, weapon, armor or ship component name to auto-fill its lowest UEX price (still editable).",
     addItem:"ADD AN ITEM", itemNamePh:"Item name", itemPricePh:"Unit price",
     brutLbl:"Gross total price", commLbl:"Commission (travel + risk premium, 25% + 50,000 aUEC guaranteed)", totalLbl:"TOTAL DUE",
@@ -1337,6 +1342,20 @@ function routeApp(){
   $('app').hidden = false;
   hideAllViews();
   updateProfileChip();
+
+  // Pseudo RSI obligatoire avant d'accéder à quoi que ce soit d'autre, quel que soit le rôle.
+  if(profile && !(profile.rsi_handle || '').trim()){
+    $('view-profile').hidden = false;
+    renderProfileView();
+    $('rsiRequiredBanner').hidden = false;
+    $('profileBackBtn').hidden = true;
+    $('adminViewBar').hidden = true;
+    $('createOrderBtn').hidden = true;
+    updatePageTitle();
+    return;
+  }
+  $('rsiRequiredBanner').hidden = true;
+  $('profileBackBtn').hidden = false;
 
   const views = availableViews();
   const v = effectiveView();
@@ -2777,12 +2796,16 @@ function displayName(p){
 }
 async function saveRsiHandle(){
   if(!session) return;
-  const { error } = await sb.from('profiles').update({ rsi_handle: $('profileRsiHandle').value.trim() }).eq('id', session.user.id);
+  const val = $('profileRsiHandle').value.trim();
+  const wasGated = !$('rsiRequiredBanner').hidden;
+  if(wasGated && !val){ alert(T[LANG].rsiRequiredNote); return; }
+  const { error } = await sb.from('profiles').update({ rsi_handle: val }).eq('id', session.user.id);
   if(error){ alert('Erreur : '+error.message); return; }
   await loadProfile();
   updateProfileChip();
   sweep();
   toastShow(T[LANG].savedRsi);
+  if(wasGated) routeApp();
 }
 // Synchronise l'avatar Discord (visible uniquement pour soi-même via la session) dans la table profiles,
 // pour qu'il puisse être affiché aux autres (profil public, etc.).

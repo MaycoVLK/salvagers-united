@@ -245,6 +245,12 @@
   .modal-overlay{position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:200; display:flex; align-items:center; justify-content:center; padding:16px; backdrop-filter:grayscale(1) brightness(.42); -webkit-backdrop-filter:grayscale(1) brightness(.42);}
   .modal-overlay::before{content:""; position:absolute; inset:0; background:var(--accent); opacity:.22; mix-blend-mode:color; pointer-events:none;}
   .modal-overlay[hidden]{display:none;}
+  .crop-stage{position:relative; width:100%; aspect-ratio:4/3; overflow:hidden; background:#000; border:1px solid var(--border); touch-action:none; cursor:grab; margin-top:8px;}
+  .crop-stage.dragging{cursor:grabbing;}
+  .crop-stage img{position:absolute; left:0; top:0; will-change:transform; user-select:none; -webkit-user-drag:none; pointer-events:none; max-width:none;}
+  .crop-frame-hint{position:absolute; inset:0; border:1px dashed var(--accent-dim); pointer-events:none;}
+  .crop-zoom-row{display:flex; align-items:center; gap:10px; margin-top:10px;}
+  .crop-zoom-row input[type="range"]{flex:1;}
   .modal-card{max-width:440px; width:100%; max-height:88vh; overflow-y:auto; margin:0; scrollbar-width:thin; scrollbar-color:var(--accent) var(--bg2);}
   .modal-card::-webkit-scrollbar{width:7px;}
   .modal-card::-webkit-scrollbar-track{background:var(--bg2);}
@@ -613,6 +619,24 @@
         <div class="offer-modal-note" id="offerModalCourierNote" data-i18n="courierSurchargeNote">Une livraison par coursier ajoute 15% au prix (au moins 50 000 aUEC garantis au coursier).</div>
         <div class="offer-modal-total"><span data-i18n="offerModalTotalLbl">Total estimé :</span> <strong id="offerModalTotal">—</strong></div>
         <button type="button" class="btn-primary" onclick="submitOfferModal()" data-i18n="sendInquiryBtn">ENVOYER LA DEMANDE</button>
+      </div>
+    </div>
+
+    <!-- RECADRAGE PHOTO ANNONCE MARKETPLACE (modale) -->
+    <div class="modal-overlay" id="cropModalOverlay" hidden onclick="if(event.target===this) closeCropModal()">
+      <div class="card modal-card" style="max-width:420px;">
+        <button type="button" class="modal-close" onclick="closeCropModal()">&times;</button>
+        <h3 data-i18n="cropModalTitle">Recadrer la photo</h3>
+        <div class="crop-stage" id="cropStage">
+          <img id="cropImage" alt="" draggable="false">
+          <div class="crop-frame-hint"></div>
+        </div>
+        <div class="crop-zoom-row">
+          <span data-i18n="cropZoomLbl">Zoom</span>
+          <input type="range" id="cropZoomSlider" min="1" max="3" step="0.01" value="1" oninput="onCropZoomChange(this.value)">
+        </div>
+        <p class="muted" style="font-size:.75rem; margin-top:6px;" data-i18n="cropDragHint">Fais glisser l'image pour la repositionner.</p>
+        <button type="button" class="btn-primary" style="width:100%; margin-top:10px;" onclick="confirmCrop()" data-i18n="cropConfirmBtn">VALIDER LE RECADRAGE</button>
       </div>
     </div>
 
@@ -1083,6 +1107,7 @@ const T = {
     sellerRankLabels:{novice:"Novice", trader:"Négociant", merchant:"Marchand", tycoon:"Magnat"}, rankSales:"ventes",
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
     newListingTitle:"Ajouter un objet en vente", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", listingSaved:"OBJET MIS EN VENTE !",
+    cropModalTitle:"Recadrer la photo", cropZoomLbl:"Zoom", cropDragHint:"Fais glisser l'image pour la repositionner.", cropConfirmBtn:"VALIDER LE RECADRAGE", photoReady:"Photo prête ✓",
     myListingsTitle:"Mes annonces", noListings:"Tu n'as encore aucune annonce.", deleteListingBtn:"SUPPRIMER", confirmDeleteListing:"Supprimer cette annonce définitivement ?",
     requestDeliveryBtn:"DEMANDER UNE LIVRAISON", requestDeliveryTitle:"Demander une livraison coursier", buyerHandleLbl:"Pseudo RSI de l'acheteur (optionnel)", phBuyerHandle:"ex: Mayco_SC", deliveryRequested:"LIVRAISON DEMANDÉE !", cancelRequest:"ANNULER", confirmDeliveryBtn:"CONFIRMER LA DEMANDE",
     marketplaceDeliveryBadge:"LIVRAISON MARKETPLACE", marketplaceDeliveryNote:"Livraison Marketplace : l'objet part de chez un VENDEUR pour être livré à un client, contrairement aux commandes classiques (client → coursier).",
@@ -1190,6 +1215,7 @@ const T = {
     sellerRankLabels:{novice:"Novice", trader:"Trader", merchant:"Merchant", tycoon:"Tycoon"}, rankSales:"sales",
     rankToNextSales:"{n} more sale(s) to reach {rank}",
     newListingTitle:"List an item for sale", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", listingSaved:"ITEM LISTED!",
+    cropModalTitle:"Crop the photo", cropZoomLbl:"Zoom", cropDragHint:"Drag the image to reposition it.", cropConfirmBtn:"CONFIRM CROP", photoReady:"Photo ready ✓",
     myListingsTitle:"My listings", noListings:"You have no listings yet.", deleteListingBtn:"DELETE", confirmDeleteListing:"Permanently delete this listing?",
     requestDeliveryBtn:"REQUEST A DELIVERY", requestDeliveryTitle:"Request a courier delivery", buyerHandleLbl:"Buyer's RSI handle (optional)", phBuyerHandle:"e.g. Mayco_SC", deliveryRequested:"DELIVERY REQUESTED!", cancelRequest:"CANCEL", confirmDeliveryBtn:"CONFIRM REQUEST",
     marketplaceDeliveryBadge:"MARKETPLACE DELIVERY", marketplaceDeliveryNote:"Marketplace delivery: the item ships from a SELLER to a client, unlike classic orders (client → courier).",
@@ -2239,9 +2265,107 @@ async function loadSellerDashboard(){
 }
 let pendingListingPhotoFile = null;
 function onListingPhotoSelected(inputEl){
-  pendingListingPhotoFile = (inputEl.files && inputEl.files[0]) || null;
-  $('listingPhotoPreviewName').textContent = pendingListingPhotoFile ? pendingListingPhotoFile.name : '';
+  const file = (inputEl.files && inputEl.files[0]) || null;
+  inputEl.value = '';
+  if(!file) return;
+  openCropModal(file);
 }
+
+// --- RECADRAGE PHOTO ANNONCE MARKETPLACE ---
+const cropState = { file:null, naturalW:0, naturalH:0, baseScale:1, zoom:1, offsetX:0, offsetY:0, dragging:false, startX:0, startY:0, startOffsetX:0, startOffsetY:0 };
+function openCropModal(file){
+  cropState.file = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = $('cropImage');
+    img.onload = () => {
+      cropState.naturalW = img.naturalWidth;
+      cropState.naturalH = img.naturalHeight;
+      $('cropZoomSlider').value = 1;
+      cropState.zoom = 1;
+      $('cropModalOverlay').hidden = false;
+      const rect = $('cropStage').getBoundingClientRect();
+      cropState.baseScale = Math.max(rect.width / cropState.naturalW, rect.height / cropState.naturalH);
+      applyCropTransform(true);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function applyCropTransform(recenter){
+  const stage = $('cropStage'); const img = $('cropImage');
+  const rect = stage.getBoundingClientRect();
+  const scale = cropState.baseScale * cropState.zoom;
+  const imgW = cropState.naturalW * scale;
+  const imgH = cropState.naturalH * scale;
+  if(recenter){
+    cropState.offsetX = (rect.width - imgW) / 2;
+    cropState.offsetY = (rect.height - imgH) / 2;
+  } else {
+    cropState.offsetX = Math.min(0, Math.max(rect.width - imgW, cropState.offsetX));
+    cropState.offsetY = Math.min(0, Math.max(rect.height - imgH, cropState.offsetY));
+  }
+  img.style.width = imgW + 'px';
+  img.style.height = imgH + 'px';
+  img.style.transform = `translate(${cropState.offsetX}px, ${cropState.offsetY}px)`;
+}
+function onCropZoomChange(val){
+  cropState.zoom = parseFloat(val) || 1;
+  applyCropTransform(false);
+}
+function cropPointerDown(e){
+  cropState.dragging = true;
+  $('cropStage').classList.add('dragging');
+  const p = e.touches ? e.touches[0] : e;
+  cropState.startX = p.clientX; cropState.startY = p.clientY;
+  cropState.startOffsetX = cropState.offsetX; cropState.startOffsetY = cropState.offsetY;
+  if(e.cancelable) e.preventDefault();
+}
+function cropPointerMove(e){
+  if(!cropState.dragging) return;
+  const p = e.touches ? e.touches[0] : e;
+  const dx = p.clientX - cropState.startX; const dy = p.clientY - cropState.startY;
+  cropState.offsetX = cropState.startOffsetX + dx;
+  cropState.offsetY = cropState.startOffsetY + dy;
+  applyCropTransform(false);
+  if(e.cancelable) e.preventDefault();
+}
+function cropPointerUp(){
+  cropState.dragging = false;
+  $('cropStage').classList.remove('dragging');
+}
+function closeCropModal(){
+  $('cropModalOverlay').hidden = true;
+  cropState.file = null;
+}
+function confirmCrop(){
+  const stage = $('cropStage'); const img = $('cropImage');
+  const rect = stage.getBoundingClientRect();
+  const scale = cropState.baseScale * cropState.zoom;
+  const sx = -cropState.offsetX / scale;
+  const sy = -cropState.offsetY / scale;
+  const sw = rect.width / scale;
+  const sh = rect.height / scale;
+  const canvas = document.createElement('canvas');
+  canvas.width = 1000; canvas.height = 750;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  const ext = (cropState.file.name.split('.').pop() || 'jpg').toLowerCase();
+  const mime = ext === 'png' ? 'image/png' : 'image/jpeg';
+  canvas.toBlob(blob => {
+    if(!blob) return;
+    pendingListingPhotoFile = new File([blob], cropState.file.name, { type: mime });
+    $('listingPhotoPreviewName').textContent = T[LANG].photoReady;
+    closeCropModal();
+  }, mime, 0.9);
+}
+(function initCropDrag(){
+  const stage = $('cropStage');
+  if(!stage) return;
+  stage.addEventListener('pointerdown', cropPointerDown);
+  window.addEventListener('pointermove', cropPointerMove);
+  window.addEventListener('pointerup', cropPointerUp);
+})();
 async function createListing(){
   if(!session) return;
   const d = T[LANG];

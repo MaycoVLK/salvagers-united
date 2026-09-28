@@ -2608,9 +2608,12 @@ function renderMyDeliveries(orders){
   }).join('');
   animateShipTracks(box);
 }
+function fullErrText(error){
+  return [error.message, error.details, error.hint, error.code ? ('code: '+error.code) : ''].filter(Boolean).join('\n');
+}
 async function acceptOrder(id){
   const { data, error } = await sb.from('orders').update({ status:'accepted', courier_id: session.user.id, accepted_at: new Date().toISOString() }).eq('id', id).eq('status','pending').select('client_id').single();
-  if(error){ alert('Erreur : '+error.message); return; }
+  if(error){ alert('Erreur : '+fullErrText(error)); return; }
   if(data) pushNotification(data.client_id, 'client_orders');
   sweep(); loadCourierData();
 }

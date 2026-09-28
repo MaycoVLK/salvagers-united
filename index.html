@@ -928,6 +928,15 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// Fix Safari/iOS : après le retour de la redirection OAuth Discord, Safari restaure parfois
+// la page depuis son cache mémoire (bfcache) au lieu de charger la page fraîchement redirigée
+// contenant le jeton de session (#access_token=...) dans l'URL. On force un rechargement complet
+// dans ce cas précis pour que Supabase puisse bien récupérer la session.
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    window.location.reload();
+  }
+});
 const DISCORD_WEBHOOK_URL = "";
 const UEX_SECRET_KEY = "d76d4cc1f06bb9764172dff43406640fb5b79b2c";
 let uexCommodities = [];

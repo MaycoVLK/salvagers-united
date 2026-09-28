@@ -3397,7 +3397,7 @@ async function loadAdmin(){
         <option value="client" ${p.role==='client'?'selected':''}>client</option>
         <option value="admin" ${p.role==='admin'?'selected':''}>admin</option>
       </select>
-      <button class="btn-cancel" style="width:auto; margin-top:0;" onclick="resetMemberProgression('${p.id}', ${JSON.stringify((p.discord_username || p.rsi_handle || p.id))})">${d.resetProgressionBtn}</button>
+      <button class="btn-cancel" style="width:auto; margin-top:0;" onclick="resetMemberProgression('${p.id}', ${JSON.stringify((p.discord_username || p.rsi_handle || p.id)).replace(/"/g,'&quot;')})">${d.resetProgressionBtn}</button>
     </div>
   `).join('');
 }

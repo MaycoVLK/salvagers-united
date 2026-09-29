@@ -555,7 +555,7 @@
   .tab-btn{background:none; border:none; border-bottom:2px solid transparent; border-radius:0; padding:10px 4px; color:var(--muted);}
   .tab-btn.active{color:var(--accent); border-bottom-color:var(--accent);}
 
-  .default-loc-row{display:flex; gap:8px; align-items:center; margin-top:8px;}
+  .default-loc-row{display:flex; gap:8px; align-items:center; margin-top:8px; position:relative;}
   .default-loc-row button{flex:none; font-size:.8rem; padding:8px 10px;}
 
   /* --- PROFILE CHIP (barre d'identité) --- */
@@ -911,7 +911,8 @@
         <select id="arrivee"><option value="Stanton">Stanton</option><option value="Nyx">Nyx</option><option value="Pyro">Pyro</option></select>
         <label for="lieu" data-i18n="lblLieu">Lieu exact de livraison</label>
         <div class="default-loc-row">
-          <input id="lieu" type="text" data-i18n-ph="phLieu" placeholder="ex: Système Nyx, People's Service Station Theta" style="flex:1;">
+          <input id="lieu" type="text" autocomplete="off" data-i18n-ph="phLieu" placeholder="ex: People's Service Station Theta, Orison..." style="flex:1;" oninput="onLieuInput(this)" onblur="onLieuBlur(this)">
+          <div class="suggest-box" hidden></div>
         </div>
         <button class="btn-secondary" style="width:100%; margin-top:8px; font-size:.82rem;" onclick="saveDefaultLocation()">
           <span data-i18n="saveDefaultLoc">📍 ENREGISTRER COMME LIEU PAR DÉFAUT</span>
@@ -1367,6 +1368,226 @@ function computeCommission(gross){
   if(!gross || gross <= 0) return 0;
   return gross < MIN_COMMISSION ? MIN_COMMISSION : MIN_COMMISSION + gross * 0.15;
 }
+// Liste fermée des lieux de livraison valides (stations, avant-postes, villes) — source : uexcorp.space
+const UEX_LOCATIONS = [
+  'ARC-L1 Wide Forest Station',
+  'ARC-L2 Lively Pathway Station',
+  'ARC-L3 Modern Express Station',
+  'ARC-L4 Faint Glen Station',
+  'ARC-L5 Yellow Core Station',
+  'ArcCorp Mining Area 045',
+  'ArcCorp Mining Area 048',
+  'ArcCorp Mining Area 056',
+  'ArcCorp Mining Area 061',
+  'ArcCorp Mining Area 141',
+  'ArcCorp Mining Area 157',
+  'Area 18',
+  'Arid Reach',
+  'Ashland',
+  'Astor\'s Clearing',
+  'Baijini Point',
+  'Benson Mining Outpost',
+  'Blackrock Exchange',
+  'Bloodshot Ridge',
+  'Bountiful Harvest Hydroponics',
+  'Brio\'s Breaker Yard',
+  'Bud\'s Growery',
+  'Bueno Ravine',
+  'Bullock\'s Reach',
+  'Canard View',
+  'Carver\'s Ridge',
+  'Chawla\'s Beach',
+  'Checkmate Station',
+  'CRU-L1 Ambitious Dream Station',
+  'CRU-L4 Shallow Fields Station',
+  'CRU-L5 Beautiful Glen Station',
+  'Cutter\'s Rig',
+  'Deakins Research',
+  'Devlin Scrap & Salvage',
+  'Dinger\'s Depot',
+  'Dudley & Daughters',
+  'Dunboro',
+  'Endgame',
+  'Everus Harbor',
+  'Fallow Field',
+  'Feo Canyon Depot',
+  'Finn\'s Folly',
+  'Frigid Knot',
+  'Frostbite',
+  'Gallete Family Farms',
+  'Gaslight',
+  'Ghost Hollow',
+  'Goner\'s Deal',
+  'Gray Gardens Depot',
+  'Green Imperial Housing Exchange',
+  'Harper\'s Point',
+  'HDMS-Anderson',
+  'HDMS-Bezdek',
+  'HDMS-Edmond',
+  'HDMS-Hadley',
+  'HDMS-Hahn',
+  'HDMS-Lathan',
+  'HDMS-Norgaard',
+  'HDMS-Oparei',
+  'HDMS-Perlman',
+  'HDMS-Pinewood',
+  'HDMS-Ryder',
+  'HDMS-Stanhope',
+  'HDMS-Thedus',
+  'HDMS-Woodruff',
+  'Hickes Research',
+  'Humboldt Mines',
+  'HUR-L1 Green Glade Station',
+  'HUR-L2 Faithful Dream Station',
+  'HUR-L3 Thundering Express Station',
+  'HUR-L4 Melodic Fields Station',
+  'HUR-L5 High Course Station',
+  'INS Jericho',
+  'Jackson\'s Swap',
+  'Jumptown',
+  'Kabir\'s Post',
+  'Kinder Plots',
+  'Kudre Ore',
+  'Last Ditch',
+  'Last Landings',
+  'Levski',
+  'Lorville',
+  'Loveridge Mineral Reserve',
+  'Ludlow',
+  'Maker\'s Point',
+  'Megumi Refueling',
+  'MIC-L1 Shallow Frontier Station',
+  'MIC-L2 Long Forest Station',
+  'MIC-L3 Endless Odyssey Station',
+  'MIC-L4 Red Crossroads Station',
+  'MIC-L5 Modern Icarus Station',
+  'Moreland Hills',
+  'Narena\'s Rest',
+  'New Babbage',
+  'NT-999-XX',
+  'NT-999-XXII',
+  'Nuen Waste Management',
+  'Nyx Gateway (Pyro)',
+  'Nyx Gateway (Stanton)',
+  'Orbituary',
+  'Orison',
+  'Ostler\'s Claim',
+  'Outpost 54',
+  'Paradise Cove',
+  'Patch City',
+  'People\'s Service Station Alpha',
+  'People\'s Service Station Delta',
+  'People\'s Service Station Lambda',
+  'People\'s Service Station Theta',
+  'Picker\'s Field',
+  'Port Olisar',
+  'Port Tressler',
+  'Private Property',
+  'Prophet\'s Peak',
+  'Prospect Depot',
+  'PYAM-FARSTAT-1-2',
+  'PYAM-FARSTAT-1-3',
+  'PYAM-FARSTAT-1-5',
+  'PYAM-FARSTAT-2-3',
+  'PYAM-FARSTAT-3-5',
+  'PYAM-FARSTAT-5-1',
+  'PYAM-FARSTAT-5-3',
+  'PYAM-FARSTAT-6-2',
+  'PYAM-SUPVISR-3-4',
+  'PYAM-SUPVISR-3-5',
+  'Pyro Gateway (Nyx)',
+  'Pyro Gateway (Stanton)',
+  'Pyro VI Lagrange Point 4',
+  'Rappel',
+  'Rat\'s Nest',
+  'Raven\'s Roost',
+  'Rayari Anvik Research Outpost',
+  'Rayari Cantwell Research Outpost',
+  'Rayari Deltana Research Outpost',
+  'Rayari Kaltag Research Outpost',
+  'Rayari McGrath Research Outpost',
+  'Razor\'s Edge',
+  'Reclamation & Disposal Orinth',
+  'Rod\'s Fuel \'N Supplies',
+  'Rough Landing',
+  'Ruin Station',
+  'Rustville',
+  'Sacren\'s Plot',
+  'Sakura Sun Magnolia Workcenter',
+  'Samson & Son\'s Salvage Center',
+  'Scarper\'s Turn',
+  'Seer\'s Canyon',
+  'Seraphim Station',
+  'Shadowfall',
+  'Shady Glen',
+  'Shepherd\'s Rest',
+  'Shubin Mining Facility SAL-2',
+  'Shubin Mining Facility SAL-5',
+  'Shubin Mining Facility SCD-1',
+  'Shubin Mining Facility SM0-10',
+  'Shubin Mining Facility SM0-13',
+  'Shubin Mining Facility SM0-18',
+  'Shubin Mining Facility SM0-22',
+  'Shubin Mining Facility SMCa-6',
+  'Shubin Mining Facility SMCa-8',
+  'Slowburn Depot',
+  'Stag\'s Rut',
+  'Stanton Gateway (Nyx)',
+  'Stanton Gateway (Pyro)',
+  'Starlight Service Station',
+  'Stonetree',
+  'Sunset Mesa',
+  'Terra Gateway (Stanton)',
+  'Terra Mills HydroFarm',
+  'The Golden Riviera',
+  'The Necropolis',
+  'The Orphanage',
+  'The Yard',
+  'Tram & Myers Mining',
+  'Watcher\'s Depot',
+  'Weeping Cove',
+  'Wikelo Emporium Dasi Station',
+  'Wikelo Emporium Kinga Station',
+  'Wikelo Emporium Selo Station',
+  'Windfall',
+  'Yang\'s Place',
+  'Zephyr'
+];
+const UEX_LOCATIONS_LOWER = new Set(UEX_LOCATIONS.map(n => n.toLowerCase()));
+function isValidUexLocation(name){
+  return UEX_LOCATIONS_LOWER.has((name||'').trim().toLowerCase());
+}
+function buildLocationSuggestions(query){
+  const q = query.trim().toLowerCase();
+  if(q.length < 1) return [];
+  const results = [];
+  for(const n of UEX_LOCATIONS){
+    if(n.toLowerCase().includes(q)){ results.push(n); if(results.length >= 8) break; }
+  }
+  return results;
+}
+function renderLocationSuggestions(inputEl, list){
+  const box = inputEl.parentElement.querySelector('.suggest-box');
+  if(!box) return;
+  if(!list.length){ box.hidden = true; box.innerHTML=''; return; }
+  box.innerHTML = list.map(n => `<div class="suggest-item" onmousedown="selectLocationSuggestion(this,'${n.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">${n.replace(/</g,'&lt;')}</div>`).join('');
+  box.hidden = false;
+}
+function selectLocationSuggestion(el, name){
+  const box = el.closest('.suggest-box');
+  const inputEl = box.parentElement.querySelector('input');
+  inputEl.value = name;
+  box.hidden = true; box.innerHTML = '';
+}
+function onLieuInput(inputEl){
+  renderLocationSuggestions(inputEl, buildLocationSuggestions(inputEl.value));
+}
+function onLieuBlur(inputEl){
+  setTimeout(() => {
+    const box = inputEl.parentElement.querySelector('.suggest-box');
+    if(box) box.hidden = true;
+  }, 150);
+}
 const UEX_SECRET_KEY = "d76d4cc1f06bb9764172dff43406640fb5b79b2c";
 let uexCommodities = [];
 let uexItems = [];
@@ -1433,7 +1654,7 @@ const T = {
     languageLabel:"Langue", themeLabel:"Thème", adminViewLabel:"Vue", navAdmin:"GESTION", navClient:"CLIENT", navCourier:"COURSIER", navSeller:"VENDEUR",
     dashClient:"Mes commandes", dashCourier:"Espace Coursier", dashAdmin:"Panneau Admin", dashSeller:"Ma Marketplace",
     createOrder:"CRÉER", back:"< RETOUR", newOrder:"Nouvelle commande",
-    lblSystem:"Système de livraison souhaité", lblLieu:"Lieu exact de livraison", phLieu:"ex: Système Nyx, People's Service Station Theta",
+    lblSystem:"Système de livraison souhaité", lblLieu:"Lieu exact de livraison", phLieu:"ex: People's Service Station Theta, Orison...", invalidLocationAlert:"Merci de choisir un lieu de livraison valide dans la liste (station, avant-poste ou ville).",
     saveDefaultLoc:"📍 ENREGISTRER COMME LIEU PAR DÉFAUT", savedDefaultLoc:"LIEU PAR DÉFAUT ENREGISTRÉ !",
     rsiRequiredNote:"Merci de renseigner ton pseudo RSI ci-dessous avant d'accéder au reste du site.",
     lblItems:"Objets souhaités", uexHint:"Astuce : tape le nom d'une marchandise, arme, armure ou pièce/composant de vaisseau pour voir le prix UEX (le plus bas trouvé) se remplir automatiquement (modifiable ensuite).",
@@ -1553,7 +1774,7 @@ const T = {
     languageLabel:"Language", themeLabel:"Theme", adminViewLabel:"View", navAdmin:"MANAGE", navClient:"CLIENT", navCourier:"COURIER", navSeller:"SELLER",
     dashClient:"My orders", dashCourier:"Courier Area", dashAdmin:"Admin Panel", dashSeller:"My Marketplace",
     createOrder:"CREATE", back:"< BACK", newOrder:"New order",
-    lblSystem:"Delivery system", lblLieu:"Exact delivery location", phLieu:"e.g. Nyx system, People's Service Station Theta",
+    lblSystem:"Delivery system", lblLieu:"Exact delivery location", phLieu:"e.g. People's Service Station Theta, Orison...", invalidLocationAlert:"Please choose a valid delivery location from the list (station, outpost or city).",
     saveDefaultLoc:"📍 SAVE AS DEFAULT LOCATION", savedDefaultLoc:"DEFAULT LOCATION SAVED!",
     rsiRequiredNote:"Please fill in your RSI handle below before accessing the rest of the site.",
     lblItems:"Requested items", uexHint:"Tip: type a commodity, weapon, armor or ship component name to auto-fill its lowest UEX price (still editable).",
@@ -2420,12 +2641,18 @@ function collectItems(){
 
 $('sendBtn').addEventListener('click', async ()=>{
   if(!session) return;
+  const lieuVal = $('lieu').value.trim();
+  if(!isValidUexLocation(lieuVal)){
+    alert(T[LANG].invalidLocationAlert);
+    $('lieu').focus();
+    return;
+  }
   const {brut,comm,total} = calc();
   const items = collectItems();
   const payload = {
     client_id: session.user.id,
     destination_system: $('arrivee').value,
-    exact_location: $('lieu').value.trim(),
+    exact_location: lieuVal,
     deadline: deadlineIso,
     items: items,
     gross_price: brut, commission: comm, total_price: total,

@@ -296,6 +296,15 @@
   .mkt-qty{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
   .mkt-info .courier-box{flex:none; max-width:none; width:100%; margin-top:auto;}
   .mkt-interest-btn{width:100%; font-size:.76rem;}
+  .mkt-tags{display:flex; flex-wrap:wrap; gap:5px;}
+  .mkt-tag{font-size:.62rem; text-transform:uppercase; letter-spacing:.4px; padding:3px 7px; border-radius:3px; border:1px solid var(--border); color:var(--muted); font-family:'VT323',monospace; font-size:.75rem; line-height:1;}
+  .mkt-tag.tag-crafted{color:var(--accent); border-color:var(--accent); background:var(--accent-dim);}
+  .mkt-tag.tag-q700{color:#8fd3ff; border-color:#8fd3ff;}
+  .mkt-tag.tag-q800{color:#b9a3ff; border-color:#b9a3ff;}
+  .mkt-tag.tag-q900{color:#ffd166; border-color:#ffd166;}
+  .listing-tags-toggle{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:4px;}
+  .tag-toggle-btn{width:auto; flex:1 1 auto; padding:9px 8px; font-size:.72rem; text-transform:uppercase; letter-spacing:.4px; border:1px solid var(--border); border-radius:3px; background:var(--bg2); color:var(--muted); cursor:pointer; font-family:'VT323',monospace; transition:border-color .15s, color .15s, background .15s;}
+  .tag-toggle-btn.active{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
   @media (max-width:480px){
     /* Grille 2x2 compacte sur mobile : on resserre le texte et les marges pour que tout reste lisible. */
     .marketplace-grid{gap:8px;}
@@ -1162,7 +1171,7 @@
     <!-- CRÉATION D'ANNONCE (page dédiée) -->
     <section id="view-seller-create-listing" hidden>
       <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
-      <header><h1 data-i18n="newListingTitle">Ajouter un objet en vente</h1></header>
+      <header><h1 id="listingFormTitle" data-i18n="newListingTitle">Ajouter un objet en vente</h1></header>
       <div class="card">
         <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
         <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute">
@@ -1170,6 +1179,13 @@
         <input id="listingPrice" type="number" min="0" step="1">
         <label for="listingQty" data-i18n="listingQtyLbl">Quantité</label>
         <input id="listingQty" type="number" min="1" step="1" value="1">
+        <label data-i18n="listingTagsLbl">Tags (optionnel)</label>
+        <div class="listing-tags-toggle">
+          <button type="button" class="tag-toggle-btn" id="tagBtn-crafted" onclick="toggleListingTag('crafted')" data-i18n="tagCrafted">CRAFTÉ</button>
+          <button type="button" class="tag-toggle-btn" id="tagBtn-700" onclick="toggleListingTag('700')" data-i18n="tagQ700">700+</button>
+          <button type="button" class="tag-toggle-btn" id="tagBtn-800" onclick="toggleListingTag('800')" data-i18n="tagQ800">800+</button>
+          <button type="button" class="tag-toggle-btn" id="tagBtn-900" onclick="toggleListingTag('900')" data-i18n="tagQ900">900+</button>
+        </div>
         <label data-i18n="listingPhotoLbl">Photo (optionnel)</label>
         <input type="file" id="listingPhotoInput" accept="image/*" hidden onchange="onListingPhotoSelected(this)">
         <button type="button" class="btn-secondary" style="width:100%; margin-top:4px;" onclick="$('listingPhotoInput').click()" id="listingPhotoBtn">
@@ -1177,7 +1193,7 @@
         </button>
         <div id="listingPhotoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
         <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createListing()">
-          <span data-i18n="addListingBtn">METTRE EN VENTE</span>
+          <span id="listingSubmitLabel" data-i18n="addListingBtn">METTRE EN VENTE</span>
         </button>
       </div>
     </section>
@@ -1477,7 +1493,8 @@ const T = {
     sellerAchvDesc:{first_sale:"Conclus ta première vente.", first_courier_sale:"Fais livrer une vente par un coursier.", five_sales:"Conclus 5 ventes."},
     sellerRankLabels:{novice:"Novice", trader:"Négociant", merchant:"Marchand", tycoon:"Magnat"}, rankSales:"ventes",
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
-    newListingTitle:"Ajouter un objet en vente", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", listingSaved:"OBJET MIS EN VENTE !",
+    newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
+    listingTagsLbl:"Tags (optionnel)", tagCrafted:"CRAFTÉ", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", editListingBtn:"MODIFIER",
     requestResourcesTitle:"Demander des ressources", requestResourcesBtn:"DEMANDER DES RESSOURCES", resourceNameLbl:"Ressource recherchée", phResourceName:"ex: Laranite brute", resourceQtyLbl:"Quantité souhaitée", resourcePriceLbl:"Prix proposé (aUEC, optionnel)", resourceNoteLbl:"Note (optionnel)", phResourceNote:"ex: Livraison sur Nyx, quantité négociable...", submitResourceRequestBtn:"ENVOYER LA DEMANDE", resourceRequestSaved:"DEMANDE ENVOYÉE !",
     myResourceRequestsTitle:"Mes demandes", noResourceRequests:"Tu n'as posté aucune demande de ressource pour le moment.",
     tabResources:"RESSOURCES DEMANDÉES", requestedResourcesTitle:"Ressources demandées par les vendeurs", noOpenResourceRequests:"Aucune demande de ressource en cours.", resourceRequestedBy:"Demandé par ",
@@ -1596,7 +1613,8 @@ const T = {
     sellerAchvDesc:{first_sale:"Close your first sale.", first_courier_sale:"Have a sale delivered by a courier.", five_sales:"Close 5 sales."},
     sellerRankLabels:{novice:"Novice", trader:"Trader", merchant:"Merchant", tycoon:"Tycoon"}, rankSales:"sales",
     rankToNextSales:"{n} more sale(s) to reach {rank}",
-    newListingTitle:"List an item for sale", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", listingSaved:"ITEM LISTED!",
+    newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
+    listingTagsLbl:"Tags (optional)", tagCrafted:"CRAFTED", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", editListingBtn:"EDIT",
     requestResourcesTitle:"Request resources", requestResourcesBtn:"REQUEST RESOURCES", resourceNameLbl:"Resource wanted", phResourceName:"e.g. Raw Laranite", resourceQtyLbl:"Quantity wanted", resourcePriceLbl:"Price offered (aUEC, optional)", resourceNoteLbl:"Note (optional)", phResourceNote:"e.g. Delivery to Nyx, quantity negotiable...", submitResourceRequestBtn:"SEND REQUEST", resourceRequestSaved:"REQUEST SENT!",
     myResourceRequestsTitle:"My requests", noResourceRequests:"You haven't posted any resource request yet.",
     tabResources:"REQUESTED RESOURCES", requestedResourcesTitle:"Resources requested by sellers", noOpenResourceRequests:"No open resource requests right now.", resourceRequestedBy:"Requested by ",
@@ -1741,6 +1759,13 @@ function openSellerCreateOption(kind){
   hideAllViews();
   $('sellerCreateWrap').hidden = true;
   if(kind === 'listing'){
+    const d = T[LANG];
+    editingListingId = null;
+    resetListingForm();
+    const titleEl = $('listingFormTitle');
+    if(titleEl){ titleEl.dataset.i18n = 'newListingTitle'; titleEl.textContent = d.newListingTitle; }
+    const btnEl = $('listingSubmitLabel');
+    if(btnEl){ btnEl.dataset.i18n = 'addListingBtn'; btnEl.textContent = d.addListingBtn; }
     $('view-seller-create-listing').hidden = false;
   } else {
     $('view-seller-create-resource').hidden = false;
@@ -2591,6 +2616,7 @@ function mktCardHtml(listing, sellerMap){
       <div class="mkt-info">
         <div class="mkt-item-name">${listing.item_name}</div>
         <div class="mkt-price-row"><span class="mkt-price">${fmt(listing.price)}</span><span class="mkt-qty">x${listing.quantity}</span></div>
+        ${listingTagsHtml(listing.tags)}
         <div class="courier-box" onclick="openSellerShop('${listing.seller_id}')" title="${d.viewShopBtn}">
           <div class="courier-box-name">${d.mktByLbl} ${(seller && seller.shop_name) || (seller ? displayName(seller) : '—')}</div>
         </div>
@@ -3017,6 +3043,71 @@ async function loadSellerDashboard(){
   checkAndRenderSellerAchievements('sellerDashAchvCard');
 }
 let pendingListingPhotoFile = null;
+let editingListingId = null;
+let listingTagsState = { crafted:false, q700:false, q800:false, q900:false };
+function toggleListingTag(tag){
+  if(tag === 'crafted'){
+    listingTagsState.crafted = !listingTagsState.crafted;
+    if(!listingTagsState.crafted){ listingTagsState.q700 = listingTagsState.q800 = listingTagsState.q900 = false; }
+  } else {
+    const key = 'q'+tag;
+    const turningOn = !listingTagsState[key];
+    listingTagsState.q700 = listingTagsState.q800 = listingTagsState.q900 = false;
+    if(turningOn){ listingTagsState[key] = true; listingTagsState.crafted = true; }
+  }
+  renderListingTagButtons();
+}
+function renderListingTagButtons(){
+  const cB = $('tagBtn-crafted'); if(cB) cB.classList.toggle('active', listingTagsState.crafted);
+  const b7 = $('tagBtn-700'); if(b7) b7.classList.toggle('active', listingTagsState.q700);
+  const b8 = $('tagBtn-800'); if(b8) b8.classList.toggle('active', listingTagsState.q800);
+  const b9 = $('tagBtn-900'); if(b9) b9.classList.toggle('active', listingTagsState.q900);
+}
+function listingTagsArray(){
+  const tags = [];
+  if(listingTagsState.crafted) tags.push('crafted');
+  if(listingTagsState.q700) tags.push('700');
+  if(listingTagsState.q800) tags.push('800');
+  if(listingTagsState.q900) tags.push('900');
+  return tags;
+}
+function setListingTagsFromArray(tags){
+  const t = tags || [];
+  listingTagsState = { crafted: t.includes('crafted'), q700: t.includes('700'), q800: t.includes('800'), q900: t.includes('900') };
+  renderListingTagButtons();
+}
+function listingTagsHtml(tags){
+  if(!tags || !tags.length) return '';
+  const d = T[LANG];
+  const labelMap = { crafted:d.tagCrafted, '700':d.tagQ700, '800':d.tagQ800, '900':d.tagQ900 };
+  const classMap = { crafted:'tag-crafted', '700':'tag-q700', '800':'tag-q800', '900':'tag-q900' };
+  return `<div class="mkt-tags">${tags.map(t => `<span class="mkt-tag ${classMap[t]||''}">${labelMap[t]||t}</span>`).join('')}</div>`;
+}
+function resetListingForm(){
+  $('listingItem').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
+  listingTagsState = { crafted:false, q700:false, q800:false, q900:false };
+  renderListingTagButtons();
+}
+function openEditListing(id){
+  const l = myListingsCache.find(x => x.id === id);
+  if(!l) return;
+  const d = T[LANG];
+  editingListingId = id;
+  hideAllViews();
+  $('sellerCreateWrap').hidden = true;
+  $('view-seller-create-listing').hidden = false;
+  $('listingItem').value = l.item_name;
+  $('listingPrice').value = l.price;
+  $('listingQty').value = l.quantity;
+  pendingListingPhotoFile = null;
+  $('listingPhotoInput').value = '';
+  $('listingPhotoPreviewName').textContent = l.photo_url ? d.listingPhotoKeepNote : '';
+  setListingTagsFromArray(l.tags);
+  const titleEl = $('listingFormTitle');
+  if(titleEl){ titleEl.dataset.i18n = 'editListingTitle'; titleEl.textContent = d.editListingTitle; }
+  const btnEl = $('listingSubmitLabel');
+  if(btnEl){ btnEl.dataset.i18n = 'saveListingBtn'; btnEl.textContent = d.saveListingBtn; }
+}
 function onListingPhotoSelected(inputEl){
   const file = (inputEl.files && inputEl.files[0]) || null;
   inputEl.value = '';
@@ -3151,7 +3242,27 @@ async function createListing(){
   const price = parseFloat($('listingPrice').value) || 0;
   const quantity = parseInt($('listingQty').value,10) || 1;
   if(!item_name || price <= 0){ alert('Erreur : renseigne un objet et un prix valide.'); return; }
-  const { data, error } = await sb.from('marketplace_listings').insert({ seller_id: session.user.id, item_name, price, quantity }).select().single();
+  const tags = listingTagsArray();
+  if(editingListingId){
+    const id = editingListingId;
+    const { error } = await sb.from('marketplace_listings').update({ item_name, price, quantity, tags }).eq('id', id);
+    if(error){ alert('Erreur : '+error.message); return; }
+    if(pendingListingPhotoFile){
+      const ext = (pendingListingPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = `${session.user.id}/${id}.${ext}`;
+      const { error: upErr } = await sb.storage.from('marketplace-photos').upload(path, pendingListingPhotoFile, { upsert:true, cacheControl:'3600' });
+      if(!upErr){
+        const { data: urlData } = sb.storage.from('marketplace-photos').getPublicUrl(path);
+        await sb.from('marketplace_listings').update({ photo_url: urlData.publicUrl + '?t=' + Date.now() }).eq('id', id);
+      }
+    }
+    editingListingId = null;
+    resetListingForm();
+    toastShow(d.listingUpdated);
+    routeApp();
+    return;
+  }
+  const { data, error } = await sb.from('marketplace_listings').insert({ seller_id: session.user.id, item_name, price, quantity, tags }).select().single();
   if(error){ alert('Erreur : '+error.message); return; }
   if(pendingListingPhotoFile){
     const ext = (pendingListingPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
@@ -3162,7 +3273,7 @@ async function createListing(){
       await sb.from('marketplace_listings').update({ photo_url: urlData.publicUrl + '?t=' + Date.now() }).eq('id', data.id);
     }
   }
-  $('listingItem').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
+  resetListingForm();
   toastShow(d.listingSaved);
   routeApp();
 }
@@ -3216,14 +3327,8 @@ function myListingCardHtml(l){
         </div>
         <button class="btn-cancel" style="width:100%; margin-top:8px;" onclick="sellerCancelDelivery('${activeOrder.id}','${activeOrder.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>` : `
         <div class="my-listing-actions">
-          <button class="btn-secondary" onclick="toggleDeliveryForm('${l.id}')">${d.requestDeliveryBtn}</button>
+          <button class="btn-secondary" onclick="openEditListing('${l.id}')">${d.editListingBtn}</button>
           <button class="btn-logout" onclick="deleteListing('${l.id}')">${d.deleteListingBtn}</button>
-        </div>
-        <div class="delivery-request-form" id="dform-${l.id}" hidden>
-          <select id="dsys-${l.id}"><option value="Stanton">Stanton</option><option value="Nyx">Nyx</option><option value="Pyro">Pyro</option></select>
-          <input type="text" id="dloc-${l.id}" data-i18n-ph="phLieu" placeholder="${d.phLieu}">
-          <input type="text" id="dbuyer-${l.id}" placeholder="${d.phBuyerHandle}">
-          <button class="btn-primary" onclick="requestMarketplaceDelivery('${l.id}')">${d.confirmDeliveryBtn}</button>
         </div>`;
   return `
     <div class="mkt-card my-listing-card" data-listing="${l.id}">
@@ -3231,6 +3336,7 @@ function myListingCardHtml(l){
       <div class="mkt-info">
         <div class="mkt-item-name">${l.item_name}</div>
         <div class="mkt-price-row"><span class="mkt-price">${fmt(l.price)}</span><span class="mkt-qty">x${l.quantity}</span></div>
+        ${listingTagsHtml(l.tags)}
         ${actionsBlock}
       </div>
     </div>`;
@@ -3251,39 +3357,6 @@ async function sellerCancelDelivery(orderId, currentStatus){
     const d = T[LANG];
     fullBox.innerHTML = myListingsCache.length ? myListingsCache.map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.noListings}</p>`;
   }
-}
-function toggleDeliveryForm(id){
-  const form = $('dform-'+id); if(!form) return;
-  form.hidden = !form.hidden;
-}
-async function requestMarketplaceDelivery(listingId){
-  if(!session) return;
-  const d = T[LANG];
-  const { data: listing, error: lErr } = await sb.from('marketplace_listings').select('*').eq('id', listingId).single();
-  if(lErr || !listing){ alert('Erreur : objet introuvable.'); return; }
-  const system = $('dsys-'+listingId).value;
-  const location = $('dloc-'+listingId).value.trim();
-  const buyer = $('dbuyer-'+listingId).value.trim();
-  const gross = listing.price * listing.quantity;
-  const commission = computeCommission(gross);
-  const total = gross + commission;
-  const payload = {
-    order_type: 'marketplace',
-    seller_id: session.user.id,
-    listing_id: listingId,
-    buyer_handle: buyer || null,
-    destination_system: system,
-    exact_location: location,
-    items: [{ name: listing.item_name, price: listing.price, qty: listing.quantity }],
-    gross_price: gross, commission, total_price: total,
-    status: 'pending'
-  };
-  const { data: newOrder, error } = await sb.from('orders').insert(payload).select().single();
-  if(error){ alert('Erreur : '+error.message); return; }
-  notifyAllCouriers(newOrder && newOrder.id);
-  sweep();
-  toastShow(d.deliveryRequested);
-  toggleDeliveryForm(listingId);
 }
 
 async function loadReceivedInquiries(){
@@ -3327,7 +3400,7 @@ async function loadReceivedInquiries(){
   const buyerIds=[...new Set(rows.map(r=>r.buyer_id))];
   const [listings, buyers] = await Promise.all([
     listingIds.length ? sb.from('marketplace_listings').select('id,item_name,price,quantity').in('id', listingIds).then(r=>r.data||[]) : Promise.resolve([]),
-    buyerIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', buyerIds).then(r=>r.data||[]) : Promise.resolve([])
+    buyerIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle,default_system,default_location').in('id', buyerIds).then(r=>r.data||[]) : Promise.resolve([])
   ]);
   const lMap={}; listings.forEach(l=>lMap[l.id]=l);
   const bMap={}; buyers.forEach(b=>bMap[b.id]=b);
@@ -3362,10 +3435,25 @@ async function loadReceivedInquiries(){
     } else if(r.status === 'accepted'){
       if(r.delivery_method === 'pickup'){
         actions = `<div class="inquiry-actions"><button class="btn-secondary" onclick="markPickedUp('${r.id}')">${d.markPickedUpBtn}</button></div>`;
+      } else if(r.order_id){
+        actions = `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
       } else {
-        actions = r.order_id
-          ? `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`
-          : `<div class="inquiry-actions"><button class="btn-secondary" onclick="handToCourier('${r.id}')">${d.handToCourierBtn}</button></div>`;
+        const sys = (buyer && buyer.default_system) || 'Stanton';
+        const loc = (buyer && buyer.default_location) || '';
+        const buyerHandleVal = buyer ? displayName(buyer) : '';
+        actions = `<div class="inquiry-actions">
+          <button class="btn-secondary" onclick="toggleInquiryDeliveryForm('${r.id}')">${d.requestDeliveryBtn}</button>
+        </div>
+        <div class="delivery-request-form" id="idform-${r.id}" hidden>
+          <select id="idsys-${r.id}">
+            <option value="Stanton" ${sys==='Stanton'?'selected':''}>Stanton</option>
+            <option value="Nyx" ${sys==='Nyx'?'selected':''}>Nyx</option>
+            <option value="Pyro" ${sys==='Pyro'?'selected':''}>Pyro</option>
+          </select>
+          <input type="text" id="idloc-${r.id}" data-i18n-ph="phLieu" placeholder="${d.phLieu}" value="${loc}">
+          <input type="text" id="idbuyer-${r.id}" placeholder="${d.phBuyerHandle}" value="${buyerHandleVal}">
+          <button class="btn-primary" onclick="requestInquiryDelivery('${r.id}')">${d.confirmDeliveryBtn}</button>
+        </div>`;
       }
     }
     return `
@@ -3380,6 +3468,10 @@ async function loadReceivedInquiries(){
         ${actions}
       </div>`;
   }).join('') + resOffersHtml;
+}
+function toggleInquiryDeliveryForm(id){
+  const form = $('idform-'+id); if(!form) return;
+  form.hidden = !form.hidden;
 }
 function toggleCounterForm(id){
   const f = $('cform-'+id); if(!f) return;
@@ -3423,14 +3515,17 @@ async function markPickedUp(id){
   checkAndRenderSellerAchievements('sellerDashAchvCard');
   fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('sellerDashStatsCard'), stats));
 }
-async function handToCourier(id){
+async function requestInquiryDelivery(id){
   if(!session) return;
   const d = T[LANG];
   const { data: inquiry, error: iErr } = await sb.from('marketplace_inquiries').select('*').eq('id', id).single();
   if(iErr || !inquiry){ alert('Erreur : demande introuvable.'); return; }
   const { data: listing, error: lErr } = await sb.from('marketplace_listings').select('*').eq('id', inquiry.listing_id).single();
   if(lErr || !listing){ alert('Erreur : objet introuvable.'); return; }
-  const { data: buyer } = await sb.from('profiles').select('id,discord_username,rsi_handle,default_system,default_location').eq('id', inquiry.buyer_id).single();
+  const sysEl = $('idsys-'+id), locEl = $('idloc-'+id), buyerEl = $('idbuyer-'+id);
+  const system = sysEl ? sysEl.value : 'Stanton';
+  const location = locEl ? locEl.value.trim() : '';
+  const buyerHandleInput = buyerEl ? buyerEl.value.trim() : '';
   const unitPrice = inquiry.offer_price != null ? Number(inquiry.offer_price) : Number(listing.price);
   const gross = unitPrice * listing.quantity;
   const commission = computeCommission(gross);
@@ -3440,9 +3535,9 @@ async function handToCourier(id){
     client_id: inquiry.buyer_id,
     seller_id: session.user.id,
     listing_id: listing.id,
-    buyer_handle: buyer ? displayName(buyer) : null,
-    destination_system: (buyer && buyer.default_system) || 'Stanton',
-    exact_location: (buyer && buyer.default_location) || '',
+    buyer_handle: buyerHandleInput || null,
+    destination_system: system,
+    exact_location: location,
     items: [{ name: listing.item_name, price: unitPrice, qty: listing.quantity }],
     gross_price: gross, commission, total_price: total,
     status: 'pending'

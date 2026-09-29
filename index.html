@@ -194,10 +194,21 @@
   .order-card{position:relative; border:1px solid var(--border); border-radius:4px; padding:14px; margin-bottom:12px; background:var(--bg2);}
   .new-order-dot{position:absolute; top:10px; right:14px; width:10px; height:10px; background:var(--danger); border-radius:50%; box-shadow:0 0 0 2px var(--bg2), 0 0 6px var(--danger); animation:notifPulse 1.5s ease-in-out infinite; pointer-events:none;}
   .order-card.big{padding:22px 28px 18px;}
-  /* --- ITINÉRAIRE D'ACHAT (schéma) --- */
-  .purchase-route{margin-top:18px; margin-bottom:4px; padding:22px 24px; border:1px solid var(--accent); border-radius:6px; background:rgba(0,0,0,.22); animation:courierAdGlow 2.6s ease-in-out infinite;}
-  .purchase-route-title{font-family:'VT323',monospace; font-size:1.35rem; color:var(--accent); text-shadow:0 0 8px var(--accent-dim); margin-bottom:18px; letter-spacing:.6px; text-transform:uppercase; display:flex; align-items:center; gap:8px;}
-  .purchase-route-title::before{content:'⟡'; font-size:1.1rem;}
+  /* --- LIVRAISONS COURSIER : défilement horizontal --- */
+  .deliveries-scroll{display:flex; gap:16px; overflow-x:auto; overflow-y:hidden; padding-bottom:16px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;}
+  .deliveries-scroll .order-card.big{flex:0 0 clamp(260px, 82vw, 380px); max-width:380px; margin-bottom:0; scroll-snap-align:start;}
+  .deliveries-scroll::-webkit-scrollbar{height:14px;}
+  .deliveries-scroll::-webkit-scrollbar-track{background:var(--bg2); border:1px solid var(--border);}
+  .deliveries-scroll::-webkit-scrollbar-thumb{background:var(--accent); border:3px solid var(--bg); box-shadow:0 0 6px var(--accent-dim); image-rendering:pixelated;}
+  .deliveries-scroll{scrollbar-width:auto; scrollbar-color:var(--accent) var(--bg2);}
+  /* --- ITINÉRAIRE D'ACHAT (schéma, repliable) --- */
+  .purchase-route{margin-top:18px; margin-bottom:4px; border:1px solid var(--accent); border-radius:6px; background:rgba(0,0,0,.22); animation:courierAdGlow 2.6s ease-in-out infinite; overflow:hidden;}
+  .purchase-route-title{font-family:'VT323',monospace; font-size:1.2rem; color:var(--accent); text-shadow:0 0 8px var(--accent-dim); letter-spacing:.6px; text-transform:uppercase; display:flex; align-items:center; gap:8px; padding:14px 18px; margin:0; cursor:pointer; user-select:none;}
+  .purchase-route-title::before{content:'⟡'; font-size:1.05rem;}
+  .purchase-route-toggle{margin-left:auto; font-size:1.1rem; transition:transform .2s ease; flex:none;}
+  .purchase-route.collapsed .purchase-route-toggle{transform:rotate(-90deg);}
+  .purchase-route-body{max-height:2000px; padding:0 22px 22px; transition:max-height .25s ease, padding .25s ease;}
+  .purchase-route.collapsed .purchase-route-body{max-height:0; padding:0 22px;}
   .route-stop{display:flex; gap:16px; align-items:flex-start;}
   .route-stop-num{flex:none; width:32px; height:32px; border-radius:50%; border:2px solid var(--accent); color:var(--accent); background:rgba(0,0,0,.35); font-family:'VT323',monospace; font-size:1.15rem; display:flex; align-items:center; justify-content:center; text-shadow:0 0 4px var(--accent-dim); box-shadow:0 0 8px var(--accent-dim);}
   .route-stop-body{flex:1; min-width:0; padding-top:3px; padding-bottom:6px;}
@@ -1792,12 +1803,18 @@ function renderPurchaseRouteHtml(order, route){
     </div>`;
   const unresolvedHtml = route.unresolved.length ? `<div class="route-unresolved">${d.routeUnresolvedNote} ${route.unresolved.join(', ')}</div>` : '';
   return `
-    <div class="purchase-route">
-      <div class="purchase-route-title">${d.purchaseRouteTitle}</div>
-      ${stopsHtml}
-      ${deliveryHtml}
-      ${unresolvedHtml}
+    <div class="purchase-route collapsed">
+      <div class="purchase-route-title" onclick="togglePurchaseRoute(this)">${d.purchaseRouteTitle}<span class="purchase-route-toggle">▸</span></div>
+      <div class="purchase-route-body">
+        ${stopsHtml}
+        ${deliveryHtml}
+        ${unresolvedHtml}
+      </div>
     </div>`;
+}
+function togglePurchaseRoute(titleEl){
+  const wrap = titleEl.closest('.purchase-route');
+  if(wrap) wrap.classList.toggle('collapsed');
 }
 
 // --- UEX CORP : catalogue vaisseaux (pour le "vaisseau livreur par défaut" en profil) ---
@@ -2931,7 +2948,7 @@ async function renderMyDeliveries(orders){
   const clientIds=[...new Set(orders.filter(o=>o.order_type!=='marketplace').map(o=>o.client_id))];
   const profs = clientIds.length ? await sb.from('profiles').select('id,discord_username,rsi_handle').in('id', clientIds).then(r=>r.data||[]) : [];
   const clients = {}; profs.forEach(p=>clients[p.id]=p);
-  box.innerHTML = orders.map(o => {
+  const cardsHtml = orders.map(o => {
     const isMkt = o.order_type === 'marketplace';
     let btn = '';
     if(o.status==='accepted' && !isMkt) btn = `<button onclick="advanceOrder('${o.id}','purchased')">${d.markPurchased}</button>`;
@@ -2948,17 +2965,29 @@ async function renderMyDeliveries(orders){
     return `
     <div class="order-card big${justAccepted}">
       ${badge}
-      <div class="status">${d.statusLabels[o.status]}</div>
+      <div class="order-top-row">
+        <div class="status">${d.statusLabels[o.status]}</div>
+        ${btn}
+      </div>
       <div class="meta">${metaLine}</div>
       ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
       ${shipTrackHtml(o)}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty}</li>`).join('')}</ul>
       <div class="line margin-line"><span>${d.courierMarginLbl}</span><span>${fmt(o.commission)}</span></div>
       ${showRoute ? `<div class="purchase-route-slot" id="route-slot-${o.id}"></div>` : ''}
-      ${btn}
       ${releaseBtn}
     </div>`;
   }).join('');
+  box.innerHTML = `<div class="deliveries-scroll">${cardsHtml}</div>`;
+  const scrollWrap = box.querySelector('.deliveries-scroll');
+  if(scrollWrap){
+    scrollWrap.addEventListener('wheel', (e) => {
+      if(Math.abs(e.deltaY) > Math.abs(e.deltaX)){
+        e.preventDefault();
+        scrollWrap.scrollLeft += e.deltaY;
+      }
+    }, { passive:false });
+  }
   animateShipTracks(box);
   justAcceptedOrderId = null;
   // Calcule et injecte l'itinéraire d'achat de chaque commande acceptée, en tâche de fond

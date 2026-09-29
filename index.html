@@ -3826,11 +3826,12 @@ async function markPickedUp(id){
   if(iErr || !inquiry){ alert('Erreur : demande introuvable.'); return; }
   const { data: listing } = await sb.from('marketplace_listings').select('*').eq('id', inquiry.listing_id).maybeSingle();
   const unitPrice = inquiry.offer_price != null ? Number(inquiry.offer_price) : (listing ? Number(listing.price) : 0);
-  const { error } = await sb.from('marketplace_inquiries').update({
+  const { data: updated, error } = await sb.from('marketplace_inquiries').update({
     status:'completed', updated_at: new Date().toISOString(),
     snap_item_name: listing ? listing.item_name : null, snap_price: unitPrice, snap_qty: listing ? listing.quantity : 1
-  }).eq('id', id);
+  }).eq('id', id).select().maybeSingle();
   if(error){ alert('Erreur : '+error.message); return; }
+  if(!updated){ alert('Erreur : la mise à jour a été bloquée (droits insuffisants sur la base). La vente n\'a PAS été validée, réessaie ou contacte l\'admin.'); return; }
   if(listing) await sb.from('marketplace_listings').delete().eq('id', listing.id);
   sweep(); loadReceivedInquiries();
   checkAndRenderSellerAchievements('sellerDashAchvCard');

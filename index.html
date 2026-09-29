@@ -277,7 +277,7 @@
   @media (min-width:960px){ .marketplace-grid{grid-template-columns:1fr 1fr 1fr;} }
   /* "Derniers objets en vente" côté client : cartes plus petites et nombre de colonnes qui s'adapte
      automatiquement à la largeur d'écran, au lieu d'un nombre de colonnes fixe. */
-  #marketplaceFeed.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
+  #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
   .mkt-toolbar{display:flex; align-items:center; gap:10px; margin:2px 0 16px; flex-wrap:wrap;}
   .mkt-search-input{flex:1; min-width:160px; width:auto;}
   .mkt-filter-wrap{flex:0 0 auto;}
@@ -1175,7 +1175,7 @@
 
         <div class="card seller-section-card">
           <div class="shop-preview-head">
-            <h3 data-i18n="myResourceRequestsTitle">MES DEMANDES</h3>
+            <h3 data-i18n="myResourceRequestsTitle">OBJETS RECHERCHÉS</h3>
             <button type="button" class="btn-secondary shop-see-more" id="sellerRequestsViewMoreBtn" onclick="openSellerAllRequests()" hidden>
               <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
             </button>
@@ -1244,7 +1244,7 @@
     <!-- TOUTES MES DEMANDES DE RESSOURCES (page dédiée) -->
     <section id="view-seller-all-resources" hidden>
       <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
-      <header><h1 data-i18n="myResourceRequestsTitle">Mes demandes</h1></header>
+      <header><h1 data-i18n="myResourceRequestsTitle">Objets recherchés</h1></header>
       <div id="myResourceRequestsListFull" class="resource-request-grid"></div>
     </section>
 
@@ -1321,7 +1321,7 @@
 
       <div class="card seller-section-card">
         <div class="shop-preview-head">
-          <h3 data-i18n="myResourceRequestsTitle">Ressources demandées</h3>
+          <h3 data-i18n="myResourceRequestsTitle">Objets recherchés</h3>
           <button type="button" class="btn-secondary shop-see-more" id="shopResourcesViewMoreBtn" onclick="openShopAllResources()" hidden>
             <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
           </button>
@@ -1340,7 +1340,7 @@
     <!-- TOUTES LES RESSOURCES DEMANDÉES DE CE VENDEUR (vue client) -->
     <section id="view-shop-all-resources" hidden>
       <button class="back" onclick="openSellerShop(shopViewingSellerId)" data-i18n="back">&lt; RETOUR</button>
-      <header><h1 data-i18n="myResourceRequestsTitle">Ressources demandées</h1></header>
+      <header><h1 data-i18n="myResourceRequestsTitle">Objets recherchés</h1></header>
       <div id="shopResourceRequestsGridFull" class="resource-request-grid"></div>
     </section>
   </div>
@@ -3642,8 +3642,8 @@ async function openSellerShop(sellerId){
   shopListingsCache = listings || [];
   shopSellerMapCache = { [sellerId]: { ...p, shop_name: (shop && shop.shop_name) || null } };
   if(!shopListingsCache.length){ grid.innerHTML = `<p class="muted">${d.shopPageEmpty}</p>`; }
-  else grid.innerHTML = shopListingsCache.slice(0,3).map(l => mktCardHtml(l, shopSellerMapCache)).join('');
-  if(listingsMoreBtn) listingsMoreBtn.hidden = shopListingsCache.length <= 3;
+  else grid.innerHTML = shopListingsCache.slice(0,4).map(l => mktCardHtml(l, shopSellerMapCache)).join('');
+  if(listingsMoreBtn) listingsMoreBtn.hidden = shopListingsCache.length <= 4;
 
   const isOwner = session && session.user.id === sellerId;
   shopResourceRequestsCache = resourceRequests || [];

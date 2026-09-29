@@ -194,35 +194,31 @@
   .order-card{position:relative; border:1px solid var(--border); border-radius:4px; padding:14px; margin-bottom:12px; background:var(--bg2);}
   .new-order-dot{position:absolute; top:10px; right:14px; width:10px; height:10px; background:var(--danger); border-radius:50%; box-shadow:0 0 0 2px var(--bg2), 0 0 6px var(--danger); animation:notifPulse 1.5s ease-in-out infinite; pointer-events:none;}
   .order-card.big{padding:22px 28px 18px;}
-  /* --- LIVRAISONS COURSIER : défilement horizontal --- */
-  .deliveries-scroll{display:flex; gap:16px; overflow-x:auto; overflow-y:hidden; padding-bottom:16px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;}
-  .deliveries-scroll .order-card.big{flex:0 0 clamp(260px, 82vw, 380px); max-width:380px; margin-bottom:0; scroll-snap-align:start;}
+  /* --- LIVRAISONS COURSIER : défilement horizontal + alignement --- */
+  .deliveries-scroll{display:flex; align-items:stretch; gap:16px; overflow-x:auto; overflow-y:hidden; padding-bottom:16px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;}
+  .deliveries-scroll .order-card.big{flex:0 0 clamp(260px, 82vw, 380px); max-width:380px; margin-bottom:0; scroll-snap-align:start; display:flex; flex-direction:column;}
   .deliveries-scroll::-webkit-scrollbar{height:14px;}
   .deliveries-scroll::-webkit-scrollbar-track{background:var(--bg2); border:1px solid var(--border);}
   .deliveries-scroll::-webkit-scrollbar-thumb{background:var(--accent); border:3px solid var(--bg); box-shadow:0 0 6px var(--accent-dim); image-rendering:pixelated;}
   .deliveries-scroll{scrollbar-width:auto; scrollbar-color:var(--accent) var(--bg2);}
-  /* --- ITINÉRAIRE D'ACHAT (schéma, repliable) --- */
-  .purchase-route{margin-top:18px; margin-bottom:4px; border:1px solid var(--accent); border-radius:6px; background:rgba(0,0,0,.22); animation:courierAdGlow 2.6s ease-in-out infinite; overflow:hidden;}
-  .purchase-route-title{font-family:'VT323',monospace; font-size:1.2rem; color:var(--accent); text-shadow:0 0 8px var(--accent-dim); letter-spacing:.6px; text-transform:uppercase; display:flex; align-items:center; gap:8px; padding:14px 18px; margin:0; cursor:pointer; user-select:none;}
-  .purchase-route-title::before{content:'⟡'; font-size:1.05rem;}
-  .purchase-route-toggle{margin-left:auto; font-size:1.1rem; transition:transform .2s ease; flex:none;}
-  .purchase-route.collapsed .purchase-route-toggle{transform:rotate(-90deg);}
-  .purchase-route-body{max-height:2000px; padding:0 22px 22px; transition:max-height .25s ease, padding .25s ease;}
-  .purchase-route.collapsed .purchase-route-body{max-height:0; padding:0 22px;}
-  .route-stop{display:flex; gap:16px; align-items:flex-start;}
-  .route-stop-num{flex:none; width:32px; height:32px; border-radius:50%; border:2px solid var(--accent); color:var(--accent); background:rgba(0,0,0,.35); font-family:'VT323',monospace; font-size:1.15rem; display:flex; align-items:center; justify-content:center; text-shadow:0 0 4px var(--accent-dim); box-shadow:0 0 8px var(--accent-dim);}
-  .route-stop-body{flex:1; min-width:0; padding-top:3px; padding-bottom:6px;}
-  .route-stop-place{font-family:'VT323',monospace; font-size:1.25rem; color:var(--text); letter-spacing:.4px; margin-bottom:8px;}
-  .route-stop-items{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px;}
-  .route-stop-items li{font-size:.92rem; color:var(--muted); padding:7px 12px; background:rgba(255,255,255,.03); border-left:2px solid var(--accent-dim); border-radius:2px; line-height:1.4;}
-  .route-stop-terminal{color:var(--muted); font-style:italic; opacity:.75;}
-  .route-arrow{width:32px; text-align:center; color:var(--accent); font-family:'VT323',monospace; font-size:1.5rem; line-height:1; margin:2px 0; text-shadow:0 0 6px var(--accent-dim); animation:routeArrowPulse 1.6s ease-in-out infinite;}
+  .order-card-actions{margin-top:auto; padding-top:14px; display:flex; flex-direction:column; gap:10px;}
+  /* --- ITINÉRAIRE D'ACHAT : bouton d'ouverture + contenu de la modale --- */
+  .route-view-btn{width:100%; display:flex; align-items:center; justify-content:center; gap:8px;}
+  .route-view-btn::before{content:'⟡'; font-size:1.05rem;}
+  #routeModalBody .route-stop{display:flex; gap:16px; align-items:flex-start;}
+  #routeModalBody .route-stop-num{flex:none; width:32px; height:32px; border-radius:50%; border:2px solid var(--accent); color:var(--accent); background:rgba(0,0,0,.35); font-family:'VT323',monospace; font-size:1.15rem; display:flex; align-items:center; justify-content:center; text-shadow:0 0 4px var(--accent-dim); box-shadow:0 0 8px var(--accent-dim);}
+  #routeModalBody .route-stop-body{flex:1; min-width:0; padding-top:3px; padding-bottom:6px;}
+  #routeModalBody .route-stop-place{font-family:'VT323',monospace; font-size:1.25rem; color:var(--text); letter-spacing:.4px; margin-bottom:8px;}
+  #routeModalBody .route-stop-items{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px;}
+  #routeModalBody .route-stop-items li{font-size:.92rem; color:var(--muted); padding:7px 12px; background:rgba(255,255,255,.03); border-left:2px solid var(--accent-dim); border-radius:2px; line-height:1.4;}
+  #routeModalBody .route-stop-terminal{color:var(--muted); font-style:italic; opacity:.75;}
+  #routeModalBody .route-arrow{width:32px; text-align:center; color:var(--accent); font-family:'VT323',monospace; font-size:1.5rem; line-height:1; margin:2px 0; text-shadow:0 0 6px var(--accent-dim); animation:routeArrowPulse 1.6s ease-in-out infinite;}
   @keyframes routeArrowPulse{0%,100%{opacity:.45; transform:translateY(0);} 50%{opacity:1; transform:translateY(3px);}}
-  .route-stop-delivery{margin-top:6px; padding:14px 16px; border:1px solid var(--accent); border-radius:4px; background:rgba(255,140,26,.08); box-shadow:0 0 16px var(--accent-dim);}
-  .route-stop-delivery .route-stop-body{padding:0;}
-  .route-stop-delivery .route-stop-num{background:var(--accent); color:#03130a; border-color:var(--accent); box-shadow:0 0 12px var(--accent);}
-  .route-stop-delivery .route-stop-place{color:var(--accent); text-shadow:0 0 8px var(--accent-dim); margin-bottom:0;}
-  .route-unresolved{margin-top:16px; padding-top:12px; border-top:1px dashed var(--border); font-size:.85rem; color:var(--muted); line-height:1.5;}
+  #routeModalBody .route-stop-delivery{margin-top:6px; padding:14px 16px; border:1px solid var(--accent); border-radius:4px; background:rgba(255,140,26,.08); box-shadow:0 0 16px var(--accent-dim);}
+  #routeModalBody .route-stop-delivery .route-stop-body{padding:0;}
+  #routeModalBody .route-stop-delivery .route-stop-num{background:var(--accent); color:#03130a; border-color:var(--accent); box-shadow:0 0 12px var(--accent);}
+  #routeModalBody .route-stop-delivery .route-stop-place{color:var(--accent); text-shadow:0 0 8px var(--accent-dim); margin-bottom:0;}
+  #routeModalBody .route-unresolved{margin-top:16px; padding-top:12px; border-top:1px dashed var(--border); font-size:.85rem; color:var(--muted); line-height:1.5;}
   .order-card.just-accepted{animation:orderAcceptedFlash 1.8s ease-out;}
   @keyframes orderAcceptedFlash{
     0%{box-shadow:0 0 0 2px var(--accent), 0 0 24px var(--accent); border-color:var(--accent); background:var(--accent-dim);}
@@ -681,6 +677,15 @@
         </div>
         <p class="muted" style="font-size:.75rem; margin-top:6px;" data-i18n="cropDragHint">Fais glisser l'image pour la repositionner.</p>
         <button type="button" class="btn-primary" style="width:100%; margin-top:10px;" onclick="confirmCrop()" data-i18n="cropConfirmBtn">VALIDER LE RECADRAGE</button>
+      </div>
+    </div>
+
+    <!-- ITINÉRAIRE D'ACHAT COURSIER (modale) -->
+    <div class="modal-overlay" id="routeModalOverlay" hidden onclick="if(event.target===this) closePurchaseRouteModal()">
+      <div class="card modal-card" style="max-width:460px;">
+        <button type="button" class="modal-close" onclick="closePurchaseRouteModal()">&times;</button>
+        <h3 data-i18n="purchaseRouteTitle">Itinéraire d'achat conseillé</h3>
+        <div id="routeModalBody"></div>
       </div>
     </div>
 
@@ -1802,19 +1807,18 @@ function renderPurchaseRouteHtml(order, route){
       </div>
     </div>`;
   const unresolvedHtml = route.unresolved.length ? `<div class="route-unresolved">${d.routeUnresolvedNote} ${route.unresolved.join(', ')}</div>` : '';
-  return `
-    <div class="purchase-route collapsed">
-      <div class="purchase-route-title" onclick="togglePurchaseRoute(this)">${d.purchaseRouteTitle}<span class="purchase-route-toggle">▸</span></div>
-      <div class="purchase-route-body">
-        ${stopsHtml}
-        ${deliveryHtml}
-        ${unresolvedHtml}
-      </div>
-    </div>`;
+  return `${stopsHtml}${deliveryHtml}${unresolvedHtml}`;
 }
-function togglePurchaseRoute(titleEl){
-  const wrap = titleEl.closest('.purchase-route');
-  if(wrap) wrap.classList.toggle('collapsed');
+// Cache des itinéraires d'achat déjà calculés, par id de commande (pour ouverture instantanée de la modale).
+const purchaseRouteCache = {};
+function openPurchaseRouteModal(orderId){
+  const entry = purchaseRouteCache[orderId];
+  if(!entry) return;
+  $('routeModalBody').innerHTML = renderPurchaseRouteHtml(entry.order, entry.route);
+  $('routeModalOverlay').hidden = false;
+}
+function closePurchaseRouteModal(){
+  $('routeModalOverlay').hidden = true;
 }
 
 // --- UEX CORP : catalogue vaisseaux (pour le "vaisseau livreur par défaut" en profil) ---
@@ -2974,8 +2978,10 @@ async function renderMyDeliveries(orders){
       ${shipTrackHtml(o)}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty}</li>`).join('')}</ul>
       <div class="line margin-line"><span>${d.courierMarginLbl}</span><span>${fmt(o.commission)}</span></div>
-      ${showRoute ? `<div class="purchase-route-slot" id="route-slot-${o.id}"></div>` : ''}
-      ${releaseBtn}
+      <div class="order-card-actions">
+        ${showRoute ? `<div class="purchase-route-slot" id="route-slot-${o.id}"><button type="button" class="route-view-btn" disabled>${d.routeLoading}</button></div>` : ''}
+        ${releaseBtn}
+      </div>
     </div>`;
   }).join('');
   box.innerHTML = `<div class="deliveries-scroll">${cardsHtml}</div>`;
@@ -2998,7 +3004,10 @@ async function renderMyDeliveries(orders){
     try{
       const route = await buildPurchaseRoute(o);
       const stillThere = document.getElementById('route-slot-'+o.id);
-      if(stillThere) stillThere.outerHTML = renderPurchaseRouteHtml(o, route) || '';
+      if(!stillThere) return;
+      if(!route.stops.length && !route.unresolved.length){ stillThere.remove(); return; }
+      purchaseRouteCache[o.id] = { order: o, route };
+      stillThere.innerHTML = `<button type="button" class="route-view-btn" onclick="openPurchaseRouteModal('${o.id}')">${d.purchaseRouteTitle}</button>`;
     }catch(e){ console.error('[buildPurchaseRoute] exception:', e); }
   });
 }

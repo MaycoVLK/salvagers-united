@@ -358,11 +358,8 @@
   .crop-frame-hint{position:absolute; inset:0; border:1px dashed var(--accent-dim); pointer-events:none;}
   .crop-zoom-row{display:flex; align-items:center; gap:10px; margin-top:10px;}
   .crop-zoom-row input[type="range"]{flex:1;}
-  .modal-card{max-width:440px; width:100%; max-height:88vh; overflow-y:auto; margin:0; scrollbar-width:thin; scrollbar-color:var(--accent) var(--bg2);}
-  .modal-card::-webkit-scrollbar{width:7px;}
-  .modal-card::-webkit-scrollbar-track{background:var(--bg2);}
-  .modal-card::-webkit-scrollbar-thumb{background:var(--accent-dim); border:1px solid var(--border);}
-  .modal-card::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+  .modal-card{max-width:440px; width:100%; max-height:88vh; overflow-y:auto; overflow-x:hidden; margin:0; scrollbar-width:none; -ms-overflow-style:none;}
+  .modal-card::-webkit-scrollbar{display:none;}
   .modal-close{position:absolute; top:10px; right:10px; width:30px; height:30px; padding:0; background:none; border:1px solid var(--border); border-radius:4px; color:var(--muted); font-size:1.3rem; line-height:1; cursor:pointer;}
   .modal-close:hover{color:var(--accent); border-color:var(--accent);}
   .modal-card h3{margin-top:0; padding-right:34px;}
@@ -744,7 +741,7 @@
                 <rect x="2" y="7" width="12" height="2"/><rect x="6" y="3" width="2" height="2"/><rect x="8" y="3" width="2" height="2"/>
                 <rect x="4" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/><rect x="7" y="9" width="2" height="5"/>
               </g></svg>
-              <span data-i18n="requestResourcesTitle">Demander des ressources</span>
+              <span data-i18n="requestResourcesTitle">Poster un objet recherché</span>
             </button>
           </div>
         </div>
@@ -806,7 +803,7 @@
       <div class="tabs">
         <button class="tab-btn active" id="tabBtnDeliveries" onclick="setClientTab('deliveries')"><span data-i18n="tabDeliveries">LIVRAISONS</span><span class="notif-dot" id="dotTabDeliveries"></span></button>
         <button class="tab-btn" id="tabBtnMarketplace" onclick="setClientTab('marketplace')"><span data-i18n="tabMarketplace">MARKETPLACE</span><span class="notif-dot" id="dotTabMarketplace"></span></button>
-        <button class="tab-btn" id="tabBtnResources" onclick="setClientTab('resources')"><span data-i18n="tabResources">RESSOURCES DEMANDÉES</span><span class="notif-dot" id="dotTabResources"></span></button>
+        <button class="tab-btn" id="tabBtnResources" onclick="setClientTab('resources')"><span data-i18n="tabResources">DESIRED ITEMS</span><span class="notif-dot" id="dotTabResources"></span></button>
       </div>
       <div id="clientTabDeliveries">
         <div class="card courier-ad" id="courierAdCard" hidden></div>
@@ -1221,10 +1218,10 @@
     <!-- DEMANDE DE RESSOURCE (page dédiée) -->
     <section id="view-seller-create-resource" hidden>
       <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
-      <header><h1 data-i18n="requestResourcesTitle">Demander des ressources</h1></header>
+      <header><h1 data-i18n="requestResourcesTitle">Poster un objet recherché</h1></header>
       <div class="card">
-        <label for="resourceName" data-i18n="resourceNameLbl">Ressource recherchée</label>
-        <input id="resourceName" type="text" data-i18n-ph="phResourceName" placeholder="ex: Laranite brute">
+        <label for="resourceName" data-i18n="resourceNameLbl">Objet recherché</label>
+        <input id="resourceName" type="text" data-i18n-ph="phResourceName" placeholder="ex: Laranite brute, casque d'armure lourde...">
         <label for="resourceQty" data-i18n="resourceQtyLbl">Quantité souhaitée</label>
         <input id="resourceQty" type="number" min="1" step="1" value="1">
         <label for="resourcePrice" data-i18n="resourcePriceLbl">Prix proposé (aUEC, optionnel)</label>
@@ -1232,7 +1229,7 @@
         <label for="resourceNote" data-i18n="resourceNoteLbl">Note (optionnel)</label>
         <textarea id="resourceNote" data-i18n-ph="phResourceNote" placeholder="ex: Livraison sur Nyx, quantité négociable..."></textarea>
         <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createResourceRequest()">
-          <span data-i18n="submitResourceRequestBtn">ENVOYER LA DEMANDE</span>
+          <span data-i18n="submitResourceRequestBtn">PUBLIER L'ANNONCE</span>
         </button>
       </div>
     </section>
@@ -1515,11 +1512,11 @@ const T = {
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
     newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
     listingTagsLbl:"Tags (optionnel)", tagCrafted:"CRAFTÉ", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", editListingBtn:"MODIFIER",
-    requestResourcesTitle:"Demander des ressources", requestResourcesBtn:"DEMANDER DES RESSOURCES", resourceNameLbl:"Ressource recherchée", phResourceName:"ex: Laranite brute", resourceQtyLbl:"Quantité souhaitée", resourcePriceLbl:"Prix proposé (aUEC, optionnel)", resourceNoteLbl:"Note (optionnel)", phResourceNote:"ex: Livraison sur Nyx, quantité négociable...", submitResourceRequestBtn:"ENVOYER LA DEMANDE", resourceRequestSaved:"DEMANDE ENVOYÉE !",
-    myResourceRequestsTitle:"Mes demandes", noResourceRequests:"Tu n'as posté aucune demande de ressource pour le moment.",
-    tabResources:"RESSOURCES DEMANDÉES", requestedResourcesTitle:"Ressources demandées par les vendeurs", noOpenResourceRequests:"Aucune demande de ressource en cours.", resourceRequestedBy:"Demandé par ",
+    requestResourcesTitle:"Poster un objet recherché", requestResourcesBtn:"OBJET RECHERCHÉ", resourceNameLbl:"Objet recherché", phResourceName:"ex: Laranite brute, casque d'armure lourde...", resourceQtyLbl:"Quantité souhaitée", resourcePriceLbl:"Prix proposé (aUEC, optionnel)", resourceNoteLbl:"Note (optionnel)", phResourceNote:"ex: Livraison sur Nyx, quantité négociable...", submitResourceRequestBtn:"PUBLIER L'ANNONCE", resourceRequestSaved:"ANNONCE PUBLIÉE !",
+    myResourceRequestsTitle:"Objets recherchés", noResourceRequests:"Tu n'as posté aucune annonce d'objet recherché pour le moment.",
+    tabResources:"DESIRED ITEMS", requestedResourcesTitle:"Objets recherchés par les vendeurs", noOpenResourceRequests:"Aucune annonce en cours.", resourceRequestedBy:"Demandé par ",
     proposeResourceBtn:"PROPOSER DE FOURNIR", resourceOfferMsgLbl:"Message au vendeur", phResourceOfferMsg:"ex: J'en ai 50 unités disponibles, je peux livrer sur Stanton.", resourceOfferPriceLbl:"Ton prix (aUEC, optionnel)", submitResourceOfferBtn:"ENVOYER LA PROPOSITION", resourceOfferSent:"PROPOSITION ENVOYÉE !",
-    myResourceOffersTitle:"Mes propositions", noResourceOffers:"Tu n'as envoyé aucune proposition pour le moment.", resourceOfferLabel:"Ressource demandée :",
+    myResourceOffersTitle:"Mes propositions", noResourceOffers:"Tu n'as envoyé aucune proposition pour le moment.", resourceOfferLabel:"Objet recherché :",
     shopDescLbl:"Description de la boutique (optionnel)", phShopDesc:"ex: Spécialiste minerais rares, livraison rapide sur Stanton.",
     cropModalTitle:"Recadrer la photo", cropZoomLbl:"Zoom", cropDragHint:"Fais glisser l'image pour la repositionner.", cropConfirmBtn:"VALIDER LE RECADRAGE", photoReady:"Photo prête ✓",
     myListingsTitle:"Mes annonces", noListings:"Tu n'as encore aucune annonce.", deleteListingBtn:"SUPPRIMER", confirmDeleteListing:"Supprimer cette annonce définitivement ?",
@@ -1635,11 +1632,11 @@ const T = {
     rankToNextSales:"{n} more sale(s) to reach {rank}",
     newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
     listingTagsLbl:"Tags (optional)", tagCrafted:"CRAFTED", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", editListingBtn:"EDIT",
-    requestResourcesTitle:"Request resources", requestResourcesBtn:"REQUEST RESOURCES", resourceNameLbl:"Resource wanted", phResourceName:"e.g. Raw Laranite", resourceQtyLbl:"Quantity wanted", resourcePriceLbl:"Price offered (aUEC, optional)", resourceNoteLbl:"Note (optional)", phResourceNote:"e.g. Delivery to Nyx, quantity negotiable...", submitResourceRequestBtn:"SEND REQUEST", resourceRequestSaved:"REQUEST SENT!",
-    myResourceRequestsTitle:"My requests", noResourceRequests:"You haven't posted any resource request yet.",
-    tabResources:"REQUESTED RESOURCES", requestedResourcesTitle:"Resources requested by sellers", noOpenResourceRequests:"No open resource requests right now.", resourceRequestedBy:"Requested by ",
+    requestResourcesTitle:"Post a desired item", requestResourcesBtn:"DESIRED ITEM", resourceNameLbl:"Item wanted", phResourceName:"e.g. Raw Laranite, heavy armor helmet...", resourceQtyLbl:"Quantity wanted", resourcePriceLbl:"Price offered (aUEC, optional)", resourceNoteLbl:"Note (optional)", phResourceNote:"e.g. Delivery to Nyx, quantity negotiable...", submitResourceRequestBtn:"POST AD", resourceRequestSaved:"AD POSTED!",
+    myResourceRequestsTitle:"Desired items", noResourceRequests:"You haven't posted any desired item ad yet.",
+    tabResources:"DESIRED ITEMS", requestedResourcesTitle:"Items sellers are looking for", noOpenResourceRequests:"No open desired item ads right now.", resourceRequestedBy:"Requested by ",
     proposeResourceBtn:"PROPOSE TO SUPPLY", resourceOfferMsgLbl:"Message to the seller", phResourceOfferMsg:"e.g. I have 50 units available, I can deliver to Stanton.", resourceOfferPriceLbl:"Your price (aUEC, optional)", submitResourceOfferBtn:"SEND PROPOSAL", resourceOfferSent:"PROPOSAL SENT!",
-    myResourceOffersTitle:"My proposals", noResourceOffers:"You haven't sent any proposal yet.", resourceOfferLabel:"Requested resource:",
+    myResourceOffersTitle:"My proposals", noResourceOffers:"You haven't sent any proposal yet.", resourceOfferLabel:"Desired item:",
     shopDescLbl:"Shop description (optional)", phShopDesc:"e.g. Rare ore specialist, fast delivery on Stanton.",
     cropModalTitle:"Crop the photo", cropZoomLbl:"Zoom", cropDragHint:"Drag the image to reposition it.", cropConfirmBtn:"CONFIRM CROP", photoReady:"Photo ready ✓",
     myListingsTitle:"My listings", noListings:"You have no listings yet.", deleteListingBtn:"DELETE", confirmDeleteListing:"Permanently delete this listing?",

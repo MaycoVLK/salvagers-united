@@ -270,8 +270,8 @@
   li.extra-item[hidden]{display:none;}
 
   /* --- MARKETPLACE --- */
-  .marketplace-grid{display:grid; grid-template-columns:1fr; gap:16px;}
-  @media (min-width:640px){ .marketplace-grid{grid-template-columns:1fr 1fr;} }
+  .marketplace-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media (min-width:640px){ .marketplace-grid{grid-template-columns:1fr 1fr; gap:16px;} }
   @media (min-width:960px){ .marketplace-grid{grid-template-columns:1fr 1fr 1fr;} }
   .mkt-card{border:1px solid var(--border); border-radius:4px; background:var(--bg2); overflow:hidden; display:flex; flex-direction:column;}
   .mkt-photo-wrap{position:relative; width:100%; aspect-ratio:4/3; background:var(--panel); display:flex; align-items:center; justify-content:center; overflow:hidden;}
@@ -284,6 +284,17 @@
   .mkt-qty{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
   .mkt-info .courier-box{flex:none; max-width:none; width:100%; margin-top:auto;}
   .mkt-interest-btn{width:100%; font-size:.76rem;}
+  @media (max-width:480px){
+    /* Grille 2x2 compacte sur mobile : on resserre le texte et les marges pour que tout reste lisible. */
+    .marketplace-grid{gap:8px;}
+    .mkt-info{padding:9px 10px 10px; gap:6px;}
+    .mkt-item-name{font-size:.92rem;}
+    .mkt-price{font-size:1.05rem;}
+    .mkt-qty{font-size:.62rem;}
+    .mkt-info .courier-box{padding:7px 8px;}
+    .mkt-info .courier-box .courier-box-name{font-size:.78rem; margin-bottom:0;}
+    .mkt-interest-btn{font-size:.68rem; padding:8px 6px;}
+  }
   .mkt-inquiry-form{display:flex; flex-direction:column; gap:6px; margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);}
   .mkt-inquiry-form textarea{width:100%; min-height:60px; padding:8px 10px; border-radius:2px; border:1px solid var(--border); background:var(--bg2); color:var(--text); font-family:inherit; font-size:.85rem; resize:vertical;}
   .mkt-delivery-choice{display:flex; gap:14px; font-size:.78rem; color:var(--muted); align-items:center;}
@@ -364,7 +375,7 @@
   #view-seller-shop[data-shop-color="jaune"]{ --accent:#ffcf40; --accent-dim:#ffcf4055; }
 
   /* Aperçu boutique (profil public) */
-  .shop-preview-head{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;}
+  .shop-preview-head{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
   .shop-preview-head h3{margin:0;}
   .shop-see-more{width:auto; flex:none; font-size:.72rem; padding:8px 12px; white-space:nowrap;}
   .shop-preview-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:10px;}
@@ -400,6 +411,17 @@
   .resource-request-meta a{color:var(--accent);}
   .resource-request-note{font-size:.78rem; color:var(--muted); font-style:italic; margin-top:6px; border-top:1px dashed var(--border); padding-top:6px;}
   .resource-request-price{font-family:'VT323',monospace; font-size:1.1rem; color:var(--accent); text-shadow:0 0 6px var(--accent-dim); margin-top:8px;}
+  @media (max-width:640px){
+    /* Grille 2x2 sur mobile plutôt qu'une colonne unique, avec des cartes resserrées. */
+    .resource-request-grid{grid-template-columns:1fr 1fr; gap:10px;}
+    .resource-request-card{padding:10px;}
+    .resource-request-name{font-size:.95rem;}
+    .resource-request-qty{font-size:.72rem;}
+    .resource-request-meta{font-size:.7rem; margin-top:6px;}
+    .resource-request-note{font-size:.68rem; margin-top:5px; padding-top:5px;}
+    .resource-request-price{font-size:.95rem; margin-top:6px;}
+    .resource-request-card .btn-secondary, .resource-request-card .btn-logout{font-size:.68rem; padding:7px 6px; margin-top:8px;}
+  }
 
   /* --- En-tête de boutique vendeur (tableau de bord) : gros logo à gauche, stats + succès à droite --- */
   .seller-header-card{display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap;}
@@ -412,8 +434,12 @@
   .seller-header-stats-row{margin-top:20px;}
   .seller-section-card{margin-top:20px;}
   @media (max-width:640px){
-    .seller-header-card{flex-direction:column; align-items:center; text-align:center;}
+    .seller-header-card{flex-direction:column; align-items:center; text-align:center; gap:16px; padding:16px;}
     .seller-header-right{width:100%;}
+    .seller-header-logo{width:120px; height:120px;}
+    .seller-header-right .shop-hero-text h1{font-size:1.5rem;}
+    .seller-header-stats-row{margin-top:14px;}
+    .seller-section-card{margin-top:14px; padding:14px;}
   }
 
   /* --- GRILLE DES COMMANDES EN COURS (client) : 2 colonnes sur ordinateur, 1 colonne sur mobile, cartes de même hauteur --- */
@@ -1346,7 +1372,7 @@ const T = {
     rankToNext:"Encore {n} livraison(s) avant {rank}", rankMaxed:"Rang maximum atteint !",
     lblDeadline:"Date et heure de livraison souhaitée (optionnel)", orderDeadline:"Deadline : ",
     viewMoreItems:"Voir {n} de plus", viewLessItems:"Voir moins",
-    viewProfileBtn:"VOIR PROFIL", marketplaceTitle:"Marketplace personnelle", marketplaceWip:"Bientôt disponible — chaque coursier/crafteur pourra proposer ici ses objets à la vente.",
+    viewProfileBtn:"VOIR PROFIL", viewShopBtn:"VOIR LA BOUTIQUE", marketplaceTitle:"Marketplace personnelle", marketplaceWip:"Bientôt disponible — chaque coursier/crafteur pourra proposer ici ses objets à la vente.",
     memberSearchPh:"Rechercher un membre...", noMembersFound:"Aucun membre ne correspond à cette recherche.",
     noAchvClient:"Pas de succès coursier pour ce membre (rôle client).",
     adminActionsTitle:"Actions admin", resetAchvBtn:"RÉINITIALISER LES SUCCÈS", resetRoleBtn:"RÉINITIALISER LE RÔLE",
@@ -1462,7 +1488,7 @@ const T = {
     rankToNext:"{n} more deliveries to reach {rank}", rankMaxed:"Maximum rank reached!",
     lblDeadline:"Desired delivery date & time (optional)", orderDeadline:"Deadline: ",
     viewMoreItems:"View {n} more", viewLessItems:"View less",
-    viewProfileBtn:"VIEW PROFILE", marketplaceTitle:"Personal marketplace", marketplaceWip:"Coming soon — every courier/crafter will be able to list their own items for sale here.",
+    viewProfileBtn:"VIEW PROFILE", viewShopBtn:"VIEW SHOP", marketplaceTitle:"Personal marketplace", marketplaceWip:"Coming soon — every courier/crafter will be able to list their own items for sale here.",
     memberSearchPh:"Search for a member...", noMembersFound:"No member matches this search.",
     noAchvClient:"No courier achievements for this member (client role).",
     adminActionsTitle:"Admin actions", resetAchvBtn:"RESET ACHIEVEMENTS", resetRoleBtn:"RESET ROLE",
@@ -2477,8 +2503,8 @@ function mktCardHtml(listing, sellerMap){
       <div class="mkt-info">
         <div class="mkt-item-name">${listing.item_name}</div>
         <div class="mkt-price-row"><span class="mkt-price">${fmt(listing.price)}</span><span class="mkt-qty">x${listing.quantity}</span></div>
-        <div class="courier-box" onclick="openPublicProfile('${listing.seller_id}')" title="${d.viewProfileBtn}">
-          <div class="courier-box-name">${d.mktByLbl} ${seller ? displayName(seller) : '—'}</div>
+        <div class="courier-box" onclick="openSellerShop('${listing.seller_id}')" title="${d.viewShopBtn}">
+          <div class="courier-box-name">${d.mktByLbl} ${(seller && seller.shop_name) || (seller ? displayName(seller) : '—')}</div>
         </div>
         ${interestBlock}
       </div>
@@ -2542,8 +2568,12 @@ async function loadMarketplaceFeed(){
   const listings = data || [];
   if(!listings.length){ box.innerHTML = `<p class="muted">${d.marketplaceEmpty}</p>`; return; }
   const sellerIds = [...new Set(listings.map(l=>l.seller_id))];
-  const { data: sellers } = await sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds);
-  const sellerMap = {}; (sellers||[]).forEach(s=>sellerMap[s.id]=s);
+  const [{ data: sellers }, { data: shops }] = await Promise.all([
+    sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds),
+    sb.from('marketplace_shops').select('id,shop_name').in('id', sellerIds)
+  ]);
+  const shopNameMap = {}; (shops||[]).forEach(s=>shopNameMap[s.id]=s.shop_name);
+  const sellerMap = {}; (sellers||[]).forEach(s=>sellerMap[s.id]={ ...s, shop_name: shopNameMap[s.id] || null });
   box.innerHTML = listings.map(l => mktCardHtml(l, sellerMap)).join('');
 }
 // --- FEED "RESSOURCES DEMANDÉES" (coté client) : ce que les vendeurs cherchent à acheter ---
@@ -3368,7 +3398,7 @@ async function openSellerShop(sellerId){
   if(divider) divider.hidden = $('shopAchvCard').hidden;
 
   shopListingsCache = listings || [];
-  shopSellerMapCache = { [sellerId]: p };
+  shopSellerMapCache = { [sellerId]: { ...p, shop_name: (shop && shop.shop_name) || null } };
   if(!shopListingsCache.length){ grid.innerHTML = `<p class="muted">${d.shopPageEmpty}</p>`; }
   else grid.innerHTML = shopListingsCache.slice(0,3).map(l => mktCardHtml(l, shopSellerMapCache)).join('');
   if(listingsMoreBtn) listingsMoreBtn.hidden = shopListingsCache.length <= 3;

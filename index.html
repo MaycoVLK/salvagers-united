@@ -993,13 +993,14 @@ let uexCommodities = [];
 let uexItems = [];
 const uexItemPriceCache = {};
 const UEX_ITEM_CATEGORIES = [
-  1,2,3,4,5,7,8,9,10,11,12,13,14,16,17,18, // armes/armures/vêtements personnels
+  1,2,3,4,5,7,8,9,10,11,12,13,14,16,17,18,24, // armes/armures/vêtements personnels (24 = sous-vêtements/undersuits)
   19,21,22,23,81,84,103, // Systèmes de vaisseau (coolers, power plants, quantum drives, boucliers, batteries...)
   32,33,34,35,70,79,80,90, // Armes de vaisseau
   25,26,27,28,29,30,31,67,109,110, // Utilitaires de vaisseau (tractor beams, mining, salvage...)
   82,83, // Avionique
   86, // Propulsion (jump modules)
-  75 // Décorations
+  75, // Décorations
+  62,63,65 // Boissons, nourriture, contenants
 ];
 let uexCatalogReady = false;
 

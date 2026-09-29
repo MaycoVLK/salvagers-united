@@ -574,11 +574,25 @@
   .rank-track-label .current{color:var(--accent);}
   .rank-track-label span:nth-child(2){flex:1; text-align:center;}
   .achv-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:10px;}
-  .achv-badge{display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 6px; border:1px solid var(--border); border-radius:6px; font-size:.66rem; text-align:center; text-transform:uppercase; letter-spacing:.5px; transition:transform .3s, border-color .3s, opacity .3s;}
+  .achv-badge{position:relative; display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 6px; border:1px solid var(--border); border-radius:6px; font-size:.66rem; text-align:center; text-transform:uppercase; letter-spacing:.5px; transition:transform .3s, border-color .3s, opacity .3s; cursor:default;}
   .achv-badge svg{width:26px; height:26px;}
   .achv-badge.locked{opacity:.35; filter:grayscale(1);}
   .achv-badge.unlocked{color:var(--accent); border-color:var(--accent); animation:achvPop .5s ease;}
   @keyframes achvPop{0%{transform:scale(.6); opacity:0;} 60%{transform:scale(1.15);} 100%{transform:scale(1); opacity:1;}}
+  .achv-badge::after{
+    content:attr(data-tip); position:absolute; bottom:calc(100% + 9px); left:50%; z-index:60;
+    width:148px; max-width:148px; padding:7px 9px; border-radius:4px; border:1px solid var(--accent);
+    background:var(--bg2); color:var(--text); font-size:.62rem; line-height:1.4; letter-spacing:normal;
+    text-transform:none; text-align:left; font-weight:400; white-space:normal; box-shadow:0 6px 16px rgba(0,0,0,.5);
+    opacity:0; pointer-events:none; transform:translate(-50%, 4px); transition:opacity .16s ease, transform .16s ease;
+  }
+  .achv-badge::before{
+    content:''; position:absolute; bottom:calc(100% + 3px); left:50%; z-index:60;
+    border:5px solid transparent; border-top-color:var(--accent);
+    opacity:0; pointer-events:none; transform:translate(-50%, 4px); transition:opacity .16s ease, transform .16s ease;
+  }
+  .achv-badge:hover::after, .achv-badge:hover::before{ opacity:1; transform:translate(-50%, 0); }
+  .achv-badge.locked:hover{ opacity:.6; }
 
   /* --- RANGS COURSIER --- */
   .rank-badge{display:inline-flex; align-items:center; gap:5px; font-size:.72rem; text-transform:uppercase; letter-spacing:.5px; color:var(--accent); white-space:nowrap;}
@@ -3843,7 +3857,7 @@ function renderAchievements(unlockedSet, deliveredCount, boxId){
     ${rankProgressHtml(deliveredCount)}
     <div class="achv-grid">
       ${ACHIEVEMENTS.map(a => `
-        <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-key="${a.key}" title="${d.achvDesc[a.key]}">
+        <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-key="${a.key}" data-tip="${d.achvDesc[a.key]}">
           ${ACHV_ICONS[a.key]}
           <span>${d.achvLabels[a.key]}</span>
         </div>
@@ -4358,7 +4372,7 @@ function renderSellerAchievements(unlockedSet, stats, boxId){
     ${sellerRankProgressHtml(salesCount)}
     <div class="achv-grid">
       ${SELLER_ACHIEVEMENTS.map(a => `
-        <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-skey="${a.key}" title="${d.sellerAchvDesc[a.key]}">
+        <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-skey="${a.key}" data-tip="${d.sellerAchvDesc[a.key]}">
           ${SELLER_ACHV_ICONS[a.key]}
           <span>${d.sellerAchvLabels[a.key]}</span>
         </div>
@@ -4636,7 +4650,7 @@ async function openPublicProfile(id){
     ]);
     const unlockedSet = new Set(unlockedRows.map(r=>r.key));
     achvGrid.innerHTML = `<div class="achv-grid">${ACHIEVEMENTS.map(a => `
-      <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" title="${d.achvDesc[a.key]}">${ACHV_ICONS[a.key]}<span>${d.achvLabels[a.key]}</span></div>
+      <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-tip="${d.achvDesc[a.key]}">${ACHV_ICONS[a.key]}<span>${d.achvLabels[a.key]}</span></div>
     `).join('')}</div>`;
     setHeroPhoto('pub', p);
     renderCareerStats($('pubCareerStatsCard'), stats);

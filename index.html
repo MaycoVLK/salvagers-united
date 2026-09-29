@@ -396,18 +396,22 @@
   .shop-hero-text h1{margin:0 0 8px; font-size:1.4rem;}
   .shop-owner-box{display:inline-flex; width:auto; max-width:none; flex:none;}
   .shop-description{font-size:.85rem; color:var(--muted); line-height:1.5; white-space:pre-wrap; margin:10px 0;}
-  .shop-upvote-btn{display:inline-flex; align-items:center; gap:8px; margin-left:8px; flex:0 0 auto; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:10px 14px; cursor:pointer; transition:border-color .2s, transform .2s;}
-  .shop-upvote-btn .icon{width:18px; height:18px; color:var(--muted); transition:color .2s;}
-  .shop-upvote-btn:hover{border-color:var(--accent); transform:translateY(-1px);}
+  .shop-header-actions{display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; margin:2px 0 10px;}
+  .shop-header-actions .shop-owner-box{margin:0; display:flex; align-items:center;}
+  .shop-header-actions .shop-owner-box .courier-box-name{margin-bottom:0;}
+  .shop-upvote-btn{display:inline-flex; align-items:center; gap:9px; background:linear-gradient(180deg, var(--panel), var(--bg2)); border:1px solid var(--border); border-radius:6px; padding:10px 16px; cursor:pointer; transition:border-color .2s, transform .2s, box-shadow .2s;}
+  .shop-upvote-btn .icon{width:18px; height:18px; color:var(--muted); transition:color .2s, filter .2s;}
+  .shop-upvote-btn:hover{border-color:var(--accent); transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,.4);}
   .shop-upvote-btn:active{transform:scale(.94);}
-  .shop-upvote-btn .shop-upvote-label{font-family:'VT323',monospace; font-size:1rem; color:var(--accent); text-decoration:underline; line-height:1.2;}
-  .shop-upvote-btn .shop-upvote-count{font-family:'VT323',monospace; font-size:1rem; color:var(--text); font-weight:700;}
-  .shop-upvote-btn.upvoted{border-color:var(--accent); box-shadow:0 0 10px var(--accent-dim);}
-  .shop-upvote-btn.upvoted .icon{color:var(--accent);}
+  .shop-upvote-btn .shop-upvote-label{font-family:'VT323',monospace; font-size:1.05rem; color:var(--accent); text-decoration:underline; line-height:1.2; letter-spacing:.5px;}
+  .shop-upvote-btn .shop-upvote-count{font-family:'VT323',monospace; font-size:1.05rem; color:var(--text); font-weight:700; min-width:14px; text-align:center;}
+  .shop-upvote-btn.upvoted{border-color:var(--accent); background:linear-gradient(180deg, var(--accent-dim), var(--bg2)); box-shadow:0 0 14px var(--accent-dim), inset 0 0 0 1px var(--accent);}
+  .shop-upvote-btn.upvoted .icon{color:var(--accent); filter:drop-shadow(0 0 4px var(--accent));}
+  .shop-upvote-btn.upvoted .shop-upvote-count{color:var(--accent);}
   .shop-upvote-btn[hidden]{display:none;}
-  .shop-upvote-badge{display:inline-flex; align-items:center; gap:8px; margin-left:8px; flex:0 0 auto; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:10px 14px; color:var(--accent);}
-  .shop-upvote-badge .icon{width:18px; height:18px; color:var(--accent);}
-  .shop-upvote-badge span{font-family:'VT323',monospace; font-size:1rem; color:var(--text); font-weight:700;}
+  .shop-upvote-badge{display:inline-flex; align-items:center; gap:9px; background:linear-gradient(180deg, var(--accent-dim), var(--bg2)); border:1px solid var(--accent); border-radius:6px; padding:10px 16px; box-shadow:0 0 14px var(--accent-dim), inset 0 0 0 1px var(--accent);}
+  .shop-upvote-badge .icon{width:18px; height:18px; color:var(--accent); filter:drop-shadow(0 0 4px var(--accent));}
+  .shop-upvote-badge span{font-family:'VT323',monospace; font-size:1.05rem; color:var(--accent); font-weight:700;}
   /* --- FLAMME 8-BIT (upvote) --- */
   .pixel-flame-particle{position:fixed; width:6px; height:6px; pointer-events:none; z-index:9999; image-rendering:pixelated; animation:pixelFlame .65s steps(5) forwards;}
   @keyframes pixelFlame{
@@ -1235,16 +1239,18 @@
         <div class="seller-header-right">
           <div class="shop-hero-text">
             <h1 id="shopPageTitle">—</h1>
-            <div class="courier-box shop-owner-box" id="shopOwnerBox" onclick="openPublicProfile(shopViewingSellerId)">
-              <div class="courier-box-name" id="shopOwnerName">—</div>
+            <div class="shop-header-actions">
+              <div class="courier-box shop-owner-box" id="shopOwnerBox" onclick="openPublicProfile(shopViewingSellerId)">
+                <div class="courier-box-name" id="shopOwnerName">—</div>
+              </div>
+              <button type="button" class="shop-upvote-btn" id="shopUpvoteBtn" onclick="toggleShopUpvote()">
+                <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                  <rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/>
+                </g></svg>
+                <span class="shop-upvote-label" data-i18n="upvoteBtn">UPVOTE</span>
+                <span class="shop-upvote-count" id="shopUpvoteCount">0</span>
+              </button>
             </div>
-            <button type="button" class="shop-upvote-btn" id="shopUpvoteBtn" onclick="toggleShopUpvote()">
-              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                <rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/>
-              </g></svg>
-              <span class="shop-upvote-label" data-i18n="upvoteBtn">UPVOTE</span>
-              <span class="shop-upvote-count" id="shopUpvoteCount">0</span>
-            </button>
           </div>
           <div class="shop-description" id="shopDescription" hidden></div>
           <div class="seller-header-stats-row">

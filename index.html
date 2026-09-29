@@ -3833,7 +3833,7 @@ async function markPickedUp(id){
   if(error){ alert('Erreur : '+error.message); return; }
   if(!updated){ alert('Erreur : la mise à jour a été bloquée (droits insuffisants sur la base). La vente n\'a PAS été validée, réessaie ou contacte l\'admin.'); return; }
   if(listing) await sb.from('marketplace_listings').delete().eq('id', listing.id);
-  sweep(); loadReceivedInquiries();
+  sweep(); loadReceivedInquiries(); loadMyListings();
   checkAndRenderSellerAchievements('sellerDashAchvCard');
   fetchSellerShopStats(session.user.id).then(stats => {
     renderShopStats($('sellerDashStatsCard'), stats);

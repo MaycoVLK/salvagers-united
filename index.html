@@ -277,10 +277,7 @@
   @media (min-width:960px){ .marketplace-grid{grid-template-columns:1fr 1fr 1fr;} }
   /* "Derniers objets en vente" côté client : cartes plus petites et nombre de colonnes qui s'adapte
      automatiquement à la largeur d'écran, au lieu d'un nombre de colonnes fixe. */
-  #marketplaceFeed.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px;}
-  #marketplaceFeed .mkt-item-name{font-size:1rem;}
-  #marketplaceFeed .mkt-price{font-size:1.1rem;}
-  #marketplaceFeed .mkt-info{padding:10px 11px 12px; gap:6px;}
+  #marketplaceFeed.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
   .mkt-card{border:1px solid var(--border); border-radius:4px; background:var(--bg2); overflow:hidden; display:flex; flex-direction:column;}
   .mkt-photo-wrap{position:relative; width:100%; aspect-ratio:4/3; background:var(--panel); display:flex; align-items:center; justify-content:center; overflow:hidden;}
   .mkt-photo-wrap img{width:100%; height:100%; object-fit:cover;}
@@ -399,15 +396,25 @@
   .shop-hero-text h1{margin:0 0 8px; font-size:1.4rem;}
   .shop-owner-box{display:inline-flex; width:auto; max-width:none; flex:none;}
   .shop-description{font-size:.85rem; color:var(--muted); line-height:1.5; white-space:pre-wrap; margin:10px 0;}
-  .shop-upvote-btn{display:inline-flex; align-items:center; gap:6px; margin-left:8px; padding:8px 12px; border:1px solid var(--border); border-radius:6px; background:var(--bg2); color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.5px; cursor:pointer; transition:border-color .2s, color .2s, transform .15s;}
-  .shop-upvote-btn .icon{width:14px; height:14px;}
-  .shop-upvote-btn:hover{border-color:var(--accent); color:var(--accent);}
+  .shop-upvote-btn{display:inline-flex; align-items:center; gap:8px; margin-left:8px; flex:0 0 auto; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:10px 14px; cursor:pointer; transition:border-color .2s, transform .2s;}
+  .shop-upvote-btn .icon{width:18px; height:18px; color:var(--muted); transition:color .2s;}
+  .shop-upvote-btn:hover{border-color:var(--accent); transform:translateY(-1px);}
   .shop-upvote-btn:active{transform:scale(.94);}
-  .shop-upvote-btn.upvoted{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
-  .shop-upvote-btn .shop-upvote-count{font-weight:700;}
+  .shop-upvote-btn .shop-upvote-label{font-family:'VT323',monospace; font-size:1rem; color:var(--accent); text-decoration:underline; line-height:1.2;}
+  .shop-upvote-btn .shop-upvote-count{font-family:'VT323',monospace; font-size:1rem; color:var(--text); font-weight:700;}
+  .shop-upvote-btn.upvoted{border-color:var(--accent); box-shadow:0 0 10px var(--accent-dim);}
+  .shop-upvote-btn.upvoted .icon{color:var(--accent);}
   .shop-upvote-btn[hidden]{display:none;}
-  .shop-upvote-badge{display:inline-flex; align-items:center; gap:5px; margin-left:8px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; color:var(--accent); font-size:.72rem; font-weight:700;}
-  .shop-upvote-badge .icon{width:12px; height:12px;}
+  .shop-upvote-badge{display:inline-flex; align-items:center; gap:8px; margin-left:8px; flex:0 0 auto; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:10px 14px; color:var(--accent);}
+  .shop-upvote-badge .icon{width:18px; height:18px; color:var(--accent);}
+  .shop-upvote-badge span{font-family:'VT323',monospace; font-size:1rem; color:var(--text); font-weight:700;}
+  /* --- FLAMME 8-BIT (upvote) --- */
+  .pixel-flame-particle{position:fixed; width:6px; height:6px; pointer-events:none; z-index:9999; image-rendering:pixelated; animation:pixelFlame .65s steps(5) forwards;}
+  @keyframes pixelFlame{
+    0%{transform:translate(-50%,-50%) scale(1); opacity:1;}
+    50%{opacity:1;}
+    100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.3); opacity:0;}
+  }
 
   /* --- TABLEAU DE BORD VENDEUR / PAGE BOUTIQUE --- */
   .seller-profile-divider{border-top:1px dashed var(--border); margin:18px 0;}
@@ -1235,7 +1242,7 @@
               <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
                 <rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/>
               </g></svg>
-              <span data-i18n="upvoteBtn">UPVOTE</span>
+              <span class="shop-upvote-label" data-i18n="upvoteBtn">UPVOTE</span>
               <span class="shop-upvote-count" id="shopUpvoteCount">0</span>
             </button>
           </div>
@@ -3503,9 +3510,31 @@ async function toggleShopUpvote(){
     const { error } = await sb.from('shop_upvotes').insert({ seller_id: sellerId, client_id: session.user.id });
     if(error){ alert('Erreur : '+error.message); return; }
     shopUpvoted = true;
+    pixelFlameBurst(btn);
   }
   if(btn) btn.classList.toggle('upvoted', shopUpvoted);
   if(countEl) countEl.textContent = Math.max(0, (parseInt(countEl.textContent,10)||0) + (shopUpvoted ? 1 : -1));
+}
+const FLAME_COLORS = ['#ff8c1a', '#ffcf40', '#ff4d2e', '#fff2b0'];
+function pixelFlameBurst(el){
+  if(!el) return;
+  const rect = el.getBoundingClientRect();
+  const n = 18;
+  for(let i=0;i<n;i++){
+    const p = document.createElement('div');
+    p.className = 'pixel-flame-particle';
+    const originX = rect.left + rect.width * (0.15 + Math.random()*0.7);
+    const originY = rect.top + rect.height * 0.55;
+    p.style.left = originX+'px'; p.style.top = originY+'px';
+    p.style.background = FLAME_COLORS[Math.floor(Math.random()*FLAME_COLORS.length)];
+    const dx = (Math.random()-0.5) * 40;
+    const dy = -(28 + Math.random()*48);
+    p.style.setProperty('--dx', dx+'px');
+    p.style.setProperty('--dy', dy+'px');
+    p.style.animationDelay = (Math.random()*90)+'ms';
+    document.body.appendChild(p);
+    p.addEventListener('animationend', () => p.remove());
+  }
 }
 function openShopAllListings(){
   hideAllViews();

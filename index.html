@@ -194,15 +194,30 @@
   .order-card{position:relative; border:1px solid var(--border); border-radius:4px; padding:14px; margin-bottom:12px; background:var(--bg2);}
   .new-order-dot{position:absolute; top:10px; right:14px; width:10px; height:10px; background:var(--danger); border-radius:50%; box-shadow:0 0 0 2px var(--bg2), 0 0 6px var(--danger); animation:notifPulse 1.5s ease-in-out infinite; pointer-events:none;}
   .order-card.big{padding:22px 28px 18px;}
-  /* --- LIVRAISONS COURSIER : commande principale + liste compacte des autres --- */
-  .delivery-mini-list{display:flex; flex-direction:column; gap:8px; margin-top:20px;}
+  /* --- LIVRAISONS COURSIER : commande principale + liste compacte des autres, côte à côte --- */
+  .delivery-layout{display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;}
+  .delivery-mini-list{flex:0 0 240px; display:flex; flex-direction:column; gap:8px;}
   .delivery-mini-list-title{font-family:'VT323',monospace; font-size:1rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin:0 0 2px;}
-  .delivery-mini-row{display:flex; align-items:center; gap:12px; flex-wrap:wrap; border:1px solid var(--border); border-radius:4px; padding:10px 14px; background:var(--bg2); cursor:pointer; transition:border-color .15s, background .15s;}
-  .delivery-mini-row:hover{border-color:var(--accent); background:var(--accent-dim);}
-  .delivery-mini-status{flex:none; font-family:'VT323',monospace; font-size:.85rem; color:var(--accent); text-transform:uppercase; min-width:72px;}
-  .delivery-mini-name{flex:1 1 120px; min-width:110px; font-size:.9rem; color:var(--text);}
-  .delivery-mini-dest{flex:1 1 140px; min-width:130px; font-size:.82rem; color:var(--muted);}
-  .delivery-mini-margin{flex:none; font-family:'VT323',monospace; font-size:1.05rem; color:var(--accent); text-shadow:0 0 6px var(--accent-dim);}
+  .delivery-mini-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap; border:1px solid var(--border); border-radius:4px; padding:10px 12px; background:var(--bg2); cursor:pointer; transition:border-color .15s, background .15s, transform .1s;}
+  .delivery-mini-row:hover{border-color:var(--accent); background:var(--accent-dim); transform:translateX(2px);}
+  .delivery-mini-status{flex:none; font-family:'VT323',monospace; font-size:.8rem; color:var(--accent); text-transform:uppercase;}
+  .delivery-mini-name{flex:1 1 100%; font-size:.88rem; color:var(--text);}
+  .delivery-mini-dest{flex:1 1 100%; font-size:.78rem; color:var(--muted);}
+  .delivery-mini-margin{flex:none; font-family:'VT323',monospace; font-size:1rem; color:var(--accent); text-shadow:0 0 6px var(--accent-dim); margin-left:auto;}
+  .delivery-main-wrap{flex:1 1 320px; min-width:280px;}
+  @keyframes deliveryMainSwap{
+    0%{opacity:0; transform:translateX(18px) scale(.97); filter:brightness(1.7) contrast(1.25);}
+    60%{opacity:1;}
+    100%{opacity:1; transform:translateX(0) scale(1); filter:brightness(1) contrast(1);}
+  }
+  .delivery-main-enter{animation:deliveryMainSwap .32s steps(6) both;}
+  @media (max-width:720px){
+    .delivery-layout{flex-direction:column;}
+    .delivery-mini-list{flex:1 1 100%; flex-direction:row; overflow-x:auto; padding-bottom:6px; -webkit-overflow-scrolling:touch;}
+    .delivery-mini-list-title{flex:0 0 100%;}
+    .delivery-mini-row{flex:0 0 190px; flex-direction:column; align-items:flex-start; gap:4px;}
+    .delivery-mini-margin{margin-left:0;}
+  }
   /* --- ITINÉRAIRE D'ACHAT (schéma, affiché directement sous la commande principale) --- */
   .purchase-route{margin-top:18px; margin-bottom:4px; padding:22px 24px; border:1px solid var(--accent); border-radius:6px; background:rgba(0,0,0,.22); animation:courierAdGlow 2.6s ease-in-out infinite;}
   .purchase-route-title{font-family:'VT323',monospace; font-size:1.3rem; color:var(--accent); text-shadow:0 0 8px var(--accent-dim); margin:0 0 18px; letter-spacing:.6px; text-transform:uppercase; display:flex; align-items:center; gap:8px;}
@@ -2980,12 +2995,23 @@ function renderMyDeliveriesView(){
   const active = orders.find(o=>o.id===activeDeliveryId) || orders[0];
   if(!active){ box.innerHTML = `<p class="muted">${d.noDeliveries}</p>`; return; }
   const others = orders.filter(o=>o.id!==active.id);
-  const othersHtml = others.length ? `
-    <div class="delivery-mini-list">
-      <div class="delivery-mini-list-title">${d.otherDeliveriesTitle}</div>
-      ${others.map(o => deliveryMiniRowHtml(o, clients)).join('')}
-    </div>` : '';
-  box.innerHTML = deliveryMainCardHtml(active, clients) + othersHtml;
+  const mainHtml = `<div class="delivery-main-wrap" id="deliveryMainWrap">${deliveryMainCardHtml(active, clients)}</div>`;
+  if(!others.length){
+    box.innerHTML = mainHtml;
+  } else {
+    const miniListHtml = `
+      <div class="delivery-mini-list">
+        <div class="delivery-mini-list-title">${d.otherDeliveriesTitle}</div>
+        ${others.map(o => deliveryMiniRowHtml(o, clients)).join('')}
+      </div>`;
+    box.innerHTML = `<div class="delivery-layout">${miniListHtml}${mainHtml}</div>`;
+  }
+  const mainWrap = document.getElementById('deliveryMainWrap');
+  if(mainWrap){
+    mainWrap.classList.remove('delivery-main-enter');
+    void mainWrap.offsetWidth;
+    mainWrap.classList.add('delivery-main-enter');
+  }
   animateShipTracks(box);
 }
 function deliveryMainCardHtml(o, clients){

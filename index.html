@@ -42,8 +42,9 @@
   .card::after{bottom:-1px; right:-1px; border-left:none; border-top:none;}
   label{display:block; font-weight:700; margin:14px 0 6px; font-size:.82rem; color:var(--accent); text-transform:uppercase; letter-spacing:1px;}
   label:first-child{margin-top:0;}
-  input,select{width:100%; padding:10px 12px; border-radius:2px; border:1px solid var(--border); background:var(--bg2); color:var(--text); font-family:inherit; font-size:1rem;}
-  input:focus,select:focus{outline:none; border-color:var(--accent); box-shadow:0 0 8px var(--accent-dim);}
+  input,select,textarea{width:100%; padding:10px 12px; border-radius:2px; border:1px solid var(--border); background:var(--bg2); color:var(--text); font-family:inherit; font-size:1rem;}
+  textarea{min-height:80px; resize:vertical;}
+  input:focus,select:focus,textarea:focus{outline:none; border-color:var(--accent); box-shadow:0 0 8px var(--accent-dim);}
   .breakdown{margin-top:18px; border-top:1px dashed var(--border); padding-top:14px;}
   .line{display:flex; justify-content:space-between; padding:5px 0; font-size:.95rem;}
   .line.total{font-family:'VT323',monospace; font-size:1.4rem; color:var(--accent); border-top:1px solid var(--border); margin-top:6px; padding-top:10px; text-shadow:0 0 8px var(--accent-dim);}
@@ -394,9 +395,6 @@
     .seller-layout{display:flex; flex-direction:column;}
   }
   .seller-profile-divider{border-top:1px dashed var(--border); margin:18px 0;}
-  .seller-form-accordion{max-height:0; overflow:hidden; transition:max-height .3s ease, margin-top .3s ease;}
-  .seller-form-accordion.open{max-height:900px; margin-top:16px;}
-  .seller-form-accordion .card{margin-bottom:0;}
   .tab-count-badge{display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; margin-left:6px; background:var(--accent); color:#03130a; border-radius:9px; font-family:'VT323',monospace; font-size:.85rem; vertical-align:middle;}
   .my-listing-card .mkt-info{gap:8px; display:flex; flex-direction:column;}
   .my-listing-actions{display:flex; gap:8px; flex-wrap:wrap;}
@@ -404,11 +402,30 @@
   .shop-logo-picker-row{display:flex; align-items:center; gap:10px;}
   .shop-logo-preview-img{width:48px; height:48px; flex:none; object-fit:cover; border-radius:6px; border:1px solid var(--accent);}
   .shop-hero-logo-img{width:100%; height:100%; object-fit:cover; border-radius:6px;}
-  .resource-request-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap; border:1px solid var(--border); border-radius:4px; padding:12px 14px; margin-bottom:10px; background:var(--bg2);}
-  .resource-request-info{flex:1; min-width:160px;}
-  .resource-request-name{font-family:'VT323',monospace; font-size:1.1rem; color:var(--text);}
-  .resource-request-meta{font-size:.8rem; color:var(--muted); margin-top:2px;}
-  .resource-request-price{flex:none; font-family:'VT323',monospace; font-size:1.05rem; color:var(--accent); text-shadow:0 0 6px var(--accent-dim);}
+  .resource-request-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;}
+  .resource-request-card{position:relative; border:1px solid var(--border); border-radius:6px; padding:16px; background:var(--bg2); transition:border-color .2s, transform .2s, box-shadow .2s;}
+  .resource-request-card:hover{border-color:var(--accent); transform:translateY(-2px); box-shadow:0 8px 18px rgba(0,0,0,.35);}
+  .resource-request-name{font-family:'VT323',monospace; font-size:1.2rem; color:var(--text);}
+  .resource-request-qty{color:var(--muted); font-size:.85rem;}
+  .resource-request-meta{font-size:.8rem; color:var(--muted); margin-top:8px;}
+  .resource-request-meta a{color:var(--accent);}
+  .resource-request-note{font-size:.78rem; color:var(--muted); font-style:italic; margin-top:6px; border-top:1px dashed var(--border); padding-top:6px;}
+  .resource-request-price{font-family:'VT323',monospace; font-size:1.1rem; color:var(--accent); text-shadow:0 0 6px var(--accent-dim); margin-top:8px;}
+
+  /* --- En-tête de boutique vendeur (tableau de bord) : gros logo à gauche, stats + succès à droite --- */
+  .seller-header-card{display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap;}
+  .seller-header-left{flex:0 0 auto;}
+  .seller-header-logo{width:170px; height:170px; border-radius:8px; overflow:hidden; background:var(--bg2); border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; color:var(--accent); padding:16px; flex:none;}
+  .seller-header-logo svg{width:100%; height:100%;}
+  .seller-header-logo img{margin:-16px; width:calc(100% + 32px); height:calc(100% + 32px); object-fit:cover; border-radius:6px;}
+  .seller-header-right{flex:1; min-width:240px;}
+  .seller-header-right .shop-hero-text h1{font-size:2rem;}
+  .seller-header-stats-row{margin-top:20px;}
+  .seller-section-card{margin-top:20px;}
+  @media (max-width:640px){
+    .seller-header-card{flex-direction:column; align-items:center; text-align:center;}
+    .seller-header-right{width:100%;}
+  }
 
   /* --- GRILLE DES COMMANDES EN COURS (client) : 2 colonnes sur ordinateur, 1 colonne sur mobile, cartes de même hauteur --- */
   #clientCurrentOrders{display:grid; grid-template-columns:1fr; gap:16px; align-items:stretch;}
@@ -698,7 +715,7 @@
       <div class="tabs">
         <button class="tab-btn active" id="tabBtnDeliveries" onclick="setClientTab('deliveries')"><span data-i18n="tabDeliveries">LIVRAISONS</span><span class="notif-dot" id="dotTabDeliveries"></span></button>
         <button class="tab-btn" id="tabBtnMarketplace" onclick="setClientTab('marketplace')"><span data-i18n="tabMarketplace">MARKETPLACE</span><span class="notif-dot" id="dotTabMarketplace"></span></button>
-        <button class="tab-btn" id="tabBtnResources" onclick="setClientTab('resources')"><span data-i18n="tabResources">RESSOURCES DEMANDÉES</span></button>
+        <button class="tab-btn" id="tabBtnResources" onclick="setClientTab('resources')"><span data-i18n="tabResources">RESSOURCES DEMANDÉES</span><span class="notif-dot" id="dotTabResources"></span></button>
       </div>
       <div id="clientTabDeliveries">
         <div class="card courier-ad" id="courierAdCard" hidden></div>
@@ -992,82 +1009,115 @@
         <p data-i18n="notSeller">Ton compte n'a pas encore le rôle vendeur. Contacte l'administrateur pour être ajouté.</p>
       </div>
       <div id="sellerDash" hidden>
-        <div class="seller-layout">
-          <div class="seller-hero-block">
-            <div class="card shop-hero-card">
-              <div class="shop-hero-row">
-                <div class="shop-hero-icon" id="sellerDashHeroIcon"></div>
-                <div class="shop-hero-text shop-preview-head">
-                  <h1 id="sellerDashShopName">—</h1>
-                  <button class="gear-btn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique">
-                    <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                      <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
-                      <rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/>
-                      <rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/>
-                    </g></svg>
-                  </button>
-                </div>
-              </div>
-              <button type="button" class="btn-secondary" style="width:100%; margin-top:12px;" onclick="openSellerShop(session.user.id)">
-                <span data-i18n="viewMyShopBtn">VOIR MA BOUTIQUE</span>
+        <div class="card seller-header-card">
+          <div class="seller-header-left">
+            <div class="seller-header-logo" id="sellerDashHeroIcon"></div>
+          </div>
+          <div class="seller-header-right">
+            <div class="shop-hero-text shop-preview-head">
+              <h1 id="sellerDashShopName">—</h1>
+              <button class="gear-btn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique">
+                <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                  <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
+                  <rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/>
+                  <rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/>
+                </g></svg>
               </button>
             </div>
-          </div>
-          <div class="seller-action-block">
-            <div class="seller-form-accordion" id="addListingBody">
-              <div class="card">
-                <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
-                <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute">
-                <label for="listingPrice" data-i18n="listingPriceLbl">Prix de vente (aUEC)</label>
-                <input id="listingPrice" type="number" min="0" step="1">
-                <label for="listingQty" data-i18n="listingQtyLbl">Quantité</label>
-                <input id="listingQty" type="number" min="1" step="1" value="1">
-                <label data-i18n="listingPhotoLbl">Photo (optionnel)</label>
-                <input type="file" id="listingPhotoInput" accept="image/*" hidden onchange="onListingPhotoSelected(this)">
-                <button type="button" class="btn-secondary" style="width:100%; margin-top:4px;" onclick="$('listingPhotoInput').click()" id="listingPhotoBtn">
-                  <span data-i18n="uploadListingPhoto">CHOISIR UNE PHOTO</span>
-                </button>
-                <div id="listingPhotoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
-                <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createListing()">
-                  <span data-i18n="addListingBtn">METTRE EN VENTE</span>
-                </button>
-              </div>
-            </div>
-            <div class="seller-form-accordion" id="resourceRequestBody">
-              <div class="card">
-                <label for="resourceName" data-i18n="resourceNameLbl">Ressource recherchée</label>
-                <input id="resourceName" type="text" data-i18n-ph="phResourceName" placeholder="ex: Laranite brute">
-                <label for="resourceQty" data-i18n="resourceQtyLbl">Quantité souhaitée</label>
-                <input id="resourceQty" type="number" min="1" step="1" value="1">
-                <label for="resourcePrice" data-i18n="resourcePriceLbl">Prix proposé (aUEC, optionnel)</label>
-                <input id="resourcePrice" type="number" min="0" step="1">
-                <label for="resourceNote" data-i18n="resourceNoteLbl">Note (optionnel)</label>
-                <textarea id="resourceNote" data-i18n-ph="phResourceNote" placeholder="ex: Livraison sur Nyx, quantité négociable..."></textarea>
-                <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createResourceRequest()">
-                  <span data-i18n="submitResourceRequestBtn">ENVOYER LA DEMANDE</span>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="seller-profile-block">
-            <div class="card seller-profile-card">
+            <button type="button" class="btn-secondary" onclick="openSellerShop(session.user.id)">
+              <span data-i18n="viewMyShopBtn">VOIR MA BOUTIQUE</span>
+            </button>
+            <div class="seller-header-stats-row">
               <div id="sellerDashStatsCard"></div>
               <div class="seller-profile-divider"></div>
               <div id="sellerDashAchvCard"></div>
             </div>
           </div>
-          <div class="seller-listings-block">
-            <div class="tabs">
-              <button class="tab-btn active" id="tab-listings" onclick="switchSellerTab('listings')"><span data-i18n="myListingsTitle">MES ANNONCES</span></button>
-              <button class="tab-btn" id="tab-inquiries" onclick="switchSellerTab('inquiries')"><span data-i18n="receivedInquiriesTitle">PROPOSITIONS REÇUES</span><span class="tab-count-badge" id="inquiriesCountBadge" hidden>0</span></button>
-              <button class="tab-btn" id="tab-myrequests" onclick="switchSellerTab('myrequests')"><span data-i18n="myResourceRequestsTitle">MES DEMANDES</span></button>
-            </div>
-            <div id="sellerListingsPane"><div id="myListingsList" class="marketplace-grid"></div></div>
-            <div id="sellerInquiriesPane" hidden><div id="receivedInquiriesList"></div></div>
-            <div id="sellerMyRequestsPane" hidden><div id="myResourceRequestsList"></div></div>
+        </div>
+
+        <div class="card seller-section-card">
+          <div class="shop-preview-head">
+            <h3 data-i18n="myListingsTitle">MES ANNONCES</h3>
+            <button type="button" class="btn-secondary shop-see-more" id="sellerListingsViewMoreBtn" onclick="openSellerAllListings()" hidden>
+              <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
+            </button>
           </div>
+          <div id="myListingsList" class="marketplace-grid"></div>
+        </div>
+
+        <div class="card seller-section-card">
+          <div class="shop-preview-head">
+            <h3><span data-i18n="receivedInquiriesTitle">PROPOSITIONS REÇUES</span><span class="tab-count-badge" id="inquiriesCountBadge" hidden>0</span></h3>
+          </div>
+          <div id="receivedInquiriesList"></div>
+        </div>
+
+        <div class="card seller-section-card">
+          <div class="shop-preview-head">
+            <h3 data-i18n="myResourceRequestsTitle">MES DEMANDES</h3>
+            <button type="button" class="btn-secondary shop-see-more" id="sellerRequestsViewMoreBtn" onclick="openSellerAllRequests()" hidden>
+              <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
+            </button>
+          </div>
+          <div id="myResourceRequestsList" class="resource-request-grid"></div>
         </div>
       </div>
+    </section>
+
+    <!-- CRÉATION D'ANNONCE (page dédiée) -->
+    <section id="view-seller-create-listing" hidden>
+      <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
+      <header><h1 data-i18n="newListingTitle">Ajouter un objet en vente</h1></header>
+      <div class="card">
+        <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
+        <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute">
+        <label for="listingPrice" data-i18n="listingPriceLbl">Prix de vente (aUEC)</label>
+        <input id="listingPrice" type="number" min="0" step="1">
+        <label for="listingQty" data-i18n="listingQtyLbl">Quantité</label>
+        <input id="listingQty" type="number" min="1" step="1" value="1">
+        <label data-i18n="listingPhotoLbl">Photo (optionnel)</label>
+        <input type="file" id="listingPhotoInput" accept="image/*" hidden onchange="onListingPhotoSelected(this)">
+        <button type="button" class="btn-secondary" style="width:100%; margin-top:4px;" onclick="$('listingPhotoInput').click()" id="listingPhotoBtn">
+          <span data-i18n="uploadListingPhoto">CHOISIR UNE PHOTO</span>
+        </button>
+        <div id="listingPhotoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
+        <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createListing()">
+          <span data-i18n="addListingBtn">METTRE EN VENTE</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- DEMANDE DE RESSOURCE (page dédiée) -->
+    <section id="view-seller-create-resource" hidden>
+      <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
+      <header><h1 data-i18n="requestResourcesTitle">Demander des ressources</h1></header>
+      <div class="card">
+        <label for="resourceName" data-i18n="resourceNameLbl">Ressource recherchée</label>
+        <input id="resourceName" type="text" data-i18n-ph="phResourceName" placeholder="ex: Laranite brute">
+        <label for="resourceQty" data-i18n="resourceQtyLbl">Quantité souhaitée</label>
+        <input id="resourceQty" type="number" min="1" step="1" value="1">
+        <label for="resourcePrice" data-i18n="resourcePriceLbl">Prix proposé (aUEC, optionnel)</label>
+        <input id="resourcePrice" type="number" min="0" step="1">
+        <label for="resourceNote" data-i18n="resourceNoteLbl">Note (optionnel)</label>
+        <textarea id="resourceNote" data-i18n-ph="phResourceNote" placeholder="ex: Livraison sur Nyx, quantité négociable..."></textarea>
+        <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createResourceRequest()">
+          <span data-i18n="submitResourceRequestBtn">ENVOYER LA DEMANDE</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- TOUTES MES ANNONCES (page dédiée) -->
+    <section id="view-seller-all-listings" hidden>
+      <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
+      <header><h1 data-i18n="myListingsTitle">Mes annonces</h1></header>
+      <div id="myListingsListFull" class="marketplace-grid"></div>
+    </section>
+
+    <!-- TOUTES MES DEMANDES DE RESSOURCES (page dédiée) -->
+    <section id="view-seller-all-resources" hidden>
+      <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
+      <header><h1 data-i18n="myResourceRequestsTitle">Mes demandes</h1></header>
+      <div id="myResourceRequestsListFull" class="resource-request-grid"></div>
     </section>
 
     <!-- MODIFICATION DE LA BOUTIQUE (nom, couleur) -->
@@ -1185,7 +1235,7 @@ let profile = null;
 // Un membre peut cumuler plusieurs casquettes (client + coursier + vendeur) : currentView retient
 // l'onglet actuellement affiché parmi celles disponibles pour ce compte. 'client' reste le point de départ par défaut.
 let currentView = 'client'; // 'client' | 'courier' | 'seller' | 'admin'
-const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-dash','view-seller-shop','view-seller-shop-edit'];
+const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-dash','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-resource','view-seller-all-listings','view-seller-all-resources'];
 function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); }
 let clientTab = 'deliveries'; // 'deliveries' | 'marketplace' | 'resources'
 function setClientTab(tab){
@@ -1475,6 +1525,15 @@ async function notifyAllCouriers(refId){
     }
   }catch(e){}
 }
+async function notifyAllUsersOfResourceRequest(refId, excludeUserId){
+  try{
+    const { data: users } = await sb.from('profiles').select('id');
+    const targets = (users||[]).filter(u => u.id !== excludeUserId);
+    if(targets.length){
+      await sb.from('notifications').insert(targets.map(u => ({ user_id:u.id, category:'client_resources', ref_id: refId||null })));
+    }
+  }catch(e){}
+}
 async function getUnreadCount(category){
   if(!session) return 0;
   const { count } = await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',session.user.id).eq('category',category).eq('read',false);
@@ -1488,17 +1547,19 @@ async function markCategoryRead(category){
 function toggleDot(id, show){ const el = $(id); if(el) el.classList.toggle('show', !!show); }
 async function refreshNotifBadges(){
   if(!session || !profile) return;
-  const [sellerCnt, mktCnt, ordCnt, courierCnt] = await Promise.all([
+  const [sellerCnt, mktCnt, ordCnt, courierCnt, resCnt] = await Promise.all([
     (profile.is_seller || profile.role==='admin') ? getUnreadCount('seller_marketplace') : Promise.resolve(0),
     getUnreadCount('client_marketplace'),
     getUnreadCount('client_orders'),
-    (profile.is_courier || profile.role==='admin') ? getUnreadCount('courier_pending') : Promise.resolve(0)
+    (profile.is_courier || profile.role==='admin') ? getUnreadCount('courier_pending') : Promise.resolve(0),
+    getUnreadCount('client_resources')
   ]);
   toggleDot('dotNavSeller', sellerCnt>0);
-  toggleDot('dotNavClient', (mktCnt+ordCnt)>0);
+  toggleDot('dotNavClient', (mktCnt+ordCnt+resCnt)>0);
   toggleDot('dotTabMarketplace', mktCnt>0);
   toggleDot('dotTabDeliveries', ordCnt>0);
   toggleDot('dotTabPending', courierCnt>0);
+  toggleDot('dotTabResources', resCnt>0);
 }
 
 const COLORS = ['orange','vert','bleu','violet','blanc','jaune'];
@@ -1535,14 +1596,12 @@ document.addEventListener('click', (e) => {
 });
 function openSellerCreateOption(kind){
   $('sellerCreateMenu').hidden = true;
+  hideAllViews();
+  $('sellerCreateWrap').hidden = true;
   if(kind === 'listing'){
-    $('resourceRequestBody')?.classList.remove('open');
-    $('addListingBody')?.classList.add('open');
-    $('addListingBody')?.scrollIntoView({ behavior:'smooth', block:'start' });
+    $('view-seller-create-listing').hidden = false;
   } else {
-    $('addListingBody')?.classList.remove('open');
-    $('resourceRequestBody')?.classList.add('open');
-    $('resourceRequestBody')?.scrollIntoView({ behavior:'smooth', block:'start' });
+    $('view-seller-create-resource').hidden = false;
   }
 }
 
@@ -2458,28 +2517,53 @@ async function loadResourceRequestsFeed(){
   const { data, error } = await sb.from('resource_requests').select('*').eq('status','open').order('created_at',{ascending:false}).limit(50);
   if(error){ box.textContent = error.message; return; }
   const rows = data || [];
+  const currentIds = new Set(rows.map(r=>r.id));
+  if(session){
+    // Nettoie les notifications "ressource demandée" orphelines (requête close/supprimée depuis) pour
+    // que la pastille de l'onglet ne reste pas bloquée sur une carte qui n'existe plus.
+    const { data: unreadRowsAll } = await sb.from('notifications').select('id,ref_id').eq('user_id',session.user.id).eq('category','client_resources').eq('read',false);
+    const staleNotifIds = (unreadRowsAll||[]).filter(n => !n.ref_id || !currentIds.has(n.ref_id)).map(n=>n.id);
+    if(staleNotifIds.length){
+      await sb.from('notifications').update({read:true}).in('id', staleNotifIds);
+      refreshNotifBadges();
+    }
+  }
   if(!rows.length){ box.innerHTML = `<p class="muted">${d.noOpenResourceRequests}</p>`; return; }
   const sellerIds = [...new Set(rows.map(r=>r.seller_id))];
-  const [{ data: sellers }, { data: shops }] = await Promise.all([
+  const [{ data: sellers }, { data: shops }, unreadRows] = await Promise.all([
     sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds),
-    sb.from('marketplace_shops').select('id,shop_name').in('id', sellerIds)
+    sb.from('marketplace_shops').select('id,shop_name').in('id', sellerIds),
+    session ? sb.from('notifications').select('ref_id').eq('user_id',session.user.id).eq('category','client_resources').eq('read',false).then(r=>r.data||[]) : []
   ]);
   const sMap = {}; (sellers||[]).forEach(s=>sMap[s.id]=s);
   const shopMap = {}; (shops||[]).forEach(s=>shopMap[s.id]=s);
+  const unreadSet = new Set(unreadRows.map(n=>n.ref_id));
+  box.className = 'resource-request-grid';
   box.innerHTML = rows.map(r => {
     const seller = sMap[r.seller_id];
     const shop = shopMap[r.seller_id];
     const sellerName = (shop && shop.shop_name) || (seller && (seller.rsi_handle || seller.discord_username)) || '—';
+    const isNew = unreadSet.has(r.id);
+    const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
+    const hoverAttr = isNew ? ` onmouseenter="markResourceRequestSeen('${r.id}', this)"` : '';
     return `
-      <div class="resource-request-row">
-        <div class="resource-request-info">
-          <div class="resource-request-name">${r.item_name} <span class="muted">x${r.quantity}</span></div>
-          <div class="resource-request-meta">${d.resourceRequestedBy}<a href="#" onclick="openSellerShop('${r.seller_id}'); return false;">${sellerName}</a></div>
-          ${r.note ? `<div class="resource-request-meta">${r.note}</div>` : ''}
-        </div>
+      <div class="resource-request-card"${hoverAttr}>
+        ${newDot}
+        <div class="resource-request-name">${r.item_name} <span class="resource-request-qty">x${r.quantity}</span></div>
+        <div class="resource-request-meta">${d.resourceRequestedBy}<a href="#" onclick="openSellerShop('${r.seller_id}'); return false;">${sellerName}</a></div>
+        ${r.note ? `<div class="resource-request-note">${r.note}</div>` : ''}
         ${r.price ? `<div class="resource-request-price">${fmt(r.price)}</div>` : ''}
       </div>`;
   }).join('');
+}
+async function markResourceRequestSeen(reqId, cardEl){
+  const dot = cardEl.querySelector('.new-order-dot');
+  if(!dot) return;
+  dot.remove();
+  cardEl.onmouseenter = null;
+  if(!session) return;
+  await sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category','client_resources').eq('ref_id', reqId).eq('read',false);
+  refreshNotifBadges();
 }
 function inquiryStatusBadge(status){
   const d = T[LANG];
@@ -2656,10 +2740,11 @@ async function loadSellerDashboard(){
   $('sellerBlocked').hidden = true; $('sellerDash').hidden = false;
   const d = T[LANG];
   const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle();
-  $('sellerDashHeroIcon').innerHTML = shop?.logo_url ? `<img class="shop-hero-logo-img" src="${shop.logo_url}" alt="">` : roleAnimSvg('seller', 40);
+  $('sellerDashHeroIcon').innerHTML = shop?.logo_url ? `<img class="shop-hero-logo-img" src="${shop.logo_url}" alt="">` : roleAnimSvg('seller', 100);
   $('sellerDashShopName').textContent = (shop && shop.shop_name) || d.shopSettingsTitle;
   await loadMyListings();
   await loadReceivedInquiries();
+  await loadMyResourceRequests();
   markCategoryRead('seller_marketplace');
   const stats = await fetchSellerShopStats(session.user.id);
   renderShopStats($('sellerDashStatsCard'), stats);
@@ -2805,24 +2890,38 @@ async function createListing(){
   }
   $('listingItem').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
   toastShow(d.listingSaved);
-  const addBody = $('addListingBody');
-  if(addBody) addBody.classList.remove('open');
-  loadMyListings();
+  routeApp();
 }
 async function deleteListing(id){
   if(!confirm(T[LANG].confirmDeleteListing)) return;
   const { error } = await sb.from('marketplace_listings').delete().eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
-  loadMyListings();
+  await loadMyListings();
+  const fullBox = $('myListingsListFull');
+  if(fullBox && !$('view-seller-all-listings').hidden){
+    const d = T[LANG];
+    fullBox.innerHTML = myListingsCache.length ? myListingsCache.map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.noListings}</p>`;
+  }
 }
+let myListingsCache = [];
 async function loadMyListings(){
   const box = $('myListingsList'); if(!box) return;
   const d = T[LANG];
   const { data, error } = await sb.from('marketplace_listings').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
   if(error){ box.textContent = error.message; return; }
-  const listings = data || [];
-  if(!listings.length){ box.innerHTML = `<p class="muted">${d.noListings}</p>`; return; }
-  box.innerHTML = listings.map(l => myListingCardHtml(l)).join('');
+  myListingsCache = data || [];
+  if(!myListingsCache.length){ box.innerHTML = `<p class="muted">${d.noListings}</p>`; }
+  else box.innerHTML = myListingsCache.slice(0,3).map(l => myListingCardHtml(l)).join('');
+  const moreBtn = $('sellerListingsViewMoreBtn');
+  if(moreBtn) moreBtn.hidden = myListingsCache.length <= 3;
+}
+function openSellerAllListings(){
+  hideAllViews();
+  $('sellerCreateWrap').hidden = true;
+  $('view-seller-all-listings').hidden = false;
+  const d = T[LANG];
+  const box = $('myListingsListFull');
+  box.innerHTML = myListingsCache.length ? myListingsCache.map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.noListings}</p>`;
 }
 // Carte "annonce" pour la grille de gestion du vendeur (même look que la grille marketplace publique,
 // mais avec les actions de gestion : demander une livraison, supprimer).
@@ -3108,26 +3207,12 @@ function switchCourierTab(tab){
   $('courierPendingPane').hidden = tab!=='pending';
   $('courierMinePane').hidden = tab!=='mine';
 }
-function switchSellerTab(tab){
-  $('tab-listings').classList.toggle('active', tab==='listings');
-  $('tab-inquiries').classList.toggle('active', tab==='inquiries');
-  $('tab-myrequests').classList.toggle('active', tab==='myrequests');
-  $('sellerListingsPane').hidden = tab!=='listings';
-  $('sellerInquiriesPane').hidden = tab!=='inquiries';
-  $('sellerMyRequestsPane').hidden = tab!=='myrequests';
-  if(tab === 'myrequests') loadMyResourceRequests();
-}
-// Pastille numérique sur l'onglet "Propositions reçues" = nombre de propositions en attente d'une décision.
+// Pastille numérique sur "Propositions reçues" = nombre de propositions en attente d'une décision.
 function updateInquiriesBadge(rows){
   const badge = $('inquiriesCountBadge'); if(!badge) return;
   const pendingCount = (rows||[]).filter(r => r.status === 'pending').length;
   badge.textContent = pendingCount;
   badge.hidden = pendingCount === 0;
-}
-// Déplie/replie un accordéon générique (formulaire "Mettre en vente", "Demander des ressources", etc.)
-function toggleAccordion(id){
-  const body = $(id);
-  if(body) body.classList.toggle('open');
 }
 // --- DEMANDES DE RESSOURCES (seller demande à la communauté un item qu'il cherche à acheter) ---
 async function createResourceRequest(){
@@ -3139,36 +3224,53 @@ async function createResourceRequest(){
   const price = priceRaw ? (parseFloat(priceRaw) || null) : null;
   const note = $('resourceNote').value.trim();
   if(!item_name){ alert('Erreur : renseigne une ressource recherchée.'); return; }
-  const { error } = await sb.from('resource_requests').insert({ seller_id: session.user.id, item_name, quantity, price, note: note || null, status: 'open' });
+  const { data, error } = await sb.from('resource_requests').insert({ seller_id: session.user.id, item_name, quantity, price, note: note || null, status: 'open' }).select().single();
   if(error){ alert('Erreur : '+error.message); return; }
   $('resourceName').value=''; $('resourceQty').value='1'; $('resourcePrice').value=''; $('resourceNote').value='';
   toastShow(d.resourceRequestSaved);
-  const body = $('resourceRequestBody');
-  if(body) body.classList.remove('open');
-  loadMyResourceRequests();
+  if(data) notifyAllUsersOfResourceRequest(data.id, session.user.id);
+  routeApp();
+}
+let myResourceRequestsCache = [];
+function ownResourceRequestCardHtml(r){
+  const d = T[LANG];
+  return `
+    <div class="resource-request-card" data-request="${r.id}">
+      <div class="resource-request-name">${r.item_name} <span class="resource-request-qty">x${r.quantity}</span></div>
+      ${r.note ? `<div class="resource-request-note">${r.note}</div>` : ''}
+      ${r.price ? `<div class="resource-request-price">${fmt(r.price)}</div>` : ''}
+      <button class="btn-logout" style="width:100%; margin-top:10px;" onclick="deleteResourceRequest('${r.id}')">${d.deleteListingBtn}</button>
+    </div>`;
 }
 async function loadMyResourceRequests(){
   const box = $('myResourceRequestsList'); if(!box || !session) return;
   const d = T[LANG];
   const { data, error } = await sb.from('resource_requests').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
   if(error){ box.textContent = error.message; return; }
-  const rows = data || [];
-  if(!rows.length){ box.innerHTML = `<p class="muted">${d.noResourceRequests}</p>`; return; }
-  box.innerHTML = rows.map(r => `
-    <div class="resource-request-row">
-      <div class="resource-request-info">
-        <div class="resource-request-name">${r.item_name} <span class="muted">x${r.quantity}</span></div>
-        ${r.note ? `<div class="resource-request-meta">${r.note}</div>` : ''}
-      </div>
-      ${r.price ? `<div class="resource-request-price">${fmt(r.price)}</div>` : ''}
-      <button class="btn-logout" onclick="deleteResourceRequest('${r.id}')">${d.deleteListingBtn}</button>
-    </div>`).join('');
+  myResourceRequestsCache = data || [];
+  if(!myResourceRequestsCache.length){ box.innerHTML = `<p class="muted">${d.noResourceRequests}</p>`; }
+  else box.innerHTML = myResourceRequestsCache.slice(0,3).map(r => ownResourceRequestCardHtml(r)).join('');
+  const moreBtn = $('sellerRequestsViewMoreBtn');
+  if(moreBtn) moreBtn.hidden = myResourceRequestsCache.length <= 3;
+}
+function openSellerAllRequests(){
+  hideAllViews();
+  $('sellerCreateWrap').hidden = true;
+  $('view-seller-all-resources').hidden = false;
+  const d = T[LANG];
+  const box = $('myResourceRequestsListFull');
+  box.innerHTML = myResourceRequestsCache.length ? myResourceRequestsCache.map(r => ownResourceRequestCardHtml(r)).join('') : `<p class="muted">${d.noResourceRequests}</p>`;
 }
 async function deleteResourceRequest(id){
   if(!confirm(T[LANG].confirmDeleteListing)) return;
   const { error } = await sb.from('resource_requests').delete().eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
-  loadMyResourceRequests();
+  await loadMyResourceRequests();
+  const fullBox = $('myResourceRequestsListFull');
+  if(fullBox && !$('view-seller-all-resources').hidden){
+    const d = T[LANG];
+    fullBox.innerHTML = myResourceRequestsCache.length ? myResourceRequestsCache.map(r => ownResourceRequestCardHtml(r)).join('') : `<p class="muted">${d.noResourceRequests}</p>`;
+  }
 }
 async function loadCourierData(){
   if(!session) return;

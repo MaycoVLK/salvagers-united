@@ -200,6 +200,8 @@
   .delivery-mini-list-title{font-family:'VT323',monospace; font-size:1rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin:0 0 2px;}
   .delivery-mini-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap; border:1px solid var(--border); border-radius:4px; padding:10px 12px; background:var(--bg2); cursor:pointer; transition:border-color .15s, background .15s, transform .1s;}
   .delivery-mini-row:hover{border-color:var(--accent); background:var(--accent-dim); transform:translateX(2px);}
+  .delivery-mini-row.active{border-color:var(--accent); background:var(--accent-dim); box-shadow:0 0 10px var(--accent-dim), inset 3px 0 0 var(--accent); cursor:default;}
+  .delivery-mini-row.active .delivery-mini-status{text-shadow:0 0 6px var(--accent-dim);}
   .delivery-mini-status{flex:none; font-family:'VT323',monospace; font-size:.8rem; color:var(--accent); text-transform:uppercase;}
   .delivery-mini-name{flex:1 1 100%; font-size:.88rem; color:var(--text);}
   .delivery-mini-dest{flex:1 1 100%; font-size:.78rem; color:var(--muted);}
@@ -218,11 +220,15 @@
     .delivery-mini-row{flex:0 0 190px; flex-direction:column; align-items:flex-start; gap:4px;}
     .delivery-mini-margin{margin-left:0;}
   }
-  /* --- ITINÉRAIRE D'ACHAT (schéma, affiché directement sous la commande principale) --- */
-  .purchase-route{margin-top:18px; margin-bottom:4px; padding:22px 24px; border:1px solid var(--accent); border-radius:6px; background:rgba(0,0,0,.22); animation:courierAdGlow 2.6s ease-in-out infinite;}
-  .purchase-route-title{font-family:'VT323',monospace; font-size:1.3rem; color:var(--accent); text-shadow:0 0 8px var(--accent-dim); margin:0 0 18px; letter-spacing:.6px; text-transform:uppercase; display:flex; align-items:center; gap:8px;}
-  .purchase-route-title::before{content:'⟡'; font-size:1.1rem;}
-  .route-loading-note{font-size:.9rem; color:var(--muted); font-style:italic;}
+  /* --- ITINÉRAIRE D'ACHAT (schéma, repliable, affiché sous la commande principale) --- */
+  .purchase-route{margin-top:18px; margin-bottom:4px; border:1px solid var(--accent); border-radius:6px; background:rgba(0,0,0,.22); animation:courierAdGlow 2.6s ease-in-out infinite; overflow:hidden;}
+  .purchase-route-title{font-family:'VT323',monospace; font-size:1.2rem; color:var(--accent); text-shadow:0 0 8px var(--accent-dim); letter-spacing:.6px; text-transform:uppercase; display:flex; align-items:center; gap:8px; padding:14px 18px; margin:0; cursor:pointer; user-select:none;}
+  .purchase-route-title::before{content:'⟡'; font-size:1.05rem;}
+  .purchase-route-toggle{margin-left:auto; font-size:1.1rem; transition:transform .2s ease; flex:none;}
+  .purchase-route:not(.collapsed) .purchase-route-toggle{transform:rotate(90deg);}
+  .purchase-route-body{max-height:0; padding:0 22px; overflow:hidden; transition:max-height .25s ease, padding .25s ease;}
+  .purchase-route:not(.collapsed) .purchase-route-body{max-height:2000px; padding:4px 22px 22px;}
+  .route-loading-note{font-size:.9rem; color:var(--muted); font-style:italic; padding:0 18px 16px;}
   .route-stop{display:flex; gap:16px; align-items:flex-start;}
   .route-stop-num{flex:none; width:32px; height:32px; border-radius:50%; border:2px solid var(--accent); color:var(--accent); background:rgba(0,0,0,.35); font-family:'VT323',monospace; font-size:1.15rem; display:flex; align-items:center; justify-content:center; text-shadow:0 0 4px var(--accent-dim); box-shadow:0 0 8px var(--accent-dim);}
   .route-stop-body{flex:1; min-width:0; padding-top:3px; padding-bottom:6px;}
@@ -1145,7 +1151,7 @@ const T = {
     adminActionsTitle:"Actions admin", resetAchvBtn:"RÉINITIALISER LES SUCCÈS", resetRoleBtn:"RÉINITIALISER LE RÔLE",
     confirmResetAchv:"Es-tu sûr de vouloir réinitialiser tous les succès de ce membre ?", confirmResetRole:"Es-tu sûr de vouloir remettre ce membre au rôle client (perte du rôle coursier/admin) ?",
     courierMarginLbl:"Ta marge (commission)",
-    purchaseRouteTitle:"Itinéraire d'achat conseillé", routeLoading:"Calcul de l'itinéraire...", routeDeliveryStop:"LIVRAISON", routeUnresolvedNote:"Objet(s) introuvable(s) dans le catalogue UEX (à récupérer par un autre moyen) :", otherDeliveriesTitle:"Autres livraisons en cours",
+    purchaseRouteTitle:"Itinéraire d'achat conseillé", routeLoading:"Calcul de l'itinéraire...", routeDeliveryStop:"LIVRAISON", routeUnresolvedNote:"Objet(s) introuvable(s) dans le catalogue UEX (à récupérer par un autre moyen) :", otherDeliveriesTitle:"Tes livraisons en cours",
     careerStatsTitle:"Statistiques de carrière", careerTotalEarned:"aUEC gagnés au total", careerTopItem:"Objet le plus transporté", careerDeliveries:"Livraisons effectuées", careerAvgMargin:"Marge moyenne / commande", careerNoData:"Pas encore de statistiques — effectue ta première livraison !",
     shipPhotoTitle:"Photo du vaisseau livreur", shipPhotoHint:"Ajoute une photo de ton vaisseau pour l'immersion — visible sur ton profil public.", uploadShipPhoto:"CHOISIR UNE PHOTO", uploadingPhoto:"ENVOI EN COURS...", shipPhotoSaved:"PHOTO ENREGISTRÉE !", shipPhotoError:"Erreur lors de l'envoi de la photo.",
     emptyCtaText:"Besoin de quelque chose ? Commande maintenant !", emptyCtaBtn:"CRÉER UNE COMMANDE",
@@ -1255,7 +1261,7 @@ const T = {
     adminActionsTitle:"Admin actions", resetAchvBtn:"RESET ACHIEVEMENTS", resetRoleBtn:"RESET ROLE",
     confirmResetAchv:"Are you sure you want to reset all of this member's achievements?", confirmResetRole:"Are you sure you want to set this member back to the client role (removing courier/admin access)?",
     courierMarginLbl:"Your margin (commission)",
-    purchaseRouteTitle:"Suggested shopping route", routeLoading:"Computing route...", routeDeliveryStop:"DELIVERY", routeUnresolvedNote:"Item(s) not found in the UEX catalog (source another way):", otherDeliveriesTitle:"Other ongoing deliveries",
+    purchaseRouteTitle:"Suggested shopping route", routeLoading:"Computing route...", routeDeliveryStop:"DELIVERY", routeUnresolvedNote:"Item(s) not found in the UEX catalog (source another way):", otherDeliveriesTitle:"Your ongoing deliveries",
     careerStatsTitle:"Career stats", careerTotalEarned:"Total aUEC earned", careerTopItem:"Most transported item", careerDeliveries:"Deliveries completed", careerAvgMargin:"Avg margin / delivery", careerNoData:"No stats yet — complete your first delivery!",
     shipPhotoTitle:"Delivery ship photo", shipPhotoHint:"Add a photo of your ship for immersion — visible on your public profile.", uploadShipPhoto:"CHOOSE A PHOTO", uploadingPhoto:"UPLOADING...", shipPhotoSaved:"PHOTO SAVED!", shipPhotoError:"Error uploading photo.",
     emptyCtaText:"Need something? Order now!", emptyCtaBtn:"CREATE AN ORDER",
@@ -1817,12 +1823,18 @@ function renderPurchaseRouteHtml(order, route){
     </div>`;
   const unresolvedHtml = route.unresolved.length ? `<div class="route-unresolved">${d.routeUnresolvedNote} ${route.unresolved.join(', ')}</div>` : '';
   return `
-    <div class="purchase-route">
-      <div class="purchase-route-title">${d.purchaseRouteTitle}</div>
-      ${stopsHtml}
-      ${deliveryHtml}
-      ${unresolvedHtml}
+    <div class="purchase-route collapsed">
+      <div class="purchase-route-title" onclick="togglePurchaseRoute(this)">${d.purchaseRouteTitle}<span class="purchase-route-toggle">▸</span></div>
+      <div class="purchase-route-body">
+        ${stopsHtml}
+        ${deliveryHtml}
+        ${unresolvedHtml}
+      </div>
     </div>`;
+}
+function togglePurchaseRoute(titleEl){
+  const wrap = titleEl.closest('.purchase-route');
+  if(wrap) wrap.classList.toggle('collapsed');
 }
 // Cache des itinéraires d'achat déjà calculés, par id de commande (pré-calculé pour toutes les commandes
 // acceptées afin qu'un changement de commande principale soit instantané).
@@ -2994,15 +3006,14 @@ function renderMyDeliveriesView(){
   const orders = courierMineOrdersCache, clients = courierMineClientsCache;
   const active = orders.find(o=>o.id===activeDeliveryId) || orders[0];
   if(!active){ box.innerHTML = `<p class="muted">${d.noDeliveries}</p>`; return; }
-  const others = orders.filter(o=>o.id!==active.id);
   const mainHtml = `<div class="delivery-main-wrap" id="deliveryMainWrap">${deliveryMainCardHtml(active, clients)}</div>`;
-  if(!others.length){
+  if(orders.length <= 1){
     box.innerHTML = mainHtml;
   } else {
     const miniListHtml = `
       <div class="delivery-mini-list">
         <div class="delivery-mini-list-title">${d.otherDeliveriesTitle}</div>
-        ${others.map(o => deliveryMiniRowHtml(o, clients)).join('')}
+        ${orders.map(o => deliveryMiniRowHtml(o, clients, o.id===active.id)).join('')}
       </div>`;
     box.innerHTML = `<div class="delivery-layout">${miniListHtml}${mainHtml}</div>`;
   }
@@ -3052,13 +3063,14 @@ function deliveryMainCardHtml(o, clients){
       ${releaseBtn}
     </div>`;
 }
-function deliveryMiniRowHtml(o, clients){
+function deliveryMiniRowHtml(o, clients, isActive){
   const d=T[LANG];
   const isMkt = o.order_type === 'marketplace';
   const name = isMkt ? (o.buyer_handle || '—') : displayName(clients[o.client_id]);
   const dest = `${o.destination_system} — ${o.exact_location||'-'}`;
+  const onclick = isActive ? '' : ` onclick="setActiveDelivery('${o.id}')"`;
   return `
-    <div class="delivery-mini-row" onclick="setActiveDelivery('${o.id}')">
+    <div class="delivery-mini-row${isActive ? ' active' : ''}"${onclick}>
       <div class="delivery-mini-status">${d.statusLabels[o.status]}</div>
       <div class="delivery-mini-name">${name}</div>
       <div class="delivery-mini-dest">${dest}</div>

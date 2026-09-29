@@ -409,9 +409,6 @@
   .shop-upvote-btn.upvoted .icon{color:var(--accent); filter:drop-shadow(0 0 4px var(--accent));}
   .shop-upvote-btn.upvoted .shop-upvote-count{color:var(--accent);}
   .shop-upvote-btn[hidden]{display:none;}
-  .shop-upvote-badge{display:inline-flex; align-items:center; gap:9px; background:linear-gradient(180deg, var(--accent-dim), var(--bg2)); border:1px solid var(--accent); border-radius:6px; padding:10px 16px; box-shadow:0 0 14px var(--accent-dim), inset 0 0 0 1px var(--accent);}
-  .shop-upvote-badge .icon{width:18px; height:18px; color:var(--accent); filter:drop-shadow(0 0 4px var(--accent));}
-  .shop-upvote-badge span{font-family:'VT323',monospace; font-size:1.05rem; color:var(--accent); font-weight:700;}
   /* --- FLAMME 8-BIT (upvote) --- */
   .pixel-flame-particle{position:fixed; width:6px; height:6px; pointer-events:none; z-index:9999; image-rendering:pixelated; animation:pixelFlame .65s steps(5) forwards;}
   @keyframes pixelFlame{
@@ -1089,12 +1086,6 @@
           <div class="seller-header-right">
             <div class="shop-hero-text shop-preview-head">
               <h1 id="sellerDashShopName">—</h1>
-              <div class="shop-upvote-badge" id="sellerDashUpvoteBadge">
-                <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                  <rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/>
-                </g></svg>
-                <span id="sellerDashUpvoteCount">0</span>
-              </div>
               <button class="gear-btn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique">
                 <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
                   <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
@@ -1455,7 +1446,7 @@ const T = {
     shopSettingsTitle:"Ma boutique", shopNameLbl:"Nom de la marketplace", phShopName:"ex: Le Comptoir de Mayco", shopThemeLbl:"Couleur de la boutique", shopLogoLbl:"Logo de la boutique (optionnel)", uploadShopLogo:"CHOISIR UN LOGO", saveShopBtn:"ENREGISTRER LA BOUTIQUE", shopSaved:"BOUTIQUE ENREGISTRÉE !",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
-    shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopMostExpensive:"Objet le plus cher vendu", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
+    shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
     sellerAchvTitle:"Succès vendeur",
     sellerAchvLabels:{first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées"},
     sellerAchvDesc:{first_sale:"Conclus ta première vente.", first_courier_sale:"Fais livrer une vente par un coursier.", five_sales:"Conclus 5 ventes."},
@@ -1573,7 +1564,7 @@ const T = {
     shopSettingsTitle:"My shop", shopNameLbl:"Marketplace name", phShopName:"e.g. Mayco's Trading Post", shopThemeLbl:"Shop color", shopLogoLbl:"Shop logo (optional)", uploadShopLogo:"CHOOSE A LOGO", saveShopBtn:"SAVE SHOP", shopSaved:"SHOP SAVED!",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
-    shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopMostExpensive:"Most expensive item sold", shopStatsNoData:"No sales yet — your first sale will show up here!",
+    shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
     sellerAchvTitle:"Seller achievements",
     sellerAchvLabels:{first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made"},
     sellerAchvDesc:{first_sale:"Close your first sale.", first_courier_sale:"Have a sale delivered by a courier.", five_sales:"Close 5 sales."},
@@ -2965,9 +2956,6 @@ async function loadSellerDashboard(){
   const stats = await fetchSellerShopStats(session.user.id);
   renderShopStats($('sellerDashStatsCard'), stats);
   checkAndRenderSellerAchievements('sellerDashAchvCard');
-  const { count: upvoteCount } = await sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', session.user.id);
-  const upvoteCountEl = $('sellerDashUpvoteCount');
-  if(upvoteCountEl) upvoteCountEl.textContent = upvoteCount || 0;
 }
 let pendingListingPhotoFile = null;
 function onListingPhotoSelected(inputEl){
@@ -3520,10 +3508,22 @@ async function toggleShopUpvote(){
   }
   if(btn) btn.classList.toggle('upvoted', shopUpvoted);
   if(countEl) countEl.textContent = Math.max(0, (parseInt(countEl.textContent,10)||0) + (shopUpvoted ? 1 : -1));
+  const statVal = $('shopStatsCard-upvoteVal');
+  if(statVal) statVal.textContent = Math.max(0, (parseInt(statVal.textContent,10)||0) + (shopUpvoted ? 1 : -1));
 }
-const FLAME_COLORS = ['#ff8c1a', '#ffcf40', '#ff4d2e', '#fff2b0'];
+function shadeColor(hex, percent){
+  hex = (hex||'#ff8c1a').trim().replace('#','');
+  if(hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
+  const num = parseInt(hex,16) || 0xff8c1a;
+  let r=(num>>16)&255, g=(num>>8)&255, b=num&255;
+  const t = percent < 0 ? 0 : 255, p = Math.abs(percent);
+  r = Math.round((t-r)*p)+r; g = Math.round((t-g)*p)+g; b = Math.round((t-b)*p)+b;
+  return `rgb(${r},${g},${b})`;
+}
 function pixelFlameBurst(el){
   if(!el) return;
+  const accent = (getComputedStyle(el).getPropertyValue('--accent') || '#ff8c1a').trim();
+  const colors = [accent, shadeColor(accent, 0.55), shadeColor(accent, -0.35), shadeColor(accent, 0.85)];
   const rect = el.getBoundingClientRect();
   const n = 18;
   for(let i=0;i<n;i++){
@@ -3532,7 +3532,7 @@ function pixelFlameBurst(el){
     const originX = rect.left + rect.width * (0.15 + Math.random()*0.7);
     const originY = rect.top + rect.height * 0.55;
     p.style.left = originX+'px'; p.style.top = originY+'px';
-    p.style.background = FLAME_COLORS[Math.floor(Math.random()*FLAME_COLORS.length)];
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
     const dx = (Math.random()-0.5) * 40;
     const dy = -(28 + Math.random()*48);
     p.style.setProperty('--dx', dx+'px');
@@ -4412,12 +4412,14 @@ function sellerRankShowcaseHtml(salesCount){
 // --- STATISTIQUES & SUCCÈS DE BOUTIQUE (vendeur) ---
 async function fetchSellerShopStats(sellerId){
   if(!sellerId) return null;
-  const [ordersRes, inquiriesRes] = await Promise.all([
+  const [ordersRes, inquiriesRes, upvotesRes] = await Promise.all([
     sb.from('orders').select('items,gross_price,status').eq('seller_id', sellerId).eq('order_type','marketplace').eq('status','delivered'),
-    sb.from('marketplace_inquiries').select('snap_item_name,snap_price,snap_qty,status,delivery_method').eq('seller_id', sellerId).eq('status','completed').eq('delivery_method','pickup')
+    sb.from('marketplace_inquiries').select('snap_item_name,snap_price,snap_qty,status,delivery_method').eq('seller_id', sellerId).eq('status','completed').eq('delivery_method','pickup'),
+    sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', sellerId)
   ]);
   const orderRows = ordersRes.data || [];
   const inquiryRows = inquiriesRes.data || [];
+  const upvoteCount = upvotesRes.count || 0;
   let itemsSold = 0, totalEarned = 0, mostExpensive = null;
   orderRows.forEach(o => {
     totalEarned += Number(o.gross_price) || 0;
@@ -4434,13 +4436,14 @@ async function fetchSellerShopStats(sellerId){
     if(!mostExpensive || Number(r.snap_price) > mostExpensive.price) mostExpensive = { name: r.snap_item_name, price: Number(r.snap_price) };
   });
   const salesCount = orderRows.length + inquiryRows.length;
-  return { salesCount, courierSalesCount: orderRows.length, itemsSold, totalEarned, mostExpensive };
+  return { salesCount, courierSalesCount: orderRows.length, itemsSold, totalEarned, mostExpensive, upvoteCount };
 }
 function renderShopStats(box, stats){
   if(!box) return;
   const d = T[LANG];
+  const upvoteStatHtml = `<div class="career-stat"><div class="val" id="${box.id}-upvoteVal">${stats ? (stats.upvoteCount||0) : 0}</div><div class="lbl">${d.shopUpvotesLbl}</div></div>`;
   if(!stats || !stats.salesCount){
-    box.innerHTML = `<h3 data-i18n="shopStatsTitle">${d.shopStatsTitle}</h3><p class="muted">${d.shopStatsNoData}</p>`;
+    box.innerHTML = `<h3 data-i18n="shopStatsTitle">${d.shopStatsTitle}</h3><div class="career-stats-grid">${upvoteStatHtml}</div><p class="muted">${d.shopStatsNoData}</p>`;
     return;
   }
   box.innerHTML = `
@@ -4450,6 +4453,7 @@ function renderShopStats(box, stats){
       <div class="career-stat"><div class="val">${stats.salesCount}</div><div class="lbl">${d.shopSalesCount}</div></div>
       <div class="career-stat"><div class="val">${stats.itemsSold}</div><div class="lbl">${d.shopItemsSold}</div></div>
       <div class="career-stat"><div class="val" style="font-size:1.1rem;">${stats.mostExpensive ? stats.mostExpensive.name + ' ('+fmt(stats.mostExpensive.price)+')' : '—'}</div><div class="lbl">${d.shopMostExpensive}</div></div>
+      ${upvoteStatHtml}
     </div>
   `;
 }

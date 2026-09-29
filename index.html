@@ -214,10 +214,15 @@
   }
   .delivery-main-enter{animation:deliveryMainSwap .32s steps(6) both;}
   @media (max-width:720px){
-    .delivery-layout{flex-direction:column;}
-    .delivery-mini-list{flex:1 1 100%; flex-direction:row; overflow-x:auto; padding-bottom:6px; -webkit-overflow-scrolling:touch;}
-    .delivery-mini-row{flex:0 0 190px; flex-direction:column; align-items:flex-start; gap:4px;}
-    .delivery-mini-margin{margin-left:0;}
+    /* Sur mobile : plus de rangée horizontale (bug d'affichage) — liste verticale compacte pleine largeur,
+       chaque commande sur une seule ligne, au-dessus de la commande principale. */
+    .delivery-layout{flex-direction:column; gap:16px;}
+    .delivery-mini-list{flex:1 1 100%; flex-direction:column; gap:6px;}
+    .delivery-mini-row{flex:none; flex-wrap:nowrap; padding:9px 12px; gap:6px;}
+    .delivery-mini-status{font-size:.72rem; min-width:64px;}
+    .delivery-mini-name{flex:1 1 auto; width:auto; font-size:.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .delivery-mini-dest{display:none;}
+    .delivery-mini-margin{font-size:.9rem;}
   }
   /* --- ITINÉRAIRE D'ACHAT (schéma, repliable, affiché sous la commande principale) --- */
   .purchase-route{margin-top:18px; margin-bottom:4px; border:1px solid var(--accent); border-radius:6px; background:rgba(0,0,0,.22); animation:courierAdGlow 2.6s ease-in-out infinite; overflow:hidden;}

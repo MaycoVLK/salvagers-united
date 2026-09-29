@@ -175,6 +175,11 @@
   .app-topbar h1{font-size:1.25rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .topbar-actions{display:flex; align-items:center; gap:8px; flex:none;}
   .gear-wrap{position:relative;}
+  .create-wrap{position:relative;}
+  .create-menu{position:absolute; top:48px; right:0; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:8px; min-width:220px; box-shadow:0 10px 26px rgba(0,0,0,.55); z-index:60; display:flex; flex-direction:column; gap:4px;}
+  .create-menu button{width:100%; justify-content:flex-start; text-align:left; display:flex; align-items:center; gap:8px; background:none; border:1px solid transparent; color:var(--text); padding:9px 10px; font-family:'VT323',monospace; font-size:.95rem; letter-spacing:.5px; cursor:pointer; border-radius:4px;}
+  .create-menu button:hover{background:var(--bg2); border-color:var(--border);}
+  .create-menu .icon{width:15px; height:15px; color:var(--accent); flex:none;}
   .gear-btn{width:40px; height:40px; padding:0; border-radius:50%;}
   .gear-btn .icon{width:18px; height:18px;}
   .settings-panel{position:absolute; top:48px; right:0; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:14px; min-width:210px; box-shadow:0 10px 26px rgba(0,0,0,.55); z-index:60; display:flex; flex-direction:column; gap:12px;}
@@ -389,12 +394,6 @@
     .seller-layout{display:flex; flex-direction:column;}
   }
   .seller-profile-divider{border-top:1px dashed var(--border); margin:18px 0;}
-  .seller-cta-row{display:flex; gap:14px;}
-  .seller-cta-row .empty-cta{flex:1; min-width:0; margin-bottom:0; padding:14px 12px; gap:6px; animation:courierAdGlow 2.6s ease-in-out infinite;}
-  .seller-cta-row .empty-cta-icon{width:18px; height:18px;}
-  .seller-cta-row .empty-cta-text{font-size:.78rem; line-height:1.2;}
-  .seller-cta-row .empty-cta button{min-width:0; width:100%; padding:7px 8px; font-size:.68rem;}
-  @media (max-width:640px){ .seller-cta-row{flex-direction:column;} }
   .seller-form-accordion{max-height:0; overflow:hidden; transition:max-height .3s ease, margin-top .3s ease;}
   .seller-form-accordion.open{max-height:900px; margin-top:16px;}
   .seller-form-accordion .card{margin-bottom:0;}
@@ -620,6 +619,27 @@
           <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="2" width="2" height="12"/><rect x="2" y="7" width="12" height="2"/></g></svg>
           <span data-i18n="createOrder">CRÉER</span>
         </button>
+        <div class="create-wrap" id="sellerCreateWrap" hidden>
+          <button class="btn-primary" onclick="toggleSellerCreateMenu()">
+            <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="2" width="2" height="12"/><rect x="2" y="7" width="12" height="2"/></g></svg>
+            <span data-i18n="createOrder">CRÉER</span>
+          </button>
+          <div class="create-menu" id="sellerCreateMenu" hidden>
+            <button type="button" onclick="openSellerCreateOption('listing')">
+              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                <rect x="7" y="3" width="2" height="10"/><rect x="3" y="7" width="10" height="2"/>
+              </g></svg>
+              <span data-i18n="newListingTitle">Ajouter un objet en vente</span>
+            </button>
+            <button type="button" onclick="openSellerCreateOption('resource')">
+              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                <rect x="2" y="7" width="12" height="2"/><rect x="6" y="3" width="2" height="2"/><rect x="8" y="3" width="2" height="2"/>
+                <rect x="4" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/><rect x="7" y="9" width="2" height="5"/>
+              </g></svg>
+              <span data-i18n="requestResourcesTitle">Demander des ressources</span>
+            </button>
+          </div>
+        </div>
         <div class="gear-wrap">
           <button class="gear-btn" onclick="toggleSettings()" aria-label="Réglages">
             <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
@@ -994,23 +1014,6 @@
             </div>
           </div>
           <div class="seller-action-block">
-            <div class="seller-cta-row">
-              <div class="card empty-cta">
-                <svg class="empty-cta-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                  <rect x="7" y="3" width="2" height="10"/><rect x="3" y="7" width="10" height="2"/>
-                </g></svg>
-                <div class="empty-cta-text" data-i18n="newListingTitle">Ajouter un objet en vente</div>
-                <button class="btn-primary" onclick="toggleAccordion('addListingBody')" onmouseenter="pixelSwoosh(this)" data-i18n="addListingBtn">METTRE EN VENTE</button>
-              </div>
-              <div class="card empty-cta">
-                <svg class="empty-cta-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                  <rect x="2" y="7" width="12" height="2"/><rect x="6" y="3" width="2" height="2"/><rect x="8" y="3" width="2" height="2"/>
-                  <rect x="4" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/><rect x="7" y="9" width="2" height="5"/>
-                </g></svg>
-                <div class="empty-cta-text" data-i18n="requestResourcesTitle">Demander des ressources</div>
-                <button class="btn-primary" onclick="toggleAccordion('resourceRequestBody')" onmouseenter="pixelSwoosh(this)" data-i18n="requestResourcesBtn">DEMANDER DES RESSOURCES</button>
-              </div>
-            </div>
             <div class="seller-form-accordion" id="addListingBody">
               <div class="card">
                 <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
@@ -1523,6 +1526,26 @@ document.addEventListener('click', (e) => {
   if(!panel.contains(e.target) && !e.target.closest('.gear-btn')) panel.hidden = true;
 });
 
+// Bouton "CRÉER" du vendeur (topbar) : petit menu avec les deux sous-actions.
+function toggleSellerCreateMenu(){ $('sellerCreateMenu').hidden = !$('sellerCreateMenu').hidden; }
+document.addEventListener('click', (e) => {
+  const menu = $('sellerCreateMenu');
+  if(!menu || menu.hidden) return;
+  if(!menu.contains(e.target) && !e.target.closest('#sellerCreateWrap > button')) menu.hidden = true;
+});
+function openSellerCreateOption(kind){
+  $('sellerCreateMenu').hidden = true;
+  if(kind === 'listing'){
+    $('resourceRequestBody')?.classList.remove('open');
+    $('addListingBody')?.classList.add('open');
+    $('addListingBody')?.scrollIntoView({ behavior:'smooth', block:'start' });
+  } else {
+    $('addListingBody')?.classList.remove('open');
+    $('resourceRequestBody')?.classList.add('open');
+    $('resourceRequestBody')?.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+}
+
 function loginDiscord(){
   const cleanRedirect = window.location.origin + window.location.pathname;
   sb.auth.signInWithOAuth({ provider:'discord', options:{ redirectTo: cleanRedirect } });
@@ -1588,6 +1611,7 @@ function routeApp(){
     btn.classList.toggle('active', btn.dataset.view === v);
   });
   $('createOrderBtn').hidden = !(v === 'client');
+  $('sellerCreateWrap').hidden = !(v === 'seller');
   updatePageTitle();
 
   if(v === 'client'){ $('view-client-dash').hidden = false; setClientTab(clientTab); }
@@ -2613,6 +2637,7 @@ async function saveShopSettings(){
 async function openSellerShopEdit(){
   if(!session) return;
   hideAllViews();
+  $('sellerCreateWrap').hidden = true;
   $('view-seller-shop-edit').hidden = false;
   const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle();
   $('shopNameInput').value = shop?.shop_name || '';
@@ -3006,6 +3031,7 @@ async function openSellerShop(sellerId){
   if(!sellerId) return;
   shopViewingSellerId = sellerId;
   hideAllViews();
+  $('sellerCreateWrap').hidden = true;
   $('view-seller-shop').hidden = false;
   const d = T[LANG];
   const shopEl = $('view-seller-shop');

@@ -379,6 +379,26 @@
   .shop-owner-box{display:inline-flex; width:auto; max-width:none; flex:none;}
   #shopRankShowcase{margin-top:6px;}
 
+  /* --- TABLEAU DE BORD VENDEUR : colonne identité boutique + zone principale --- */
+  .seller-layout{display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;}
+  .seller-sidebar{flex:0 0 300px; display:flex; flex-direction:column; gap:16px;}
+  .seller-main{flex:1 1 420px; min-width:280px; display:flex; flex-direction:column; gap:16px;}
+  @media (max-width:860px){
+    .seller-layout{flex-direction:column;}
+  }
+  .seller-profile-divider{border-top:1px dashed var(--border); margin:18px 0;}
+  .seller-add-listing-card{overflow:hidden;}
+  .seller-add-toggle{display:flex; align-items:center; justify-content:space-between; gap:8px; cursor:pointer; user-select:none; font-family:'VT323',monospace; font-size:1.25rem; color:var(--accent); text-transform:uppercase; letter-spacing:.5px; text-shadow:0 0 6px var(--accent-dim);}
+  .seller-add-toggle::before{content:'+'; font-size:1.3rem; line-height:1;}
+  .seller-add-toggle-chevron{margin-left:auto; flex:none; font-size:1.05rem; transition:transform .2s ease;}
+  .seller-add-listing-card:not(.collapsed) .seller-add-toggle-chevron{transform:rotate(90deg);}
+  .seller-add-listing-body{max-height:0; overflow:hidden; transition:max-height .3s ease, margin-top .3s ease;}
+  .seller-add-listing-card:not(.collapsed) .seller-add-listing-body{max-height:900px; margin-top:16px;}
+  .tab-count-badge{display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; margin-left:6px; background:var(--accent); color:#03130a; border-radius:9px; font-family:'VT323',monospace; font-size:.85rem; vertical-align:middle;}
+  .my-listing-card .mkt-info{gap:8px; display:flex; flex-direction:column;}
+  .my-listing-actions{display:flex; gap:8px; flex-wrap:wrap;}
+  .my-listing-actions button{flex:1 1 auto; font-size:.75rem; padding:9px 10px;}
+
   /* --- GRILLE DES COMMANDES EN COURS (client) : 2 colonnes sur ordinateur, 1 colonne sur mobile, cartes de même hauteur --- */
   #clientCurrentOrders{display:grid; grid-template-columns:1fr; gap:16px; align-items:stretch;}
   #clientCurrentOrders .order-card.big{margin-bottom:0; display:flex; flex-direction:column; height:100%;}
@@ -935,47 +955,64 @@
         <p data-i18n="notSeller">Ton compte n'a pas encore le rôle vendeur. Contacte l'administrateur pour être ajouté.</p>
       </div>
       <div id="sellerDash" hidden>
-        <div class="card shop-hero-card">
-          <div class="shop-hero-row">
-            <div class="shop-hero-icon" id="sellerDashHeroIcon"></div>
-            <div class="shop-hero-text shop-preview-head">
-              <h1 id="sellerDashShopName">—</h1>
-              <button class="gear-btn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique">
-                <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                  <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
-                  <rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/>
-                  <rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/>
-                </g></svg>
+        <div class="seller-layout">
+          <div class="seller-sidebar">
+            <div class="card shop-hero-card">
+              <div class="shop-hero-row">
+                <div class="shop-hero-icon" id="sellerDashHeroIcon"></div>
+                <div class="shop-hero-text shop-preview-head">
+                  <h1 id="sellerDashShopName">—</h1>
+                  <button class="gear-btn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique">
+                    <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                      <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
+                      <rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/>
+                      <rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/>
+                    </g></svg>
+                  </button>
+                </div>
+              </div>
+              <button type="button" class="btn-secondary" style="width:100%; margin-top:12px;" onclick="openSellerShop(session.user.id)">
+                <span data-i18n="viewMyShopBtn">VOIR MA BOUTIQUE</span>
               </button>
             </div>
+            <div class="card seller-profile-card">
+              <div id="sellerDashStatsCard"></div>
+              <div class="seller-profile-divider"></div>
+              <div id="sellerDashAchvCard"></div>
+            </div>
+          </div>
+          <div class="seller-main">
+            <div class="card seller-add-listing-card collapsed" id="sellerAddListingCard">
+              <div class="seller-add-toggle" onclick="toggleAddListingForm()">
+                <span data-i18n="newListingTitle">Ajouter un objet en vente</span>
+                <span class="seller-add-toggle-chevron">▸</span>
+              </div>
+              <div class="seller-add-listing-body">
+                <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
+                <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute">
+                <label for="listingPrice" data-i18n="listingPriceLbl">Prix de vente (aUEC)</label>
+                <input id="listingPrice" type="number" min="0" step="1">
+                <label for="listingQty" data-i18n="listingQtyLbl">Quantité</label>
+                <input id="listingQty" type="number" min="1" step="1" value="1">
+                <label data-i18n="listingPhotoLbl">Photo (optionnel)</label>
+                <input type="file" id="listingPhotoInput" accept="image/*" hidden onchange="onListingPhotoSelected(this)">
+                <button type="button" class="btn-secondary" style="width:100%; margin-top:4px;" onclick="$('listingPhotoInput').click()" id="listingPhotoBtn">
+                  <span data-i18n="uploadListingPhoto">CHOISIR UNE PHOTO</span>
+                </button>
+                <div id="listingPhotoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
+                <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createListing()">
+                  <span data-i18n="addListingBtn">METTRE EN VENTE</span>
+                </button>
+              </div>
+            </div>
+            <div class="tabs">
+              <button class="tab-btn active" id="tab-listings" onclick="switchSellerTab('listings')"><span data-i18n="myListingsTitle">MES ANNONCES</span></button>
+              <button class="tab-btn" id="tab-inquiries" onclick="switchSellerTab('inquiries')"><span data-i18n="receivedInquiriesTitle">PROPOSITIONS REÇUES</span><span class="tab-count-badge" id="inquiriesCountBadge" hidden>0</span></button>
+            </div>
+            <div id="sellerListingsPane"><div id="myListingsList" class="marketplace-grid"></div></div>
+            <div id="sellerInquiriesPane" hidden><div id="receivedInquiriesList"></div></div>
           </div>
         </div>
-        <div class="card" id="sellerDashStatsCard"></div>
-        <div class="card" id="sellerDashAchvCard"></div>
-        <div class="card">
-          <h3 data-i18n="newListingTitle">Ajouter un objet en vente</h3>
-          <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
-          <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute">
-          <label for="listingPrice" data-i18n="listingPriceLbl">Prix de vente (aUEC)</label>
-          <input id="listingPrice" type="number" min="0" step="1">
-          <label for="listingQty" data-i18n="listingQtyLbl">Quantité</label>
-          <input id="listingQty" type="number" min="1" step="1" value="1">
-          <label data-i18n="listingPhotoLbl">Photo (optionnel)</label>
-          <input type="file" id="listingPhotoInput" accept="image/*" hidden onchange="onListingPhotoSelected(this)">
-          <button type="button" class="btn-secondary" style="width:100%; margin-top:4px;" onclick="$('listingPhotoInput').click()" id="listingPhotoBtn">
-            <span data-i18n="uploadListingPhoto">CHOISIR UNE PHOTO</span>
-          </button>
-          <div id="listingPhotoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
-          <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createListing()">
-            <span data-i18n="addListingBtn">METTRE EN VENTE</span>
-          </button>
-        </div>
-        <div class="tabs">
-          <button class="tab-btn active" id="tab-listings" onclick="switchSellerTab('listings')" data-i18n="myListingsTitle">MES ANNONCES</button>
-          <button class="tab-btn" id="tab-inquiries" onclick="switchSellerTab('inquiries')" data-i18n="receivedInquiriesTitle">PROPOSITIONS REÇUES</button>
-        </div>
-        <div id="sellerListingsPane"><div id="myListingsList"></div></div>
-        <div id="sellerInquiriesPane" hidden><div id="receivedInquiriesList"></div></div>
       </div>
     </section>
 
@@ -2598,6 +2635,8 @@ async function createListing(){
   }
   $('listingItem').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
   toastShow(d.listingSaved);
+  const addCard = $('sellerAddListingCard');
+  if(addCard) addCard.classList.add('collapsed');
   loadMyListings();
 }
 async function deleteListing(id){
@@ -2613,27 +2652,31 @@ async function loadMyListings(){
   if(error){ box.textContent = error.message; return; }
   const listings = data || [];
   if(!listings.length){ box.innerHTML = `<p class="muted">${d.noListings}</p>`; return; }
-  box.innerHTML = listings.map(l => {
-    const thumb = l.photo_url ? `<img class="listing-thumb" src="${l.photo_url}">` : `<div class="listing-thumb-placeholder">${MKT_PHOTO_PLACEHOLDER}</div>`;
-    return `
-    <div class="listing-row" data-listing="${l.id}">
-      ${thumb}
-      <div class="listing-info">
-        <div class="listing-name">${l.item_name}</div>
-        <div class="listing-meta">${fmt(l.price)} × ${l.quantity}</div>
-      </div>
-      <div class="listing-actions">
-        <button class="btn-secondary" onclick="toggleDeliveryForm('${l.id}')">${d.requestDeliveryBtn}</button>
-        <button class="btn-logout" onclick="deleteListing('${l.id}')">${d.deleteListingBtn}</button>
-      </div>
-      <div class="delivery-request-form" id="dform-${l.id}" hidden>
-        <select id="dsys-${l.id}"><option value="Stanton">Stanton</option><option value="Nyx">Nyx</option><option value="Pyro">Pyro</option></select>
-        <input type="text" id="dloc-${l.id}" data-i18n-ph="phLieu" placeholder="${d.phLieu}">
-        <input type="text" id="dbuyer-${l.id}" placeholder="${d.phBuyerHandle}">
-        <button class="btn-primary" onclick="requestMarketplaceDelivery('${l.id}')">${d.confirmDeliveryBtn}</button>
+  box.innerHTML = listings.map(l => myListingCardHtml(l)).join('');
+}
+// Carte "annonce" pour la grille de gestion du vendeur (même look que la grille marketplace publique,
+// mais avec les actions de gestion : demander une livraison, supprimer).
+function myListingCardHtml(l){
+  const d = T[LANG];
+  const photo = l.photo_url ? `<img src="${l.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  return `
+    <div class="mkt-card my-listing-card" data-listing="${l.id}">
+      <div class="mkt-photo-wrap">${photo}</div>
+      <div class="mkt-info">
+        <div class="mkt-item-name">${l.item_name}</div>
+        <div class="mkt-price-row"><span class="mkt-price">${fmt(l.price)}</span><span class="mkt-qty">x${l.quantity}</span></div>
+        <div class="my-listing-actions">
+          <button class="btn-secondary" onclick="toggleDeliveryForm('${l.id}')">${d.requestDeliveryBtn}</button>
+          <button class="btn-logout" onclick="deleteListing('${l.id}')">${d.deleteListingBtn}</button>
+        </div>
+        <div class="delivery-request-form" id="dform-${l.id}" hidden>
+          <select id="dsys-${l.id}"><option value="Stanton">Stanton</option><option value="Nyx">Nyx</option><option value="Pyro">Pyro</option></select>
+          <input type="text" id="dloc-${l.id}" data-i18n-ph="phLieu" placeholder="${d.phLieu}">
+          <input type="text" id="dbuyer-${l.id}" placeholder="${d.phBuyerHandle}">
+          <button class="btn-primary" onclick="requestMarketplaceDelivery('${l.id}')">${d.confirmDeliveryBtn}</button>
+        </div>
       </div>
     </div>`;
-  }).join('');
 }
 function toggleDeliveryForm(id){
   const form = $('dform-'+id); if(!form) return;
@@ -2675,6 +2718,7 @@ async function loadReceivedInquiries(){
   const { data, error } = await sb.from('marketplace_inquiries').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
   if(error){ box.textContent = error.message; return; }
   const rows = data || [];
+  updateInquiriesBadge(rows);
   if(!rows.length){ box.innerHTML = `<p class="muted">${d.noReceivedInquiries}</p>`; return; }
   const listingIds=[...new Set(rows.map(r=>r.listing_id))];
   const buyerIds=[...new Set(rows.map(r=>r.buyer_id))];
@@ -2895,6 +2939,18 @@ function switchSellerTab(tab){
   $('tab-inquiries').classList.toggle('active', tab==='inquiries');
   $('sellerListingsPane').hidden = tab!=='listings';
   $('sellerInquiriesPane').hidden = tab!=='inquiries';
+}
+// Pastille numérique sur l'onglet "Propositions reçues" = nombre de propositions en attente d'une décision.
+function updateInquiriesBadge(rows){
+  const badge = $('inquiriesCountBadge'); if(!badge) return;
+  const pendingCount = (rows||[]).filter(r => r.status === 'pending').length;
+  badge.textContent = pendingCount;
+  badge.hidden = pendingCount === 0;
+}
+// Déplie/replie le formulaire "Ajouter un objet en vente" (pour ne pas encombrer la page par défaut).
+function toggleAddListingForm(){
+  const card = $('sellerAddListingCard');
+  if(card) card.classList.toggle('collapsed');
 }
 async function loadCourierData(){
   if(!session) return;

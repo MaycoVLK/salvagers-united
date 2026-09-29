@@ -1654,7 +1654,7 @@ const T = {
     languageLabel:"Langue", themeLabel:"Thème", adminViewLabel:"Vue", navAdmin:"GESTION", navClient:"CLIENT", navCourier:"COURSIER", navSeller:"VENDEUR",
     dashClient:"Mes commandes", dashCourier:"Espace Coursier", dashAdmin:"Panneau Admin", dashSeller:"Ma Marketplace",
     createOrder:"CRÉER", back:"< RETOUR", newOrder:"Nouvelle commande",
-    lblSystem:"Système de livraison souhaité", lblLieu:"Lieu exact de livraison", phLieu:"ex: People's Service Station Theta, Orison...", invalidLocationAlert:"Merci de choisir un lieu de livraison valide dans la liste (station, avant-poste ou ville).",
+    lblSystem:"Système de livraison souhaité", lblLieu:"Lieu exact de livraison", phLieu:"ex: People's Service Station Theta, Orison...", invalidLocationAlert:"Merci de choisir un lieu de livraison valide dans la liste (station, avant-poste ou ville).", noItemsAlert:"Ajoute au moins un objet à la commande avant de l'envoyer.",
     saveDefaultLoc:"📍 ENREGISTRER COMME LIEU PAR DÉFAUT", savedDefaultLoc:"LIEU PAR DÉFAUT ENREGISTRÉ !",
     rsiRequiredNote:"Merci de renseigner ton pseudo RSI ci-dessous avant d'accéder au reste du site.",
     lblItems:"Objets souhaités", uexHint:"Astuce : tape le nom d'une marchandise, arme, armure ou pièce/composant de vaisseau pour voir le prix UEX (le plus bas trouvé) se remplir automatiquement (modifiable ensuite).",
@@ -1774,7 +1774,7 @@ const T = {
     languageLabel:"Language", themeLabel:"Theme", adminViewLabel:"View", navAdmin:"MANAGE", navClient:"CLIENT", navCourier:"COURIER", navSeller:"SELLER",
     dashClient:"My orders", dashCourier:"Courier Area", dashAdmin:"Admin Panel", dashSeller:"My Marketplace",
     createOrder:"CREATE", back:"< BACK", newOrder:"New order",
-    lblSystem:"Delivery system", lblLieu:"Exact delivery location", phLieu:"e.g. People's Service Station Theta, Orison...", invalidLocationAlert:"Please choose a valid delivery location from the list (station, outpost or city).",
+    lblSystem:"Delivery system", lblLieu:"Exact delivery location", phLieu:"e.g. People's Service Station Theta, Orison...", invalidLocationAlert:"Please choose a valid delivery location from the list (station, outpost or city).", noItemsAlert:"Add at least one item to the order before sending it.",
     saveDefaultLoc:"📍 SAVE AS DEFAULT LOCATION", savedDefaultLoc:"DEFAULT LOCATION SAVED!",
     rsiRequiredNote:"Please fill in your RSI handle below before accessing the rest of the site.",
     lblItems:"Requested items", uexHint:"Tip: type a commodity, weapon, armor or ship component name to auto-fill its lowest UEX price (still editable).",
@@ -2649,6 +2649,10 @@ $('sendBtn').addEventListener('click', async ()=>{
   }
   const {brut,comm,total} = calc();
   const items = collectItems();
+  if(!items.length){
+    alert(T[LANG].noItemsAlert);
+    return;
+  }
   const payload = {
     client_id: session.user.id,
     destination_system: $('arrivee').value,

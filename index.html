@@ -389,8 +389,12 @@
     .seller-layout{display:flex; flex-direction:column;}
   }
   .seller-profile-divider{border-top:1px dashed var(--border); margin:18px 0;}
-  .seller-cta{padding:22px 20px;}
-  .seller-cta .empty-cta-text{font-size:1.1rem;}
+  .seller-cta-row{display:flex; gap:14px;}
+  .seller-cta-row .empty-cta{flex:1; min-width:0; margin-bottom:0; padding:14px 12px; gap:6px; animation:courierAdGlow 2.6s ease-in-out infinite;}
+  .seller-cta-row .empty-cta-icon{width:18px; height:18px;}
+  .seller-cta-row .empty-cta-text{font-size:.78rem; line-height:1.2;}
+  .seller-cta-row .empty-cta button{min-width:0; width:100%; padding:7px 8px; font-size:.68rem;}
+  @media (max-width:640px){ .seller-cta-row{flex-direction:column;} }
   .seller-form-accordion{max-height:0; overflow:hidden; transition:max-height .3s ease, margin-top .3s ease;}
   .seller-form-accordion.open{max-height:900px; margin-top:16px;}
   .seller-form-accordion .card{margin-bottom:0;}
@@ -990,12 +994,22 @@
             </div>
           </div>
           <div class="seller-action-block">
-            <div class="card empty-cta seller-cta">
-              <svg class="empty-cta-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                <rect x="7" y="3" width="2" height="10"/><rect x="3" y="7" width="10" height="2"/>
-              </g></svg>
-              <div class="empty-cta-text" data-i18n="newListingTitle">Ajouter un objet en vente</div>
-              <button class="btn-primary" onclick="toggleAccordion('addListingBody')" onmouseenter="pixelSwoosh(this)" data-i18n="addListingBtn">METTRE EN VENTE</button>
+            <div class="seller-cta-row">
+              <div class="card empty-cta">
+                <svg class="empty-cta-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                  <rect x="7" y="3" width="2" height="10"/><rect x="3" y="7" width="10" height="2"/>
+                </g></svg>
+                <div class="empty-cta-text" data-i18n="newListingTitle">Ajouter un objet en vente</div>
+                <button class="btn-primary" onclick="toggleAccordion('addListingBody')" onmouseenter="pixelSwoosh(this)" data-i18n="addListingBtn">METTRE EN VENTE</button>
+              </div>
+              <div class="card empty-cta">
+                <svg class="empty-cta-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                  <rect x="2" y="7" width="12" height="2"/><rect x="6" y="3" width="2" height="2"/><rect x="8" y="3" width="2" height="2"/>
+                  <rect x="4" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/><rect x="7" y="9" width="2" height="5"/>
+                </g></svg>
+                <div class="empty-cta-text" data-i18n="requestResourcesTitle">Demander des ressources</div>
+                <button class="btn-primary" onclick="toggleAccordion('resourceRequestBody')" onmouseenter="pixelSwoosh(this)" data-i18n="requestResourcesBtn">DEMANDER DES RESSOURCES</button>
+              </div>
             </div>
             <div class="seller-form-accordion" id="addListingBody">
               <div class="card">
@@ -1015,14 +1029,6 @@
                   <span data-i18n="addListingBtn">METTRE EN VENTE</span>
                 </button>
               </div>
-            </div>
-            <div class="card empty-cta seller-cta">
-              <svg class="empty-cta-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                <rect x="2" y="7" width="12" height="2"/><rect x="6" y="3" width="2" height="2"/><rect x="8" y="3" width="2" height="2"/>
-                <rect x="4" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/><rect x="7" y="9" width="2" height="5"/>
-              </g></svg>
-              <div class="empty-cta-text" data-i18n="requestResourcesTitle">Demander des ressources</div>
-              <button class="btn-primary" onclick="toggleAccordion('resourceRequestBody')" onmouseenter="pixelSwoosh(this)" data-i18n="requestResourcesBtn">DEMANDER DES RESSOURCES</button>
             </div>
             <div class="seller-form-accordion" id="resourceRequestBody">
               <div class="card">

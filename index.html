@@ -277,7 +277,7 @@
   @media (min-width:960px){ .marketplace-grid{grid-template-columns:1fr 1fr 1fr;} }
   /* "Derniers objets en vente" côté client : cartes plus petites et nombre de colonnes qui s'adapte
      automatiquement à la largeur d'écran, au lieu d'un nombre de colonnes fixe. */
-  #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
+  #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid, #myListingsList.marketplace-grid, #myListingsListFull.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
   .mkt-toolbar{display:flex; align-items:center; gap:10px; margin:2px 0 16px; flex-wrap:wrap;}
   .mkt-search-input{flex:1; min-width:160px; width:auto;}
   .mkt-filter-wrap{flex:0 0 auto;}
@@ -285,7 +285,7 @@
   .mkt-filter-btn .icon{width:14px; height:14px;}
   .mkt-filter-menu{right:0; min-width:200px;}
   .mkt-filter-menu button.active{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
-  .mkt-card{border:1px solid var(--border); border-radius:4px; background:var(--bg2); overflow:hidden; display:flex; flex-direction:column;}
+  .mkt-card{position:relative; border:1px solid var(--border); border-radius:4px; background:var(--bg2); overflow:hidden; display:flex; flex-direction:column;}
   .mkt-photo-wrap{position:relative; width:100%; aspect-ratio:4/3; background:var(--panel); display:flex; align-items:center; justify-content:center; overflow:hidden;}
   .mkt-photo-wrap img{width:100%; height:100%; object-fit:cover;}
   .mkt-photo-placeholder{width:34px; height:34px; color:var(--muted); opacity:.4;}
@@ -1716,7 +1716,7 @@ async function notifyAllUsersOfNewListing(refId, excludeUserId){
     const { data: users } = await sb.from('profiles').select('id');
     const targets = (users||[]).filter(u => u.id !== excludeUserId);
     if(targets.length){
-      await sb.from('notifications').insert(targets.map(u => ({ user_id:u.id, category:'client_marketplace', ref_id: refId||null })));
+      await sb.from('notifications').insert(targets.map(u => ({ user_id:u.id, category:'client_new_listing', ref_id: refId||null })));
     }
   }catch(e){}
 }
@@ -1733,16 +1733,18 @@ async function markCategoryRead(category){
 function toggleDot(id, show){ const el = $(id); if(el) el.classList.toggle('show', !!show); }
 async function refreshNotifBadges(){
   if(!session || !profile) return;
-  const [sellerCnt, mktCnt, ordCnt, courierCnt, resCnt] = await Promise.all([
+  const [sellerCnt, mktCnt, newListingCnt, ordCnt, courierCnt, resCnt] = await Promise.all([
     (profile.is_seller || profile.role==='admin') ? getUnreadCount('seller_marketplace') : Promise.resolve(0),
     getUnreadCount('client_marketplace'),
+    getUnreadCount('client_new_listing'),
     getUnreadCount('client_orders'),
     (profile.is_courier || profile.role==='admin') ? getUnreadCount('courier_pending') : Promise.resolve(0),
     getUnreadCount('client_resources')
   ]);
+  const mktTotal = mktCnt + newListingCnt;
   toggleDot('dotNavSeller', sellerCnt>0);
-  toggleDot('dotNavClient', (mktCnt+ordCnt+resCnt)>0);
-  toggleDot('dotTabMarketplace', mktCnt>0);
+  toggleDot('dotNavClient', (mktTotal+ordCnt+resCnt)>0);
+  toggleDot('dotTabMarketplace', mktTotal>0);
   toggleDot('dotTabDeliveries', ordCnt>0);
   toggleDot('dotTabPending', courierCnt>0);
   toggleDot('dotTabResources', resCnt>0);
@@ -2630,14 +2632,18 @@ function toggleItemsList(btn){
 const MKT_PHOTO_PLACEHOLDER = `<svg class="mkt-photo-placeholder" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
   <rect x="2" y="9" width="12" height="4"/><rect x="4" y="4" width="8" height="5"/><rect x="6" y="2" width="4" height="2"/>
 </g></svg>`;
-function mktCardHtml(listing, sellerMap){
+function mktCardHtml(listing, sellerMap, unreadSet){
   const d = T[LANG];
   const seller = sellerMap[listing.seller_id];
   const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
   const canBuy = session && session.user.id !== listing.seller_id;
   const interestBlock = canBuy ? `<button type="button" class="btn-secondary mkt-interest-btn" data-listing-id="${listing.id}" data-item-name="${listing.item_name}" data-price="${listing.price}" onclick="pixelSwoosh(this); openOfferModal(this)">${d.imInterested}</button>` : '';
+  const isNew = !!(unreadSet && unreadSet.has(listing.id));
+  const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
+  const hoverAttr = isNew ? ` onmouseenter="markListingSeen('${listing.id}', this)"` : '';
   return `
-    <div class="mkt-card">
+    <div class="mkt-card"${hoverAttr}>
+      ${newDot}
       <div class="mkt-photo-wrap">${photo}${listingTagsHtml(listing.tags)}</div>
       <div class="mkt-info">
         <div class="mkt-item-name">${listing.item_name}</div>
@@ -2701,6 +2707,7 @@ async function submitOfferModal(){
 }
 let marketplaceFeedCache = [];
 let marketplaceSellerMapCache = {};
+let marketplaceUnreadSet = new Set();
 let marketplaceSortMode = 'newest';
 async function loadMarketplaceFeed(){
   const box = $('marketplaceFeed'); if(!box) return;
@@ -2710,14 +2717,28 @@ async function loadMarketplaceFeed(){
   if(error){ box.textContent = error.message; return; }
   marketplaceFeedCache = data || [];
   if(!marketplaceFeedCache.length){ box.innerHTML = `<p class="muted">${d.marketplaceEmpty}</p>`; return; }
+  const currentIds = new Set(marketplaceFeedCache.map(l=>l.id));
   const sellerIds = [...new Set(marketplaceFeedCache.map(l=>l.seller_id))];
-  const [{ data: sellers }, { data: shops }] = await Promise.all([
+  const [{ data: sellers }, { data: shops }, unreadRows] = await Promise.all([
     sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds),
-    sb.from('marketplace_shops').select('id,shop_name').in('id', sellerIds)
+    sb.from('marketplace_shops').select('id,shop_name').in('id', sellerIds),
+    session ? sb.from('notifications').select('id,ref_id').eq('user_id',session.user.id).eq('category','client_new_listing').eq('read',false).then(r=>r.data||[]) : Promise.resolve([])
   ]);
   const shopNameMap = {}; (shops||[]).forEach(s=>shopNameMap[s.id]=s.shop_name);
   const sellerMap = {}; (sellers||[]).forEach(s=>sellerMap[s.id]={ ...s, shop_name: shopNameMap[s.id] || null });
   marketplaceSellerMapCache = sellerMap;
+  if(session){
+    // Nettoie les notifs "nouvelle annonce" orphelines (annonce supprimée depuis) pour que la pastille
+    // de l'onglet ne reste pas bloquée sur une carte qui n'existe plus.
+    const staleNotifIds = unreadRows.filter(n => !n.ref_id || !currentIds.has(n.ref_id)).map(n=>n.id);
+    if(staleNotifIds.length){
+      await sb.from('notifications').update({read:true}).in('id', staleNotifIds);
+      refreshNotifBadges();
+    }
+    marketplaceUnreadSet = new Set(unreadRows.filter(n => currentIds.has(n.ref_id)).map(n=>n.ref_id));
+  } else {
+    marketplaceUnreadSet = new Set();
+  }
   applyMarketplaceFilters();
 }
 // Recherche + tri appliqués côté client sur les annonces déjà chargées (pas de nouvel appel réseau).
@@ -2735,7 +2756,7 @@ function applyMarketplaceFilters(){
     return new Date(b.created_at) - new Date(a.created_at); // newest (défaut)
   });
   if(!list.length){ box.innerHTML = `<p class="muted">${d.mktNoResults}</p>`; return; }
-  box.innerHTML = list.map(l => mktCardHtml(l, marketplaceSellerMapCache)).join('');
+  box.innerHTML = list.map(l => mktCardHtml(l, marketplaceSellerMapCache, marketplaceUnreadSet)).join('');
 }
 function toggleMktFilterMenu(){ $('mktFilterMenu').hidden = !$('mktFilterMenu').hidden; }
 document.addEventListener('click', (e) => {
@@ -2806,6 +2827,16 @@ async function markResourceRequestSeen(reqId, cardEl){
   cardEl.onmouseenter = null;
   if(!session) return;
   await sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category','client_resources').eq('ref_id', reqId).eq('read',false);
+  refreshNotifBadges();
+}
+async function markListingSeen(listingId, cardEl){
+  const dot = cardEl.querySelector('.new-order-dot');
+  if(!dot) return;
+  dot.remove();
+  cardEl.onmouseenter = null;
+  marketplaceUnreadSet.delete(listingId);
+  if(!session) return;
+  await sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category','client_new_listing').eq('ref_id', listingId).eq('read',false);
   refreshNotifBadges();
 }
 // --- PROPOSITION DE FOURNITURE (un client répond à une "ressource demandée" d'un vendeur) ---

@@ -296,9 +296,9 @@
   .mkt-qty{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
   .mkt-info .courier-box{flex:none; max-width:none; width:100%; margin-top:auto;}
   .mkt-interest-btn{width:100%; font-size:.76rem;}
-  .mkt-tags{display:flex; flex-wrap:wrap; gap:5px;}
-  .mkt-tag{font-size:.62rem; text-transform:uppercase; letter-spacing:.4px; padding:3px 7px; border-radius:3px; border:1px solid var(--border); color:var(--muted); font-family:'VT323',monospace; font-size:.75rem; line-height:1;}
-  .mkt-tag.tag-crafted{color:var(--accent); border-color:var(--accent); background:var(--accent-dim);}
+  .mkt-tags-overlay{position:absolute; top:8px; left:8px; z-index:2; display:flex; flex-direction:column; align-items:flex-start; gap:4px; pointer-events:none;}
+  .mkt-tag{font-size:.68rem; text-transform:uppercase; letter-spacing:.4px; padding:3px 8px; border-radius:3px; border:1px solid var(--border); background:rgba(6,6,8,.82); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px); color:var(--text); font-family:'VT323',monospace; line-height:1.3; box-shadow:0 1px 4px rgba(0,0,0,.5);}
+  .mkt-tag.tag-crafted{color:var(--accent); border-color:var(--accent);}
   .mkt-tag.tag-q700{color:#8fd3ff; border-color:#8fd3ff;}
   .mkt-tag.tag-q800{color:#b9a3ff; border-color:#b9a3ff;}
   .mkt-tag.tag-q900{color:#ffd166; border-color:#ffd166;}
@@ -2612,11 +2612,10 @@ function mktCardHtml(listing, sellerMap){
   const interestBlock = canBuy ? `<button type="button" class="btn-secondary mkt-interest-btn" data-listing-id="${listing.id}" data-item-name="${listing.item_name}" data-price="${listing.price}" onclick="openOfferModal(this)">${d.imInterested}</button>` : '';
   return `
     <div class="mkt-card">
-      <div class="mkt-photo-wrap">${photo}</div>
+      <div class="mkt-photo-wrap">${photo}${listingTagsHtml(listing.tags)}</div>
       <div class="mkt-info">
         <div class="mkt-item-name">${listing.item_name}</div>
         <div class="mkt-price-row"><span class="mkt-price">${fmt(listing.price)}</span><span class="mkt-qty">x${listing.quantity}</span></div>
-        ${listingTagsHtml(listing.tags)}
         <div class="courier-box" onclick="openSellerShop('${listing.seller_id}')" title="${d.viewShopBtn}">
           <div class="courier-box-name">${d.mktByLbl} ${(seller && seller.shop_name) || (seller ? displayName(seller) : '—')}</div>
         </div>
@@ -3081,7 +3080,7 @@ function listingTagsHtml(tags){
   const d = T[LANG];
   const labelMap = { crafted:d.tagCrafted, '700':d.tagQ700, '800':d.tagQ800, '900':d.tagQ900 };
   const classMap = { crafted:'tag-crafted', '700':'tag-q700', '800':'tag-q800', '900':'tag-q900' };
-  return `<div class="mkt-tags">${tags.map(t => `<span class="mkt-tag ${classMap[t]||''}">${labelMap[t]||t}</span>`).join('')}</div>`;
+  return `<div class="mkt-tags-overlay">${tags.map(t => `<span class="mkt-tag ${classMap[t]||''}">${labelMap[t]||t}</span>`).join('')}</div>`;
 }
 function resetListingForm(){
   $('listingItem').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
@@ -3332,11 +3331,10 @@ function myListingCardHtml(l){
         </div>`;
   return `
     <div class="mkt-card my-listing-card" data-listing="${l.id}">
-      <div class="mkt-photo-wrap">${photo}</div>
+      <div class="mkt-photo-wrap">${photo}${listingTagsHtml(l.tags)}</div>
       <div class="mkt-info">
         <div class="mkt-item-name">${l.item_name}</div>
         <div class="mkt-price-row"><span class="mkt-price">${fmt(l.price)}</span><span class="mkt-qty">x${l.quantity}</span></div>
-        ${listingTagsHtml(l.tags)}
         ${actionsBlock}
       </div>
     </div>`;

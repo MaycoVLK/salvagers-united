@@ -290,13 +290,14 @@
   .mkt-photo-wrap img{width:100%; height:100%; object-fit:cover;}
   .mkt-photo-placeholder{width:34px; height:34px; color:var(--muted); opacity:.4;}
   .mkt-info{padding:12px 14px 14px; display:flex; flex-direction:column; gap:8px; flex:1;}
-  .mkt-item-name{font-family:'VT323',monospace; font-size:1.15rem; color:var(--text); line-height:1.2;}
+  .mkt-item-name{font-family:'VT323',monospace; font-size:1.15rem; color:var(--text); line-height:1.25; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.5em;}
   .mkt-price-row{display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
   .mkt-price{font-family:'VT323',monospace; font-size:1.3rem; color:var(--accent);}
   .mkt-qty{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
   .mkt-info .courier-box{flex:none; max-width:none; width:100%; margin-top:auto;}
+  .mkt-info .courier-box .courier-box-name{text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .mkt-interest-btn{width:100%; font-size:.76rem;}
-  .mkt-tags-overlay{position:absolute; top:8px; left:8px; z-index:2; display:flex; flex-direction:column; align-items:flex-start; gap:4px; pointer-events:none;}
+  .mkt-tags-overlay{position:absolute; top:8px; left:8px; right:8px; z-index:2; display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start; gap:5px; pointer-events:none;}
   .mkt-tag{font-size:.68rem; text-transform:uppercase; letter-spacing:.4px; padding:3px 8px; border-radius:3px; border:1px solid var(--border); background:rgba(6,6,8,.82); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px); color:var(--text); font-family:'VT323',monospace; line-height:1.3; box-shadow:0 1px 4px rgba(0,0,0,.5);}
   .mkt-tag.tag-crafted{color:var(--accent); border-color:var(--accent);}
   .mkt-tag.tag-q700{color:#8fd3ff; border-color:#8fd3ff;}
@@ -305,6 +306,9 @@
   .listing-tags-toggle{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:4px;}
   .tag-toggle-btn{width:auto; flex:1 1 auto; padding:9px 8px; font-size:.72rem; text-transform:uppercase; letter-spacing:.4px; border:1px solid var(--border); border-radius:3px; background:var(--bg2); color:var(--muted); cursor:pointer; font-family:'VT323',monospace; transition:border-color .15s, color .15s, background .15s;}
   .tag-toggle-btn.active{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
+  /* Formulaire "Créer/Modifier une annonce" : encadré compact centré sur desktop (au lieu d'étirer
+     champs et boutons sur toute la largeur de la page), pleine largeur naturellement sur mobile. */
+  #view-seller-create-listing .card{max-width:460px; margin:0 auto;}
   @media (max-width:480px){
     /* Grille 2x2 compacte sur mobile : on resserre le texte et les marges pour que tout reste lisible. */
     .marketplace-grid{gap:8px;}
@@ -425,6 +429,15 @@
   .shop-upvote-btn.upvoted .icon{color:var(--accent); filter:drop-shadow(0 0 4px var(--accent));}
   .shop-upvote-btn.upvoted .shop-upvote-count{color:var(--accent);}
   .shop-upvote-btn[hidden]{display:none;}
+  @media (max-width:480px){
+    /* Header de boutique sur mobile : on empile "Run by" et "Upvote" en pleine largeur,
+       en gardant les mêmes proportions/style que la version desktop, juste agrandies pour rester lisibles. */
+    .shop-header-actions{flex-direction:column; align-items:stretch; gap:8px;}
+    .shop-header-actions .shop-owner-box, .shop-header-actions .shop-upvote-btn{width:100%; justify-content:center; padding:12px 14px;}
+    .shop-header-actions .shop-owner-box .courier-box-name{font-size:1.1rem;}
+    .shop-upvote-btn .icon{width:20px; height:20px;}
+    .shop-upvote-btn .shop-upvote-label, .shop-upvote-btn .shop-upvote-count{font-size:1.15rem;}
+  }
   /* --- FLAMME 8-BIT (upvote) --- */
   .pixel-flame-particle{position:fixed; width:6px; height:6px; pointer-events:none; z-index:9999; image-rendering:pixelated; animation:pixelFlame .65s steps(5) forwards;}
   @keyframes pixelFlame{
@@ -479,6 +492,8 @@
     .seller-header-right{width:100%;}
     .seller-header-logo{width:120px; height:120px;}
     .seller-header-right .shop-hero-text h1{font-size:1.5rem;}
+    .seller-header-right .shop-preview-head{justify-content:center; gap:10px;}
+    .seller-header-right > .btn-secondary{width:100%;}
     .seller-header-stats-row{margin-top:14px;}
     .seller-section-card{margin-top:14px; padding:14px;}
   }

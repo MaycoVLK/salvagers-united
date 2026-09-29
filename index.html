@@ -194,6 +194,20 @@
   .order-card{position:relative; border:1px solid var(--border); border-radius:4px; padding:14px; margin-bottom:12px; background:var(--bg2);}
   .new-order-dot{position:absolute; top:10px; right:14px; width:10px; height:10px; background:var(--danger); border-radius:50%; box-shadow:0 0 0 2px var(--bg2), 0 0 6px var(--danger); animation:notifPulse 1.5s ease-in-out infinite; pointer-events:none;}
   .order-card.big{padding:22px 28px 18px;}
+  /* --- ITINÉRAIRE D'ACHAT (schéma) --- */
+  .purchase-route{margin-top:14px; padding:14px; border:1px dashed var(--accent); border-radius:4px; background:rgba(0,0,0,.15);}
+  .purchase-route-title{font-family:'VT323',monospace; font-size:1.15rem; color:var(--accent); text-shadow:0 0 6px var(--accent-dim); margin-bottom:10px; letter-spacing:.5px; text-transform:uppercase;}
+  .route-stop{display:flex; gap:10px; align-items:flex-start;}
+  .route-stop-num{flex:none; width:24px; height:24px; border-radius:50%; border:1px solid var(--accent); color:var(--accent); font-family:'VT323',monospace; font-size:1rem; display:flex; align-items:center; justify-content:center; text-shadow:0 0 4px var(--accent-dim);}
+  .route-stop-body{flex:1; min-width:0;}
+  .route-stop-place{font-family:'VT323',monospace; font-size:1.05rem; color:var(--text); letter-spacing:.3px;}
+  .route-stop-items{margin:4px 0 0; padding-left:18px; font-size:.88rem; color:var(--muted);}
+  .route-stop-items li{margin-bottom:2px;}
+  .route-stop-terminal{color:var(--muted); font-style:italic;}
+  .route-arrow{margin:2px 0 2px 11px; color:var(--accent-dim); font-family:'VT323',monospace; font-size:1.1rem; line-height:1;}
+  .route-stop-delivery .route-stop-num{background:var(--accent); color:#03130a; border-color:var(--accent);}
+  .route-stop-delivery .route-stop-place{color:var(--accent); text-shadow:0 0 6px var(--accent-dim);}
+  .route-unresolved{margin-top:10px; padding-top:8px; border-top:1px dashed var(--border); font-size:.82rem; color:var(--muted);}
   .order-card.just-accepted{animation:orderAcceptedFlash 1.8s ease-out;}
   @keyframes orderAcceptedFlash{
     0%{box-shadow:0 0 0 2px var(--accent), 0 0 24px var(--accent); border-color:var(--accent); background:var(--accent-dim);}
@@ -1102,6 +1116,7 @@ const T = {
     adminActionsTitle:"Actions admin", resetAchvBtn:"RÉINITIALISER LES SUCCÈS", resetRoleBtn:"RÉINITIALISER LE RÔLE",
     confirmResetAchv:"Es-tu sûr de vouloir réinitialiser tous les succès de ce membre ?", confirmResetRole:"Es-tu sûr de vouloir remettre ce membre au rôle client (perte du rôle coursier/admin) ?",
     courierMarginLbl:"Ta marge (commission)",
+    purchaseRouteTitle:"Itinéraire d'achat conseillé", routeLoading:"Calcul de l'itinéraire...", routeDeliveryStop:"LIVRAISON", routeUnresolvedNote:"Objet(s) introuvable(s) dans le catalogue UEX (à récupérer par un autre moyen) :",
     careerStatsTitle:"Statistiques de carrière", careerTotalEarned:"aUEC gagnés au total", careerTopItem:"Objet le plus transporté", careerDeliveries:"Livraisons effectuées", careerAvgMargin:"Marge moyenne / commande", careerNoData:"Pas encore de statistiques — effectue ta première livraison !",
     shipPhotoTitle:"Photo du vaisseau livreur", shipPhotoHint:"Ajoute une photo de ton vaisseau pour l'immersion — visible sur ton profil public.", uploadShipPhoto:"CHOISIR UNE PHOTO", uploadingPhoto:"ENVOI EN COURS...", shipPhotoSaved:"PHOTO ENREGISTRÉE !", shipPhotoError:"Erreur lors de l'envoi de la photo.",
     emptyCtaText:"Besoin de quelque chose ? Commande maintenant !", emptyCtaBtn:"CRÉER UNE COMMANDE",
@@ -1211,6 +1226,7 @@ const T = {
     adminActionsTitle:"Admin actions", resetAchvBtn:"RESET ACHIEVEMENTS", resetRoleBtn:"RESET ROLE",
     confirmResetAchv:"Are you sure you want to reset all of this member's achievements?", confirmResetRole:"Are you sure you want to set this member back to the client role (removing courier/admin access)?",
     courierMarginLbl:"Your margin (commission)",
+    purchaseRouteTitle:"Suggested shopping route", routeLoading:"Computing route...", routeDeliveryStop:"DELIVERY", routeUnresolvedNote:"Item(s) not found in the UEX catalog (source another way):",
     careerStatsTitle:"Career stats", careerTotalEarned:"Total aUEC earned", careerTopItem:"Most transported item", careerDeliveries:"Deliveries completed", careerAvgMargin:"Avg margin / delivery", careerNoData:"No stats yet — complete your first delivery!",
     shipPhotoTitle:"Delivery ship photo", shipPhotoHint:"Add a photo of your ship for immersion — visible on your public profile.", uploadShipPhoto:"CHOOSE A PHOTO", uploadingPhoto:"UPLOADING...", shipPhotoSaved:"PHOTO SAVED!", shipPhotoError:"Error uploading photo.",
     emptyCtaText:"Need something? Order now!", emptyCtaBtn:"CREATE AN ORDER",
@@ -1653,6 +1669,131 @@ async function fetchUexItemMinPrice(itemId){
     uexItemPriceCache[itemId] = min;
     return min;
   }catch(e){ uexItemPriceCache[itemId] = null; return null; }
+}
+
+// --- UEX CORP : lieux d'achat par item (pour l'itinéraire d'achat coursier) ---
+const uexItemLocationsCache = {};
+async function fetchUexItemLocations(itemId){
+  if(uexItemLocationsCache[itemId] !== undefined) return uexItemLocationsCache[itemId];
+  try{
+    const res = await fetch(`https://uexcorp.space/api/2.0/items_prices?id_item=${itemId}`, { headers: { "secret_key": UEX_SECRET_KEY } });
+    const data = await res.json();
+    const rows = (data?.data || []).filter(row => row.price_buy && row.price_buy > 0).sort((a,b) => a.price_buy - b.price_buy);
+    uexItemLocationsCache[itemId] = rows;
+    return rows;
+  }catch(e){ uexItemLocationsCache[itemId] = []; return []; }
+}
+// Identifiant du lieu le plus précis disponible sur une ligne de prix UEX (pour regrouper les objets par lieu commun).
+function placeKeyFor(row){
+  if(row.id_city) return 'city:'+row.id_city;
+  if(row.id_outpost) return 'outpost:'+row.id_outpost;
+  if(row.id_terminal && row.space_station_name) return 'station:'+row.id_terminal;
+  if(row.id_moon) return 'moon:'+row.id_moon;
+  if(row.id_planet) return 'planet:'+row.id_planet;
+  if(row.id_orbit) return 'orbit:'+row.id_orbit;
+  return 'system:'+row.id_star_system;
+}
+// Libellé lisible du lieu le plus précis disponible sur une ligne de prix UEX.
+function placeLabelFor(row){
+  return row.city_name || row.outpost_name || row.space_station_name || row.moon_name || row.planet_name || row.orbit_name || row.star_system_name || '?';
+}
+// Construit un itinéraire d'achat optimisé : regroupe un maximum d'objets par lieu (algorithme glouton de couverture maximale),
+// puis ordonne les étapes par système, et termine toujours par le lieu de livraison.
+async function buildPurchaseRoute(order){
+  await loadUexCatalog();
+  const items = order.items || [];
+  const pool = []; // { name, qty, candidates: [rows] }
+  const unresolved = [];
+  for(const it of items){
+    const uexItem = findUexItem(it.name);
+    if(!uexItem){ unresolved.push(it.name); continue; }
+    const rows = await fetchUexItemLocations(uexItem.id);
+    if(!rows.length){ unresolved.push(it.name); continue; }
+    pool.push({ name: it.name, qty: it.qty, candidates: rows });
+  }
+  const remaining = new Set(pool.map((_,idx) => idx));
+  const stops = [];
+  while(remaining.size){
+    // Pour chaque lieu candidat encore possible, compte combien d'objets restants il peut couvrir.
+    const coverage = new Map(); // placeKey -> { count, price, label, systemName, items: [{idx,row}] }
+    remaining.forEach(idx => {
+      const p = pool[idx];
+      const seenKeys = new Set();
+      p.candidates.forEach(row => {
+        const key = placeKeyFor(row);
+        if(seenKeys.has(key)) return; // ne compter qu'une fois par objet et par lieu (garder le moins cher déjà trié)
+        seenKeys.add(key);
+        if(!coverage.has(key)) coverage.set(key, { count:0, price:0, label: placeLabelFor(row), systemName: row.star_system_name || '', items: [] });
+        const c = coverage.get(key);
+        c.count += 1;
+        c.price += row.price_buy;
+        c.items.push({ idx, row });
+      });
+    });
+    if(!coverage.size) break;
+    // Choisit le lieu qui couvre le plus d'objets restants ; en cas d'égalité, le moins cher au total.
+    let bestKey = null, best = null;
+    coverage.forEach((c, key) => {
+      if(!best || c.count > best.count || (c.count === best.count && c.price < best.price)){ best = c; bestKey = key; }
+    });
+    best.items.forEach(({idx}) => remaining.delete(idx));
+    stops.push({
+      place: best.label,
+      system: best.systemName,
+      items: best.items.map(({idx, row}) => ({ name: pool[idx].name, qty: pool[idx].qty, price: row.price_buy, terminal: row.terminal_name || '' }))
+    });
+  }
+  // Regroupe les étapes consécutives appartenant au même système (ordre logique simple, sans distances réelles).
+  const bySystem = [];
+  stops.forEach(s => {
+    const last = bySystem[bySystem.length-1];
+    if(last && last.length && last[0].system === s.system) last.push(s);
+    else bySystem.push([s]);
+  });
+  // Fusionne : si un même système apparaît plusieurs fois de façon non consécutive, on les rapproche quand même.
+  const grouped = [];
+  const used = new Set();
+  bySystem.forEach((grp, i) => {
+    if(used.has(i)) return;
+    const merged = [...grp];
+    bySystem.forEach((grp2, j) => {
+      if(j <= i || used.has(j)) return;
+      if(grp2[0].system === grp[0].system){ merged.push(...grp2); used.add(j); }
+    });
+    grouped.push(...merged);
+  });
+  return { stops: grouped, unresolved };
+}
+// Rend le schéma HTML de l'itinéraire d'achat pour une commande acceptée.
+function renderPurchaseRouteHtml(order, route){
+  const d = T[LANG];
+  if(!route.stops.length && !route.unresolved.length) return '';
+  const stopsHtml = route.stops.map((s, i) => `
+    <div class="route-stop">
+      <div class="route-stop-num">${i+1}</div>
+      <div class="route-stop-body">
+        <div class="route-stop-place">${s.place}${s.system ? ' — '+s.system : ''}</div>
+        <ul class="route-stop-items">${s.items.map(it => `<li>${it.name} x${it.qty} — ${fmt(it.price)}${it.terminal ? ' <span class="route-stop-terminal">('+it.terminal+')</span>' : ''}</li>`).join('')}</ul>
+      </div>
+    </div>
+    <div class="route-arrow">↓</div>
+  `).join('');
+  const dest = order.exact_location ? `${order.exact_location}, ${order.destination_system}` : (order.destination_system || '-');
+  const deliveryHtml = `
+    <div class="route-stop route-stop-delivery">
+      <div class="route-stop-num">${route.stops.length+1}</div>
+      <div class="route-stop-body">
+        <div class="route-stop-place">${d.routeDeliveryStop} — ${dest}</div>
+      </div>
+    </div>`;
+  const unresolvedHtml = route.unresolved.length ? `<div class="route-unresolved">${d.routeUnresolvedNote} ${route.unresolved.join(', ')}</div>` : '';
+  return `
+    <div class="purchase-route">
+      <div class="purchase-route-title">${d.purchaseRouteTitle}</div>
+      ${stopsHtml}
+      ${deliveryHtml}
+      ${unresolvedHtml}
+    </div>`;
 }
 
 // --- UEX CORP : catalogue vaisseaux (pour le "vaisseau livreur par défaut" en profil) ---
@@ -2799,6 +2940,7 @@ async function renderMyDeliveries(orders){
       ? `${o.buyer_handle ? d.buyerTo+o.buyer_handle+' — ' : ''}${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`
       : `${d.orderClient}${displayName(clients[o.client_id])} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`;
     const justAccepted = o.id === justAcceptedOrderId ? ' just-accepted' : '';
+    const showRoute = !isMkt && o.status === 'accepted';
     return `
     <div class="order-card big${justAccepted}">
       ${badge}
@@ -2808,12 +2950,24 @@ async function renderMyDeliveries(orders){
       ${shipTrackHtml(o)}
       <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty}</li>`).join('')}</ul>
       <div class="line margin-line"><span>${d.courierMarginLbl}</span><span>${fmt(o.commission)}</span></div>
+      ${showRoute ? `<div class="purchase-route-slot" id="route-slot-${o.id}"></div>` : ''}
       ${btn}
       ${releaseBtn}
     </div>`;
   }).join('');
   animateShipTracks(box);
   justAcceptedOrderId = null;
+  // Calcule et injecte l'itinéraire d'achat de chaque commande acceptée, en tâche de fond
+  // (sans bloquer l'affichage de la liste sur les appels réseau UEX potentiellement lents).
+  orders.filter(o => o.order_type !== 'marketplace' && o.status === 'accepted').forEach(async o => {
+    const slot = document.getElementById('route-slot-'+o.id);
+    if(!slot) return;
+    try{
+      const route = await buildPurchaseRoute(o);
+      const stillThere = document.getElementById('route-slot-'+o.id);
+      if(stillThere) stillThere.outerHTML = renderPurchaseRouteHtml(o, route) || '';
+    }catch(e){ console.error('[buildPurchaseRoute] exception:', e); }
+  });
 }
 function fullErrText(error){
   return [error.message, error.details, error.hint, error.code ? ('code: '+error.code) : ''].filter(Boolean).join('\n');

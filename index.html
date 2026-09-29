@@ -278,6 +278,13 @@
   /* "Derniers objets en vente" côté client : cartes plus petites et nombre de colonnes qui s'adapte
      automatiquement à la largeur d'écran, au lieu d'un nombre de colonnes fixe. */
   #marketplaceFeed.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
+  .mkt-toolbar{display:flex; align-items:center; gap:10px; margin:2px 0 16px; flex-wrap:wrap;}
+  .mkt-search-input{flex:1; min-width:160px; width:auto;}
+  .mkt-filter-wrap{flex:0 0 auto;}
+  .mkt-filter-btn{display:inline-flex; align-items:center; gap:8px; white-space:nowrap;}
+  .mkt-filter-btn .icon{width:14px; height:14px;}
+  .mkt-filter-menu{right:0; min-width:200px;}
+  .mkt-filter-menu button.active{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
   .mkt-card{border:1px solid var(--border); border-radius:4px; background:var(--bg2); overflow:hidden; display:flex; flex-direction:column;}
   .mkt-photo-wrap{position:relative; width:100%; aspect-ratio:4/3; background:var(--panel); display:flex; align-items:center; justify-content:center; overflow:hidden;}
   .mkt-photo-wrap img{width:100%; height:100%; object-fit:cover;}
@@ -782,6 +789,23 @@
       </div>
       <div id="clientTabMarketplace" hidden>
         <h3 data-i18n="marketplaceFeedTitle" style="margin-top:0;">Derniers objets en vente</h3>
+        <div class="mkt-toolbar">
+          <input type="text" id="marketplaceSearchInput" class="mkt-search-input" data-i18n-ph="mktSearchPh" placeholder="Rechercher un objet…" oninput="applyMarketplaceFilters()">
+          <div class="create-wrap mkt-filter-wrap" id="mktFilterWrap">
+            <button type="button" class="btn-secondary mkt-filter-btn" id="mktFilterBtn" onclick="toggleMktFilterMenu()">
+              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                <rect x="1" y="2" width="14" height="2"/><rect x="4" y="7" width="8" height="2"/><rect x="6" y="12" width="4" height="2"/>
+              </g></svg>
+              <span data-i18n="filterBtn">FILTER</span>
+            </button>
+            <div class="create-menu mkt-filter-menu" id="mktFilterMenu" hidden>
+              <button type="button" class="active" data-sort="newest" onclick="setMarketplaceSort('newest')"><span data-i18n="sortNewest">Plus récent</span></button>
+              <button type="button" data-sort="oldest" onclick="setMarketplaceSort('oldest')"><span data-i18n="sortOldest">Plus ancien</span></button>
+              <button type="button" data-sort="price_asc" onclick="setMarketplaceSort('price_asc')"><span data-i18n="sortPriceAsc">Prix croissant</span></button>
+              <button type="button" data-sort="price_desc" onclick="setMarketplaceSort('price_desc')"><span data-i18n="sortPriceDesc">Prix décroissant</span></button>
+            </div>
+          </div>
+        </div>
         <div id="marketplaceFeed" class="marketplace-grid"></div>
         <h3 data-i18n="myInquiriesTitle" style="margin-top:26px;">Mes demandes</h3>
         <div id="myInquiriesList"></div>
@@ -1437,6 +1461,7 @@ const T = {
     dtWeekdays:["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"],
     tabDeliveries:"LIVRAISONS", tabMarketplace:"MARKETPLACE",
     marketplaceFeedTitle:"Derniers objets en vente", marketplaceEmpty:"Aucun objet en vente pour le moment.",
+    mktSearchPh:"Rechercher un objet…", filterBtn:"FILTRER", sortNewest:"Plus récent", sortOldest:"Plus ancien", sortPriceAsc:"Prix croissant", sortPriceDesc:"Prix décroissant", mktNoResults:"Aucun objet ne correspond à ta recherche.",
     mktByLbl:"Vendu par", visitShopBtn:"VOIR LA MARKETPLACE",
     roleWords:{client:"client", courier:"coursier", admin:"admin", seller:"vendeur"},
     becomeSellerBtn:"DEMANDER À DEVENIR VENDEUR", sellerPending:"Ta candidature vendeur est en attente de validation par l'administrateur.",
@@ -1555,6 +1580,7 @@ const T = {
     dtWeekdays:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
     tabDeliveries:"DELIVERIES", tabMarketplace:"MARKETPLACE",
     marketplaceFeedTitle:"Latest items for sale", marketplaceEmpty:"No items for sale right now.",
+    mktSearchPh:"Search for an item…", filterBtn:"FILTER", sortNewest:"Newest first", sortOldest:"Oldest first", sortPriceAsc:"Price: low to high", sortPriceDesc:"Price: high to low", mktNoResults:"No items match your search.",
     mktByLbl:"Sold by", visitShopBtn:"VIEW MARKETPLACE",
     roleWords:{client:"client", courier:"courier", admin:"admin", seller:"seller"},
     becomeSellerBtn:"REQUEST TO BECOME A SELLER", sellerPending:"Your seller application is pending admin review.",
@@ -2621,22 +2647,55 @@ async function submitOfferModal(){
   closeOfferModal();
   loadMyInquiries();
 }
+let marketplaceFeedCache = [];
+let marketplaceSellerMapCache = {};
+let marketplaceSortMode = 'newest';
 async function loadMarketplaceFeed(){
   const box = $('marketplaceFeed'); if(!box) return;
   const d = T[LANG];
   box.innerHTML = `<p class="muted">…</p>`;
   const { data, error } = await sb.from('marketplace_listings').select('*').order('created_at',{ascending:false}).limit(30);
   if(error){ box.textContent = error.message; return; }
-  const listings = data || [];
-  if(!listings.length){ box.innerHTML = `<p class="muted">${d.marketplaceEmpty}</p>`; return; }
-  const sellerIds = [...new Set(listings.map(l=>l.seller_id))];
+  marketplaceFeedCache = data || [];
+  if(!marketplaceFeedCache.length){ box.innerHTML = `<p class="muted">${d.marketplaceEmpty}</p>`; return; }
+  const sellerIds = [...new Set(marketplaceFeedCache.map(l=>l.seller_id))];
   const [{ data: sellers }, { data: shops }] = await Promise.all([
     sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds),
     sb.from('marketplace_shops').select('id,shop_name').in('id', sellerIds)
   ]);
   const shopNameMap = {}; (shops||[]).forEach(s=>shopNameMap[s.id]=s.shop_name);
   const sellerMap = {}; (sellers||[]).forEach(s=>sellerMap[s.id]={ ...s, shop_name: shopNameMap[s.id] || null });
-  box.innerHTML = listings.map(l => mktCardHtml(l, sellerMap)).join('');
+  marketplaceSellerMapCache = sellerMap;
+  applyMarketplaceFilters();
+}
+// Recherche + tri appliqués côté client sur les annonces déjà chargées (pas de nouvel appel réseau).
+function applyMarketplaceFilters(){
+  const box = $('marketplaceFeed'); if(!box) return;
+  const d = T[LANG];
+  if(!marketplaceFeedCache.length){ box.innerHTML = `<p class="muted">${d.marketplaceEmpty}</p>`; return; }
+  const searchInput = $('marketplaceSearchInput');
+  const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+  let list = marketplaceFeedCache.filter(l => !q || (l.item_name||'').toLowerCase().includes(q));
+  list = list.slice().sort((a,b) => {
+    if(marketplaceSortMode === 'price_asc') return (a.price||0) - (b.price||0);
+    if(marketplaceSortMode === 'price_desc') return (b.price||0) - (a.price||0);
+    if(marketplaceSortMode === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
+    return new Date(b.created_at) - new Date(a.created_at); // newest (défaut)
+  });
+  if(!list.length){ box.innerHTML = `<p class="muted">${d.mktNoResults}</p>`; return; }
+  box.innerHTML = list.map(l => mktCardHtml(l, marketplaceSellerMapCache)).join('');
+}
+function toggleMktFilterMenu(){ $('mktFilterMenu').hidden = !$('mktFilterMenu').hidden; }
+document.addEventListener('click', (e) => {
+  const menu = $('mktFilterMenu');
+  if(!menu || menu.hidden) return;
+  if(!menu.contains(e.target) && !e.target.closest('#mktFilterBtn')) menu.hidden = true;
+});
+function setMarketplaceSort(mode){
+  marketplaceSortMode = mode;
+  document.querySelectorAll('#mktFilterMenu button').forEach(b => b.classList.toggle('active', b.dataset.sort === mode));
+  $('mktFilterMenu').hidden = true;
+  applyMarketplaceFilters();
 }
 // --- FEED "RESSOURCES DEMANDÉES" (coté client) : ce que les vendeurs cherchent à acheter ---
 async function loadResourceRequestsFeed(){

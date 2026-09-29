@@ -467,6 +467,7 @@
   .history-toggle{width:100%; background:none; border:1px dashed var(--border); color:var(--muted); margin:26px 0 12px;}
   .history-toggle:hover{border-color:var(--accent); color:var(--accent);}
   .btn-cancel{width:100%; margin-top:12px; border-color:var(--danger); color:var(--danger); font-size:.85rem;}
+  .cancel-locked-note{width:100%; margin-top:12px; padding:8px 10px; border:1px dashed var(--border); border-radius:2px; color:var(--muted); font-size:.75rem; text-align:center;}
   .btn-cancel:hover{background:var(--danger-dim);}
 
   /* --- SHIP TRACK --- */
@@ -1335,6 +1336,7 @@ const T = {
     brutLbl:"Prix brut total", commLbl:"Commission (déplacement + risque, 15% + 50 000 aUEC garantis)", totalLbl:"TOTAL À PAYER",
     sendBtn:"ENVOYER LA COMMANDE", historyLabel:"Historique", noCurrentOrders:"Aucune commande en cours.", noHistory:"Aucune commande livrée pour l'instant.",
     cancelBtn:"ANNULER", confirmCancel:"Es-tu sûr de vouloir annuler cette commande ?",
+    cancelLockedNote:"Annulation impossible : le coursier a déjà acheté la marchandise.",
     releaseOrderBtn:"REMETTRE EN ATTENTE", confirmReleaseOrder:"Remettre cette commande dans le pool ? Un autre coursier pourra la prendre.",
     notCourier:"Ton compte n'a pas encore le rôle coursier. Contacte l'administrateur pour être ajouté.",
     notSeller:"Ton compte n'a pas encore le rôle vendeur. Contacte l'administrateur pour être ajouté.",
@@ -1451,6 +1453,7 @@ const T = {
     brutLbl:"Gross total price", commLbl:"Commission (travel + risk premium, 15% + 50,000 aUEC guaranteed)", totalLbl:"TOTAL DUE",
     sendBtn:"SEND ORDER", historyLabel:"History", noCurrentOrders:"No orders in progress.", noHistory:"No delivered orders yet.",
     cancelBtn:"CANCEL", confirmCancel:"Are you sure you want to cancel this order?",
+    cancelLockedNote:"Cancellation unavailable: the courier already purchased the items.",
     releaseOrderBtn:"RELEASE TO POOL", confirmReleaseOrder:"Put this order back in the pending pool? Another courier will be able to take it.",
     notCourier:"Your account doesn't have courier access yet. Contact the admin to be added.",
     notSeller:"Your account doesn't have seller access yet. Contact the admin to be added.",
@@ -2390,6 +2393,10 @@ async function loadClientDashboard(){
     const itemsLi = items.map((it,idx) => `<li${idx>=MAX_VISIBLE_ITEMS?' class="extra-item" hidden':''}>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('');
     const moreCount = items.length - MAX_VISIBLE_ITEMS;
     const toggleBtn = moreCount > 0 ? `<button type="button" class="items-toggle" data-more-label="${d.viewMoreItems.replace('{n}', moreCount)}" onclick="toggleItemsList(this)">${d.viewMoreItems.replace('{n}', moreCount)}</button>` : '';
+    const canCancelOrder = !['purchased','in_transit'].includes(o.status);
+    const cancelBlock = canCancelOrder
+      ? `<button class="btn-cancel" onclick="cancelOrder('${o.id}','${o.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>`
+      : `<div class="cancel-locked-note">${d.cancelLockedNote}</div>`;
     return `
     <div class="order-card big ${singleClass}">
       <div class="order-top-row">
@@ -2402,7 +2409,7 @@ async function loadClientDashboard(){
       <ul>${itemsLi}</ul>
       ${toggleBtn}
       <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
-      <button class="btn-cancel" onclick="cancelOrder('${o.id}','${o.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>
+      ${cancelBlock}
     </div>
   `;
   }).join('') : `
@@ -2454,6 +2461,10 @@ function toggleHistoryDetail(id){
 }
 
 async function cancelOrder(id, currentStatus){
+  if(['purchased','in_transit'].includes(currentStatus)){
+    alert(T[LANG].cancelLockedNote);
+    return;
+  }
   if(!confirm(T[LANG].confirmCancel)) return;
   let error;
   if(currentStatus === 'pending'){

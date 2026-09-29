@@ -275,6 +275,12 @@
   .marketplace-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   @media (min-width:640px){ .marketplace-grid{grid-template-columns:1fr 1fr; gap:16px;} }
   @media (min-width:960px){ .marketplace-grid{grid-template-columns:1fr 1fr 1fr;} }
+  /* "Derniers objets en vente" côté client : cartes plus petites et nombre de colonnes qui s'adapte
+     automatiquement à la largeur d'écran, au lieu d'un nombre de colonnes fixe. */
+  #marketplaceFeed.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px;}
+  #marketplaceFeed .mkt-item-name{font-size:1rem;}
+  #marketplaceFeed .mkt-price{font-size:1.1rem;}
+  #marketplaceFeed .mkt-info{padding:10px 11px 12px; gap:6px;}
   .mkt-card{border:1px solid var(--border); border-radius:4px; background:var(--bg2); overflow:hidden; display:flex; flex-direction:column;}
   .mkt-photo-wrap{position:relative; width:100%; aspect-ratio:4/3; background:var(--panel); display:flex; align-items:center; justify-content:center; overflow:hidden;}
   .mkt-photo-wrap img{width:100%; height:100%; object-fit:cover;}
@@ -393,6 +399,15 @@
   .shop-hero-text h1{margin:0 0 8px; font-size:1.4rem;}
   .shop-owner-box{display:inline-flex; width:auto; max-width:none; flex:none;}
   .shop-description{font-size:.85rem; color:var(--muted); line-height:1.5; white-space:pre-wrap; margin:10px 0;}
+  .shop-upvote-btn{display:inline-flex; align-items:center; gap:6px; margin-left:8px; padding:8px 12px; border:1px solid var(--border); border-radius:6px; background:var(--bg2); color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.5px; cursor:pointer; transition:border-color .2s, color .2s, transform .15s;}
+  .shop-upvote-btn .icon{width:14px; height:14px;}
+  .shop-upvote-btn:hover{border-color:var(--accent); color:var(--accent);}
+  .shop-upvote-btn:active{transform:scale(.94);}
+  .shop-upvote-btn.upvoted{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
+  .shop-upvote-btn .shop-upvote-count{font-weight:700;}
+  .shop-upvote-btn[hidden]{display:none;}
+  .shop-upvote-badge{display:inline-flex; align-items:center; gap:5px; margin-left:8px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; color:var(--accent); font-size:.72rem; font-weight:700;}
+  .shop-upvote-badge .icon{width:12px; height:12px;}
 
   /* --- TABLEAU DE BORD VENDEUR / PAGE BOUTIQUE --- */
   .seller-profile-divider{border-top:1px dashed var(--border); margin:18px 0;}
@@ -1063,6 +1078,12 @@
           <div class="seller-header-right">
             <div class="shop-hero-text shop-preview-head">
               <h1 id="sellerDashShopName">—</h1>
+              <div class="shop-upvote-badge" id="sellerDashUpvoteBadge">
+                <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                  <rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/>
+                </g></svg>
+                <span id="sellerDashUpvoteCount">0</span>
+              </div>
               <button class="gear-btn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique">
                 <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
                   <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
@@ -1210,6 +1231,13 @@
             <div class="courier-box shop-owner-box" id="shopOwnerBox" onclick="openPublicProfile(shopViewingSellerId)">
               <div class="courier-box-name" id="shopOwnerName">—</div>
             </div>
+            <button type="button" class="shop-upvote-btn" id="shopUpvoteBtn" onclick="toggleShopUpvote()">
+              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                <rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/>
+              </g></svg>
+              <span data-i18n="upvoteBtn">UPVOTE</span>
+              <span class="shop-upvote-count" id="shopUpvoteCount">0</span>
+            </button>
           </div>
           <div class="shop-description" id="shopDescription" hidden></div>
           <div class="seller-header-stats-row">
@@ -1413,6 +1441,7 @@ const T = {
     sellerAccepted:"🎉 Ta demande pour devenir vendeur a été acceptée !", sellerRejected:"Ta demande pour devenir vendeur a été refusée.",
     shopSettingsTitle:"Ma boutique", shopNameLbl:"Nom de la marketplace", phShopName:"ex: Le Comptoir de Mayco", shopThemeLbl:"Couleur de la boutique", shopLogoLbl:"Logo de la boutique (optionnel)", uploadShopLogo:"CHOISIR UN LOGO", saveShopBtn:"ENREGISTRER LA BOUTIQUE", shopSaved:"BOUTIQUE ENREGISTRÉE !",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
+    upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
     shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopMostExpensive:"Objet le plus cher vendu", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
     sellerAchvTitle:"Succès vendeur",
     sellerAchvLabels:{first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées"},
@@ -1530,6 +1559,7 @@ const T = {
     sellerAccepted:"🎉 Your seller application was accepted!", sellerRejected:"Your seller application was rejected.",
     shopSettingsTitle:"My shop", shopNameLbl:"Marketplace name", phShopName:"e.g. Mayco's Trading Post", shopThemeLbl:"Shop color", shopLogoLbl:"Shop logo (optional)", uploadShopLogo:"CHOOSE A LOGO", saveShopBtn:"SAVE SHOP", shopSaved:"SHOP SAVED!",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
+    upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
     shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopMostExpensive:"Most expensive item sold", shopStatsNoData:"No sales yet — your first sale will show up here!",
     sellerAchvTitle:"Seller achievements",
     sellerAchvLabels:{first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made"},
@@ -2922,6 +2952,9 @@ async function loadSellerDashboard(){
   const stats = await fetchSellerShopStats(session.user.id);
   renderShopStats($('sellerDashStatsCard'), stats);
   checkAndRenderSellerAchievements('sellerDashAchvCard');
+  const { count: upvoteCount } = await sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', session.user.id);
+  const upvoteCountEl = $('sellerDashUpvoteCount');
+  if(upvoteCountEl) upvoteCountEl.textContent = upvoteCount || 0;
 }
 let pendingListingPhotoFile = null;
 function onListingPhotoSelected(inputEl){
@@ -3437,6 +3470,42 @@ async function openSellerShop(sellerId){
   if(!shopResourceRequestsCache.length){ resGrid.innerHTML = `<p class="muted">${d.noResourceRequests}</p>`; }
   else resGrid.innerHTML = shopResourceRequestsCache.slice(0,3).map(r => resCardFn(r)).join('');
   if(resMoreBtn) resMoreBtn.hidden = shopResourceRequestsCache.length <= 3;
+  loadShopUpvotes(sellerId, isOwner);
+}
+let shopUpvoted = false;
+async function loadShopUpvotes(sellerId, isOwner){
+  const btn = $('shopUpvoteBtn');
+  if(!btn) return;
+  btn.hidden = !!isOwner;
+  btn.classList.remove('upvoted');
+  shopUpvoted = false;
+  const { count } = await sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', sellerId);
+  const countEl = $('shopUpvoteCount');
+  if(countEl) countEl.textContent = count || 0;
+  if(session && !isOwner){
+    const { data } = await sb.from('shop_upvotes').select('id').eq('seller_id', sellerId).eq('client_id', session.user.id).maybeSingle();
+    shopUpvoted = !!data;
+    btn.classList.toggle('upvoted', shopUpvoted);
+  }
+}
+async function toggleShopUpvote(){
+  const sellerId = shopViewingSellerId;
+  if(!sellerId) return;
+  if(!session){ toastShow(T[LANG].upvoteLoginNote); return; }
+  if(session.user.id === sellerId) return;
+  const btn = $('shopUpvoteBtn');
+  const countEl = $('shopUpvoteCount');
+  if(shopUpvoted){
+    const { error } = await sb.from('shop_upvotes').delete().eq('seller_id', sellerId).eq('client_id', session.user.id);
+    if(error){ alert('Erreur : '+error.message); return; }
+    shopUpvoted = false;
+  } else {
+    const { error } = await sb.from('shop_upvotes').insert({ seller_id: sellerId, client_id: session.user.id });
+    if(error){ alert('Erreur : '+error.message); return; }
+    shopUpvoted = true;
+  }
+  if(btn) btn.classList.toggle('upvoted', shopUpvoted);
+  if(countEl) countEl.textContent = Math.max(0, (parseInt(countEl.textContent,10)||0) + (shopUpvoted ? 1 : -1));
 }
 function openShopAllListings(){
   hideAllViews();

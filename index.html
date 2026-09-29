@@ -36,6 +36,8 @@
   @keyframes flicker{ 0%,100%{opacity:.55;} 50%{opacity:.75;} 92%{opacity:.3;} }
   h1,h2,h3{font-family:'VT323',monospace; margin:0 0 4px; letter-spacing:1px; text-shadow:0 0 8px var(--accent-dim);}
   .wrap{max-width:900px; margin:0 auto; position:relative; z-index:1;}
+  @media (min-width:1440px){ .wrap{max-width:1200px;} }
+  @media (min-width:1920px){ .wrap{max-width:1500px;} }
   .card{background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:20px; margin-bottom:22px; position:relative; box-shadow:0 0 0 1px var(--border) inset, 0 0 18px rgba(0,0,0,.4);}
   .card::before,.card::after{content:""; position:absolute; width:10px; height:10px; border:2px solid var(--accent); opacity:.7;}
   .card::before{top:-1px; left:-1px; border-right:none; border-bottom:none;}

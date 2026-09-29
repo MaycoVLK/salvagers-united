@@ -1358,8 +1358,8 @@ const T = {
     courierAccepted:"🎉 Ta demande pour devenir coursier a été acceptée !", courierRejected:"Ta demande pour devenir coursier a été refusée.",
     courierApplications:"Candidatures Coursier", noApplications:"Aucune candidature en attente.", acceptApp:"ACCEPTER", rejectApp:"REFUSER",
     achvTitle:"Succès", achvUnlocked:"Nouveau succès débloqué :",
-    achvLabels:{first_delivery:"Première livraison", five_deliveries:"5 livraisons", veteran:"Coursier fiable", lightning:"Rapide comme l'éclair"},
-    achvDesc:{first_delivery:"Termine ta première commande.", five_deliveries:"Termine 5 commandes.", veteran:"Termine 20 commandes.", lightning:"Livre une commande en moins de 10 minutes après l'avoir acceptée."},
+    achvLabels:{first_delivery:"Première livraison", five_deliveries:"5 livraisons", veteran:"Coursier fiable", lightning:"Rapide comme l'éclair", this_is_the_way:"This is the way", trunk_contents:"What is that in your trunk, sir?", dangerous_deliveries:"Dangerous Deliveries", raising_army:"Are you raising an army?", paperwork:"Do you have the paperwork for that?"},
+    achvDesc:{first_delivery:"Termine ta première commande.", five_deliveries:"Termine 5 commandes.", veteran:"Termine 20 commandes.", lightning:"Marque une commande comme achetée dans les 10 minutes après l'avoir acceptée.", this_is_the_way:"Termine une commande dont l'itinéraire d'achat suggéré traverse les 3 systèmes stellaires (lieu de livraison inclus).", trunk_contents:"Transporte une Colossus Bomb ou une torpille de taille 5 ou plus.", dangerous_deliveries:"Livre une commande à Pyro.", raising_army:"Transporte 100 chargeurs ou plus (toutes armes combinées) dans une même commande.", paperwork:"Transporte plus de 2 000 000 aUEC de marchandise dans une même commande."},
     statusLabels:{pending:"En attente d'un coursier",accepted:"Acceptée",purchased:"Marchandise achetée",in_transit:"En transit",delivered:"Livrée",cancelled:"Annulée"},
     statusShort:{pending:"Attente",accepted:"Acceptée",purchased:"Achetée",in_transit:"Transit",delivered:"Livrée"},
     orderSystem:"Système : ", orderLieu:"Lieu : ", orderTotal:"Total : ", orderCourier:"Coursier : ", orderClient:"Client : ", orderShip:"Vaisseau : ",
@@ -1475,8 +1475,8 @@ const T = {
     courierAccepted:"🎉 Your courier application was accepted!", courierRejected:"Your courier application was rejected.",
     courierApplications:"Courier Applications", noApplications:"No pending applications.", acceptApp:"ACCEPT", rejectApp:"REJECT",
     achvTitle:"Achievements", achvUnlocked:"New achievement unlocked:",
-    achvLabels:{first_delivery:"First delivery", five_deliveries:"5 deliveries", veteran:"Reliable courier", lightning:"Lightning fast"},
-    achvDesc:{first_delivery:"Complete your first order.", five_deliveries:"Complete 5 orders.", veteran:"Complete 20 orders.", lightning:"Deliver an order within 10 minutes of accepting it."},
+    achvLabels:{first_delivery:"First delivery", five_deliveries:"5 deliveries", veteran:"Reliable courier", lightning:"Lightning fast", this_is_the_way:"This is the way", trunk_contents:"What is that in your trunk, sir?", dangerous_deliveries:"Dangerous Deliveries", raising_army:"Are you raising an army?", paperwork:"Do you have the paperwork for that?"},
+    achvDesc:{first_delivery:"Complete your first order.", five_deliveries:"Complete 5 orders.", veteran:"Complete 20 orders.", lightning:"Mark an order as purchased within 10 minutes of accepting it.", this_is_the_way:"Complete an order whose suggested shopping route passes through all 3 star systems (delivery location included).", trunk_contents:"Carry a Colossus Bomb or a size 5+ torpedo.", dangerous_deliveries:"Deliver an order to Pyro.", raising_army:"Carry 100+ magazines (any weapons combined) in a single order.", paperwork:"Carry over 2,000,000 aUEC worth of goods in a single order."},
     statusLabels:{pending:"Waiting for a courier",accepted:"Accepted",purchased:"Purchased",in_transit:"In transit",delivered:"Delivered",cancelled:"Cancelled"},
     statusShort:{pending:"Waiting",accepted:"Accepted",purchased:"Purchased",in_transit:"Transit",delivered:"Delivered"},
     orderSystem:"System: ", orderLieu:"Location: ", orderTotal:"Total: ", orderCourier:"Courier: ", orderClient:"Client: ", orderShip:"Ship: ",
@@ -2069,7 +2069,8 @@ async function buildPurchaseRoute(order){
     });
     grouped.push(...merged);
   });
-  return { stops: grouped, unresolved };
+  const systems = [...new Set(grouped.map(s => s.system).filter(Boolean))];
+  return { stops: grouped, unresolved, systems };
 }
 // Rend le schéma HTML de l'itinéraire d'achat pour une commande acceptée.
 function renderPurchaseRouteHtml(order, route){
@@ -3649,6 +3650,11 @@ async function renderMyDeliveries(orders){
     try{
       const route = await buildPurchaseRoute(o);
       purchaseRouteCache[o.id] = { order: o, route };
+      // Sauvegarde les systèmes de l'itinéraire suggéré sur la commande : sert à l'achievement
+      // "This is the way" (itinéraire + lieu de livraison couvrant les 3 systèmes).
+      if(route.systems && route.systems.length){
+        sb.from('orders').update({ route_systems: route.systems }).eq('id', o.id).then(({error})=>{ if(error) console.error('[route_systems]', error); });
+      }
       if(o.id === activeDeliveryId) renderMyDeliveriesView();
     }catch(e){ console.error('[buildPurchaseRoute] exception:', e); }
   });
@@ -3773,21 +3779,55 @@ const ACHV_ICONS = {
   first_delivery: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="5" y="2" width="6" height="2"/><rect x="4" y="4" width="8" height="4"/><rect x="6" y="8" width="4" height="2"/><rect x="5" y="10" width="6" height="2"/><rect x="3" y="12" width="10" height="2"/></g></svg>`,
   five_deliveries: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="1" width="2" height="2"/><rect x="7" y="13" width="2" height="2"/><rect x="1" y="7" width="2" height="2"/><rect x="13" y="7" width="2" height="2"/><rect x="5" y="5" width="6" height="6"/></g></svg>`,
   veteran: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="4" y="2" width="8" height="2"/><rect x="3" y="4" width="10" height="6"/><rect x="4" y="10" width="8" height="2"/><rect x="6" y="12" width="4" height="2"/></g></svg>`,
-  lightning: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="8" y="1" width="3" height="3"/><rect x="6" y="4" width="3" height="3"/><rect x="4" y="7" width="4" height="2"/><rect x="7" y="9" width="3" height="3"/><rect x="5" y="12" width="3" height="3"/></g></svg>`
+  lightning: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="8" y="1" width="3" height="3"/><rect x="6" y="4" width="3" height="3"/><rect x="4" y="7" width="4" height="2"/><rect x="7" y="9" width="3" height="3"/><rect x="5" y="12" width="3" height="3"/></g></svg>`,
+  this_is_the_way: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="5" y="2" width="6" height="2"/><rect x="4" y="4" width="8" height="4"/><rect x="4" y="8" width="2" height="2"/><rect x="10" y="8" width="2" height="2"/><rect x="6" y="8" width="4" height="2"/><rect x="5" y="10" width="6" height="2"/></g></svg>`,
+  trunk_contents: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="4" y="6" width="8" height="2"/><rect x="3" y="8" width="10" height="4"/><rect x="4" y="12" width="8" height="1"/></g></svg>`,
+  dangerous_deliveries: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="1" width="2" height="2"/><rect x="6" y="3" width="4" height="2"/><rect x="5" y="5" width="2" height="2"/><rect x="9" y="5" width="2" height="2"/><rect x="4" y="7" width="2" height="2"/><rect x="10" y="7" width="2" height="2"/><rect x="3" y="9" width="2" height="2"/><rect x="11" y="9" width="2" height="2"/><rect x="2" y="11" width="12" height="2"/><rect x="7" y="8" width="2" height="2"/></g></svg>`,
+  raising_army: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="2" width="2" height="11"/><rect x="11" y="2" width="2" height="11"/><rect x="6" y="2" width="4" height="2"/><rect x="6" y="5" width="4" height="8"/></g></svg>`,
+  paperwork: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="2" width="10" height="1"/><rect x="3" y="13" width="10" height="1"/><rect x="3" y="2" width="1" height="12"/><rect x="12" y="2" width="1" height="12"/><rect x="5" y="5" width="6" height="1"/><rect x="5" y="7" width="6" height="1"/><rect x="5" y="9" width="4" height="1"/></g></svg>`
 };
 const ACHIEVEMENTS = [
   { key:'first_delivery', check: s => s.deliveredCount >= 1 },
   { key:'five_deliveries', check: s => s.deliveredCount >= 5 },
   { key:'veteran', check: s => s.deliveredCount >= 20 },
-  { key:'lightning', check: s => s.hasFastDelivery }
+  { key:'lightning', check: s => s.hasFastDelivery },
+  { key:'this_is_the_way', check: s => s.hasAllSystemsOrder },
+  { key:'trunk_contents', check: s => s.hasBigItem },
+  { key:'dangerous_deliveries', check: s => s.hasPyroDelivery },
+  { key:'raising_army', check: s => s.hasArmyOrder },
+  { key:'paperwork', check: s => s.hasExpensiveOrder }
 ];
+function isBigOrdnanceItem(name){
+  const n = (name||'').toLowerCase();
+  if(n.includes('colossus') && n.includes('bomb')) return true;
+  if(n.includes('torpedo')){
+    const m = n.match(/(?:size|s)\s*-?\s*(\d{1,2})\b/);
+    if(m && parseInt(m[1],10) >= 5) return true;
+  }
+  return false;
+}
+function isMagazineItem(name){
+  const n = (name||'').toLowerCase();
+  return n.includes('magazine') || n.includes('chargeur');
+}
 async function fetchCourierStats(){
   if(!session) return null;
-  const { data } = await sb.from('orders').select('accepted_at,updated_at,status').eq('courier_id', session.user.id).eq('status','delivered');
+  const { data } = await sb.from('orders').select('accepted_at,purchased_at,updated_at,status,items,gross_price,destination_system,route_systems').eq('courier_id', session.user.id).eq('status','delivered');
   const rows = data || [];
   const deliveredCount = rows.length;
-  const hasFastDelivery = rows.some(o => o.accepted_at && (new Date(o.updated_at) - new Date(o.accepted_at)) <= 10*60*1000);
-  return { deliveredCount, hasFastDelivery };
+  const hasFastDelivery = rows.some(o => o.accepted_at && o.purchased_at && (new Date(o.purchased_at) - new Date(o.accepted_at)) <= 10*60*1000);
+  const hasAllSystemsOrder = rows.some(o => {
+    const set = new Set([...(o.route_systems||[]), o.destination_system].filter(Boolean).map(s=>String(s).toLowerCase()));
+    return set.size >= 3;
+  });
+  const hasBigItem = rows.some(o => (o.items||[]).some(it => isBigOrdnanceItem(it.name)));
+  const hasPyroDelivery = rows.some(o => String(o.destination_system||'').toLowerCase() === 'pyro');
+  const hasArmyOrder = rows.some(o => {
+    const total = (o.items||[]).filter(it => isMagazineItem(it.name)).reduce((sum,it) => sum + (parseFloat(it.qty)||0), 0);
+    return total >= 100;
+  });
+  const hasExpensiveOrder = rows.some(o => (parseFloat(o.gross_price)||0) > 2000000);
+  return { deliveredCount, hasFastDelivery, hasAllSystemsOrder, hasBigItem, hasPyroDelivery, hasArmyOrder, hasExpensiveOrder };
 }
 async function loadUnlockedAchievements(){
   if(!session) return new Set();

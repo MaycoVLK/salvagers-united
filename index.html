@@ -379,7 +379,6 @@
   .shop-hero-text{flex:1; min-width:0;}
   .shop-hero-text h1{margin:0 0 8px; font-size:1.4rem;}
   .shop-owner-box{display:inline-flex; width:auto; max-width:none; flex:none;}
-  #shopRankShowcase{margin-top:6px;}
   .shop-description{font-size:.85rem; color:var(--muted); line-height:1.5; white-space:pre-wrap; margin:10px 0;}
 
   /* --- TABLEAU DE BORD VENDEUR / PAGE BOUTIQUE --- */
@@ -1170,7 +1169,6 @@
             </div>
           </div>
           <div class="shop-description" id="shopDescription" hidden></div>
-          <div id="shopRankShowcase"></div>
           <div class="seller-header-stats-row">
             <div id="shopStatsCard"></div>
             <div class="seller-profile-divider" id="shopProfileDivider" hidden></div>
@@ -3337,7 +3335,6 @@ async function openSellerShop(sellerId){
   $('shopHeroIcon').innerHTML = roleAnimSvg('seller', 100);
   $('shopStatsCard').innerHTML = '';
   $('shopAchvCard').hidden = true;
-  $('shopRankShowcase').innerHTML = '';
   const descEl = $('shopDescription');
   if(descEl) descEl.hidden = true;
   const [{ data: shop }, { data: p }, { data: listings }, { data: resourceRequests }] = await Promise.all([
@@ -3363,7 +3360,6 @@ async function openSellerShop(sellerId){
     return;
   }
   const stats = await fetchSellerShopStats(sellerId);
-  $('shopRankShowcase').innerHTML = sellerRankShowcaseHtml(stats ? stats.salesCount : 0);
   renderShopStats($('shopStatsCard'), stats);
   const unlockedSet = await fetchUnlockedSellerAchievements(sellerId);
   renderSellerAchievements(unlockedSet, stats, 'shopAchvCard');

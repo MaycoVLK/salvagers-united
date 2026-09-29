@@ -376,29 +376,19 @@
   .shop-preview-price{font-family:'VT323',monospace; font-size:.9rem; color:var(--accent); padding:0 7px 7px;}
 
   /* Page boutique dédiée d'un vendeur */
-  .shop-hero-card{display:flex; flex-direction:column; gap:4px;}
-  .shop-hero-row{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
-  .shop-hero-icon{width:44px; height:44px; flex:none; color:var(--accent);}
-  .shop-hero-icon svg{width:100%; height:100%;}
   .shop-hero-text{flex:1; min-width:0;}
   .shop-hero-text h1{margin:0 0 8px; font-size:1.4rem;}
   .shop-owner-box{display:inline-flex; width:auto; max-width:none; flex:none;}
   #shopRankShowcase{margin-top:6px;}
+  .shop-description{font-size:.85rem; color:var(--muted); line-height:1.5; white-space:pre-wrap; margin:10px 0;}
 
-  /* --- TABLEAU DE BORD VENDEUR / PAGE BOUTIQUE : grille alignée identité + zone principale --- */
-  .seller-layout{display:grid; grid-template-columns:300px 1fr; gap:20px; align-items:start;}
-  .seller-hero-block{grid-column:1; grid-row:1;}
-  .seller-action-block{grid-column:2; grid-row:1; display:flex; flex-direction:column; gap:16px;}
-  .seller-profile-block{grid-column:1; grid-row:2;}
-  .seller-listings-block{grid-column:2; grid-row:2;}
-  @media (max-width:860px){
-    .seller-layout{display:flex; flex-direction:column;}
-  }
+  /* --- TABLEAU DE BORD VENDEUR / PAGE BOUTIQUE --- */
   .seller-profile-divider{border-top:1px dashed var(--border); margin:18px 0;}
   .tab-count-badge{display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; margin-left:6px; background:var(--accent); color:#03130a; border-radius:9px; font-family:'VT323',monospace; font-size:.85rem; vertical-align:middle;}
   .my-listing-card .mkt-info{gap:8px; display:flex; flex-direction:column;}
   .my-listing-actions{display:flex; gap:8px; flex-wrap:wrap;}
   .my-listing-actions button{flex:1 1 auto; font-size:.75rem; padding:9px 10px;}
+  .my-listing-delivery-status{margin-top:4px;}
   .shop-logo-picker-row{display:flex; align-items:center; gap:10px;}
   .shop-logo-preview-img{width:48px; height:48px; flex:none; object-fit:cover; border-radius:6px; border:1px solid var(--accent);}
   .shop-hero-logo-img{width:100%; height:100%; object-fit:cover; border-radius:6px;}
@@ -738,8 +728,23 @@
       <div id="clientTabResources" hidden>
         <h3 data-i18n="requestedResourcesTitle" style="margin-top:0;">Ressources demandées par les vendeurs</h3>
         <div id="resourceRequestsFeed"></div>
+        <h3 data-i18n="myResourceOffersTitle" style="margin-top:26px;">Mes propositions</h3>
+        <div id="myResourceOffersList"></div>
       </div>
     </section>
+
+    <!-- PROPOSITION DE FOURNITURE (ressource demandée par un vendeur) -->
+    <div class="modal-overlay" id="resourceOfferModalOverlay" hidden onclick="if(event.target===this) closeResourceOfferModal()">
+      <div class="card modal-card">
+        <button type="button" class="modal-close" onclick="closeResourceOfferModal()">&times;</button>
+        <h3 id="resourceOfferModalTitle">—</h3>
+        <label data-i18n="resourceOfferMsgLbl">Message au vendeur</label>
+        <textarea id="resourceOfferModalMsg" data-i18n-ph="phResourceOfferMsg" placeholder="ex: J'en ai 50 unités disponibles, je peux livrer sur Stanton."></textarea>
+        <label data-i18n="resourceOfferPriceLbl">Ton prix (aUEC, optionnel)</label>
+        <input type="number" id="resourceOfferModalPrice" step="0.01" min="0">
+        <button type="button" class="btn-primary" style="width:100%; margin-top:10px;" onclick="submitResourceOfferModal()" data-i18n="submitResourceOfferBtn">ENVOYER LA PROPOSITION</button>
+      </div>
+    </div>
 
     <!-- PROPOSITION D'ACHAT MARKETPLACE (modale) -->
     <div class="modal-overlay" id="offerModalOverlay" hidden onclick="if(event.target===this) closeOfferModal()">
@@ -1024,6 +1029,7 @@
                 </g></svg>
               </button>
             </div>
+            <div class="shop-description" id="sellerDashDescription" hidden></div>
             <button type="button" class="btn-secondary" onclick="openSellerShop(session.user.id)">
               <span data-i18n="viewMyShopBtn">VOIR MA BOUTIQUE</span>
             </button>
@@ -1129,10 +1135,12 @@
         <input id="shopNameInput" type="text" data-i18n-ph="phShopName" placeholder="ex: Le Comptoir de Mayco">
         <label data-i18n="shopThemeLbl">Couleur de la boutique</label>
         <div class="theme-row" id="shopThemePicker"></div>
-        <label data-i18n="shopLogoLbl">Logo de la boutique (optionnel)</label>
+        <label data-i18n="shopDescLbl">Description de la boutique (optionnel)</label>
+        <textarea id="shopDescInput" data-i18n-ph="phShopDesc" placeholder="ex: Spécialiste minerais rares, livraison rapide sur Stanton."></textarea>
+        <label data-i18n="shopLogoLbl">Logo de la boutique (optionnel, GIF accepté)</label>
         <div class="shop-logo-picker-row">
           <img id="shopLogoPreviewImg" class="shop-logo-preview-img" hidden alt="">
-          <input type="file" id="shopLogoInput" accept="image/*" hidden onchange="onShopLogoSelected(this)">
+          <input type="file" id="shopLogoInput" accept="image/*,.gif" hidden onchange="onShopLogoSelected(this)">
           <button type="button" class="btn-secondary" style="flex:1;" onclick="$('shopLogoInput').click()" id="shopLogoBtn">
             <span data-i18n="uploadShopLogo">CHOISIR UN LOGO</span>
           </button>
@@ -1150,35 +1158,60 @@
     <!-- BOUTIQUE PUBLIQUE D'UN VENDEUR -->
     <section id="view-seller-shop" hidden>
       <button class="back" onclick="closeSellerShop()" data-i18n="back">&lt; RETOUR</button>
-      <div class="seller-layout">
-        <div class="seller-hero-block">
-          <div class="card shop-hero-card">
-            <div class="shop-hero-row">
-              <div class="shop-hero-icon" id="shopHeroIcon"></div>
-              <div class="shop-hero-text">
-                <h1 id="shopPageTitle">—</h1>
-                <div class="courier-box shop-owner-box" id="shopOwnerBox" onclick="openPublicProfile(shopViewingSellerId)">
-                  <div class="courier-box-name" id="shopOwnerName">—</div>
-                </div>
-              </div>
+      <div class="card seller-header-card">
+        <div class="seller-header-left">
+          <div class="seller-header-logo" id="shopHeroIcon"></div>
+        </div>
+        <div class="seller-header-right">
+          <div class="shop-hero-text">
+            <h1 id="shopPageTitle">—</h1>
+            <div class="courier-box shop-owner-box" id="shopOwnerBox" onclick="openPublicProfile(shopViewingSellerId)">
+              <div class="courier-box-name" id="shopOwnerName">—</div>
             </div>
-            <div id="shopRankShowcase"></div>
           </div>
-        </div>
-        <div class="seller-action-block">
-          <h3 data-i18n="shopListingsTitle" style="margin:0;">Objets en vente</h3>
-        </div>
-        <div class="seller-profile-block">
-          <div class="card seller-profile-card">
+          <div class="shop-description" id="shopDescription" hidden></div>
+          <div id="shopRankShowcase"></div>
+          <div class="seller-header-stats-row">
             <div id="shopStatsCard"></div>
             <div class="seller-profile-divider" id="shopProfileDivider" hidden></div>
             <div id="shopAchvCard" hidden></div>
           </div>
         </div>
-        <div class="seller-listings-block">
-          <div id="shopListingsGrid" class="marketplace-grid"></div>
-        </div>
       </div>
+
+      <div class="card seller-section-card">
+        <div class="shop-preview-head">
+          <h3 data-i18n="shopListingsTitle">Objets en vente</h3>
+          <button type="button" class="btn-secondary shop-see-more" id="shopListingsViewMoreBtn" onclick="openShopAllListings()" hidden>
+            <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
+          </button>
+        </div>
+        <div id="shopListingsGrid" class="marketplace-grid"></div>
+      </div>
+
+      <div class="card seller-section-card">
+        <div class="shop-preview-head">
+          <h3 data-i18n="myResourceRequestsTitle">Ressources demandées</h3>
+          <button type="button" class="btn-secondary shop-see-more" id="shopResourcesViewMoreBtn" onclick="openShopAllResources()" hidden>
+            <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
+          </button>
+        </div>
+        <div id="shopResourceRequestsGrid" class="resource-request-grid"></div>
+      </div>
+    </section>
+
+    <!-- TOUTES LES ANNONCES DE CE VENDEUR (vue client) -->
+    <section id="view-shop-all-listings" hidden>
+      <button class="back" onclick="openSellerShop(shopViewingSellerId)" data-i18n="back">&lt; RETOUR</button>
+      <header><h1 data-i18n="shopListingsTitle">Objets en vente</h1></header>
+      <div id="shopListingsGridFull" class="marketplace-grid"></div>
+    </section>
+
+    <!-- TOUTES LES RESSOURCES DEMANDÉES DE CE VENDEUR (vue client) -->
+    <section id="view-shop-all-resources" hidden>
+      <button class="back" onclick="openSellerShop(shopViewingSellerId)" data-i18n="back">&lt; RETOUR</button>
+      <header><h1 data-i18n="myResourceRequestsTitle">Ressources demandées</h1></header>
+      <div id="shopResourceRequestsGridFull" class="resource-request-grid"></div>
     </section>
   </div>
 
@@ -1235,7 +1268,7 @@ let profile = null;
 // Un membre peut cumuler plusieurs casquettes (client + coursier + vendeur) : currentView retient
 // l'onglet actuellement affiché parmi celles disponibles pour ce compte. 'client' reste le point de départ par défaut.
 let currentView = 'client'; // 'client' | 'courier' | 'seller' | 'admin'
-const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-dash','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-resource','view-seller-all-listings','view-seller-all-resources'];
+const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-dash','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-resource','view-seller-all-listings','view-seller-all-resources','view-shop-all-listings','view-shop-all-resources'];
 function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); }
 let clientTab = 'deliveries'; // 'deliveries' | 'marketplace' | 'resources'
 function setClientTab(tab){
@@ -1248,7 +1281,7 @@ function setClientTab(tab){
   $('clientTabResources').hidden = tab !== 'resources';
   if(tab === 'deliveries'){ loadClientDashboard(); markCategoryRead('client_orders'); }
   else if(tab === 'marketplace'){ loadMarketplaceFeed(); loadMyInquiries(); markCategoryRead('client_marketplace'); }
-  else { loadResourceRequestsFeed(); }
+  else { loadResourceRequestsFeed(); loadMyResourceOffers(); }
 }
 let hasBooted = false;
 let trackedShipPct = {}; // orderId -> pourcentage précédemment affiché (pour l'animation)
@@ -1348,6 +1381,9 @@ const T = {
     requestResourcesTitle:"Demander des ressources", requestResourcesBtn:"DEMANDER DES RESSOURCES", resourceNameLbl:"Ressource recherchée", phResourceName:"ex: Laranite brute", resourceQtyLbl:"Quantité souhaitée", resourcePriceLbl:"Prix proposé (aUEC, optionnel)", resourceNoteLbl:"Note (optionnel)", phResourceNote:"ex: Livraison sur Nyx, quantité négociable...", submitResourceRequestBtn:"ENVOYER LA DEMANDE", resourceRequestSaved:"DEMANDE ENVOYÉE !",
     myResourceRequestsTitle:"Mes demandes", noResourceRequests:"Tu n'as posté aucune demande de ressource pour le moment.",
     tabResources:"RESSOURCES DEMANDÉES", requestedResourcesTitle:"Ressources demandées par les vendeurs", noOpenResourceRequests:"Aucune demande de ressource en cours.", resourceRequestedBy:"Demandé par ",
+    proposeResourceBtn:"PROPOSER DE FOURNIR", resourceOfferMsgLbl:"Message au vendeur", phResourceOfferMsg:"ex: J'en ai 50 unités disponibles, je peux livrer sur Stanton.", resourceOfferPriceLbl:"Ton prix (aUEC, optionnel)", submitResourceOfferBtn:"ENVOYER LA PROPOSITION", resourceOfferSent:"PROPOSITION ENVOYÉE !",
+    myResourceOffersTitle:"Mes propositions", noResourceOffers:"Tu n'as envoyé aucune proposition pour le moment.", resourceOfferLabel:"Ressource demandée :",
+    shopDescLbl:"Description de la boutique (optionnel)", phShopDesc:"ex: Spécialiste minerais rares, livraison rapide sur Stanton.",
     cropModalTitle:"Recadrer la photo", cropZoomLbl:"Zoom", cropDragHint:"Fais glisser l'image pour la repositionner.", cropConfirmBtn:"VALIDER LE RECADRAGE", photoReady:"Photo prête ✓",
     myListingsTitle:"Mes annonces", noListings:"Tu n'as encore aucune annonce.", deleteListingBtn:"SUPPRIMER", confirmDeleteListing:"Supprimer cette annonce définitivement ?",
     requestDeliveryBtn:"DEMANDER UNE LIVRAISON", requestDeliveryTitle:"Demander une livraison coursier", buyerHandleLbl:"Pseudo RSI de l'acheteur (optionnel)", phBuyerHandle:"ex: Mayco_SC", deliveryRequested:"LIVRAISON DEMANDÉE !", cancelRequest:"ANNULER", confirmDeliveryBtn:"CONFIRMER LA DEMANDE",
@@ -1461,6 +1497,9 @@ const T = {
     requestResourcesTitle:"Request resources", requestResourcesBtn:"REQUEST RESOURCES", resourceNameLbl:"Resource wanted", phResourceName:"e.g. Raw Laranite", resourceQtyLbl:"Quantity wanted", resourcePriceLbl:"Price offered (aUEC, optional)", resourceNoteLbl:"Note (optional)", phResourceNote:"e.g. Delivery to Nyx, quantity negotiable...", submitResourceRequestBtn:"SEND REQUEST", resourceRequestSaved:"REQUEST SENT!",
     myResourceRequestsTitle:"My requests", noResourceRequests:"You haven't posted any resource request yet.",
     tabResources:"REQUESTED RESOURCES", requestedResourcesTitle:"Resources requested by sellers", noOpenResourceRequests:"No open resource requests right now.", resourceRequestedBy:"Requested by ",
+    proposeResourceBtn:"PROPOSE TO SUPPLY", resourceOfferMsgLbl:"Message to the seller", phResourceOfferMsg:"e.g. I have 50 units available, I can deliver to Stanton.", resourceOfferPriceLbl:"Your price (aUEC, optional)", submitResourceOfferBtn:"SEND PROPOSAL", resourceOfferSent:"PROPOSAL SENT!",
+    myResourceOffersTitle:"My proposals", noResourceOffers:"You haven't sent any proposal yet.", resourceOfferLabel:"Requested resource:",
+    shopDescLbl:"Shop description (optional)", phShopDesc:"e.g. Rare ore specialist, fast delivery on Stanton.",
     cropModalTitle:"Crop the photo", cropZoomLbl:"Zoom", cropDragHint:"Drag the image to reposition it.", cropConfirmBtn:"CONFIRM CROP", photoReady:"Photo ready ✓",
     myListingsTitle:"My listings", noListings:"You have no listings yet.", deleteListingBtn:"DELETE", confirmDeleteListing:"Permanently delete this listing?",
     requestDeliveryBtn:"REQUEST A DELIVERY", requestDeliveryTitle:"Request a courier delivery", buyerHandleLbl:"Buyer's RSI handle (optional)", phBuyerHandle:"e.g. Mayco_SC", deliveryRequested:"DELIVERY REQUESTED!", cancelRequest:"CANCEL", confirmDeliveryBtn:"CONFIRM REQUEST",
@@ -2546,6 +2585,8 @@ async function loadResourceRequestsFeed(){
     const isNew = unreadSet.has(r.id);
     const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
     const hoverAttr = isNew ? ` onmouseenter="markResourceRequestSeen('${r.id}', this)"` : '';
+    const canPropose = session && session.user.id !== r.seller_id;
+    const proposeBtn = canPropose ? `<button type="button" class="btn-secondary" style="width:100%; margin-top:10px;" onclick="openResourceOfferModal(this)" data-request-id="${r.id}" data-item-name="${r.item_name}" data-qty="${r.quantity}" data-seller-id="${r.seller_id}">${d.proposeResourceBtn}</button>` : '';
     return `
       <div class="resource-request-card"${hoverAttr}>
         ${newDot}
@@ -2553,6 +2594,7 @@ async function loadResourceRequestsFeed(){
         <div class="resource-request-meta">${d.resourceRequestedBy}<a href="#" onclick="openSellerShop('${r.seller_id}'); return false;">${sellerName}</a></div>
         ${r.note ? `<div class="resource-request-note">${r.note}</div>` : ''}
         ${r.price ? `<div class="resource-request-price">${fmt(r.price)}</div>` : ''}
+        ${proposeBtn}
       </div>`;
   }).join('');
 }
@@ -2564,6 +2606,77 @@ async function markResourceRequestSeen(reqId, cardEl){
   if(!session) return;
   await sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category','client_resources').eq('ref_id', reqId).eq('read',false);
   refreshNotifBadges();
+}
+// --- PROPOSITION DE FOURNITURE (un client répond à une "ressource demandée" d'un vendeur) ---
+let resourceOfferModalRequestId = null;
+let resourceOfferModalSellerId = null;
+function openResourceOfferModal(btn){
+  if(!session) return;
+  resourceOfferModalRequestId = btn.dataset.requestId;
+  resourceOfferModalSellerId = btn.dataset.sellerId;
+  $('resourceOfferModalTitle').textContent = `${btn.dataset.itemName} x${btn.dataset.qty}`;
+  $('resourceOfferModalMsg').value = '';
+  $('resourceOfferModalPrice').value = '';
+  $('resourceOfferModalOverlay').hidden = false;
+}
+function closeResourceOfferModal(){
+  $('resourceOfferModalOverlay').hidden = true;
+  resourceOfferModalRequestId = null;
+  resourceOfferModalSellerId = null;
+}
+async function submitResourceOfferModal(){
+  if(!session || !resourceOfferModalRequestId) return;
+  const d = T[LANG];
+  const message = $('resourceOfferModalMsg').value.trim();
+  const priceVal = parseFloat($('resourceOfferModalPrice').value);
+  const price = (!isNaN(priceVal) && priceVal > 0) ? priceVal : null;
+  const { error } = await sb.from('resource_offers').insert({
+    request_id: resourceOfferModalRequestId, seller_id: resourceOfferModalSellerId, client_id: session.user.id,
+    message: message || null, price, status: 'pending'
+  });
+  if(error){ alert('Erreur : '+error.message); return; }
+  pushNotification(resourceOfferModalSellerId, 'seller_marketplace');
+  toastShow(d.resourceOfferSent);
+  closeResourceOfferModal();
+  loadMyResourceOffers();
+}
+async function loadMyResourceOffers(){
+  const box = $('myResourceOffersList'); if(!box || !session) return;
+  const d = T[LANG];
+  const { data, error } = await sb.from('resource_offers').select('*').eq('client_id', session.user.id).order('created_at',{ascending:false});
+  if(error){ box.textContent = error.message; return; }
+  const rows = data || [];
+  if(!rows.length){ box.innerHTML = `<p class="muted">${d.noResourceOffers}</p>`; return; }
+  const requestIds = [...new Set(rows.map(r=>r.request_id))];
+  const sellerIds = [...new Set(rows.map(r=>r.seller_id))];
+  const [requests, sellers] = await Promise.all([
+    requestIds.length ? sb.from('resource_requests').select('id,item_name,quantity').in('id', requestIds).then(r=>r.data||[]) : Promise.resolve([]),
+    sellerIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds).then(r=>r.data||[]) : Promise.resolve([])
+  ]);
+  const rMap = {}; requests.forEach(r=>rMap[r.id]=r);
+  const sMap = {}; sellers.forEach(s=>sMap[s.id]=s);
+  box.innerHTML = rows.map(r => {
+    const req = rMap[r.request_id];
+    const seller = sMap[r.seller_id];
+    const cancelBtn = r.status === 'pending' ? `<button class="btn-cancel" style="width:100%; margin-top:8px;" onclick="cancelResourceOffer('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>` : '';
+    return `
+      <div class="inquiry-row">
+        <div class="inquiry-head">
+          <div class="inquiry-item">${req ? req.item_name : '—'}</div>
+          ${inquiryStatusBadge(r.status)}
+        </div>
+        <div class="inquiry-meta">${d.resourceRequestedBy}${seller ? displayName(seller) : '—'}</div>
+        ${r.price ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(r.price)}</strong></div>` : ''}
+        ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
+        ${cancelBtn}
+      </div>`;
+  }).join('');
+}
+async function cancelResourceOffer(id){
+  if(!confirm(T[LANG].confirmCancel)) return;
+  const { error } = await sb.from('resource_offers').delete().eq('id', id).eq('status','pending');
+  if(error){ alert('Erreur : '+error.message); return; }
+  loadMyResourceOffers();
 }
 function inquiryStatusBadge(status){
   const d = T[LANG];
@@ -2702,7 +2815,8 @@ async function saveShopSettings(){
   if(!session) return;
   const d = T[LANG];
   const shop_name = $('shopNameInput').value.trim();
-  const payload = { id: session.user.id, shop_name, theme_color: selectedShopColor };
+  const description = $('shopDescInput').value.trim();
+  const payload = { id: session.user.id, shop_name, theme_color: selectedShopColor, description: description || null };
   if(pendingShopLogoFile){
     const ext = (pendingShopLogoFile.name.split('.').pop() || 'jpg').toLowerCase();
     const path = `${session.user.id}/logo.${ext}`;
@@ -2725,6 +2839,7 @@ async function openSellerShopEdit(){
   $('view-seller-shop-edit').hidden = false;
   const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle();
   $('shopNameInput').value = shop?.shop_name || '';
+  $('shopDescInput').value = shop?.description || '';
   selectedShopColor = shop?.theme_color || 'orange';
   pendingShopLogoFile = null;
   $('shopLogoPreviewName').textContent = '';
@@ -2742,6 +2857,8 @@ async function loadSellerDashboard(){
   const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle();
   $('sellerDashHeroIcon').innerHTML = shop?.logo_url ? `<img class="shop-hero-logo-img" src="${shop.logo_url}" alt="">` : roleAnimSvg('seller', 100);
   $('sellerDashShopName').textContent = (shop && shop.shop_name) || d.shopSettingsTitle;
+  const dashDesc = $('sellerDashDescription');
+  if(dashDesc){ if(shop?.description){ dashDesc.textContent = shop.description; dashDesc.hidden = false; } else { dashDesc.hidden = true; } }
   await loadMyListings();
   await loadReceivedInquiries();
   await loadMyResourceRequests();
@@ -2762,6 +2879,14 @@ function onShopLogoSelected(inputEl){
   const file = (inputEl.files && inputEl.files[0]) || null;
   inputEl.value = '';
   if(!file) return;
+  // Les GIF ne passent pas par le recadrage (le canvas casserait l'animation) : on les upload tels quels.
+  if(file.type === 'image/gif' || /\.gif$/i.test(file.name)){
+    pendingShopLogoFile = file;
+    $('shopLogoPreviewName').textContent = T[LANG].photoReady;
+    const preview = $('shopLogoPreviewImg');
+    if(preview){ preview.src = URL.createObjectURL(file); preview.hidden = false; }
+    return;
+  }
   openCropModal(file, 'shopLogo');
 }
 
@@ -2904,12 +3029,19 @@ async function deleteListing(id){
   }
 }
 let myListingsCache = [];
+let myListingsOrderMap = {};
 async function loadMyListings(){
   const box = $('myListingsList'); if(!box) return;
   const d = T[LANG];
   const { data, error } = await sb.from('marketplace_listings').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
   if(error){ box.textContent = error.message; return; }
   myListingsCache = data || [];
+  myListingsOrderMap = {};
+  const listingIds = myListingsCache.map(l=>l.id);
+  if(listingIds.length){
+    const { data: activeOrders } = await sb.from('orders').select('*').eq('order_type','marketplace').eq('seller_id', session.user.id).in('listing_id', listingIds);
+    (activeOrders||[]).filter(o => !['delivered','cancelled'].includes(o.status)).forEach(o => { myListingsOrderMap[o.listing_id] = o; });
+  }
   if(!myListingsCache.length){ box.innerHTML = `<p class="muted">${d.noListings}</p>`; }
   else box.innerHTML = myListingsCache.slice(0,3).map(l => myListingCardHtml(l)).join('');
   const moreBtn = $('sellerListingsViewMoreBtn');
@@ -2924,16 +3056,16 @@ function openSellerAllListings(){
   box.innerHTML = myListingsCache.length ? myListingsCache.map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.noListings}</p>`;
 }
 // Carte "annonce" pour la grille de gestion du vendeur (même look que la grille marketplace publique,
-// mais avec les actions de gestion : demander une livraison, supprimer).
+// mais avec les actions de gestion : demander une livraison, supprimer, ou annuler la livraison en cours.
 function myListingCardHtml(l){
   const d = T[LANG];
   const photo = l.photo_url ? `<img src="${l.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
-  return `
-    <div class="mkt-card my-listing-card" data-listing="${l.id}">
-      <div class="mkt-photo-wrap">${photo}</div>
-      <div class="mkt-info">
-        <div class="mkt-item-name">${l.item_name}</div>
-        <div class="mkt-price-row"><span class="mkt-price">${fmt(l.price)}</span><span class="mkt-qty">x${l.quantity}</span></div>
+  const activeOrder = myListingsOrderMap[l.id];
+  const actionsBlock = activeOrder ? `
+        <div class="my-listing-delivery-status">
+          ${(d.statusLabels && d.statusLabels[activeOrder.status]) ? `<span class="inquiry-status ${activeOrder.status}">${d.statusLabels[activeOrder.status]}</span>` : ''}
+        </div>
+        <button class="btn-cancel" style="width:100%; margin-top:8px;" onclick="sellerCancelDelivery('${activeOrder.id}','${activeOrder.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>` : `
         <div class="my-listing-actions">
           <button class="btn-secondary" onclick="toggleDeliveryForm('${l.id}')">${d.requestDeliveryBtn}</button>
           <button class="btn-logout" onclick="deleteListing('${l.id}')">${d.deleteListingBtn}</button>
@@ -2943,9 +3075,33 @@ function myListingCardHtml(l){
           <input type="text" id="dloc-${l.id}" data-i18n-ph="phLieu" placeholder="${d.phLieu}">
           <input type="text" id="dbuyer-${l.id}" placeholder="${d.phBuyerHandle}">
           <button class="btn-primary" onclick="requestMarketplaceDelivery('${l.id}')">${d.confirmDeliveryBtn}</button>
-        </div>
+        </div>`;
+  return `
+    <div class="mkt-card my-listing-card" data-listing="${l.id}">
+      <div class="mkt-photo-wrap">${photo}</div>
+      <div class="mkt-info">
+        <div class="mkt-item-name">${l.item_name}</div>
+        <div class="mkt-price-row"><span class="mkt-price">${fmt(l.price)}</span><span class="mkt-qty">x${l.quantity}</span></div>
+        ${actionsBlock}
       </div>
     </div>`;
+}
+async function sellerCancelDelivery(orderId, currentStatus){
+  if(!confirm(T[LANG].confirmCancel)) return;
+  let error;
+  if(currentStatus === 'pending'){
+    ({ error } = await sb.from('orders').delete().eq('id', orderId).eq('status','pending'));
+  } else {
+    ({ error } = await sb.from('orders').update({ status:'cancelled', updated_at: new Date().toISOString() }).eq('id', orderId));
+  }
+  if(error){ alert('Erreur : '+error.message); return; }
+  sweep();
+  await loadMyListings();
+  const fullBox = $('myListingsListFull');
+  if(fullBox && !$('view-seller-all-listings').hidden){
+    const d = T[LANG];
+    fullBox.innerHTML = myListingsCache.length ? myListingsCache.map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.noListings}</p>`;
+  }
 }
 function toggleDeliveryForm(id){
   const form = $('dform-'+id); if(!form) return;
@@ -2988,7 +3144,36 @@ async function loadReceivedInquiries(){
   if(error){ box.textContent = error.message; return; }
   const rows = data || [];
   updateInquiriesBadge(rows);
-  if(!rows.length){ box.innerHTML = `<p class="muted">${d.noReceivedInquiries}</p>`; return; }
+  // Propositions reçues sur les "ressources demandées" postées par ce vendeur (affichage simple, lecture seule).
+  const { data: resOffers } = await sb.from('resource_offers').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
+  const resOffersList = resOffers || [];
+  let resOffersHtml = '';
+  if(resOffersList.length){
+    const requestIds = [...new Set(resOffersList.map(r=>r.request_id))];
+    const clientIds = [...new Set(resOffersList.map(r=>r.client_id))];
+    const [requests, clients] = await Promise.all([
+      requestIds.length ? sb.from('resource_requests').select('id,item_name,quantity').in('id', requestIds).then(r=>r.data||[]) : Promise.resolve([]),
+      clientIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', clientIds).then(r=>r.data||[]) : Promise.resolve([])
+    ]);
+    const rMap={}; requests.forEach(r=>rMap[r.id]=r);
+    const cMap={}; clients.forEach(c=>cMap[c.id]=c);
+    resOffersHtml = resOffersList.map(r => {
+      const req = rMap[r.request_id];
+      const client = cMap[r.client_id];
+      return `
+        <div class="inquiry-row">
+          <div class="inquiry-head">
+            <div class="inquiry-item">${d.resourceOfferLabel} ${req ? req.item_name : '—'}</div>
+            ${inquiryStatusBadge(r.status)}
+          </div>
+          <div class="inquiry-meta">${d.inquiryFrom}${client ? displayName(client) : '—'}</div>
+          ${r.price ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(r.price)}</strong></div>` : ''}
+          ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
+        </div>`;
+    }).join('');
+  }
+  if(!rows.length && !resOffersList.length){ box.innerHTML = `<p class="muted">${d.noReceivedInquiries}</p>`; return; }
+  if(!rows.length){ box.innerHTML = resOffersHtml; return; }
   const listingIds=[...new Set(rows.map(r=>r.listing_id))];
   const buyerIds=[...new Set(rows.map(r=>r.buyer_id))];
   const [listings, buyers] = await Promise.all([
@@ -3045,7 +3230,7 @@ async function loadReceivedInquiries(){
         ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
         ${actions}
       </div>`;
-  }).join('');
+  }).join('') + resOffersHtml;
 }
 function toggleCounterForm(id){
   const f = $('cform-'+id); if(!f) return;
@@ -3126,6 +3311,21 @@ async function handToCourier(id){
 }
 
 // --- BOUTIQUE PUBLIQUE D'UN VENDEUR ---
+function visitorResourceRequestCardHtml(r){
+  const d = T[LANG];
+  const canPropose = session && session.user.id !== r.seller_id;
+  const proposeBtn = canPropose ? `<button type="button" class="btn-secondary" style="width:100%; margin-top:10px;" onclick="openResourceOfferModal(this)" data-request-id="${r.id}" data-item-name="${r.item_name}" data-qty="${r.quantity}" data-seller-id="${r.seller_id}">${d.proposeResourceBtn}</button>` : '';
+  return `
+    <div class="resource-request-card">
+      <div class="resource-request-name">${r.item_name} <span class="resource-request-qty">x${r.quantity}</span></div>
+      ${r.note ? `<div class="resource-request-note">${r.note}</div>` : ''}
+      ${r.price ? `<div class="resource-request-price">${fmt(r.price)}</div>` : ''}
+      ${proposeBtn}
+    </div>`;
+}
+let shopListingsCache = [];
+let shopResourceRequestsCache = [];
+let shopSellerMapCache = {};
 async function openSellerShop(sellerId){
   if(!sellerId) return;
   shopViewingSellerId = sellerId;
@@ -3134,21 +3334,34 @@ async function openSellerShop(sellerId){
   $('view-seller-shop').hidden = false;
   const d = T[LANG];
   const shopEl = $('view-seller-shop');
-  $('shopHeroIcon').innerHTML = roleAnimSvg('seller', 40);
+  $('shopHeroIcon').innerHTML = roleAnimSvg('seller', 100);
   $('shopStatsCard').innerHTML = '';
   $('shopAchvCard').hidden = true;
   $('shopRankShowcase').innerHTML = '';
-  const [{ data: shop }, { data: p }, { data: listings }] = await Promise.all([
+  const descEl = $('shopDescription');
+  if(descEl) descEl.hidden = true;
+  const [{ data: shop }, { data: p }, { data: listings }, { data: resourceRequests }] = await Promise.all([
     sb.from('marketplace_shops').select('*').eq('id', sellerId).maybeSingle(),
     sb.from('profiles').select('*').eq('id', sellerId).single(),
-    sb.from('marketplace_listings').select('*').eq('seller_id', sellerId).order('created_at',{ascending:false})
+    sb.from('marketplace_listings').select('*').eq('seller_id', sellerId).order('created_at',{ascending:false}),
+    sb.from('resource_requests').select('*').eq('seller_id', sellerId).eq('status','open').order('created_at',{ascending:false})
   ]);
   if(shop?.logo_url) $('shopHeroIcon').innerHTML = `<img class="shop-hero-logo-img" src="${shop.logo_url}" alt="">`;
   shopEl.setAttribute('data-shop-color', (shop && shop.theme_color) || 'orange');
   $('shopPageTitle').textContent = (shop && shop.shop_name) || (p ? displayName(p) : '—');
   $('shopOwnerName').textContent = d.shopOwnerLbl + (p ? displayName(p) : '—');
+  if(descEl && shop?.description){ descEl.textContent = shop.description; descEl.hidden = false; }
   const grid = $('shopListingsGrid');
-  if(!shop){ grid.innerHTML = `<p class="muted">${d.noShopYet}</p>`; return; }
+  const resGrid = $('shopResourceRequestsGrid');
+  const listingsMoreBtn = $('shopListingsViewMoreBtn');
+  const resMoreBtn = $('shopResourcesViewMoreBtn');
+  if(!shop){
+    grid.innerHTML = `<p class="muted">${d.noShopYet}</p>`;
+    resGrid.innerHTML = '';
+    if(listingsMoreBtn) listingsMoreBtn.hidden = true;
+    if(resMoreBtn) resMoreBtn.hidden = true;
+    return;
+  }
   const stats = await fetchSellerShopStats(sellerId);
   $('shopRankShowcase').innerHTML = sellerRankShowcaseHtml(stats ? stats.salesCount : 0);
   renderShopStats($('shopStatsCard'), stats);
@@ -3157,10 +3370,37 @@ async function openSellerShop(sellerId){
   if(session && session.user.id === sellerId) checkAndRenderSellerAchievements('shopAchvCard');
   const divider = $('shopProfileDivider');
   if(divider) divider.hidden = $('shopAchvCard').hidden;
-  const list = listings || [];
-  if(!list.length){ grid.innerHTML = `<p class="muted">${d.shopPageEmpty}</p>`; return; }
-  const sellerMap = { [sellerId]: p };
-  grid.innerHTML = list.map(l => mktCardHtml(l, sellerMap)).join('');
+
+  shopListingsCache = listings || [];
+  shopSellerMapCache = { [sellerId]: p };
+  if(!shopListingsCache.length){ grid.innerHTML = `<p class="muted">${d.shopPageEmpty}</p>`; }
+  else grid.innerHTML = shopListingsCache.slice(0,3).map(l => mktCardHtml(l, shopSellerMapCache)).join('');
+  if(listingsMoreBtn) listingsMoreBtn.hidden = shopListingsCache.length <= 3;
+
+  const isOwner = session && session.user.id === sellerId;
+  shopResourceRequestsCache = resourceRequests || [];
+  const resCardFn = isOwner ? ownResourceRequestCardHtml : visitorResourceRequestCardHtml;
+  if(!shopResourceRequestsCache.length){ resGrid.innerHTML = `<p class="muted">${d.noResourceRequests}</p>`; }
+  else resGrid.innerHTML = shopResourceRequestsCache.slice(0,3).map(r => resCardFn(r)).join('');
+  if(resMoreBtn) resMoreBtn.hidden = shopResourceRequestsCache.length <= 3;
+}
+function openShopAllListings(){
+  hideAllViews();
+  $('sellerCreateWrap').hidden = true;
+  $('view-shop-all-listings').hidden = false;
+  const d = T[LANG];
+  const box = $('shopListingsGridFull');
+  box.innerHTML = shopListingsCache.length ? shopListingsCache.map(l => mktCardHtml(l, shopSellerMapCache)).join('') : `<p class="muted">${d.shopPageEmpty}</p>`;
+}
+function openShopAllResources(){
+  hideAllViews();
+  $('sellerCreateWrap').hidden = true;
+  $('view-shop-all-resources').hidden = false;
+  const d = T[LANG];
+  const isOwner = session && session.user.id === shopViewingSellerId;
+  const resCardFn = isOwner ? ownResourceRequestCardHtml : visitorResourceRequestCardHtml;
+  const box = $('shopResourceRequestsGridFull');
+  box.innerHTML = shopResourceRequestsCache.length ? shopResourceRequestsCache.map(r => resCardFn(r)).join('') : `<p class="muted">${d.noResourceRequests}</p>`;
 }
 function closeSellerShop(){ routeApp(); }
 

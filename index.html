@@ -1172,6 +1172,10 @@
             <h3><span data-i18n="receivedInquiriesTitle">PROPOSITIONS REÇUES</span><span class="tab-count-badge" id="inquiriesCountBadge" hidden>0</span></h3>
           </div>
           <div id="receivedInquiriesList"></div>
+          <button class="history-toggle" onclick="toggleSellerMktHistory()">
+            <span data-i18n="sellerMktHistoryLabel">Historique des ventes</span> (<span id="sellerMktHistoryCount">0</span>) <span id="sellerMktHistoryToggleIcon">▾</span>
+          </button>
+          <div id="receivedInquiriesHistoryList" hidden></div>
         </div>
 
         <div class="card seller-section-card">
@@ -1749,6 +1753,7 @@ const T = {
     sendInquiryBtn:"ENVOYER LA DEMANDE", inquirySent:"DEMANDE ENVOYÉE !",
     myInquiriesTitle:"Mes demandes", noInquiries:"Tu n'as envoyé aucune demande pour le moment.",
     receivedInquiriesTitle:"Propositions reçues", noReceivedInquiries:"Aucune proposition reçue pour le moment.",
+    sellerMktHistoryLabel:"Historique des ventes", sellerMktHistoryEmpty:"Aucune vente terminée pour le moment.",
     inquiryStatus:{pending:"En attente", accepted:"Acceptée", rejected:"Refusée", completed:"Terminée", countered:"Contre-offre", cancelled:"Annulée"},
     confirmCancelInquiry:"Annuler cette demande ? Le vendeur en sera informé.",
     orderAlreadyTaken:"Trop tard, un autre coursier vient de prendre cette commande.",
@@ -1869,6 +1874,7 @@ const T = {
     sendInquiryBtn:"SEND REQUEST", inquirySent:"REQUEST SENT!",
     myInquiriesTitle:"My requests", noInquiries:"You haven't sent any requests yet.",
     receivedInquiriesTitle:"Received offers", noReceivedInquiries:"No offers received yet.",
+    sellerMktHistoryLabel:"Sales history", sellerMktHistoryEmpty:"No completed sales yet.",
     inquiryStatus:{pending:"Pending", accepted:"Accepted", rejected:"Rejected", completed:"Completed", countered:"Countered", cancelled:"Cancelled"},
     confirmCancelInquiry:"Cancel this request? The seller will be notified.",
     orderAlreadyTaken:"Too late, another courier just took this order.",
@@ -3682,8 +3688,10 @@ async function loadReceivedInquiries(){
         </div>`;
     }).join('');
   }
-  if(!rows.length && !resOffersList.length){ box.innerHTML = `<p class="muted">${d.noReceivedInquiries}</p>`; return; }
-  if(!rows.length){ box.innerHTML = resOffersHtml; return; }
+  const current = rows.filter(r => !['completed','rejected','cancelled'].includes(r.status));
+  const history = rows.filter(r => ['completed','rejected','cancelled'].includes(r.status));
+  const histCountEl = $('sellerMktHistoryCount');
+  if(histCountEl) histCountEl.textContent = history.length;
   const listingIds=[...new Set(rows.map(r=>r.listing_id))];
   const buyerIds=[...new Set(rows.map(r=>r.buyer_id))];
   const [listings, buyers] = await Promise.all([
@@ -3692,7 +3700,27 @@ async function loadReceivedInquiries(){
   ]);
   const lMap={}; listings.forEach(l=>lMap[l.id]=l);
   const bMap={}; buyers.forEach(b=>bMap[b.id]=b);
-  box.innerHTML = rows.map(r => {
+  const histBox = $('receivedInquiriesHistoryList');
+  if(histBox){
+    if(!history.length){ histBox.innerHTML = `<p class="muted">${d.sellerMktHistoryEmpty}</p>`; }
+    else histBox.innerHTML = history.map(r => {
+      const listing = lMap[r.listing_id];
+      const buyer = bMap[r.buyer_id];
+      const finalPrice = inquiryFinalPrice(r, listing);
+      return `
+        <div class="inquiry-row">
+          <div class="inquiry-head">
+            <div class="inquiry-item">${listing ? listing.item_name : (r.snap_item_name || '—')}</div>
+            ${inquiryStatusBadge(r.status)}
+          </div>
+          <div class="inquiry-meta">${d.inquiryFrom}${buyer ? displayName(buyer) : '—'} — ${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
+          ${finalPrice != null ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(finalPrice)}</strong></div>` : ''}
+        </div>`;
+    }).join('');
+  }
+  if(!current.length && !resOffersList.length){ box.innerHTML = `<p class="muted">${d.noReceivedInquiries}</p>`; return; }
+  if(!current.length){ box.innerHTML = resOffersHtml; return; }
+  box.innerHTML = current.map(r => {
     const listing = lMap[r.listing_id];
     const buyer = bMap[r.buyer_id];
     let actions = '';
@@ -3757,6 +3785,11 @@ async function loadReceivedInquiries(){
       </div>`;
   }).join('') + resOffersHtml;
 }
+function toggleSellerMktHistory(){
+  const box = $('receivedInquiriesHistoryList');
+  box.hidden = !box.hidden;
+  $('sellerMktHistoryToggleIcon').textContent = box.hidden ? '▾' : '▴';
+}
 function toggleInquiryDeliveryForm(id){
   const form = $('idform-'+id); if(!form) return;
   form.hidden = !form.hidden;
@@ -3801,7 +3834,10 @@ async function markPickedUp(id){
   if(listing) await sb.from('marketplace_listings').delete().eq('id', listing.id);
   sweep(); loadReceivedInquiries();
   checkAndRenderSellerAchievements('sellerDashAchvCard');
-  fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('sellerDashStatsCard'), stats));
+  fetchSellerShopStats(session.user.id).then(stats => {
+    renderShopStats($('sellerDashStatsCard'), stats);
+    if($('shopStatsProfileCard')) renderShopStats($('shopStatsProfileCard'), stats);
+  });
 }
 async function requestInquiryDelivery(id){
   if(!session) return;

@@ -347,6 +347,11 @@
   .modal-overlay{position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:200; display:flex; align-items:center; justify-content:center; padding:16px; backdrop-filter:grayscale(1) brightness(.42); -webkit-backdrop-filter:grayscale(1) brightness(.42);}
   .modal-overlay::before{content:""; position:absolute; inset:0; background:var(--accent); opacity:.22; mix-blend-mode:color; pointer-events:none;}
   .modal-overlay[hidden]{display:none;}
+  .modal-overlay:not([hidden]) .modal-card{animation:modalPixelIn .22s steps(6) both;}
+  @keyframes modalPixelIn{
+    0%{opacity:0; transform:scale(.88) translateY(14px);}
+    100%{opacity:1; transform:scale(1) translateY(0);}
+  }
   .crop-stage{position:relative; width:100%; aspect-ratio:4/3; overflow:hidden; background:#000; border:1px solid var(--border); touch-action:none; cursor:grab; margin-top:8px;}
   .crop-stage.dragging{cursor:grabbing;}
   .crop-stage img{position:absolute; left:0; top:0; will-change:transform; user-select:none; -webkit-user-drag:none; pointer-events:none; max-width:none;}
@@ -878,7 +883,7 @@
         </div>
         <div class="offer-modal-note" id="offerModalCourierNote" data-i18n="courierSurchargeNote">Une livraison par coursier ajoute 15% au prix (au moins 50 000 aUEC garantis au coursier).</div>
         <div class="offer-modal-total"><span data-i18n="offerModalTotalLbl">Total estimé :</span> <strong id="offerModalTotal">—</strong></div>
-        <button type="button" class="btn-primary" onclick="submitOfferModal()" data-i18n="sendInquiryBtn">ENVOYER LA DEMANDE</button>
+        <button type="button" class="btn-primary" id="offerModalSendBtn" onclick="submitOfferModal()" data-i18n="sendInquiryBtn">ENVOYER LA DEMANDE</button>
       </div>
     </div>
 
@@ -1706,6 +1711,15 @@ async function notifyAllUsersOfResourceRequest(refId, excludeUserId){
     const targets = (users||[]).filter(u => u.id !== excludeUserId);
     if(targets.length){
       await sb.from('notifications').insert(targets.map(u => ({ user_id:u.id, category:'client_resources', ref_id: refId||null })));
+    }
+  }catch(e){}
+}
+async function notifyAllUsersOfNewListing(refId, excludeUserId){
+  try{
+    const { data: users } = await sb.from('profiles').select('id');
+    const targets = (users||[]).filter(u => u.id !== excludeUserId);
+    if(targets.length){
+      await sb.from('notifications').insert(targets.map(u => ({ user_id:u.id, category:'client_marketplace', ref_id: refId||null })));
     }
   }catch(e){}
 }
@@ -2624,7 +2638,7 @@ function mktCardHtml(listing, sellerMap){
   const seller = sellerMap[listing.seller_id];
   const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
   const canBuy = session && session.user.id !== listing.seller_id;
-  const interestBlock = canBuy ? `<button type="button" class="btn-secondary mkt-interest-btn" data-listing-id="${listing.id}" data-item-name="${listing.item_name}" data-price="${listing.price}" onclick="openOfferModal(this)">${d.imInterested}</button>` : '';
+  const interestBlock = canBuy ? `<button type="button" class="btn-secondary mkt-interest-btn" data-listing-id="${listing.id}" data-item-name="${listing.item_name}" data-price="${listing.price}" onclick="pixelSwoosh(this); openOfferModal(this)">${d.imInterested}</button>` : '';
   return `
     <div class="mkt-card">
       <div class="mkt-photo-wrap">${photo}${listingTagsHtml(listing.tags)}</div>
@@ -2683,6 +2697,7 @@ async function submitOfferModal(){
   });
   if(error){ alert('Erreur : '+error.message); return; }
   pushNotification(listing.seller_id, 'seller_marketplace');
+  pixelBurst($('offerModalSendBtn'));
   toastShow(d.inquirySent);
   closeOfferModal();
   loadMyInquiries();
@@ -3287,6 +3302,7 @@ async function createListing(){
       await sb.from('marketplace_listings').update({ photo_url: urlData.publicUrl + '?t=' + Date.now() }).eq('id', data.id);
     }
   }
+  notifyAllUsersOfNewListing(data.id, session.user.id);
   resetListingForm();
   toastShow(d.listingSaved);
   routeApp();

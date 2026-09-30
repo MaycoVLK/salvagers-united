@@ -303,8 +303,12 @@
   .mkt-tag.tag-q700{color:#8fd3ff; border-color:#8fd3ff;}
   .mkt-tag.tag-q800{color:#b9a3ff; border-color:#b9a3ff;}
   .mkt-tag.tag-q900{color:#ffd166; border-color:#ffd166;}
-  .listing-tags-toggle{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:4px;}
-  .tag-toggle-btn{width:auto; flex:1 1 auto; padding:9px 8px; font-size:.72rem; text-transform:uppercase; letter-spacing:.4px; border:1px solid var(--border); border-radius:3px; background:var(--bg2); color:var(--muted); cursor:pointer; font-family:'VT323',monospace; transition:border-color .15s, color .15s, background .15s;}
+  .stock-toggle-row{display:flex; align-items:center; gap:8px; cursor:pointer; margin:2px 0 6px; font-family:'VT323',monospace; font-size:.95rem; color:var(--text); text-transform:none; letter-spacing:0;}
+  .stock-toggle-row input[type="checkbox"]{width:16px; height:16px; accent-color:var(--accent); cursor:pointer; margin:0;}
+  .mkt-price-unit{font-size:.68rem; color:var(--muted); margin-left:2px; text-transform:none;}
+  .mkt-stock-note{font-size:.72rem; color:var(--muted); margin-top:2px;}
+  .listing-tags-toggle{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:4px;}
+  .tag-toggle-btn{width:auto; flex:1 1 auto; padding:13px 10px; font-size:1rem; text-transform:uppercase; letter-spacing:.5px; border:1px solid var(--border); border-radius:3px; background:var(--bg2); color:var(--muted); cursor:pointer; font-family:'VT323',monospace; transition:border-color .15s, color .15s, background .15s;}
   .tag-toggle-btn.active{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
   /* Formulaire "Créer/Modifier une annonce" : encadré compact centré sur desktop (au lieu d'étirer
      champs et boutons sur toute la largeur de la page), pleine largeur naturellement sur mobile. */
@@ -869,7 +873,12 @@
         <div class="offer-modal-price-row"><span data-i18n="listingPriceLbl">Prix :</span> <strong id="offerModalBasePrice">—</strong></div>
         <label data-i18n="inquiryMsgLbl">Message au vendeur (prix ok, contre-offre, etc.)</label>
         <textarea id="offerModalMsg" data-i18n-ph="phInquiryMsg" placeholder="ex: Ok pour le prix, je peux passer ce soir vers 20h."></textarea>
-        <div class="mkt-price-negotiate">
+        <div class="mkt-price-negotiate" id="offerModalQtyRow" hidden>
+          <label data-i18n="yourQtyLbl">Quantité souhaitée :</label>
+          <input type="number" id="offerModalQty" min="1" step="1" value="1" oninput="updateOfferModalTotal()">
+          <div class="mkt-stock-note" id="offerModalStockNote"></div>
+        </div>
+        <div class="mkt-price-negotiate" id="offerModalNegotiateRow">
           <label data-i18n="yourOfferLbl">Ta proposition (aUEC, optionnel) :</label>
           <input type="number" id="offerModalPrice" step="0.01" min="0" oninput="updateOfferModalTotal()">
         </div>
@@ -1197,9 +1206,14 @@
       <div class="card">
         <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
         <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute">
-        <label for="listingPrice" data-i18n="listingPriceLbl">Prix de vente (aUEC)</label>
+        <label class="stock-toggle-row" for="listingStockMode">
+          <input type="checkbox" id="listingStockMode" onchange="onListingStockModeChange()">
+          <span data-i18n="listingStockModeLbl">Vendre par unité (gérer un stock)</span>
+        </label>
+        <div class="muted" id="listingStockModeHint" style="font-size:.75rem; margin:-4px 0 10px;" data-i18n="listingStockModeHint">Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.</div>
+        <label for="listingPrice" id="listingPriceLblEl" data-i18n="listingPriceLbl">Prix de vente (aUEC)</label>
         <input id="listingPrice" type="number" min="0" step="1">
-        <label for="listingQty" data-i18n="listingQtyLbl">Quantité</label>
+        <label for="listingQty" id="listingQtyLblEl" data-i18n="listingQtyLbl">Quantité</label>
         <input id="listingQty" type="number" min="1" step="1" value="1">
         <label data-i18n="listingTagsLbl">Tags (optionnel)</label>
         <div class="listing-tags-toggle">
@@ -1736,6 +1750,7 @@ const T = {
     sellerRankLabels:{novice:"Novice", trader:"Négociant", merchant:"Marchand", tycoon:"Magnat"}, rankSales:"ventes",
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
     newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
+    listingStockModeLbl:"Vendre par unité (gérer un stock)", listingStockModeHint:"Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.", listingPriceUnitLbl:"Prix unitaire (aUEC)", listingStockLbl:"Stock disponible", perUnitSuffix:" / unité", stockLbl:"Stock :", yourQtyLbl:"Quantité souhaitée :", stockAvailableLbl:"Disponible :", stockTooLowAlert:"Erreur : il n'y a plus assez de stock disponible pour cette quantité.", invalidQtyAlert:"Erreur : quantité invalide.",
     listingTagsLbl:"Tags (optionnel)", tagCrafted:"CRAFTÉ", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", editListingBtn:"MODIFIER",
     requestResourcesTitle:"Poster un objet recherché", requestResourcesBtn:"OBJET RECHERCHÉ", resourceNameLbl:"Objet recherché", phResourceName:"ex: Laranite brute, casque d'armure lourde...", resourceQtyLbl:"Quantité souhaitée", resourcePriceLbl:"Prix proposé (aUEC, optionnel)", resourceNoteLbl:"Note (optionnel)", phResourceNote:"ex: Livraison sur Nyx, quantité négociable...", submitResourceRequestBtn:"PUBLIER L'ANNONCE", resourceRequestSaved:"ANNONCE PUBLIÉE !",
     myResourceRequestsTitle:"Objets recherchés", noResourceRequests:"Tu n'as posté aucune annonce d'objet recherché pour le moment.",
@@ -1857,6 +1872,7 @@ const T = {
     sellerRankLabels:{novice:"Novice", trader:"Trader", merchant:"Merchant", tycoon:"Tycoon"}, rankSales:"sales",
     rankToNextSales:"{n} more sale(s) to reach {rank}",
     newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
+    listingStockModeLbl:"Sell by unit (manage a stock)", listingStockModeHint:"The price is counted per unit and the buyer picks how many they want. Stock goes down automatically with each sale.", listingPriceUnitLbl:"Unit price (aUEC)", listingStockLbl:"Stock available", perUnitSuffix:" / unit", stockLbl:"Stock:", yourQtyLbl:"Quantity wanted:", stockAvailableLbl:"Available:", stockTooLowAlert:"Error: there isn't enough stock left for that quantity.", invalidQtyAlert:"Error: invalid quantity.",
     listingTagsLbl:"Tags (optional)", tagCrafted:"CRAFTED", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", editListingBtn:"EDIT",
     requestResourcesTitle:"Post a desired item", requestResourcesBtn:"DESIRED ITEM", resourceNameLbl:"Item wanted", phResourceName:"e.g. Raw Laranite, heavy armor helmet...", resourceQtyLbl:"Quantity wanted", resourcePriceLbl:"Price offered (aUEC, optional)", resourceNoteLbl:"Note (optional)", phResourceNote:"e.g. Delivery to Nyx, quantity negotiable...", submitResourceRequestBtn:"POST AD", resourceRequestSaved:"AD POSTED!",
     myResourceRequestsTitle:"Desired items", noResourceRequests:"You haven't posted any desired item ad yet.",
@@ -2869,12 +2885,19 @@ function toggleItemsList(btn){
 const MKT_PHOTO_PLACEHOLDER = `<svg class="mkt-photo-placeholder" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
   <rect x="2" y="9" width="12" height="4"/><rect x="4" y="4" width="8" height="5"/><rect x="6" y="2" width="4" height="2"/>
 </g></svg>`;
+function mktPriceRowHtml(listing){
+  const d = T[LANG];
+  if(listing.is_stock){
+    return `<div class="mkt-price-row"><span class="mkt-price">${fmt(listing.price)}<span class="mkt-price-unit">${d.perUnitSuffix}</span></span><span class="mkt-qty">${d.stockLbl} ${listing.quantity}</span></div>`;
+  }
+  return `<div class="mkt-price-row"><span class="mkt-price">${fmt(listing.price)}</span><span class="mkt-qty">x${listing.quantity}</span></div>`;
+}
 function mktCardHtml(listing, sellerMap, unreadSet){
   const d = T[LANG];
   const seller = sellerMap[listing.seller_id];
   const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
   const canBuy = session && session.user.id !== listing.seller_id;
-  const interestBlock = canBuy ? `<button type="button" class="btn-secondary mkt-interest-btn" data-listing-id="${listing.id}" data-item-name="${listing.item_name}" data-price="${listing.price}" onclick="pixelSwoosh(this); openOfferModal(this)">${d.imInterested}</button>` : '';
+  const interestBlock = canBuy ? `<button type="button" class="btn-secondary mkt-interest-btn" data-listing-id="${listing.id}" data-item-name="${listing.item_name}" data-price="${listing.price}" data-is-stock="${listing.is_stock ? '1' : '0'}" data-stock="${listing.quantity}" onclick="pixelSwoosh(this); openOfferModal(this)">${d.imInterested}</button>` : '';
   const isNew = !!(unreadSet && unreadSet.has(listing.id));
   const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
   const hoverAttr = isNew ? ` onmouseenter="markListingSeen('${listing.id}', this)"` : '';
@@ -2884,7 +2907,7 @@ function mktCardHtml(listing, sellerMap, unreadSet){
       <div class="mkt-photo-wrap">${photo}${listingTagsHtml(listing.tags)}</div>
       <div class="mkt-info">
         <div class="mkt-item-name">${listing.item_name}</div>
-        <div class="mkt-price-row"><span class="mkt-price">${fmt(listing.price)}</span><span class="mkt-qty">x${listing.quantity}</span></div>
+        ${mktPriceRowHtml(listing)}
         <div class="courier-box" onclick="openSellerShop('${listing.seller_id}')" title="${d.viewShopBtn}">
           <div class="courier-box-name">${d.mktByLbl} ${(seller && seller.shop_name) || (seller ? displayName(seller) : '—')}</div>
         </div>
@@ -2894,15 +2917,27 @@ function mktCardHtml(listing, sellerMap, unreadSet){
 }
 let offerModalListingId = null;
 let offerModalListingPrice = 0;
+let offerModalIsStock = false;
+let offerModalStock = 1;
 function openOfferModal(btn){
   if(!session) return;
+  const d = T[LANG];
   offerModalListingId = btn.dataset.listingId;
   offerModalListingPrice = Number(btn.dataset.price) || 0;
+  offerModalIsStock = btn.dataset.isStock === '1';
+  offerModalStock = Number(btn.dataset.stock) || 1;
   $('offerModalTitle').textContent = btn.dataset.itemName;
-  $('offerModalBasePrice').textContent = fmt(offerModalListingPrice);
+  $('offerModalBasePrice').textContent = offerModalIsStock ? fmt(offerModalListingPrice) + d.perUnitSuffix : fmt(offerModalListingPrice);
   $('offerModalMsg').value = '';
   $('offerModalPrice').value = '';
   $('offerModalPrice').placeholder = fmtNum(offerModalListingPrice);
+  $('offerModalQtyRow').hidden = !offerModalIsStock;
+  $('offerModalNegotiateRow').hidden = offerModalIsStock;
+  if(offerModalIsStock){
+    $('offerModalQty').value = 1;
+    $('offerModalQty').max = offerModalStock;
+    $('offerModalStockNote').textContent = d.stockAvailableLbl + ' ' + offerModalStock;
+  }
   const courierRadio = document.querySelector('input[name="offerModalDelivery"][value="courier"]');
   if(courierRadio) courierRadio.checked = true;
   updateOfferModalTotal();
@@ -2913,8 +2948,16 @@ function closeOfferModal(){
   offerModalListingId = null;
 }
 function updateOfferModalTotal(){
-  const offerVal = parseFloat($('offerModalPrice').value);
-  const base = (!isNaN(offerVal) && offerVal > 0) ? offerVal : offerModalListingPrice;
+  let base;
+  if(offerModalIsStock){
+    let qty = parseInt($('offerModalQty').value, 10);
+    if(isNaN(qty) || qty < 1) qty = 1;
+    if(qty > offerModalStock) qty = offerModalStock;
+    base = offerModalListingPrice * qty;
+  } else {
+    const offerVal = parseFloat($('offerModalPrice').value);
+    base = (!isNaN(offerVal) && offerVal > 0) ? offerVal : offerModalListingPrice;
+  }
   const methodInput = document.querySelector('input[name="offerModalDelivery"]:checked');
   const isCourier = !methodInput || methodInput.value === 'courier';
   const total = isCourier ? base + computeCommission(base) : base;
@@ -2927,13 +2970,21 @@ async function submitOfferModal(){
   const message = $('offerModalMsg').value.trim();
   const methodInput = document.querySelector('input[name="offerModalDelivery"]:checked');
   const delivery_method = methodInput ? methodInput.value : 'courier';
-  const offerVal = parseFloat($('offerModalPrice').value);
-  const offer_price = (!isNaN(offerVal) && offerVal > 0) ? offerVal : null;
-  const { data: listing, error: lErr } = await sb.from('marketplace_listings').select('seller_id').eq('id', offerModalListingId).single();
+  const { data: listing, error: lErr } = await sb.from('marketplace_listings').select('seller_id,is_stock,quantity').eq('id', offerModalListingId).single();
   if(lErr || !listing){ alert('Erreur : objet introuvable.'); return; }
+  let offer_price = null;
+  let requested_qty = null;
+  if(listing.is_stock){
+    requested_qty = parseInt($('offerModalQty').value, 10);
+    if(isNaN(requested_qty) || requested_qty < 1){ alert(d.invalidQtyAlert); return; }
+    if(requested_qty > listing.quantity){ alert(d.stockTooLowAlert); return; }
+  } else {
+    const offerVal = parseFloat($('offerModalPrice').value);
+    offer_price = (!isNaN(offerVal) && offerVal > 0) ? offerVal : null;
+  }
   const { error } = await sb.from('marketplace_inquiries').insert({
     listing_id: offerModalListingId, seller_id: listing.seller_id, buyer_id: session.user.id,
-    message, delivery_method, status: 'pending', offer_price
+    message, delivery_method, status: 'pending', offer_price, requested_qty
   });
   if(error){ alert('Erreur : '+error.message); return; }
   pushNotification(listing.seller_id, 'seller_marketplace');
@@ -3377,8 +3428,17 @@ function listingTagsHtml(tags){
   const classMap = { crafted:'tag-crafted', '700':'tag-q700', '800':'tag-q800', '900':'tag-q900' };
   return `<div class="mkt-tags-overlay">${tags.map(t => `<span class="mkt-tag ${classMap[t]||''}">${labelMap[t]||t}</span>`).join('')}</div>`;
 }
+function onListingStockModeChange(){
+  const d = T[LANG];
+  const isStock = $('listingStockMode').checked;
+  const priceLbl = $('listingPriceLblEl'); const qtyLbl = $('listingQtyLblEl');
+  if(priceLbl){ priceLbl.dataset.i18n = isStock ? 'listingPriceUnitLbl' : 'listingPriceLbl'; priceLbl.textContent = isStock ? d.listingPriceUnitLbl : d.listingPriceLbl; }
+  if(qtyLbl){ qtyLbl.dataset.i18n = isStock ? 'listingStockLbl' : 'listingQtyLbl'; qtyLbl.textContent = isStock ? d.listingStockLbl : d.listingQtyLbl; }
+}
 function resetListingForm(){
   $('listingItem').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
+  $('listingStockMode').checked = false;
+  onListingStockModeChange();
   listingTagsState = { crafted:false, q700:false, q800:false, q900:false };
   renderListingTagButtons();
 }
@@ -3393,6 +3453,8 @@ function openEditListing(id){
   $('listingItem').value = l.item_name;
   $('listingPrice').value = l.price;
   $('listingQty').value = l.quantity;
+  $('listingStockMode').checked = !!l.is_stock;
+  onListingStockModeChange();
   pendingListingPhotoFile = null;
   $('listingPhotoInput').value = '';
   $('listingPhotoPreviewName').textContent = l.photo_url ? d.listingPhotoKeepNote : '';
@@ -3535,11 +3597,12 @@ async function createListing(){
   const item_name = $('listingItem').value.trim();
   const price = parseFloat($('listingPrice').value) || 0;
   const quantity = parseInt($('listingQty').value,10) || 1;
+  const is_stock = $('listingStockMode').checked;
   if(!item_name || price <= 0){ alert('Erreur : renseigne un objet et un prix valide.'); return; }
   const tags = listingTagsArray();
   if(editingListingId){
     const id = editingListingId;
-    const { error } = await sb.from('marketplace_listings').update({ item_name, price, quantity, tags }).eq('id', id);
+    const { error } = await sb.from('marketplace_listings').update({ item_name, price, quantity, tags, is_stock }).eq('id', id);
     if(error){ alert('Erreur : '+error.message); return; }
     if(pendingListingPhotoFile){
       const ext = (pendingListingPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
@@ -3556,7 +3619,7 @@ async function createListing(){
     routeApp();
     return;
   }
-  const { data, error } = await sb.from('marketplace_listings').insert({ seller_id: session.user.id, item_name, price, quantity, tags }).select().single();
+  const { data, error } = await sb.from('marketplace_listings').insert({ seller_id: session.user.id, item_name, price, quantity, tags, is_stock }).select().single();
   if(error){ alert('Erreur : '+error.message); return; }
   if(pendingListingPhotoFile){
     const ext = (pendingListingPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
@@ -3630,7 +3693,7 @@ function myListingCardHtml(l){
       <div class="mkt-photo-wrap">${photo}${listingTagsHtml(l.tags)}</div>
       <div class="mkt-info">
         <div class="mkt-item-name">${l.item_name}</div>
-        <div class="mkt-price-row"><span class="mkt-price">${fmt(l.price)}</span><span class="mkt-qty">x${l.quantity}</span></div>
+        ${mktPriceRowHtml(l)}
         ${actionsBlock}
       </div>
     </div>`;
@@ -3805,10 +3868,30 @@ async function sendCounter(id){
   await counterInquiry(id, val);
 }
 async function acceptInquiry(id){
-  const { data, error } = await sb.from('marketplace_inquiries').update({ status:'accepted', updated_at: new Date().toISOString() }).eq('id', id).select('buyer_id').single();
+  const { data: inquiry, error: iErr } = await sb.from('marketplace_inquiries').select('*').eq('id', id).single();
+  if(iErr || !inquiry){ alert('Erreur : demande introuvable.'); return; }
+  const updates = { status:'accepted', updated_at: new Date().toISOString() };
+  if(inquiry.requested_qty != null){
+    const { data: listing } = await sb.from('marketplace_listings').select('*').eq('id', inquiry.listing_id).maybeSingle();
+    if(!listing){ alert(T[LANG].stockTooLowAlert); return; }
+    if(inquiry.requested_qty > listing.quantity){ alert(T[LANG].stockTooLowAlert); return; }
+    updates.snap_item_name = listing.item_name;
+    updates.snap_price = listing.price;
+    updates.snap_qty = inquiry.requested_qty;
+    const newQty = listing.quantity - inquiry.requested_qty;
+    if(newQty > 0){
+      await sb.from('marketplace_listings').update({ quantity: newQty }).eq('id', listing.id);
+    } else {
+      // Stock épuisé : on refuse les autres demandes encore en attente sur cette annonce, puis on la retire.
+      await sb.from('marketplace_inquiries').update({ status:'rejected', updated_at: new Date().toISOString() })
+        .eq('listing_id', listing.id).neq('id', id).in('status', ['pending','countered']);
+      await sb.from('marketplace_listings').delete().eq('id', listing.id);
+    }
+  }
+  const { data, error } = await sb.from('marketplace_inquiries').update(updates).eq('id', id).select('buyer_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
   if(data) pushNotification(data.buyer_id, 'client_marketplace');
-  sweep(); loadReceivedInquiries();
+  sweep(); loadReceivedInquiries(); loadMyListings();
 }
 async function rejectInquiry(id){
   const { error } = await sb.from('marketplace_inquiries').update({ status:'rejected', updated_at: new Date().toISOString() }).eq('id', id);
@@ -3824,15 +3907,23 @@ async function counterInquiry(id, price){
 async function markPickedUp(id){
   const { data: inquiry, error: iErr } = await sb.from('marketplace_inquiries').select('*').eq('id', id).single();
   if(iErr || !inquiry){ alert('Erreur : demande introuvable.'); return; }
-  const { data: listing } = await sb.from('marketplace_listings').select('*').eq('id', inquiry.listing_id).maybeSingle();
-  const unitPrice = inquiry.offer_price != null ? Number(inquiry.offer_price) : (listing ? Number(listing.price) : 0);
-  const { data: updated, error } = await sb.from('marketplace_inquiries').update({
-    status:'completed', updated_at: new Date().toISOString(),
-    snap_item_name: listing ? listing.item_name : null, snap_price: unitPrice, snap_qty: listing ? listing.quantity : 1
-  }).eq('id', id).select().maybeSingle();
+  const isStockSale = inquiry.requested_qty != null;
+  const updatePayload = { status:'completed', updated_at: new Date().toISOString() };
+  let listing = null;
+  if(!isStockSale){
+    // Vente "au lot" classique : le stock a déjà été géré (ou pas) au moment de l'acceptation pour les ventes au stock ;
+    // ici on gère encore le cas historique où toute l'annonce est vendue d'un coup.
+    const { data: l } = await sb.from('marketplace_listings').select('*').eq('id', inquiry.listing_id).maybeSingle();
+    listing = l;
+    const unitPrice = inquiry.offer_price != null ? Number(inquiry.offer_price) : (listing ? Number(listing.price) : 0);
+    updatePayload.snap_item_name = listing ? listing.item_name : null;
+    updatePayload.snap_price = unitPrice;
+    updatePayload.snap_qty = listing ? listing.quantity : 1;
+  }
+  const { data: updated, error } = await sb.from('marketplace_inquiries').update(updatePayload).eq('id', id).select().maybeSingle();
   if(error){ alert('Erreur : '+error.message); return; }
   if(!updated){ alert('Erreur : la mise à jour a été bloquée (droits insuffisants sur la base). La vente n\'a PAS été validée, réessaie ou contacte l\'admin.'); return; }
-  if(listing) await sb.from('marketplace_listings').delete().eq('id', listing.id);
+  if(!isStockSale && listing) await sb.from('marketplace_listings').delete().eq('id', listing.id);
   sweep(); loadReceivedInquiries(); loadMyListings();
   checkAndRenderSellerAchievements('sellerDashAchvCard');
   fetchSellerShopStats(session.user.id).then(stats => {
@@ -3845,25 +3936,29 @@ async function requestInquiryDelivery(id){
   const d = T[LANG];
   const { data: inquiry, error: iErr } = await sb.from('marketplace_inquiries').select('*').eq('id', id).single();
   if(iErr || !inquiry){ alert('Erreur : demande introuvable.'); return; }
-  const { data: listing, error: lErr } = await sb.from('marketplace_listings').select('*').eq('id', inquiry.listing_id).single();
-  if(lErr || !listing){ alert('Erreur : objet introuvable.'); return; }
+  const { data: listing } = await sb.from('marketplace_listings').select('*').eq('id', inquiry.listing_id).maybeSingle();
+  // Pour une vente au stock, l'annonce peut déjà avoir été retirée (stock épuisé) au moment de l'acceptation :
+  // on retombe alors sur les infos figées (snap_*) enregistrées sur la demande à ce moment-là.
+  const itemName = listing ? listing.item_name : inquiry.snap_item_name;
+  const qty = inquiry.requested_qty != null ? inquiry.requested_qty : (listing ? listing.quantity : (inquiry.snap_qty || 1));
+  if(!itemName){ alert('Erreur : objet introuvable.'); return; }
   const sysEl = $('idsys-'+id), locEl = $('idloc-'+id), buyerEl = $('idbuyer-'+id);
   const system = sysEl ? sysEl.value : 'Stanton';
   const location = locEl ? locEl.value.trim() : '';
   const buyerHandleInput = buyerEl ? buyerEl.value.trim() : '';
-  const unitPrice = inquiry.offer_price != null ? Number(inquiry.offer_price) : Number(listing.price);
-  const gross = unitPrice * listing.quantity;
+  const unitPrice = inquiry.snap_price != null ? Number(inquiry.snap_price) : (inquiry.offer_price != null ? Number(inquiry.offer_price) : (listing ? Number(listing.price) : 0));
+  const gross = unitPrice * qty;
   const commission = computeCommission(gross);
   const total = gross + commission;
   const payload = {
     order_type: 'marketplace',
     client_id: inquiry.buyer_id,
     seller_id: session.user.id,
-    listing_id: listing.id,
+    listing_id: listing ? listing.id : null,
     buyer_handle: buyerHandleInput || null,
     destination_system: system,
     exact_location: location,
-    items: [{ name: listing.item_name, price: unitPrice, qty: listing.quantity }],
+    items: [{ name: itemName, price: unitPrice, qty: qty }],
     gross_price: gross, commission, total_price: total,
     status: 'pending'
   };
@@ -3871,7 +3966,7 @@ async function requestInquiryDelivery(id){
   if(error){ alert('Erreur : '+error.message); return; }
   await sb.from('marketplace_inquiries').update({
     order_id: order.id, updated_at: new Date().toISOString(),
-    snap_item_name: listing.item_name, snap_price: unitPrice, snap_qty: listing.quantity
+    snap_item_name: itemName, snap_price: unitPrice, snap_qty: qty
   }).eq('id', id);
   notifyAllCouriers(order.id);
   sweep();

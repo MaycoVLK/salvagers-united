@@ -170,21 +170,21 @@
   .app-topbar .brand{display:flex; align-items:center; gap:10px; min-width:0;}
   .brand-lg{background:none; border:none; padding:0; margin:0; cursor:pointer; flex:none; text-align:left; border-radius:4px;}
   .brand-lg:hover .logo-anim-header{filter:brightness(1.25) drop-shadow(0 0 10px var(--accent-dim));}
-  .logo-icon-wrap-header{position:relative; display:inline-block; transform:scale(.58); transform-origin:left center; margin-right:-24px; vertical-align:middle;}
+  .logo-icon-wrap-header{position:relative; display:inline-block; transform:scale(.58); transform-origin:left center; margin-right:-72px; vertical-align:middle;}
   .logo-anim-header{width:180px; aspect-ratio:1260/750; height:auto; filter:drop-shadow(0 0 8px var(--accent-dim));}
   .logo-wordmark-header{display:inline-flex; flex-direction:column; vertical-align:middle; line-height:1; font-family:'VT323',monospace; text-align:left;}
-  .logo-wordmark-header .lw-main{font-size:1.35rem; color:var(--accent); letter-spacing:2px;}
-  .logo-wordmark-header .lw-sub{font-size:.62rem; color:var(--muted); letter-spacing:5px; margin-top:1px;}
+  .logo-wordmark-header .lw-main{font-size:2.6rem; color:var(--accent); letter-spacing:2px;}
+  .logo-wordmark-header .lw-sub{font-size:1.1rem; color:var(--muted); letter-spacing:4px; margin-top:2px;}
   .logo-mark-sm-btn{background:none; border:none; padding:0; margin:0; cursor:pointer; flex:none; line-height:0; border-radius:4px;}
   .logo-mark-sm-btn:hover .logo-anim-sm{filter:brightness(1.25);}
-  .admin-view-bar{display:flex; gap:6px; margin:0; overflow-x:auto; -webkit-overflow-scrolling:touch; flex:1 1 260px; justify-content:center;}
-  .admin-view-bar .admin-view-btn{flex:0 1 130px; min-width:80px; padding:9px 6px; font-family:'VT323',monospace; font-size:.85rem; letter-spacing:.5px; text-transform:uppercase; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:4px; cursor:pointer; transition:border-color .2s, color .2s, background .2s; white-space:nowrap;}
+  .admin-view-bar{display:flex; gap:8px; margin:0; overflow-x:auto; -webkit-overflow-scrolling:touch; flex:1 1 260px; justify-content:center;}
+  .admin-view-bar .admin-view-btn{flex:0 1 150px; min-width:90px; padding:13px 10px; font-family:'VT323',monospace; font-size:1.05rem; letter-spacing:.8px; text-transform:uppercase; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:4px; cursor:pointer; transition:border-color .2s, color .2s, background .2s; white-space:nowrap;}
   .admin-view-bar .admin-view-btn:hover{border-color:var(--accent); color:var(--text);}
   .admin-view-bar .admin-view-btn.active{color:var(--bg); background:var(--accent); border-color:var(--accent);}
   .logo-anim-sm{width:52px; aspect-ratio:1260/750; height:auto; flex:none;}
   .page-title-lg{font-size:1.9rem; margin:4px 0 18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .topbar-actions{display:flex; align-items:center; gap:8px; flex:none;}
-  .avatar-gear-btn{background:none; border:none; padding:0; margin:0; cursor:pointer; border-radius:50%; line-height:0;}
+  .avatar-gear-btn{background:none; border:none; padding:0; margin:0; cursor:pointer; border-radius:50%; line-height:0; display:inline-flex; align-items:center; justify-content:center; flex:none;}
   .avatar-gear-btn .avatar-wrap{transition:box-shadow .15s;}
   .avatar-gear-btn:hover .avatar-wrap{box-shadow:0 0 0 2px var(--accent);}
   .avatar-gear-btn .avatar-fallback{width:100%; height:100%; border-radius:50%; border:2px solid var(--accent);}
@@ -199,7 +199,7 @@
   .create-menu button{width:100%; justify-content:flex-start; text-align:left; display:flex; align-items:center; gap:8px; background:none; border:1px solid transparent; color:var(--text); padding:9px 10px; font-family:'VT323',monospace; font-size:.95rem; letter-spacing:.5px; cursor:pointer; border-radius:4px;}
   .create-menu button:hover{background:var(--bg2); border-color:var(--border);}
   .create-menu .icon{width:15px; height:15px; color:var(--accent); flex:none;}
-  .gear-btn{width:40px; height:40px; padding:0; border-radius:50%;}
+  .gear-btn{width:40px; height:40px; padding:0; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex:none;}
   .gear-btn .icon{width:18px; height:18px;}
   .messages-btn{position:relative;}
   .messages-btn .notif-dot{top:4px; right:5px;}
@@ -789,14 +789,15 @@
         </div>
         <button class="gear-btn messages-btn" id="messagesBtn" onclick="openMessages()" aria-label="Messages" title="Messages">
           <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-            <rect x="1" y="3" width="14" height="2"/>
-            <rect x="1" y="11" width="14" height="2"/>
-            <rect x="1" y="3" width="2" height="10"/>
-            <rect x="13" y="3" width="2" height="10"/>
-            <rect x="3" y="5" width="2" height="2"/>
-            <rect x="5" y="7" width="2" height="2"/>
-            <rect x="9" y="7" width="2" height="2"/>
-            <rect x="11" y="5" width="2" height="2"/>
+            <rect x="1" y="2" width="14" height="2"/>
+            <rect x="1" y="9" width="14" height="2"/>
+            <rect x="1" y="2" width="2" height="9"/>
+            <rect x="13" y="2" width="2" height="9"/>
+            <rect x="3" y="11" width="2" height="2"/>
+            <rect x="5" y="11" width="2" height="1"/>
+            <rect x="4" y="5" width="2" height="2"/>
+            <rect x="7" y="5" width="2" height="2"/>
+            <rect x="10" y="5" width="2" height="2"/>
           </g></svg>
           <span class="notif-dot" id="dotMessagesMain"></span>
         </button>
@@ -1829,6 +1830,11 @@ const T = {
     myInquiriesTitle:"Mes demandes", noInquiries:"Tu n'as envoyé aucune demande pour le moment.",
     receivedInquiriesTitle:"Propositions reçues", noReceivedInquiries:"Aucune proposition reçue pour le moment.",
     sellerMktHistoryLabel:"Historique des ventes", sellerMktHistoryEmpty:"Aucune vente terminée pour le moment.",
+    messagesTitle:"Messagerie", msgTabClient:"CLIENT", msgTabSeller:"VENDEUR", msgTabSales:"VENTES MARKETPLACE", msgTabDesired:"DESIRED ITEMS",
+    msgRoleBuyer:"Achat", msgRoleSeller:"Vente",
+    msgSalesOngoingTitle:"Négociations en cours", msgSalesHistoryTitle:"Historique des ventes",
+    msgSalesOngoingEmpty:"Aucune négociation en cours.", msgSalesHistoryEmpty:"Aucune vente terminée pour le moment.",
+    msgDesiredReceivedTitle:"Offres reçues", noReceivedResourceOffers:"Aucune offre reçue pour le moment.",
     inquiryStatus:{pending:"En attente", accepted:"Acceptée", rejected:"Refusée", completed:"Terminée", countered:"Contre-offre", cancelled:"Annulée"},
     confirmCancelInquiry:"Annuler cette demande ? Le vendeur en sera informé.",
     orderAlreadyTaken:"Trop tard, un autre coursier vient de prendre cette commande.",
@@ -1951,6 +1957,11 @@ const T = {
     myInquiriesTitle:"My requests", noInquiries:"You haven't sent any requests yet.",
     receivedInquiriesTitle:"Received offers", noReceivedInquiries:"No offers received yet.",
     sellerMktHistoryLabel:"Sales history", sellerMktHistoryEmpty:"No completed sales yet.",
+    messagesTitle:"Messages", msgTabClient:"CLIENT", msgTabSeller:"SELLER", msgTabSales:"MARKETPLACE SALES", msgTabDesired:"DESIRED ITEMS",
+    msgRoleBuyer:"Purchase", msgRoleSeller:"Sale",
+    msgSalesOngoingTitle:"Ongoing negotiations", msgSalesHistoryTitle:"Sales history",
+    msgSalesOngoingEmpty:"No ongoing negotiations.", msgSalesHistoryEmpty:"No completed sales yet.",
+    msgDesiredReceivedTitle:"Offers received", noReceivedResourceOffers:"No offers received yet.",
     inquiryStatus:{pending:"Pending", accepted:"Accepted", rejected:"Rejected", completed:"Completed", countered:"Countered", cancelled:"Cancelled"},
     confirmCancelInquiry:"Cancel this request? The seller will be notified.",
     orderAlreadyTaken:"Too late, another courier just took this order.",
@@ -2034,23 +2045,44 @@ async function markCategoryRead(category){
   refreshNotifBadges();
 }
 function toggleDot(id, show){ const el = $(id); if(el) el.classList.toggle('show', !!show); }
+// --- MESSAGERIE : pastilles par message (mêmes principes que markListingSeen, mais génériques à toute catégorie) ---
+const msgUnreadSets = { client_marketplace:new Set(), seller_marketplace:new Set(), seller_resource_offer:new Set() };
+async function loadMsgUnreadSet(category){
+  if(!session) return new Set();
+  const { data } = await sb.from('notifications').select('ref_id').eq('user_id',session.user.id).eq('category',category).eq('read',false).not('ref_id','is',null);
+  return new Set((data||[]).map(n=>n.ref_id));
+}
+async function markMsgSeen(category, refId, cardEl){
+  const dot = cardEl.querySelector('.new-order-dot');
+  if(dot) dot.remove();
+  if(msgUnreadSets[category]) msgUnreadSets[category].delete(refId);
+  try{ await sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category',category).eq('ref_id',refId).eq('read',false); }catch(e){}
+  refreshNotifBadges();
+}
 async function refreshNotifBadges(){
   if(!session || !profile) return;
-  const [sellerCnt, mktCnt, newListingCnt, ordCnt, courierCnt, resCnt] = await Promise.all([
-    (profile.is_seller || profile.role==='admin') ? getUnreadCount('seller_marketplace') : Promise.resolve(0),
+  const isSeller = profile.is_seller || profile.role==='admin';
+  const [sellerCnt, resOfferCnt, mktCnt, newListingCnt, ordCnt, courierCnt, resCnt] = await Promise.all([
+    isSeller ? getUnreadCount('seller_marketplace') : Promise.resolve(0),
+    isSeller ? getUnreadCount('seller_resource_offer') : Promise.resolve(0),
     getUnreadCount('client_marketplace'),
     getUnreadCount('client_new_listing'),
     getUnreadCount('client_orders'),
     (profile.is_courier || profile.role==='admin') ? getUnreadCount('courier_pending') : Promise.resolve(0),
     getUnreadCount('client_resources')
   ]);
-  const mktTotal = mktCnt + newListingCnt;
-  toggleDot('dotNavSeller', sellerCnt>0);
-  toggleDot('dotNavClient', (mktTotal+ordCnt+resCnt)>0);
-  toggleDot('dotTabMarketplace', mktTotal>0);
+  const sellerTotal = sellerCnt + resOfferCnt;
+  toggleDot('dotNavSeller', sellerTotal>0);
+  toggleDot('dotNavClient', (mktCnt+newListingCnt+ordCnt+resCnt)>0);
+  toggleDot('dotTabMarketplace', newListingCnt>0);
   toggleDot('dotTabDeliveries', ordCnt>0);
   toggleDot('dotTabPending', courierCnt>0);
   toggleDot('dotTabResources', resCnt>0);
+  toggleDot('dotMessagesMain', (mktCnt+sellerTotal)>0);
+  toggleDot('dotMsgTabClient', mktCnt>0);
+  toggleDot('dotMsgTabSeller', sellerCnt>0);
+  toggleDot('dotMsgTabSales', (mktCnt+sellerCnt)>0);
+  toggleDot('dotMsgTabDesired', resOfferCnt>0);
 }
 
 const COLORS = ['orange','vert','bleu','violet','blanc','jaune'];
@@ -2186,6 +2218,71 @@ function goHome(){
   clientTab = 'deliveries';
   currentView = 'client';
   routeApp();
+}
+
+// --- MESSAGERIE UNIFIÉE ---
+let msgTab = 'client'; // 'client' | 'seller' | 'sales' | 'desired'
+function openMessages(){
+  $('settingsPanel').hidden = true;
+  hideAllViews();
+  $('view-messages').hidden = false;
+  const isSeller = profile && (profile.is_seller || profile.role === 'admin');
+  $('msgTabBtnSeller').hidden = !isSeller;
+  if(msgTab === 'seller' && !isSeller) msgTab = 'client';
+  setMsgTab(msgTab);
+}
+function setMsgTab(tab){
+  msgTab = tab;
+  $('msgTabBtnClient').classList.toggle('active', tab === 'client');
+  $('msgTabBtnSeller').classList.toggle('active', tab === 'seller');
+  $('msgTabBtnSales').classList.toggle('active', tab === 'sales');
+  $('msgTabBtnDesired').classList.toggle('active', tab === 'desired');
+  $('msgTabClient').hidden = tab !== 'client';
+  $('msgTabSeller').hidden = tab !== 'seller';
+  $('msgTabSales').hidden = tab !== 'sales';
+  $('msgTabDesired').hidden = tab !== 'desired';
+  if(tab === 'client') loadMyInquiries();
+  else if(tab === 'seller') loadReceivedInquiries();
+  else if(tab === 'sales') loadMsgSales();
+  else { loadReceivedResourceOffers(); loadMyResourceOffers(); }
+}
+// Vue fusionnée "Ventes marketplace" : toutes les demandes marketplace où je suis acheteur OU vendeur,
+// séparées entre négociations en cours et historique (demandé explicitement par l'utilisateur).
+async function loadMsgSales(){
+  const ongoingBox = $('msgSalesOngoingList'); const histBox = $('msgSalesHistoryList');
+  if(!ongoingBox || !histBox || !session) return;
+  const d = T[LANG];
+  const { data, error } = await sb.from('marketplace_inquiries').select('*').or(`buyer_id.eq.${session.user.id},seller_id.eq.${session.user.id}`).order('created_at',{ascending:false});
+  if(error){ ongoingBox.textContent = error.message; return; }
+  const rows = data || [];
+  const ongoing = rows.filter(r => !['completed','rejected','cancelled'].includes(r.status));
+  const history = rows.filter(r => ['completed','rejected','cancelled'].includes(r.status));
+  const listingIds=[...new Set(rows.map(r=>r.listing_id))];
+  const peopleIds=[...new Set(rows.flatMap(r=>[r.buyer_id, r.seller_id]))];
+  const [listings, people] = await Promise.all([
+    listingIds.length ? sb.from('marketplace_listings').select('id,item_name,price').in('id', listingIds).then(r=>r.data||[]) : Promise.resolve([]),
+    peopleIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', peopleIds).then(r=>r.data||[]) : Promise.resolve([])
+  ]);
+  const lMap={}; listings.forEach(l=>lMap[l.id]=l);
+  const pMap={}; people.forEach(p=>pMap[p.id]=p);
+  function rowHtml(r){
+    const listing = lMap[r.listing_id];
+    const isSellerSide = r.seller_id === session.user.id;
+    const counterpart = pMap[isSellerSide ? r.buyer_id : r.seller_id];
+    const roleLbl = isSellerSide ? d.msgRoleSeller : d.msgRoleBuyer;
+    const finalPrice = inquiryFinalPrice(r, listing);
+    return `
+      <div class="inquiry-row">
+        <div class="inquiry-head">
+          <div class="inquiry-item">${inquiryItemName(r, listing)}</div>
+          ${inquiryStatusBadge(r.status)}
+        </div>
+        <div class="inquiry-meta">${roleLbl} — ${d.inquiryFrom}${counterpart ? displayName(counterpart) : '—'}</div>
+        ${finalPrice != null ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(finalPrice)}</strong></div>` : ''}
+      </div>`;
+  }
+  ongoingBox.innerHTML = ongoing.length ? ongoing.map(rowHtml).join('') : `<p class="muted">${d.msgSalesOngoingEmpty}</p>`;
+  histBox.innerHTML = history.length ? history.map(rowHtml).join('') : `<p class="muted">${d.msgSalesHistoryEmpty}</p>`;
 }
 
 function openCreateOrder(){
@@ -3042,12 +3139,12 @@ async function submitOfferModal(){
     const offerVal = parseFloat($('offerModalPrice').value);
     offer_price = (!isNaN(offerVal) && offerVal > 0) ? offerVal : null;
   }
-  const { error } = await sb.from('marketplace_inquiries').insert({
+  const { data: newInquiry, error } = await sb.from('marketplace_inquiries').insert({
     listing_id: offerModalListingId, seller_id: listing.seller_id, buyer_id: session.user.id,
     message, delivery_method, status: 'pending', offer_price, requested_qty
-  });
+  }).select('id').single();
   if(error){ alert('Erreur : '+error.message); return; }
-  pushNotification(listing.seller_id, 'seller_marketplace');
+  pushNotification(listing.seller_id, 'seller_marketplace', newInquiry ? newInquiry.id : null);
   pixelBurst($('offerModalSendBtn'));
   toastShow(d.inquirySent);
   closeOfferModal();
@@ -3236,12 +3333,12 @@ async function submitResourceOfferModal(){
   const message = $('resourceOfferModalMsg').value.trim();
   const priceVal = parseFloat($('resourceOfferModalPrice').value);
   const price = (!isNaN(priceVal) && priceVal > 0) ? priceVal : null;
-  const { error } = await sb.from('resource_offers').insert({
+  const { data: newOffer, error } = await sb.from('resource_offers').insert({
     request_id: resourceOfferModalRequestId, seller_id: resourceOfferModalSellerId, client_id: session.user.id,
     message: message || null, price, status: 'pending'
-  });
+  }).select('id').single();
   if(error){ alert('Erreur : '+error.message); return; }
-  pushNotification(resourceOfferModalSellerId, 'seller_marketplace');
+  pushNotification(resourceOfferModalSellerId, 'seller_resource_offer', newOffer ? newOffer.id : null);
   toastShow(d.resourceOfferSent);
   closeResourceOfferModal();
   loadMyResourceOffers();
@@ -3300,6 +3397,7 @@ async function loadMyInquiries(){
   const { data, error } = await sb.from('marketplace_inquiries').select('*').eq('buyer_id', session.user.id).order('created_at',{ascending:false});
   if(error){ box.textContent = error.message; return; }
   const rows = data || [];
+  msgUnreadSets.client_marketplace = await loadMsgUnreadSet('client_marketplace');
   const current = rows.filter(r => !['completed','rejected','cancelled'].includes(r.status));
   const history = rows.filter(r => ['completed','rejected','cancelled'].includes(r.status));
   const listingIds=[...new Set(rows.map(r=>r.listing_id))];
@@ -3343,10 +3441,12 @@ async function loadMyInquiries(){
     }
     const canCancel = !r.order_id && ['pending','countered','accepted'].includes(r.status);
     const cancelBtn = canCancel ? `<button class="btn-cancel" onclick="cancelInquiry('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>` : '';
+    const isNew = msgUnreadSets.client_marketplace.has(r.id);
+    const hoverAttr = isNew ? ` onmouseenter="markMsgSeen('client_marketplace','${r.id}', this)"` : '';
     return `
-      <div class="inquiry-row">
+      <div class="inquiry-row"${hoverAttr}>
         <div class="inquiry-head">
-          <div class="inquiry-item">${inquiryItemName(r, listing)}</div>
+          <div class="inquiry-item">${inquiryItemName(r, listing)}${isNew ? '<span class="new-order-dot" style="position:relative; top:auto; right:auto; display:inline-block; margin-left:8px;"></span>' : ''}</div>
           ${inquiryStatusBadge(r.status)}
         </div>
         <div class="inquiry-meta">${d.inquiryFrom}${seller ? displayName(seller) : '—'} — ${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
@@ -3382,7 +3482,7 @@ async function cancelInquiry(id){
   if(!confirm(T[LANG].confirmCancelInquiry)) return;
   const { data, error } = await sb.from('marketplace_inquiries').update({ status:'cancelled', updated_at: new Date().toISOString() }).eq('id', id).select('seller_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
-  if(data) pushNotification(data.seller_id, 'seller_marketplace');
+  if(data) pushNotification(data.seller_id, 'seller_marketplace', id);
   sweep(); loadMyInquiries();
 }
 function toggleMktHistory(){
@@ -3393,13 +3493,13 @@ function toggleMktHistory(){
 async function buyerAcceptCounter(id, counterPrice){
   const { data, error } = await sb.from('marketplace_inquiries').update({ status:'accepted', offer_price: counterPrice, updated_at: new Date().toISOString() }).eq('id', id).select('seller_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
-  if(data) pushNotification(data.seller_id, 'seller_marketplace');
+  if(data) pushNotification(data.seller_id, 'seller_marketplace', id);
   sweep(); loadMyInquiries();
 }
 async function buyerRejectCounter(id){
   const { data, error } = await sb.from('marketplace_inquiries').update({ status:'rejected', updated_at: new Date().toISOString() }).eq('id', id).select('seller_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
-  if(data) pushNotification(data.seller_id, 'seller_marketplace');
+  if(data) pushNotification(data.seller_id, 'seller_marketplace', id);
   sweep(); loadMyInquiries();
 }
 
@@ -3469,9 +3569,7 @@ async function loadSellerDashboard(){
   const dashDesc = $('sellerDashDescription');
   if(dashDesc){ if(shop?.description){ dashDesc.textContent = shop.description; dashDesc.hidden = false; } else { dashDesc.hidden = true; } }
   await loadMyListings();
-  await loadReceivedInquiries();
   await loadMyResourceRequests();
-  markCategoryRead('seller_marketplace');
   const stats = await fetchSellerShopStats(session.user.id);
   renderShopStats($('sellerDashStatsCard'), stats);
   checkAndRenderSellerAchievements('sellerDashAchvCard');
@@ -3827,34 +3925,7 @@ async function loadReceivedInquiries(){
   if(error){ box.textContent = error.message; return; }
   const rows = data || [];
   updateInquiriesBadge(rows);
-  // Propositions reçues sur les "ressources demandées" postées par ce vendeur (affichage simple, lecture seule).
-  const { data: resOffers } = await sb.from('resource_offers').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
-  const resOffersList = resOffers || [];
-  let resOffersHtml = '';
-  if(resOffersList.length){
-    const requestIds = [...new Set(resOffersList.map(r=>r.request_id))];
-    const clientIds = [...new Set(resOffersList.map(r=>r.client_id))];
-    const [requests, clients] = await Promise.all([
-      requestIds.length ? sb.from('resource_requests').select('id,item_name,quantity').in('id', requestIds).then(r=>r.data||[]) : Promise.resolve([]),
-      clientIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', clientIds).then(r=>r.data||[]) : Promise.resolve([])
-    ]);
-    const rMap={}; requests.forEach(r=>rMap[r.id]=r);
-    const cMap={}; clients.forEach(c=>cMap[c.id]=c);
-    resOffersHtml = resOffersList.map(r => {
-      const req = rMap[r.request_id];
-      const client = cMap[r.client_id];
-      return `
-        <div class="inquiry-row">
-          <div class="inquiry-head">
-            <div class="inquiry-item">${d.resourceOfferLabel} ${req ? req.item_name : '—'}</div>
-            ${inquiryStatusBadge(r.status)}
-          </div>
-          <div class="inquiry-meta">${d.inquiryFrom}${client ? displayName(client) : '—'}</div>
-          ${r.price ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(r.price)}</strong></div>` : ''}
-          ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
-        </div>`;
-    }).join('');
-  }
+  msgUnreadSets.seller_marketplace = await loadMsgUnreadSet('seller_marketplace');
   const current = rows.filter(r => !['completed','rejected','cancelled'].includes(r.status));
   const history = rows.filter(r => ['completed','rejected','cancelled'].includes(r.status));
   const histCountEl = $('sellerMktHistoryCount');
@@ -3885,8 +3956,7 @@ async function loadReceivedInquiries(){
         </div>`;
     }).join('');
   }
-  if(!current.length && !resOffersList.length){ box.innerHTML = `<p class="muted">${d.noReceivedInquiries}</p>`; return; }
-  if(!current.length){ box.innerHTML = resOffersHtml; return; }
+  if(!current.length){ box.innerHTML = `<p class="muted">${d.noReceivedInquiries}</p>`; return; }
   box.innerHTML = current.map(r => {
     const listing = lMap[r.listing_id];
     const buyer = bMap[r.buyer_id];
@@ -3942,10 +4012,12 @@ async function loadReceivedInquiries(){
         </div>`;
       }
     }
+    const isNew = msgUnreadSets.seller_marketplace.has(r.id);
+    const hoverAttr = isNew ? ` onmouseenter="markMsgSeen('seller_marketplace','${r.id}', this)"` : '';
     return `
-      <div class="inquiry-row">
+      <div class="inquiry-row"${hoverAttr}>
         <div class="inquiry-head">
-          <div class="inquiry-item">${listing ? listing.item_name : (r.snap_item_name || '—')}</div>
+          <div class="inquiry-item">${listing ? listing.item_name : (r.snap_item_name || '—')}${isNew ? '<span class="new-order-dot" style="position:relative; top:auto; right:auto; display:inline-block; margin-left:8px;"></span>' : ''}</div>
           ${inquiryStatusBadge(r.status)}
         </div>
         <div class="inquiry-meta">${d.inquiryFrom}${buyer ? displayName(buyer) : '—'} — ${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
@@ -3953,7 +4025,41 @@ async function loadReceivedInquiries(){
         ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
         ${actions}
       </div>`;
-  }).join('') + resOffersHtml;
+  }).join('');
+}
+// Propositions reçues sur les "ressources demandées" postées par ce vendeur (onglet Messagerie > Desired Items).
+async function loadReceivedResourceOffers(){
+  const box = $('receivedResourceOffersList'); if(!box || !session) return;
+  const d = T[LANG];
+  const { data: resOffers, error } = await sb.from('resource_offers').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
+  if(error){ box.textContent = error.message; return; }
+  msgUnreadSets.seller_resource_offer = await loadMsgUnreadSet('seller_resource_offer');
+  const resOffersList = resOffers || [];
+  if(!resOffersList.length){ box.innerHTML = `<p class="muted">${d.noReceivedResourceOffers}</p>`; return; }
+  const requestIds = [...new Set(resOffersList.map(r=>r.request_id))];
+  const clientIds = [...new Set(resOffersList.map(r=>r.client_id))];
+  const [requests, clients] = await Promise.all([
+    requestIds.length ? sb.from('resource_requests').select('id,item_name,quantity').in('id', requestIds).then(r=>r.data||[]) : Promise.resolve([]),
+    clientIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', clientIds).then(r=>r.data||[]) : Promise.resolve([])
+  ]);
+  const rMap={}; requests.forEach(r=>rMap[r.id]=r);
+  const cMap={}; clients.forEach(c=>cMap[c.id]=c);
+  box.innerHTML = resOffersList.map(r => {
+    const req = rMap[r.request_id];
+    const client = cMap[r.client_id];
+    const isNew = msgUnreadSets.seller_resource_offer.has(r.id);
+    const hoverAttr = isNew ? ` onmouseenter="markMsgSeen('seller_resource_offer','${r.id}', this)"` : '';
+    return `
+      <div class="inquiry-row"${hoverAttr}>
+        <div class="inquiry-head">
+          <div class="inquiry-item">${d.resourceOfferLabel} ${req ? req.item_name : '—'}${isNew ? '<span class=\"new-order-dot\" style=\"position:relative; top:auto; right:auto; display:inline-block; margin-left:8px;\"></span>' : ''}</div>
+          ${inquiryStatusBadge(r.status)}
+        </div>
+        <div class="inquiry-meta">${d.inquiryFrom}${client ? displayName(client) : '—'}</div>
+        ${r.price ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(r.price)}</strong></div>` : ''}
+        ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
+      </div>`;
+  }).join('');
 }
 function toggleSellerMktHistory(){
   const box = $('receivedInquiriesHistoryList');
@@ -3997,18 +4103,19 @@ async function acceptInquiry(id){
   }
   const { data, error } = await sb.from('marketplace_inquiries').update(updates).eq('id', id).select('buyer_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
-  if(data) pushNotification(data.buyer_id, 'client_marketplace');
+  if(data) pushNotification(data.buyer_id, 'client_marketplace', id);
   sweep(); loadReceivedInquiries(); loadMyListings();
 }
 async function rejectInquiry(id){
-  const { error } = await sb.from('marketplace_inquiries').update({ status:'rejected', updated_at: new Date().toISOString() }).eq('id', id);
+  const { data, error } = await sb.from('marketplace_inquiries').update({ status:'rejected', updated_at: new Date().toISOString() }).eq('id', id).select('buyer_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
+  if(data) pushNotification(data.buyer_id, 'client_marketplace', id);
   sweep(); loadReceivedInquiries();
 }
 async function counterInquiry(id, price){
   const { data, error } = await sb.from('marketplace_inquiries').update({ status:'countered', counter_price: price, updated_at: new Date().toISOString() }).eq('id', id).select('buyer_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
-  if(data) pushNotification(data.buyer_id, 'client_marketplace');
+  if(data) pushNotification(data.buyer_id, 'client_marketplace', id);
   sweep(); loadReceivedInquiries();
 }
 async function markPickedUp(id){
@@ -4031,6 +4138,7 @@ async function markPickedUp(id){
   if(error){ alert('Erreur : '+error.message); return; }
   if(!updated){ alert('Erreur : la mise à jour a été bloquée (droits insuffisants sur la base). La vente n\'a PAS été validée, réessaie ou contacte l\'admin.'); return; }
   if(!isStockSale && listing) await sb.from('marketplace_listings').delete().eq('id', listing.id);
+  pushNotification(inquiry.buyer_id, 'client_marketplace', id);
   sweep(); loadReceivedInquiries(); loadMyListings();
   checkAndRenderSellerAchievements('sellerDashAchvCard');
   fetchSellerShopStats(session.user.id).then(stats => {
@@ -5614,9 +5722,12 @@ async function initAuth(){
 
   sb.channel('inquiries-realtime')
     .on('postgres_changes', { event:'*', schema:'public', table:'marketplace_inquiries' }, () => {
-      const v = effectiveView();
-      if((v === 'client' || v === 'admin') && !$('view-client-dash').hidden && clientTab === 'marketplace') loadMyInquiries();
-      if((v === 'seller' || v === 'admin') && !$('view-seller-dash').hidden) loadReceivedInquiries();
+      if(!$('view-messages').hidden){
+        if(msgTab === 'client') loadMyInquiries();
+        else if(msgTab === 'seller') loadReceivedInquiries();
+        else if(msgTab === 'sales') loadMsgSales();
+      }
+      refreshNotifBadges();
     })
     .subscribe();
 

@@ -378,6 +378,7 @@
   .mkt-tag.tag-q700{color:#8fd3ff; border-color:#8fd3ff;}
   .mkt-tag.tag-q800{color:#b9a3ff; border-color:#b9a3ff;}
   .mkt-tag.tag-q900{color:#ffd166; border-color:#ffd166;}
+  .mkt-tag.tag-negotiable{color:#9dff9d; border-color:#9dff9d;}
   .mkt-price-unit{font-size:.68rem; color:var(--muted); margin-left:2px; text-transform:none;}
   .mkt-stock-note{font-size:.72rem; color:var(--muted); margin-top:2px;}
   .listing-mode-tabs{margin:0 0 4px; border-bottom:1px solid var(--border);}
@@ -1335,6 +1336,7 @@
           <button type="button" class="tag-toggle-btn" id="tagBtn-700" onclick="toggleListingTag('700')" data-i18n="tagQ700">700+</button>
           <button type="button" class="tag-toggle-btn" id="tagBtn-800" onclick="toggleListingTag('800')" data-i18n="tagQ800">800+</button>
           <button type="button" class="tag-toggle-btn" id="tagBtn-900" onclick="toggleListingTag('900')" data-i18n="tagQ900">900+</button>
+          <button type="button" class="tag-toggle-btn" id="tagBtn-negotiable" onclick="toggleListingTag('negotiable')" data-i18n="tagNegotiable">NÉGOCIABLE</button>
         </div>
         <label data-i18n="listingPhotoLbl">Photo (optionnel)</label>
         <input type="file" id="listingPhotoInput" accept="image/*" hidden onchange="onListingPhotoSelected(this)">
@@ -1895,7 +1897,7 @@ const T = {
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
     newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
     listingStockModeLbl:"Vendre par unité (gérer un stock)", listingStockModeHint:"Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.", listingPriceUnitLbl:"Prix unitaire (aUEC)", listingStockLbl:"Stock disponible", perUnitSuffix:" / unité", stockLbl:"Stock :", yourQtyLbl:"Quantité souhaitée :", stockAvailableLbl:"Disponible :", stockTooLowAlert:"Erreur : il n'y a plus assez de stock disponible pour cette quantité.", invalidQtyAlert:"Erreur : quantité invalide.", qtyRequestedLbl:"Quantité :", listingModeSingleTab:"VENTE UNIQUE", listingModeStockTab:"VENTE PAR QUANTITÉ",
-    listingTagsLbl:"Tags (optionnel)", tagCrafted:"CRAFTÉ", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", editListingBtn:"MODIFIER",
+    listingTagsLbl:"Tags (optionnel)", tagCrafted:"CRAFTÉ", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", tagNegotiable:"NÉGOCIABLE", editListingBtn:"MODIFIER",
     requestResourcesTitle:"Poster un objet recherché", requestResourcesBtn:"OBJET RECHERCHÉ", resourceNameLbl:"Objet recherché", phResourceName:"ex: Laranite brute, casque d'armure lourde...", resourceQtyLbl:"Quantité souhaitée", resourcePriceLbl:"Prix proposé (aUEC, optionnel)", resourceNoteLbl:"Note (optionnel)", phResourceNote:"ex: Livraison sur Nyx, quantité négociable...", submitResourceRequestBtn:"PUBLIER L'ANNONCE", resourceRequestSaved:"ANNONCE PUBLIÉE !",
     myResourceRequestsTitle:"Objets recherchés", noResourceRequests:"Tu n'as posté aucune annonce d'objet recherché pour le moment.",
     tabResources:"DESIRED ITEMS", requestedResourcesTitle:"Objets recherchés par les vendeurs", noOpenResourceRequests:"Aucune annonce en cours.", resourceRequestedBy:"Demandé par ",
@@ -2027,7 +2029,7 @@ const T = {
     rankToNextSales:"{n} more sale(s) to reach {rank}",
     newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
     listingStockModeLbl:"Sell by unit (manage a stock)", listingStockModeHint:"The price is counted per unit and the buyer picks how many they want. Stock goes down automatically with each sale.", listingPriceUnitLbl:"Unit price (aUEC)", listingStockLbl:"Stock available", perUnitSuffix:" / unit", stockLbl:"Stock:", yourQtyLbl:"Quantity wanted:", stockAvailableLbl:"Available:", stockTooLowAlert:"Error: there isn't enough stock left for that quantity.", invalidQtyAlert:"Error: invalid quantity.", qtyRequestedLbl:"Quantity:", listingModeSingleTab:"SINGLE SALE", listingModeStockTab:"SELL BY QUANTITY",
-    listingTagsLbl:"Tags (optional)", tagCrafted:"CRAFTED", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", editListingBtn:"EDIT",
+    listingTagsLbl:"Tags (optional)", tagCrafted:"CRAFTED", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", tagNegotiable:"NEGOTIABLE", editListingBtn:"EDIT",
     requestResourcesTitle:"Post a desired item", requestResourcesBtn:"DESIRED ITEM", resourceNameLbl:"Item wanted", phResourceName:"e.g. Raw Laranite, heavy armor helmet...", resourceQtyLbl:"Quantity wanted", resourcePriceLbl:"Price offered (aUEC, optional)", resourceNoteLbl:"Note (optional)", phResourceNote:"e.g. Delivery to Nyx, quantity negotiable...", submitResourceRequestBtn:"POST AD", resourceRequestSaved:"AD POSTED!",
     myResourceRequestsTitle:"Desired items", noResourceRequests:"You haven't posted any desired item ad yet.",
     tabResources:"DESIRED ITEMS", requestedResourcesTitle:"Items sellers are looking for", noOpenResourceRequests:"No open desired item ads right now.", resourceRequestedBy:"Requested by ",
@@ -3887,9 +3889,11 @@ async function loadSellerDashboard(){
 }
 let pendingListingPhotoFile = null;
 let editingListingId = null;
-let listingTagsState = { crafted:false, q700:false, q800:false, q900:false };
+let listingTagsState = { crafted:false, q700:false, q800:false, q900:false, negotiable:false };
 function toggleListingTag(tag){
-  if(tag === 'crafted'){
+  if(tag === 'negotiable'){
+    listingTagsState.negotiable = !listingTagsState.negotiable;
+  } else if(tag === 'crafted'){
     listingTagsState.crafted = !listingTagsState.crafted;
     if(!listingTagsState.crafted){ listingTagsState.q700 = listingTagsState.q800 = listingTagsState.q900 = false; }
   } else {
@@ -3905,6 +3909,7 @@ function renderListingTagButtons(){
   const b7 = $('tagBtn-700'); if(b7) b7.classList.toggle('active', listingTagsState.q700);
   const b8 = $('tagBtn-800'); if(b8) b8.classList.toggle('active', listingTagsState.q800);
   const b9 = $('tagBtn-900'); if(b9) b9.classList.toggle('active', listingTagsState.q900);
+  const bN = $('tagBtn-negotiable'); if(bN) bN.classList.toggle('active', listingTagsState.negotiable);
 }
 function listingTagsArray(){
   const tags = [];
@@ -3912,18 +3917,19 @@ function listingTagsArray(){
   if(listingTagsState.q700) tags.push('700');
   if(listingTagsState.q800) tags.push('800');
   if(listingTagsState.q900) tags.push('900');
+  if(listingTagsState.negotiable) tags.push('negotiable');
   return tags;
 }
 function setListingTagsFromArray(tags){
   const t = tags || [];
-  listingTagsState = { crafted: t.includes('crafted'), q700: t.includes('700'), q800: t.includes('800'), q900: t.includes('900') };
+  listingTagsState = { crafted: t.includes('crafted'), q700: t.includes('700'), q800: t.includes('800'), q900: t.includes('900'), negotiable: t.includes('negotiable') };
   renderListingTagButtons();
 }
 function listingTagsHtml(tags){
   if(!tags || !tags.length) return '';
   const d = T[LANG];
-  const labelMap = { crafted:d.tagCrafted, '700':d.tagQ700, '800':d.tagQ800, '900':d.tagQ900 };
-  const classMap = { crafted:'tag-crafted', '700':'tag-q700', '800':'tag-q800', '900':'tag-q900' };
+  const labelMap = { crafted:d.tagCrafted, '700':d.tagQ700, '800':d.tagQ800, '900':d.tagQ900, negotiable:d.tagNegotiable };
+  const classMap = { crafted:'tag-crafted', '700':'tag-q700', '800':'tag-q800', '900':'tag-q900', negotiable:'tag-negotiable' };
   return `<div class="mkt-tags-overlay">${tags.map(t => `<span class="mkt-tag ${classMap[t]||''}">${labelMap[t]||t}</span>`).join('')}</div>`;
 }
 function onListingStockModeChange(){
@@ -3953,7 +3959,7 @@ function setListingMode(isStock, btnEl){
 function resetListingForm(){
   $('listingItem').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
   applyListingMode(false);
-  listingTagsState = { crafted:false, q700:false, q800:false, q900:false };
+  listingTagsState = { crafted:false, q700:false, q800:false, q900:false, negotiable:false };
   renderListingTagButtons();
 }
 function openEditListing(id){

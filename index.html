@@ -1804,7 +1804,7 @@ const T = {
     accept:"ACCEPTER", markPurchased:"MARCHANDISE ACHETÉE", markTransit:"MARQUER EN TRANSIT", markDelivered:"MARQUER LIVRÉE",
     members:"Membres", footer:"COURIERS UNITED // RISQUES INCLUS DANS LA COMMISSION // PAIEMENT À LA REMISE",
     discordCtaText:"Rejoins la communauté sur Discord", discordCtaBtn:"REJOINS-NOUS SUR DISCORD",
-    msgClearBtn:"EFFACER", confirmClearConversation:"Effacer cette conversation de ta messagerie ? Elle réapparaîtra automatiquement si vous échangez à nouveau.",
+    msgClearBtn:"EFFACER", confirmClearConversation:"Vider cette conversation ? Les éléments encore en attente d'une réponse resteront affichés.", msgThreadCleared:"Conversation vidée. Les nouveaux échanges apparaîtront ici.",
     dangerZoneTitle:"Zone dangereuse", resetProgressionBtn:"RESET PROGRESSION",
     resetProgressionNote:"Réinitialise pour TOUS les membres : statistiques, rangs, succès débloqués et historique des livraisons/ventes. Action irréversible.",
     confirmResetProgression:"Es-tu sûr(e) ? Ceci va effacer TOUTES les statistiques, rangs, succès et historiques de livraisons/ventes de TOUS les membres, définitivement.",
@@ -1931,7 +1931,7 @@ const T = {
     accept:"ACCEPT", markPurchased:"MARK PURCHASED", markTransit:"MARK IN TRANSIT", markDelivered:"MARK DELIVERED",
     members:"Members", footer:"COURIERS UNITED // RISK INCLUDED IN THE COMMISSION // PAYMENT ON DELIVERY",
     discordCtaText:"Join our community on Discord", discordCtaBtn:"JOIN US ON DISCORD",
-    msgClearBtn:"CLEAR", confirmClearConversation:"Clear this conversation from your messaging? It will reappear automatically if you exchange again.",
+    msgClearBtn:"CLEAR", confirmClearConversation:"Clear this conversation? Items still awaiting a response will stay visible.", msgThreadCleared:"Conversation cleared. New exchanges will show up here.",
     dangerZoneTitle:"Danger zone", resetProgressionBtn:"RESET PROGRESSION",
     resetProgressionNote:"Resets, for ALL members: stats, ranks, unlocked achievements and delivery/sales history. Irreversible action.",
     confirmResetProgression:"Are you sure? This will permanently erase ALL stats, ranks, achievements and delivery/sales history for ALL members.",
@@ -2321,9 +2321,9 @@ function openMsgList(){
   loadMsgConversations();
 }
 function closeMsgThread(){ openMsgList(); }
-// "Clear" une conversation : la masque de la liste de messagerie (par joueur, stocké localement dans ce
-// navigateur) tant qu'aucun nouvel échange n'a lieu avec cette personne. Non destructif : les demandes/offres
-// elles-mêmes ne sont jamais supprimées, seulement cachées de la messagerie jusqu'au prochain message.
+// "Clear" une conversation : vide l'AFFICHAGE de son contenu (stocké localement dans ce navigateur, par
+// joueur) sans jamais supprimer les demandes/offres réelles ni faire disparaître la conversation de la
+// liste de messagerie. Les éléments encore en attente d'une réponse restent visibles (voir renderMsgThreadItems).
 function getMsgClearedMap(){
   if(!session) return {};
   try{ return JSON.parse(localStorage.getItem('su-msg-cleared-'+session.user.id) || '{}'); }
@@ -2339,8 +2339,10 @@ function clearMsgConversation(){
   if(!currentMsgThreadPartnerId) return;
   if(!confirm(T[LANG].confirmClearConversation)) return;
   const g = msgConversationsCache[currentMsgThreadPartnerId];
-  setMsgCleared(currentMsgThreadPartnerId, (g && g.lastAt) || new Date().toISOString());
-  openMsgList();
+  // Vide l'intérieur de CE fil (garde les éléments encore en attente d'une réponse) sans faire disparaître
+  // la conversation de la liste de messagerie, et sans rien supprimer en base : on reste sur le fil, juste réaffiché.
+  setMsgCleared(currentMsgThreadPartnerId, new Date().toISOString());
+  if(g) renderMsgThreadItems(g);
 }
 // Rafraîchit la liste des conversations et, si un fil est ouvert, le fil en cours (appelé après toute action
 // qui change l'état d'une demande/offre : accepter, refuser, contre-offre, annuler, marquer récupéré...).
@@ -2396,13 +2398,6 @@ async function loadMsgConversations(){
   (offRes.data||[]).forEach(r => {
     const iAmSeller = r.seller_id === uid; // seller_id = celui qui a posté l'objet recherché (destinataire de l'offre)
     addItem(r, iAmSeller ? 'offer_received' : 'offer_sent', iAmSeller ? r.client_id : r.seller_id);
-  });
-  // Une conversation "clear" (voir clearMsgConversation) est cachée tant qu'aucun nouvel échange n'a
-  // eu lieu depuis : si son dernier élément est plus ancien (ou égal) que le moment du clear, on la retire.
-  const clearedMap = getMsgClearedMap();
-  Object.keys(groups).forEach(id => {
-    const clearedAt = clearedMap[id];
-    if(clearedAt && new Date(groups[id].lastAt) <= new Date(clearedAt)) delete groups[id];
   });
   msgConversationsCache = groups;
   const counterpartIds = Object.keys(groups);
@@ -2481,11 +2476,20 @@ async function renderMsgThreadItems(g){
   ]);
   const lMap={}; listings.forEach(l=>lMap[l.id]=l);
   const rMap={}; requests.forEach(r=>rMap[r.id]=r);
-  const sorted = g.items.slice().sort((a,b)=> new Date(a.created_at)-new Date(b.created_at));
-  box.innerHTML = sorted.map(it => {
+  // "Clear" (voir clearMsgConversation) vide l'intérieur de CETTE conversation, mais jamais la conversation
+  // elle-même dans la messagerie : on ne filtre que l'affichage des éléments, on ne les supprime jamais en base.
+  // Un élément encore "en attente d'une réponse" (pending/countered) reste toujours visible, même s'il est
+  // antérieur au clear ; seuls les éléments déjà résolus (acceptée/refusée/terminée/annulée) créés avant
+  // le clear sont masqués.
+  const AWAITING_RESPONSE = ['pending','countered'];
+  const clearedAt = getMsgClearedMap()[g.id];
+  const visibleItems = g.items.filter(it => AWAITING_RESPONSE.includes(it.status) || !clearedAt || new Date(it.created_at) > new Date(clearedAt));
+  const sorted = visibleItems.slice().sort((a,b)=> new Date(a.created_at)-new Date(b.created_at));
+  const d = T[LANG];
+  box.innerHTML = sorted.length ? sorted.map(it => {
     if(it.__kind === 'inq_received' || it.__kind === 'inq_sent') return inquiryThreadItemHtml(it, it.__kind === 'inq_received', lMap[it.listing_id]);
     return offerThreadItemHtml(it, it.__kind === 'offer_received', rMap[it.request_id]);
-  }).join('');
+  }).join('') : `<p class="muted">${d.msgThreadCleared}</p>`;
   animateShipTracks(box);
 }
 function inquiryThreadItemHtml(r, iAmSeller, listing){

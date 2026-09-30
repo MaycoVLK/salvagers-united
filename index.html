@@ -990,12 +990,7 @@
           <label data-i18n="yourOfferLbl">Ta proposition (aUEC, optionnel) :</label>
           <input type="number" id="offerModalPrice" step="0.01" min="0" oninput="updateOfferModalTotal()">
         </div>
-        <div class="mkt-delivery-choice"><span data-i18n="deliveryMethodLbl">Mode de livraison souhaité</span></div>
-        <div class="mkt-delivery-choice">
-          <label><input type="radio" name="offerModalDelivery" value="courier" checked onchange="updateOfferModalTotal()"> <span data-i18n="deliveryMethodCourier">Livraison par un coursier</span></label>
-          <label><input type="radio" name="offerModalDelivery" value="pickup" onchange="updateOfferModalTotal()"> <span data-i18n="deliveryMethodPickup">Je viens le chercher sur place</span></label>
-        </div>
-        <div class="offer-modal-note" id="offerModalCourierNote" data-i18n="courierSurchargeNote">Une livraison par coursier ajoute 15% au prix (au moins 50 000 aUEC garantis au coursier).</div>
+        <div class="offer-modal-note" data-i18n="pickupByDefaultNote">La remise en main propre est proposée par défaut. Si besoin, le vendeur pourra ensuite faire appel à un coursier directement dans la conversation (des frais de livraison s'ajoutent alors au prix).</div>
         <div class="offer-modal-total"><span data-i18n="offerModalTotalLbl">Total estimé :</span> <strong id="offerModalTotal">—</strong></div>
         <button type="button" class="btn-primary" id="offerModalSendBtn" onclick="submitOfferModal()" data-i18n="sendInquiryBtn">ENVOYER LA DEMANDE</button>
       </div>
@@ -1915,6 +1910,7 @@ const T = {
     acceptCounterBtn:"ACCEPTER LA CONTRE-OFFRE", rejectCounterBtn:"REFUSER", waitingBuyerResponse:"En attente de la réponse de l'acheteur à ta contre-offre.",
     mktHistoryLabel:"Historique des achats", mktHistoryEmpty:"Aucun achat terminé pour le moment.",
     offerModalTotalLbl:"Total estimé :", courierSurchargeNote:"Une livraison par coursier ajoute 15% au prix (au moins 50 000 aUEC garantis au coursier).",
+    pickupByDefaultNote:"La remise en main propre est proposée par défaut. Si besoin, le vendeur pourra ensuite faire appel à un coursier directement dans la conversation (des frais de livraison s'ajoutent alors au prix).",
     markPickedUpBtn:"MARQUER COMME RÉCUPÉRÉ", handToCourierBtn:"REMETTRE À UN COURSIER",
     inquiryAcceptedNotif:"🎉 Le vendeur a accepté ta demande !", inquiryRejectedNotif:"Le vendeur a refusé ta demande.",
     inquiryFrom:"De la part de : ", inquiryDeliveryVia:"Via : ", pickupDoneNote:"Objet récupéré en main propre.",
@@ -2043,6 +2039,7 @@ const T = {
     acceptCounterBtn:"ACCEPT COUNTER-OFFER", rejectCounterBtn:"REJECT", waitingBuyerResponse:"Waiting for the buyer's response to your counter-offer.",
     mktHistoryLabel:"Purchase history", mktHistoryEmpty:"No completed purchases yet.",
     offerModalTotalLbl:"Estimated total:", courierSurchargeNote:"A courier delivery adds 15% to the price (at least 50,000 aUEC guaranteed to the courier).",
+    pickupByDefaultNote:"In-person pickup is used by default. If needed, the seller can then request a courier directly from the conversation (delivery fees are added to the price at that point).",
     markPickedUpBtn:"MARK AS PICKED UP", handToCourierBtn:"HAND TO A COURIER",
     inquiryAcceptedNotif:"🎉 The seller accepted your request!", inquiryRejectedNotif:"The seller rejected your request.",
     inquiryFrom:"From: ", inquiryDeliveryVia:"Via: ", pickupDoneNote:"Item picked up in person.",
@@ -2559,12 +2556,11 @@ function inquiryThreadItemHtml(r, iAmSeller, listing){
     } else if(r.status === 'countered'){
       actions = `<div class="inquiry-meta">${d.waitingBuyerResponse}</div>`;
     } else if(r.status === 'accepted'){
-      if(r.delivery_method === 'pickup'){
-        actions = `<div class="inquiry-actions"><button class="btn-secondary" onclick="markPickedUp('${r.id}')">${d.markPickedUpBtn}</button></div>`;
-      } else if(r.order_id){
+      if(r.order_id){
         actions = `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
       } else {
         actions = `<div class="inquiry-actions">
+          <button class="btn-secondary" onclick="markPickedUp('${r.id}')">${d.markPickedUpBtn}</button>
           <button class="btn-secondary" onclick="toggleInquiryDeliveryForm('${r.id}')">${d.requestDeliveryBtn}</button>
         </div>
         <div class="delivery-request-form" id="idform-${r.id}" hidden>
@@ -2583,7 +2579,7 @@ function inquiryThreadItemHtml(r, iAmSeller, listing){
         <button class="btn-secondary" onclick="buyerAcceptCounter('${r.id}', ${Number(r.counter_price)})">${d.acceptCounterBtn}</button>
         <button class="btn-logout" onclick="buyerRejectCounter('${r.id}')">${d.rejectCounterBtn}</button>
       </div>`;
-    } else if(r.status === 'accepted' && r.delivery_method === 'courier' && r.order_id){
+    } else if(r.status === 'accepted' && r.order_id){
       actions = `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
     }
     const canCancel = !r.order_id && ['pending','countered','accepted'].includes(r.status);
@@ -2596,7 +2592,7 @@ function inquiryThreadItemHtml(r, iAmSeller, listing){
         <div class="inquiry-item">${listing ? listing.item_name : (r.snap_item_name || '—')}</div>
         ${inquiryStatusBadge(r.status)}
       </div>
-      <div class="inquiry-meta">${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
+      <div class="inquiry-meta">${d.inquiryDeliveryVia}${r.order_id ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
       ${priceLine}
       ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
       ${actions}
@@ -3437,8 +3433,6 @@ function openOfferModal(btn){
     $('offerModalQty').max = offerModalStock;
     $('offerModalStockNote').textContent = d.stockAvailableLbl + ' ' + offerModalStock;
   }
-  const courierRadio = document.querySelector('input[name="offerModalDelivery"][value="courier"]');
-  if(courierRadio) courierRadio.checked = true;
   updateOfferModalTotal();
   $('offerModalOverlay').hidden = false;
 }
@@ -3457,18 +3451,13 @@ function updateOfferModalTotal(){
     const offerVal = parseFloat($('offerModalPrice').value);
     base = (!isNaN(offerVal) && offerVal > 0) ? offerVal : offerModalListingPrice;
   }
-  const methodInput = document.querySelector('input[name="offerModalDelivery"]:checked');
-  const isCourier = !methodInput || methodInput.value === 'courier';
-  const total = isCourier ? base + computeCommission(base) : base;
-  $('offerModalCourierNote').hidden = !isCourier;
-  $('offerModalTotal').textContent = fmt(total);
+  $('offerModalTotal').textContent = fmt(base);
 }
 async function submitOfferModal(){
   if(!session || !offerModalListingId) return;
   const d = T[LANG];
   const message = $('offerModalMsg').value.trim();
-  const methodInput = document.querySelector('input[name="offerModalDelivery"]:checked');
-  const delivery_method = methodInput ? methodInput.value : 'courier';
+  const delivery_method = 'pickup';
   const { data: listing, error: lErr } = await sb.from('marketplace_listings').select('seller_id,is_stock,quantity').eq('id', offerModalListingId).single();
   if(lErr || !listing){ alert('Erreur : objet introuvable.'); return; }
   let offer_price = null;
@@ -4303,7 +4292,7 @@ async function requestInquiryDelivery(id){
   const { data: order, error } = await sb.from('orders').insert(payload).select().single();
   if(error){ alert('Erreur : '+error.message); return; }
   await sb.from('marketplace_inquiries').update({
-    order_id: order.id, updated_at: new Date().toISOString(),
+    order_id: order.id, updated_at: new Date().toISOString(), delivery_method: 'courier',
     snap_item_name: itemName, snap_price: unitPrice, snap_qty: qty
   }).eq('id', id);
   notifyAllCouriers(order.id);

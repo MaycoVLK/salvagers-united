@@ -1863,8 +1863,8 @@ const T = {
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
     shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
     sellerAchvTitle:"Succès vendeur",
-    sellerAchvLabels:{first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées"},
-    sellerAchvDesc:{first_sale:"Conclus ta première vente.", first_courier_sale:"Fais livrer une vente par un coursier.", five_sales:"Conclus 5 ventes."},
+    sellerAchvLabels:{first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command"},
+    sellerAchvDesc:{first_sale:"Conclus ta première vente.", first_courier_sale:"Fais livrer une vente par un coursier.", five_sales:"Conclus 5 ventes.", pockets_full:"Mets en ligne 15 annonces ou plus.", good_fences:"Valide une vente de plus de 2 000 000 aUEC en une seule fois.", crafter_confirmed:"Mets en vente un item crafté de qualité 800 ou plus.", not_stolen:"Valide la vente d'une bombe Colossus.", couldnt_be_bothered:"Mets en ligne une annonce sans photo.", your_wish:"Valide la proposition d'un client sur un de tes desired items."},
     sellerRankLabels:{novice:"Novice", trader:"Négociant", merchant:"Marchand", tycoon:"Magnat"}, rankSales:"ventes",
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
     newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
@@ -1990,8 +1990,8 @@ const T = {
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
     shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
     sellerAchvTitle:"Seller achievements",
-    sellerAchvLabels:{first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made"},
-    sellerAchvDesc:{first_sale:"Close your first sale.", first_courier_sale:"Have a sale delivered by a courier.", five_sales:"Close 5 sales."},
+    sellerAchvLabels:{first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command"},
+    sellerAchvDesc:{first_sale:"Close your first sale.", first_courier_sale:"Have a sale delivered by a courier.", five_sales:"Close 5 sales.", pockets_full:"List 15 or more items for sale.", good_fences:"Close a single sale worth more than 2,000,000 aUEC.", crafter_confirmed:"List a crafted item with quality 800 or higher.", not_stolen:"Complete the sale of a Colossus bomb.", couldnt_be_bothered:"List an item with no photo.", your_wish:"Accept a client's offer on one of your desired items."},
     sellerRankLabels:{novice:"Novice", trader:"Trader", merchant:"Merchant", tycoon:"Tycoon"}, rankSales:"sales",
     rankToNextSales:"{n} more sale(s) to reach {rank}",
     newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
@@ -5281,31 +5281,44 @@ function sellerRankShowcaseHtml(salesCount){
 // --- STATISTIQUES & SUCCÈS DE BOUTIQUE (vendeur) ---
 async function fetchSellerShopStats(sellerId){
   if(!sellerId) return null;
-  const [ordersRes, inquiriesRes, upvotesRes] = await Promise.all([
+  const [ordersRes, inquiriesRes, upvotesRes, listingsRes, acceptedOffersRes] = await Promise.all([
     sb.from('orders').select('items,gross_price,status').eq('seller_id', sellerId).eq('order_type','marketplace').eq('status','delivered'),
     sb.from('marketplace_inquiries').select('snap_item_name,snap_price,snap_qty,status,delivery_method').eq('seller_id', sellerId).eq('status','completed').eq('delivery_method','pickup'),
-    sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', sellerId)
+    sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', sellerId),
+    sb.from('marketplace_listings').select('tags,photo_url').eq('seller_id', sellerId),
+    sb.from('resource_offers').select('id', { count:'exact', head:true }).eq('seller_id', sellerId).eq('status','accepted')
   ]);
   const orderRows = ordersRes.data || [];
   const inquiryRows = inquiriesRes.data || [];
   const upvoteCount = upvotesRes.count || 0;
-  let itemsSold = 0, totalEarned = 0, mostExpensive = null;
+  const listingRows = listingsRes.data || [];
+  let itemsSold = 0, totalEarned = 0, mostExpensive = null, hasBigSale = false, hasSoldColossusBomb = false;
   orderRows.forEach(o => {
-    totalEarned += Number(o.gross_price) || 0;
+    const grossPrice = Number(o.gross_price) || 0;
+    totalEarned += grossPrice;
+    if(grossPrice > 2000000) hasBigSale = true;
     (o.items||[]).forEach(it => {
       itemsSold += Number(it.qty) || 0;
       if(!mostExpensive || Number(it.price) > mostExpensive.price) mostExpensive = { name: it.name, price: Number(it.price) };
+      if(isColossusBomb(it.name)) hasSoldColossusBomb = true;
     });
   });
   inquiryRows.forEach(r => {
     if(r.snap_price == null) return;
     const qty = Number(r.snap_qty) || 1;
     itemsSold += qty;
-    totalEarned += Number(r.snap_price) * qty;
+    const lineTotal = Number(r.snap_price) * qty;
+    totalEarned += lineTotal;
+    if(lineTotal > 2000000) hasBigSale = true;
     if(!mostExpensive || Number(r.snap_price) > mostExpensive.price) mostExpensive = { name: r.snap_item_name, price: Number(r.snap_price) };
+    if(isColossusBomb(r.snap_item_name)) hasSoldColossusBomb = true;
   });
   const salesCount = orderRows.length + inquiryRows.length;
-  return { salesCount, courierSalesCount: orderRows.length, itemsSold, totalEarned, mostExpensive, upvoteCount };
+  const listingsCount = listingRows.length;
+  const hasHighQualityCrafted = listingRows.some(l => (l.tags||[]).includes('crafted') && ((l.tags||[]).includes('800') || (l.tags||[]).includes('900')));
+  const hasListingNoPhoto = listingRows.some(l => !l.photo_url);
+  const hasAcceptedDesiredItemOffer = (acceptedOffersRes.count || 0) > 0;
+  return { salesCount, courierSalesCount: orderRows.length, itemsSold, totalEarned, mostExpensive, upvoteCount, listingsCount, hasBigSale, hasHighQualityCrafted, hasSoldColossusBomb, hasListingNoPhoto, hasAcceptedDesiredItemOffer };
 }
 function renderShopStats(box, stats){
   if(!box) return;
@@ -5329,13 +5342,29 @@ function renderShopStats(box, stats){
 const SELLER_ACHV_ICONS = {
   first_sale: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="6" width="10" height="8"/><rect x="5" y="3" width="6" height="3"/><rect x="6" y="1" width="4" height="2"/><rect x="6" y="9" width="4" height="2" fill="var(--panel)"/></g></svg>`,
   first_courier_sale: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="1" y="7" width="6" height="6"/><rect x="0" y="5" width="8" height="2"/><rect x="9" y="9" width="2" height="2"/><rect x="11" y="7" width="2" height="2"/><rect x="13" y="5" width="2" height="2"/></g></svg>`,
-  five_sales: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="10" width="12" height="3"/><rect x="3" y="7" width="10" height="3"/><rect x="4" y="4" width="8" height="3"/></g></svg>`
+  five_sales: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="10" width="12" height="3"/><rect x="3" y="7" width="10" height="3"/><rect x="4" y="4" width="8" height="3"/></g></svg>`,
+  pockets_full: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="6" y="2" width="4" height="2"/><rect x="4" y="4" width="8" height="1"/><rect x="3" y="5" width="10" height="8"/><rect x="4" y="13" width="8" height="1"/></g></svg>`,
+  good_fences: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="6" width="2" height="8"/><rect x="7" y="4" width="2" height="10"/><rect x="12" y="6" width="2" height="8"/><rect x="1" y="8" width="14" height="2"/></g></svg>`,
+  crafter_confirmed: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="9" y="2" width="5" height="4"/><rect x="7" y="6" width="3" height="2"/><rect x="5" y="8" width="2" height="2"/><rect x="3" y="10" width="2" height="2"/><rect x="1" y="12" width="2" height="2"/></g></svg>`,
+  not_stolen: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="10" y="1" width="2" height="2"/><rect x="9" y="3" width="2" height="2"/><rect x="5" y="5" width="6" height="2"/><rect x="4" y="7" width="8" height="4"/><rect x="5" y="11" width="6" height="2"/></g></svg>`,
+  couldnt_be_bothered: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="5" width="10" height="7"/><rect x="6" y="3" width="4" height="2"/><rect x="6" y="7" width="4" height="3" fill="var(--panel)"/><rect x="2" y="13" width="2" height="2"/><rect x="4" y="11" width="2" height="2"/><rect x="6" y="9" width="2" height="2"/><rect x="8" y="7" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/><rect x="12" y="3" width="2" height="2"/></g></svg>`,
+  your_wish: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="9" width="8" height="2"/><rect x="3" y="11" width="6" height="2"/><rect x="9" y="8" width="3" height="1"/><rect x="12" y="6" width="2" height="2"/><rect x="1" y="7" width="2" height="1"/><rect x="6" y="3" width="2" height="2"/></g></svg>`
 };
 const SELLER_ACHIEVEMENTS = [
   { key:'first_sale', check: s => s.salesCount >= 1 },
   { key:'first_courier_sale', check: s => s.courierSalesCount >= 1 },
-  { key:'five_sales', check: s => s.salesCount >= 5 }
+  { key:'five_sales', check: s => s.salesCount >= 5 },
+  { key:'pockets_full', check: s => s.listingsCount >= 15 },
+  { key:'good_fences', check: s => s.hasBigSale },
+  { key:'crafter_confirmed', check: s => s.hasHighQualityCrafted },
+  { key:'not_stolen', check: s => s.hasSoldColossusBomb },
+  { key:'couldnt_be_bothered', check: s => s.hasListingNoPhoto },
+  { key:'your_wish', check: s => s.hasAcceptedDesiredItemOffer }
 ];
+function isColossusBomb(name){
+  const n = (name||'').toLowerCase();
+  return n.includes('colossus') && n.includes('bomb');
+}
 async function fetchUnlockedSellerAchievements(sellerId){
   if(!sellerId) return new Set();
   const { data } = await sb.from('seller_achievements').select('key').eq('seller_id', sellerId);

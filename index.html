@@ -2611,7 +2611,11 @@ function inquiryThreadItemHtml(r, iAmSeller, listing){
     } else if(r.status === 'accepted' && r.order_id){
       actions = `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
     }
-    const canCancel = !r.order_id && ['pending','countered','accepted'].includes(r.status);
+    // Contrairement aux commandes classiques, le coursier n'achète jamais l'objet sur une vente marketplace
+    // (il ne fait que la transporter) : l'acheteur peut donc annuler à tout moment tant que la vente n'a pas
+    // été clôturée (récupérée en main propre par le vendeur, ou livrée par le coursier — les deux amènent
+    // l'inquiry au statut 'completed'), même si un coursier a déjà été sollicité (order_id présent).
+    const canCancel = ['pending','countered','accepted'].includes(r.status);
     if(canCancel) actions += `<button class="btn-cancel" onclick="cancelInquiry('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>`;
   }
   return `
@@ -3741,8 +3745,16 @@ async function buyerRequestDelivery(id){
 }
 async function cancelInquiry(id){
   if(!confirm(T[LANG].confirmCancelInquiry)) return;
+  const { data: inquiry, error: iErr } = await sb.from('marketplace_inquiries').select('order_id').eq('id', id).maybeSingle();
+  if(iErr){ alert('Erreur : '+iErr.message); return; }
   const { data, error } = await sb.from('marketplace_inquiries').update({ status:'cancelled', updated_at: new Date().toISOString() }).eq('id', id).select('seller_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
+  // Si un coursier avait déjà été sollicité pour cette vente, on annule aussi la course et on le prévient
+  // (le coursier n'a rien acheté sur une vente marketplace, il n'est donc pas pénalisé par cette annulation).
+  if(inquiry && inquiry.order_id){
+    const { data: orderRow } = await sb.from('orders').update({ status:'cancelled', updated_at: new Date().toISOString() }).eq('id', inquiry.order_id).select('courier_id').maybeSingle();
+    if(orderRow && orderRow.courier_id) pushNotification(orderRow.courier_id, 'client_orders');
+  }
   if(data) pushNotification(data.seller_id, 'seller_marketplace', id);
   sweep(); msgRefreshAfterAction();
 }

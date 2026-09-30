@@ -205,6 +205,7 @@
     .logo-anim-header{width:42px;}
     .logo-wordmark-header .lw-main{font-size:1.3rem; letter-spacing:.5px;}
     .logo-wordmark-header .lw-sub{font-size:.68rem; letter-spacing:1.5px; margin-top:1px;}
+    .msg-overlay:not([hidden]){display:block;}
   }
   @media (max-width:480px){
     .admin-view-bar{gap:5px;}
@@ -225,6 +226,11 @@
   .messages-panel[hidden]{display:none;}
   .messages-panel.msg-panel-anim{animation:msgPanelIn .22s steps(6) both;}
   @keyframes msgPanelIn{0%{opacity:0; transform:translateY(-10px) scale(.94);} 100%{opacity:1; transform:translateY(0) scale(1);}}
+  /* Overlay mobile derrière la messagerie : masqué par défaut, activé uniquement sous 720px (voir media query). */
+  .msg-overlay{display:none; position:fixed; inset:0; z-index:59; background:var(--bg); opacity:0;}
+  .msg-overlay[hidden]{display:none;}
+  .msg-overlay.msg-overlay-anim{animation:msgOverlayIn .3s steps(8) both;}
+  @keyframes msgOverlayIn{0%{opacity:0;} 100%{opacity:.82;}}
   .messages-panel-title{font-family:'VT323',monospace; font-size:1.1rem; letter-spacing:1px; text-transform:uppercase; color:var(--text); margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border);}
   .msg-conv-list{display:flex; flex-direction:column; gap:4px;}
   .msg-conv-row{display:flex; align-items:center; gap:10px; padding:8px; border-radius:4px; cursor:pointer; border:1px solid transparent; text-align:left;}
@@ -827,6 +833,7 @@
             </button>
           </div>
         </div>
+        <div class="msg-overlay" id="msgOverlay" onclick="closeMessagesPanel()" hidden></div>
         <div class="gear-wrap">
           <button class="gear-btn messages-btn" id="messagesBtn" onclick="toggleMessagesPanel()" aria-label="Messages" title="Messages">
             <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
@@ -2228,23 +2235,32 @@ function goHome(){
 }
 
 // --- MESSAGERIE UNIFIÉE (popup, une conversation par personne) ---
-function toggleMessagesPanel(){
+function openMessagesPanel(){
   const panel = $('messagesPanel');
-  const wasHidden = panel.hidden;
-  if(wasHidden){
-    $('settingsPanel').hidden = true;
-    $('sellerCreateMenu') && ($('sellerCreateMenu').hidden = true);
-    panel.hidden = false;
-    panel.classList.remove('msg-panel-anim'); void panel.offsetWidth; panel.classList.add('msg-panel-anim');
-    openMsgList();
-  } else {
-    panel.hidden = true;
+  $('settingsPanel').hidden = true;
+  $('sellerCreateMenu') && ($('sellerCreateMenu').hidden = true);
+  panel.hidden = false;
+  panel.classList.remove('msg-panel-anim'); void panel.offsetWidth; panel.classList.add('msg-panel-anim');
+  // Overlay (visible uniquement sur mobile via CSS) derrière la messagerie, avec sa propre petite animation.
+  const overlay = $('msgOverlay');
+  if(overlay){
+    overlay.hidden = false;
+    overlay.classList.remove('msg-overlay-anim'); void overlay.offsetWidth; overlay.classList.add('msg-overlay-anim');
   }
+  openMsgList();
+}
+function closeMessagesPanel(){
+  $('messagesPanel').hidden = true;
+  const overlay = $('msgOverlay');
+  if(overlay) overlay.hidden = true;
+}
+function toggleMessagesPanel(){
+  if($('messagesPanel').hidden) openMessagesPanel(); else closeMessagesPanel();
 }
 document.addEventListener('click', (e) => {
   const panel = $('messagesPanel');
   if(!panel || panel.hidden) return;
-  if(!panel.contains(e.target) && !e.target.closest('.messages-btn')) panel.hidden = true;
+  if(!panel.contains(e.target) && !e.target.closest('.messages-btn')) closeMessagesPanel();
 });
 function openMsgList(){
   $('msgListView').hidden = false;
@@ -2255,10 +2271,20 @@ function openMsgList(){
 function closeMsgThread(){ openMsgList(); }
 // Rafraîchit la liste des conversations et, si un fil est ouvert, le fil en cours (appelé après toute action
 // qui change l'état d'une demande/offre : accepter, refuser, contre-offre, annuler, marquer récupéré...).
-function msgRefreshAfterAction(){
+async function msgRefreshAfterAction(){
   if($('messagesPanel') && !$('messagesPanel').hidden){
-    if(!$('msgThreadView').hidden && currentMsgThreadPartnerId) openMsgThread(currentMsgThreadPartnerId);
-    else loadMsgConversations();
+    const threadOpen = !$('msgThreadView').hidden && currentMsgThreadPartnerId;
+    const partnerId = currentMsgThreadPartnerId;
+    // Recharge les conversations depuis la base (msgConversationsCache était sinon obsolète : rouvrir
+    // le fil avec l'ancien cache ne montrait pas le changement tant qu'on ne refermait/rouvrait pas
+    // complètement la messagerie). Puis, si un fil est ouvert, on ré-affiche juste ses éléments à jour
+    // sans relancer tout le marquage "lu" (déjà fait à l'ouverture du fil).
+    await loadMsgConversations();
+    if(threadOpen){
+      const g = msgConversationsCache[partnerId];
+      if(g) await renderMsgThreadItems(g);
+      else openMsgList(); // la conversation n'a plus aucun élément (ex: offre annulée) : on revient à la liste
+    }
   }
   refreshNotifBadges();
 }
@@ -2318,6 +2344,14 @@ async function loadMsgConversations(){
       </div>`;
   }).join('');
 }
+function scrollMsgThreadToBottom(){
+  // Fait défiler la messagerie jusqu'au dernier message du fil ouvert (au lieu de rester en haut).
+  // On attend une frame pour être sûr que le nouveau contenu (et ses images) a bien été mis en page.
+  requestAnimationFrame(() => {
+    const panel = $('messagesPanel');
+    if(panel) panel.scrollTop = panel.scrollHeight;
+  });
+}
 async function openMsgThread(counterpartId){
   const g = msgConversationsCache[counterpartId];
   if(!g) return;
@@ -2327,6 +2361,7 @@ async function openMsgThread(counterpartId){
   const { data: p } = await sb.from('profiles').select('id,discord_username,rsi_handle').eq('id', counterpartId).maybeSingle();
   $('msgThreadPartnerName').textContent = p ? displayName(p) : '—';
   await renderMsgThreadItems(g);
+  scrollMsgThreadToBottom();
   // Marque comme lus tous les messages non lus de ce fil. On interroge directement la base pour
   // récupérer les notifications non lues dont le ref_id correspond à un élément de cette conversation
   // (peu importe la catégorie), puis on les marque lues par leur id de notification. On ne dépend plus
@@ -5628,12 +5663,7 @@ async function initAuth(){
 
   sb.channel('inquiries-realtime')
     .on('postgres_changes', { event:'*', schema:'public', table:'marketplace_inquiries' }, () => {
-      const panel = $('messagesPanel');
-      if(panel && !panel.hidden){
-        if(!$('msgThreadView').hidden && currentMsgThreadPartnerId) openMsgThread(currentMsgThreadPartnerId);
-        else loadMsgConversations();
-      }
-      refreshNotifBadges();
+      msgRefreshAfterAction();
     })
     .subscribe();
 

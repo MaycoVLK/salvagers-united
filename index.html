@@ -1377,7 +1377,9 @@
         <label data-i18n="shopThemeLbl">Couleur de la boutique</label>
         <div class="shop-color-picker">
           <input type="color" id="shopColorWheel" class="shop-color-wheel" value="#ff8c1a" oninput="setShopColor(this.value, true)" aria-label="Color wheel">
-          <input type="text" id="shopColorHex" class="shop-color-hex" maxlength="7" placeholder="#FF8C1A" oninput="onShopColorHexInput(this.value)">
+          <input type="text" id="shopColorHex" class="shop-color-hex" maxlength="7" placeholder="#FF8C1A"
+                 autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" inputmode="text"
+                 oninput="onShopColorHexInput(this.value)" onchange="onShopColorHexInput(this.value)" onblur="onShopColorHexBlur(this.value)">
         </div>
         <div class="theme-row shop-color-presets" id="shopThemePicker"></div>
         <label data-i18n="shopDescLbl">Description de la boutique (optionnel)</label>
@@ -3758,10 +3760,24 @@ function setShopColor(hex, updateHexField){
   selectedShopColor = hex.toLowerCase();
   syncShopColorPicker(updateHexField);
 }
-function onShopColorHexInput(v){
-  let hex = (v||'').trim();
+// Nettoie une saisie hexa tolérante : espaces/retours à la ligne (copier-coller), sans #, ou raccourci 3 chiffres (ex: "7ed" -> "77eedd").
+function cleanHexInput(v){
+  let hex = (v||'').replace(/\s/g,'');
   if(hex && hex[0] !== '#') hex = '#'+hex;
+  if(/^#[0-9a-fA-F]{3}$/.test(hex)){
+    hex = '#' + hex.slice(1).split('').map(ch => ch+ch).join('');
+  }
+  return hex;
+}
+function onShopColorHexInput(v){
+  const hex = cleanHexInput(v);
   if(isValidHexColor(hex)) setShopColor(hex, false);
+}
+// Au blur, si le champ ne contient pas un hexa valide, on le rétablit proprement sur la couleur active.
+function onShopColorHexBlur(v){
+  const hex = cleanHexInput(v);
+  if(isValidHexColor(hex)) setShopColor(hex, true);
+  else syncShopColorPicker(true);
 }
 function syncShopColorPicker(updateHexField){
   const wheel = $('shopColorWheel'); if(wheel) wheel.value = selectedShopColor;

@@ -4855,6 +4855,7 @@ async function checkAndRenderAchievements(){
   for(const a of ACHIEVEMENTS){
     if(!unlocked.has(a.key) && a.check(stats)){
       const { error, data } = await sb.from('courier_achievements').insert({ courier_id: session.user.id, key: a.key }).select();
+      if(error) console.error('Achievement coursier non débloqué ('+a.key+') :', error);
       if(!error && data && data.length){ unlocked.add(a.key); newlyUnlocked.push(a.key); }
     }
   }
@@ -5403,6 +5404,7 @@ async function checkAndRenderSellerAchievements(boxId){
   for(const a of SELLER_ACHIEVEMENTS){
     if(!unlocked.has(a.key) && a.check(stats)){
       const { error, data } = await sb.from('seller_achievements').insert({ seller_id: session.user.id, key: a.key }).select();
+      if(error) console.error('Achievement vendeur non débloqué ('+a.key+') :', error);
       if(!error && data && data.length){ unlocked.add(a.key); newlyUnlocked.push(a.key); }
     }
   }
@@ -5678,7 +5680,9 @@ async function openPublicProfile(id){
       fetchCourierCareerStats(p.id)
     ]);
     const unlockedSet = new Set(unlockedRows.map(r=>r.key));
-    achvGrid.innerHTML = `<div class="achv-grid">${ACHIEVEMENTS.map(a => `
+    achvGrid.innerHTML = `
+      ${rankProgressHtml(stats ? stats.deliveries : 0)}
+      <div class="achv-grid">${ACHIEVEMENTS.map(a => `
       <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-tip="${d.achvDesc[a.key]}">${ACHV_ICONS[a.key]}<span>${d.achvLabels[a.key]}</span></div>
     `).join('')}</div>`;
     setHeroPhoto('pub', p);

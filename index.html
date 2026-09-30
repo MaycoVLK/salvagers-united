@@ -166,7 +166,7 @@
   .lang-btn.active{color:var(--accent); border-color:var(--accent);}
 
   /* --- APP TOPBAR --- */
-  .app-topbar{position:sticky; top:0; z-index:40; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:10px 0 16px; background:linear-gradient(to bottom, var(--bg) 78%, transparent); flex-wrap:wrap;}
+  .app-topbar{position:sticky; top:0; z-index:40; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:16px; padding:10px 0 16px; background:linear-gradient(to bottom, var(--bg) 78%, transparent);}
   .app-topbar .brand{display:flex; align-items:center; gap:10px; min-width:0;}
   .brand-lg{background:none; border:none; padding:0; margin:0; cursor:pointer; flex:none; text-align:left; border-radius:4px;}
   .brand-lg:hover .logo-anim-header{filter:brightness(1.25) drop-shadow(0 0 10px var(--accent-dim));}
@@ -177,21 +177,23 @@
   .logo-wordmark-header .lw-sub{font-size:1.1rem; color:var(--muted); letter-spacing:4px; margin-top:2px;}
   .logo-mark-sm-btn{background:none; border:none; padding:0; margin:0; cursor:pointer; flex:none; line-height:0; border-radius:4px;}
   .logo-mark-sm-btn:hover .logo-anim-sm{filter:brightness(1.25);}
-  .admin-view-bar{display:flex; gap:8px; margin:0; overflow-x:auto; -webkit-overflow-scrolling:touch; flex:1 1 260px; justify-content:center;}
+  .admin-view-bar{display:flex; gap:8px; margin:0; overflow-x:auto; -webkit-overflow-scrolling:touch; justify-content:center; justify-self:center;}
   .admin-view-bar .admin-view-btn{flex:0 1 150px; min-width:90px; padding:13px 10px; font-family:'VT323',monospace; font-size:1.05rem; letter-spacing:.8px; text-transform:uppercase; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:4px; cursor:pointer; transition:border-color .2s, color .2s, background .2s; white-space:nowrap;}
   .admin-view-bar .admin-view-btn:hover{border-color:var(--accent); color:var(--text);}
   .admin-view-bar .admin-view-btn.active{color:var(--bg); background:var(--accent); border-color:var(--accent);}
   .logo-anim-sm{width:52px; aspect-ratio:1260/750; height:auto; flex:none;}
   .page-title-lg{font-size:1.9rem; margin:4px 0 18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .topbar-actions{display:flex; align-items:center; gap:8px; flex:none;}
+  .topbar-actions{display:flex; align-items:center; gap:8px; flex:none; justify-self:end;}
   .avatar-gear-btn{background:none; border:none; padding:0; margin:0; cursor:pointer; border-radius:50%; line-height:0; display:inline-flex; align-items:center; justify-content:center; flex:none;}
   .avatar-gear-btn .avatar-wrap{transition:box-shadow .15s;}
   .avatar-gear-btn:hover .avatar-wrap{box-shadow:0 0 0 2px var(--accent);}
   .avatar-gear-btn .avatar-fallback{width:100%; height:100%; border-radius:50%; border:2px solid var(--accent);}
   .settings-panel-profile{display:flex; flex-direction:column; gap:4px; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--border);}
   @media (max-width:720px){
-    .app-topbar{justify-content:center;}
-    .admin-view-bar{order:3; flex:1 1 100%; justify-content:flex-start;}
+    .app-topbar{grid-template-columns:1fr 1fr; grid-template-areas:"brand actions" "tabs tabs"; row-gap:10px;}
+    .app-topbar .brand-lg{grid-area:brand;}
+    .app-topbar .topbar-actions{grid-area:actions;}
+    .admin-view-bar{grid-area:tabs; justify-self:stretch; justify-content:flex-start;}
   }
   .gear-wrap{position:relative;}
   .create-wrap{position:relative;}
@@ -201,7 +203,7 @@
   .create-menu .icon{width:15px; height:15px; color:var(--accent); flex:none;}
   .gear-btn{width:40px; height:40px; padding:0; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex:none;}
   .gear-btn .icon{width:18px; height:18px;}
-  .messages-btn{position:relative;}
+  .messages-btn{position:relative; border:none;}
   .messages-btn .notif-dot{top:4px; right:5px;}
   .messages-panel{position:absolute; top:48px; right:0; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:12px; width:360px; max-width:88vw; max-height:70vh; overflow-y:auto; box-shadow:0 10px 26px rgba(0,0,0,.55); z-index:60;}
   .messages-panel[hidden]{display:none;}
@@ -1952,11 +1954,9 @@ const T = {
     myInquiriesTitle:"My requests", noInquiries:"You haven't sent any requests yet.",
     receivedInquiriesTitle:"Received offers", noReceivedInquiries:"No offers received yet.",
     sellerMktHistoryLabel:"Sales history", sellerMktHistoryEmpty:"No completed sales yet.",
-    messagesTitle:"Messages", msgTabClient:"CLIENT", msgTabSeller:"SELLER", msgTabSales:"MARKETPLACE SALES", msgTabDesired:"DESIRED ITEMS",
-    msgRoleBuyer:"Purchase", msgRoleSeller:"Sale",
-    msgSalesOngoingTitle:"Ongoing negotiations", msgSalesHistoryTitle:"Sales history",
-    msgSalesOngoingEmpty:"No ongoing negotiations.", msgSalesHistoryEmpty:"No completed sales yet.",
-    msgDesiredReceivedTitle:"Offers received", noReceivedResourceOffers:"No offers received yet.",
+    messagesTitle:"Messages", msgNoConversations:"No messages yet.",
+    msgKindInqReceived:"Marketplace offer received", msgKindInqSent:"Marketplace request sent",
+    msgKindOfferReceived:"Offer received on your desired item", msgKindOfferSent:"Proposal sent for a desired item",
     inquiryStatus:{pending:"Pending", accepted:"Accepted", rejected:"Rejected", completed:"Completed", countered:"Countered", cancelled:"Cancelled"},
     confirmCancelInquiry:"Cancel this request? The seller will be notified.",
     orderAlreadyTaken:"Too late, another courier just took this order.",
@@ -2311,15 +2311,20 @@ async function openMsgThread(counterpartId){
   const { data: p } = await sb.from('profiles').select('id,discord_username,rsi_handle').eq('id', counterpartId).maybeSingle();
   $('msgThreadPartnerName').textContent = p ? displayName(p) : '—';
   await renderMsgThreadItems(g);
-  // Marque comme vus tous les messages non lus de ce fil (par élément, pas en masse pour toute la catégorie).
+  // Marque comme vus tous les messages non lus de ce fil (par élément, pas en masse pour toute la catégorie),
+  // et on ATTEND que les écritures soient bien passées avant de recalculer les pastilles pour éviter
+  // qu'un rafraîchissement trop rapide des compteurs ne les lise encore comme non lus.
+  const markReadOps = [];
   g.items.forEach(it => {
     ['client_marketplace','seller_marketplace','seller_resource_offer'].forEach(cat => {
       if(msgUnreadSets[cat] && msgUnreadSets[cat].has(it.id)){
         msgUnreadSets[cat].delete(it.id);
-        sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category',cat).eq('ref_id',it.id).eq('read',false).then(()=>{});
+        markReadOps.push(sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category',cat).eq('ref_id',it.id).eq('read',false));
       }
     });
   });
+  g.unread = false;
+  if(markReadOps.length) await Promise.all(markReadOps);
   refreshNotifBadges();
 }
 async function renderMsgThreadItems(g){

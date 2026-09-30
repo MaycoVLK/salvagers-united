@@ -249,8 +249,12 @@
   .msg-conv-info{min-width:0; flex:1;}
   .msg-conv-name{font-family:'VT323',monospace; font-size:1rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .msg-conv-preview{font-size:.75rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .msg-thread-back{display:flex; align-items:center; gap:6px; width:100%; background:none; border:none; border-bottom:1px solid var(--border); color:var(--text); font-family:'VT323',monospace; font-size:1rem; text-transform:uppercase; letter-spacing:.5px; padding:0 0 10px; margin-bottom:10px; cursor:pointer; text-align:left;}
+  .msg-thread-header{display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:1px solid var(--border); padding:0 0 10px; margin-bottom:10px;}
+  .msg-thread-back{display:flex; align-items:center; gap:6px; flex:1; min-width:0; background:none; border:none; color:var(--text); font-family:'VT323',monospace; font-size:1rem; text-transform:uppercase; letter-spacing:.5px; padding:0; cursor:pointer; text-align:left;}
+  .msg-thread-back span:last-child{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .msg-thread-back:hover{color:var(--accent);}
+  .msg-thread-clear{flex:none; background:none; border:1px solid var(--border); color:var(--muted); font-family:'VT323',monospace; font-size:.8rem; letter-spacing:1px; text-transform:uppercase; padding:5px 10px; border-radius:4px; cursor:pointer;}
+  .msg-thread-clear:hover{border-color:var(--danger); color:var(--danger);}
   .msg-thread-items{display:flex; flex-direction:column; gap:10px;}
   .msg-kind-label{display:inline-block; font-size:.68rem; text-transform:uppercase; letter-spacing:.5px; color:var(--accent); border:1px solid var(--accent-dim); border-radius:3px; padding:2px 6px; margin-bottom:6px;}
   @media (max-width:480px){
@@ -862,9 +866,12 @@
               <div id="msgConversationsList" class="msg-conv-list"></div>
             </div>
             <div id="msgThreadView" hidden>
-              <button type="button" class="msg-thread-back" onclick="closeMsgThread()">
-                <span aria-hidden="true">&lt;</span> <span id="msgThreadPartnerName">—</span>
-              </button>
+              <div class="msg-thread-header">
+                <button type="button" class="msg-thread-back" onclick="closeMsgThread()">
+                  <span aria-hidden="true">&lt;</span> <span id="msgThreadPartnerName">—</span>
+                </button>
+                <button type="button" class="msg-thread-clear" onclick="clearMsgConversation()" data-i18n="msgClearBtn">CLEAR</button>
+              </div>
               <div id="msgThreadItems" class="msg-thread-items"></div>
             </div>
           </div>
@@ -1797,6 +1804,7 @@ const T = {
     accept:"ACCEPTER", markPurchased:"MARCHANDISE ACHETÉE", markTransit:"MARQUER EN TRANSIT", markDelivered:"MARQUER LIVRÉE",
     members:"Membres", footer:"COURIERS UNITED // RISQUES INCLUS DANS LA COMMISSION // PAIEMENT À LA REMISE",
     discordCtaText:"Rejoins la communauté sur Discord", discordCtaBtn:"REJOINS-NOUS SUR DISCORD",
+    msgClearBtn:"EFFACER", confirmClearConversation:"Effacer cette conversation de ta messagerie ? Elle réapparaîtra automatiquement si vous échangez à nouveau.",
     dangerZoneTitle:"Zone dangereuse", resetProgressionBtn:"RESET PROGRESSION",
     resetProgressionNote:"Réinitialise pour TOUS les membres : statistiques, rangs, succès débloqués et historique des livraisons/ventes. Action irréversible.",
     confirmResetProgression:"Es-tu sûr(e) ? Ceci va effacer TOUTES les statistiques, rangs, succès et historiques de livraisons/ventes de TOUS les membres, définitivement.",
@@ -1923,6 +1931,7 @@ const T = {
     accept:"ACCEPT", markPurchased:"MARK PURCHASED", markTransit:"MARK IN TRANSIT", markDelivered:"MARK DELIVERED",
     members:"Members", footer:"COURIERS UNITED // RISK INCLUDED IN THE COMMISSION // PAYMENT ON DELIVERY",
     discordCtaText:"Join our community on Discord", discordCtaBtn:"JOIN US ON DISCORD",
+    msgClearBtn:"CLEAR", confirmClearConversation:"Clear this conversation from your messaging? It will reappear automatically if you exchange again.",
     dangerZoneTitle:"Danger zone", resetProgressionBtn:"RESET PROGRESSION",
     resetProgressionNote:"Resets, for ALL members: stats, ranks, unlocked achievements and delivery/sales history. Irreversible action.",
     confirmResetProgression:"Are you sure? This will permanently erase ALL stats, ranks, achievements and delivery/sales history for ALL members.",
@@ -2121,23 +2130,25 @@ async function markMsgSeen(category, refId, cardEl){
 async function refreshNotifBadges(){
   if(!session || !profile) return;
   const isSeller = profile.is_seller || profile.role==='admin';
-  const [sellerCnt, resOfferCnt, mktCnt, newListingCnt, ordCnt, courierCnt, resCnt] = await Promise.all([
+  const [sellerCnt, resOfferCnt, mktCnt, clientResOfferCnt, newListingCnt, ordCnt, courierCnt, resCnt] = await Promise.all([
     isSeller ? getUnreadCount('seller_marketplace') : Promise.resolve(0),
     isSeller ? getUnreadCount('seller_resource_offer') : Promise.resolve(0),
     getUnreadCount('client_marketplace'),
+    getUnreadCount('client_resource_offer'),
     getUnreadCount('client_new_listing'),
     getUnreadCount('client_orders'),
     (profile.is_courier || profile.role==='admin') ? getUnreadCount('courier_pending') : Promise.resolve(0),
     getUnreadCount('client_resources')
   ]);
   const sellerTotal = sellerCnt + resOfferCnt;
+  const clientMsgTotal = mktCnt + clientResOfferCnt;
   toggleDot('dotNavSeller', sellerTotal>0);
-  toggleDot('dotNavClient', (mktCnt+newListingCnt+ordCnt+resCnt)>0);
+  toggleDot('dotNavClient', (clientMsgTotal+newListingCnt+ordCnt+resCnt)>0);
   toggleDot('dotTabMarketplace', newListingCnt>0);
   toggleDot('dotTabDeliveries', ordCnt>0);
   toggleDot('dotTabPending', courierCnt>0);
   toggleDot('dotTabResources', resCnt>0);
-  toggleDot('dotMessagesMain', (mktCnt+sellerTotal)>0);
+  toggleDot('dotMessagesMain', (clientMsgTotal+sellerTotal)>0);
 }
 
 const COLORS = ['orange','vert','bleu','violet','blanc','jaune'];
@@ -2310,6 +2321,27 @@ function openMsgList(){
   loadMsgConversations();
 }
 function closeMsgThread(){ openMsgList(); }
+// "Clear" une conversation : la masque de la liste de messagerie (par joueur, stocké localement dans ce
+// navigateur) tant qu'aucun nouvel échange n'a lieu avec cette personne. Non destructif : les demandes/offres
+// elles-mêmes ne sont jamais supprimées, seulement cachées de la messagerie jusqu'au prochain message.
+function getMsgClearedMap(){
+  if(!session) return {};
+  try{ return JSON.parse(localStorage.getItem('su-msg-cleared-'+session.user.id) || '{}'); }
+  catch(e){ return {}; }
+}
+function setMsgCleared(counterpartId, ts){
+  if(!session) return;
+  const map = getMsgClearedMap();
+  map[counterpartId] = ts;
+  try{ localStorage.setItem('su-msg-cleared-'+session.user.id, JSON.stringify(map)); }catch(e){}
+}
+function clearMsgConversation(){
+  if(!currentMsgThreadPartnerId) return;
+  if(!confirm(T[LANG].confirmClearConversation)) return;
+  const g = msgConversationsCache[currentMsgThreadPartnerId];
+  setMsgCleared(currentMsgThreadPartnerId, (g && g.lastAt) || new Date().toISOString());
+  openMsgList();
+}
 // Rafraîchit la liste des conversations et, si un fil est ouvert, le fil en cours (appelé après toute action
 // qui change l'état d'une demande/offre : accepter, refuser, contre-offre, annuler, marquer récupéré...).
 async function msgRefreshAfterAction(){
@@ -2339,14 +2371,15 @@ async function loadMsgConversations(){
   const box = $('msgConversationsList'); if(!box || !session) return;
   const d = T[LANG];
   const uid = session.user.id;
-  const [inqRes, offRes, unreadClientMkt, unreadSellerMkt, unreadResOffer] = await Promise.all([
+  const [inqRes, offRes, unreadClientMkt, unreadSellerMkt, unreadResOffer, unreadClientResOffer] = await Promise.all([
     sb.from('marketplace_inquiries').select('*').or(`buyer_id.eq.${uid},seller_id.eq.${uid}`).order('created_at',{ascending:false}),
     sb.from('resource_offers').select('*').or(`client_id.eq.${uid},seller_id.eq.${uid}`).order('created_at',{ascending:false}),
     loadMsgUnreadSet('client_marketplace'),
     loadMsgUnreadSet('seller_marketplace'),
-    loadMsgUnreadSet('seller_resource_offer')
+    loadMsgUnreadSet('seller_resource_offer'),
+    loadMsgUnreadSet('client_resource_offer')
   ]);
-  const unreadIds = new Set([...unreadClientMkt, ...unreadSellerMkt, ...unreadResOffer]);
+  const unreadIds = new Set([...unreadClientMkt, ...unreadSellerMkt, ...unreadResOffer, ...unreadClientResOffer]);
   const groups = {};
   function addItem(item, kind, counterpartId){
     if(!counterpartId) return;
@@ -2363,6 +2396,13 @@ async function loadMsgConversations(){
   (offRes.data||[]).forEach(r => {
     const iAmSeller = r.seller_id === uid; // seller_id = celui qui a posté l'objet recherché (destinataire de l'offre)
     addItem(r, iAmSeller ? 'offer_received' : 'offer_sent', iAmSeller ? r.client_id : r.seller_id);
+  });
+  // Une conversation "clear" (voir clearMsgConversation) est cachée tant qu'aucun nouvel échange n'a
+  // eu lieu depuis : si son dernier élément est plus ancien (ou égal) que le moment du clear, on la retire.
+  const clearedMap = getMsgClearedMap();
+  Object.keys(groups).forEach(id => {
+    const clearedAt = clearedMap[id];
+    if(clearedAt && new Date(groups[id].lastAt) <= new Date(clearedAt)) delete groups[id];
   });
   msgConversationsCache = groups;
   const counterpartIds = Object.keys(groups);
@@ -2410,6 +2450,8 @@ async function openMsgThread(counterpartId){
   // c'était la vraie cause du bug : le test restait toujours faux et aucune écriture n'était jamais faite.
   const itemIds = g.items.map(it => it.id);
   if(itemIds.length && session){
+    // Note : le filtre .eq('ref_id', itemIds) suffit à cibler uniquement les notifs de CE fil, donc on
+    // ne filtre pas non plus par catégorie ici (peu importe qu'on en ajoute de nouvelles plus tard).
     const { data: unreadNotifs, error: fetchErr } = await sb.from('notifications')
       .select('id,category,ref_id')
       .eq('user_id', session.user.id)
@@ -2525,7 +2567,16 @@ function inquiryThreadItemHtml(r, iAmSeller, listing){
 }
 function offerThreadItemHtml(r, iAmSeller, req){
   const d = T[LANG];
-  const cancelBtn = (!iAmSeller && r.status === 'pending') ? `<button class="btn-cancel" style="width:100%; margin-top:8px;" onclick="cancelResourceOffer('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>` : '';
+  let actions = '';
+  if(iAmSeller && r.status === 'pending'){
+    // Le vendeur (celui qui a posté l'objet recherché) peut accepter ou refuser l'offre de fourniture reçue.
+    actions = `<div class="inquiry-actions">
+      <button class="btn-secondary" onclick="acceptResourceOffer('${r.id}')">${d.acceptInquiryBtn}</button>
+      <button class="btn-logout" onclick="rejectResourceOffer('${r.id}')">${d.rejectInquiryBtn}</button>
+    </div>`;
+  } else if(!iAmSeller && r.status === 'pending'){
+    actions = `<button class="btn-cancel" style="width:100%; margin-top:8px;" onclick="cancelResourceOffer('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>`;
+  }
   return `
     <div class="inquiry-row">
       <span class="msg-kind-label">${msgKindLabel(iAmSeller ? 'offer_received' : 'offer_sent')}</span>
@@ -2535,7 +2586,7 @@ function offerThreadItemHtml(r, iAmSeller, req){
       </div>
       ${r.price ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(r.price)}</strong></div>` : ''}
       ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
-      ${cancelBtn}
+      ${actions}
     </div>`;
 }
 
@@ -3601,6 +3652,20 @@ async function cancelResourceOffer(id){
   if(!confirm(T[LANG].confirmCancel)) return;
   const { error } = await sb.from('resource_offers').delete().eq('id', id).eq('status','pending');
   if(error){ alert('Erreur : '+error.message); return; }
+  msgRefreshAfterAction();
+}
+// Le vendeur (celui qui a posté l'objet recherché) accepte/refuse une offre de fourniture reçue.
+// Il n'existait jusqu'ici AUCUN moyen de le faire nulle part dans le site : ni bouton, ni fonction.
+async function acceptResourceOffer(id){
+  const { data, error } = await sb.from('resource_offers').update({ status:'accepted' }).eq('id', id).eq('status','pending').select('client_id').single();
+  if(error){ alert('Erreur : '+error.message); return; }
+  if(data) pushNotification(data.client_id, 'client_resource_offer', id);
+  msgRefreshAfterAction();
+}
+async function rejectResourceOffer(id){
+  const { data, error } = await sb.from('resource_offers').update({ status:'rejected' }).eq('id', id).eq('status','pending').select('client_id').single();
+  if(error){ alert('Erreur : '+error.message); return; }
+  if(data) pushNotification(data.client_id, 'client_resource_offer', id);
   msgRefreshAfterAction();
 }
 function inquiryStatusBadge(status){

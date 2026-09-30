@@ -5646,7 +5646,7 @@ function subscribeNotifChannel(){
       if(payload && payload.eventType === 'INSERT' && payload.new){ playNotifSound(payload.new.category); }
       if(profile && profile.role === 'admin' && !$('view-admin-dash').hidden){ loadCourierApplications(); loadSellerApplications(); }
     })
-    .subscribe();
+    .subscribe((status) => { console.log('[DEBUG notifChannel status]', status); });
 }
 function unsubscribeNotifChannel(){
   if(notifChannel){ sb.removeChannel(notifChannel); notifChannel = null; }

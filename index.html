@@ -815,7 +815,7 @@
         <button class="admin-view-btn" data-view="client" onclick="setAdminView('client')"><span data-i18n="navClient">CLIENT</span><span class="notif-dot" id="dotNavClient"></span></button>
         <button class="admin-view-btn" data-view="courier" onclick="setAdminView('courier')" data-i18n="navCourier">COURSIER</button>
         <button class="admin-view-btn" data-view="seller" onclick="setAdminView('seller')"><span data-i18n="navSeller">VENDEUR</span><span class="notif-dot" id="dotNavSeller"></span></button>
-        <button class="admin-view-btn" data-view="admin" onclick="setAdminView('admin')" data-i18n="navAdmin">GESTION</button>
+        <button class="admin-view-btn" data-view="admin" onclick="setAdminView('admin')"><span data-i18n="navAdmin">GESTION</span><span class="notif-dot" id="dotNavAdmin"></span></button>
       </div>
 
       <div class="topbar-actions">
@@ -2084,6 +2084,14 @@ async function notifyAllCouriers(refId){
     }
   }catch(e){}
 }
+async function notifyAllAdmins(category, refId){
+  try{
+    const { data: admins } = await sb.from('profiles').select('id').eq('role', 'admin');
+    if(admins && admins.length){
+      await sb.from('notifications').insert(admins.map(a => ({ user_id:a.id, category, ref_id: refId||null })));
+    }
+  }catch(e){}
+}
 async function notifyAllUsersOfResourceRequest(refId, excludeUserId){
   try{
     const { data: users } = await sb.from('profiles').select('id');
@@ -2130,7 +2138,8 @@ async function markMsgSeen(category, refId, cardEl){
 async function refreshNotifBadges(){
   if(!session || !profile) return;
   const isSeller = profile.is_seller || profile.role==='admin';
-  const [sellerCnt, resOfferCnt, mktCnt, clientResOfferCnt, newListingCnt, ordCnt, courierCnt, resCnt] = await Promise.all([
+  const isAdmin = profile.role==='admin';
+  const [sellerCnt, resOfferCnt, mktCnt, clientResOfferCnt, newListingCnt, ordCnt, courierCnt, resCnt, courierAppCnt, sellerAppCnt] = await Promise.all([
     isSeller ? getUnreadCount('seller_marketplace') : Promise.resolve(0),
     // Pas de garde-fou "isSeller" ici (contrairement à seller_marketplace ci-dessus) : la pastille par
     // conversation dans la messagerie (loadMsgUnreadSet) ne filtre déjà pas selon ce flag, donc si on le
@@ -2142,12 +2151,16 @@ async function refreshNotifBadges(){
     getUnreadCount('client_new_listing'),
     getUnreadCount('client_orders'),
     (profile.is_courier || profile.role==='admin') ? getUnreadCount('courier_pending') : Promise.resolve(0),
-    getUnreadCount('client_resources')
+    getUnreadCount('client_resources'),
+    isAdmin ? getUnreadCount('admin_courier_app') : Promise.resolve(0),
+    isAdmin ? getUnreadCount('admin_seller_app') : Promise.resolve(0)
   ]);
   const sellerTotal = sellerCnt + resOfferCnt;
   const clientMsgTotal = mktCnt + clientResOfferCnt;
+  const adminAppTotal = courierAppCnt + sellerAppCnt;
   toggleDot('dotNavSeller', sellerTotal>0);
   toggleDot('dotNavClient', (clientMsgTotal+newListingCnt+ordCnt+resCnt)>0);
+  toggleDot('dotNavAdmin', adminAppTotal>0);
   toggleDot('dotTabMarketplace', newListingCnt>0);
   toggleDot('dotTabDeliveries', ordCnt>0);
   toggleDot('dotTabPending', courierCnt>0);
@@ -4410,16 +4423,25 @@ function closeSellerShop(){ routeApp(); }
 async function loadSellerApplications(){
   const box = $('sellerAppsList'); if(!box) return;
   const d = T[LANG];
-  const { data, error } = await sb.from('profiles').select('*').eq('seller_request', 'pending');
+  const [{ data, error }, unreadSet] = await Promise.all([
+    sb.from('profiles').select('*').eq('seller_request', 'pending'),
+    loadMsgUnreadSet('admin_seller_app')
+  ]);
   if(error){ box.textContent = error.message; return; }
   if(!data || !data.length){ box.innerHTML = `<p class="muted">${d.noSellerApplications}</p>`; return; }
-  box.innerHTML = data.map(p => `
-    <div class="order-card app-list-row">
+  box.innerHTML = data.map(p => {
+    const isNew = unreadSet.has(p.id);
+    const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
+    const hoverAttr = isNew ? ` onmouseenter="markAdminAppSeen('admin_seller_app','${p.id}', this)"` : '';
+    return `
+    <div class="order-card app-list-row"${hoverAttr}>
+      ${newDot}
       <div style="flex:1; min-width:140px;">${displayName(p)}</div>
       <button class="btn-secondary" onclick="acceptSellerApp('${p.id}')">${d.acceptApp}</button>
       <button class="btn-logout" onclick="rejectSellerApp('${p.id}')">${d.rejectApp}</button>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 async function acceptSellerApp(id){
   const { error } = await sb.from('profiles').update({ is_seller:true, seller_request:'accepted' }).eq('id', id);
@@ -5426,6 +5448,7 @@ async function requestSeller(){
   if(!session) return;
   const { error } = await sb.from('profiles').update({ seller_request: 'pending' }).eq('id', session.user.id);
   if(error){ alert('Erreur : '+error.message); return; }
+  notifyAllAdmins('admin_seller_app', session.user.id);
   await loadProfile();
   sweep();
 }
@@ -5433,6 +5456,7 @@ async function requestCourier(){
   if(!session) return;
   const { error } = await sb.from('profiles').update({ courier_request: 'pending' }).eq('id', session.user.id);
   if(error){ alert('Erreur : '+error.message); return; }
+  notifyAllAdmins('admin_courier_app', session.user.id);
   await loadProfile();
   renderCourierRequestCard();
   renderCourierAd();
@@ -5473,6 +5497,7 @@ function subscribeNotifChannel(){
   notifChannel = sb.channel('notifications-self-'+session.user.id)
     .on('postgres_changes', { event:'*', schema:'public', table:'notifications', filter:`user_id=eq.${session.user.id}` }, () => {
       refreshNotifBadges();
+      if(profile && profile.role === 'admin' && !$('view-admin-dash').hidden){ loadCourierApplications(); loadSellerApplications(); }
     })
     .subscribe();
 }
@@ -5556,16 +5581,34 @@ function renderMembersList(list){
 async function loadCourierApplications(){
   const box = $('courierAppsList'); if(!box) return;
   const d = T[LANG];
-  const { data, error } = await sb.from('profiles').select('*').eq('courier_request', 'pending');
+  const [{ data, error }, unreadSet] = await Promise.all([
+    sb.from('profiles').select('*').eq('courier_request', 'pending'),
+    loadMsgUnreadSet('admin_courier_app')
+  ]);
   if(error){ box.textContent = error.message; return; }
   if(!data || !data.length){ box.innerHTML = `<p class="muted">${d.noApplications}</p>`; return; }
-  box.innerHTML = data.map(p => `
-    <div class="order-card app-list-row">
+  box.innerHTML = data.map(p => {
+    const isNew = unreadSet.has(p.id);
+    const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
+    const hoverAttr = isNew ? ` onmouseenter="markAdminAppSeen('admin_courier_app','${p.id}', this)"` : '';
+    return `
+    <div class="order-card app-list-row"${hoverAttr}>
+      ${newDot}
       <div style="flex:1; min-width:140px;">${displayName(p)}</div>
       <button class="btn-secondary" onclick="acceptCourierApp('${p.id}')">${d.acceptApp}</button>
       <button class="btn-logout" onclick="rejectCourierApp('${p.id}')">${d.rejectApp}</button>
     </div>
-  `).join('');
+  `;
+  }).join('');
+}
+async function markAdminAppSeen(category, refId, cardEl){
+  const dot = cardEl.querySelector('.new-order-dot');
+  if(!dot) return;
+  dot.remove();
+  cardEl.onmouseenter = null;
+  if(!session) return;
+  await sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category',category).eq('ref_id', refId).eq('read',false);
+  refreshNotifBadges();
 }
 async function acceptCourierApp(id){
   const { error } = await sb.from('profiles').update({ is_courier:true, courier_request:'accepted' }).eq('id', id);

@@ -112,6 +112,13 @@
   .toast{position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); background:var(--accent); color:#03130a; padding:10px 18px; border-radius:2px; font-family:'VT323',monospace; font-size:1.1rem; letter-spacing:1px; opacity:0; pointer-events:none; transition:opacity .25s; z-index:80;}
   .toast.show{opacity:1;}
   footer{text-align:center; margin-top:20px; color:var(--muted); font-size:.75rem; letter-spacing:1px;}
+  .discord-cta{max-width:380px; margin:16px auto 0; padding:14px 18px; border:1px solid var(--border); border-radius:6px; background:var(--panel); display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;}
+  .discord-cta-text{font-family:'VT323',monospace; font-size:1rem; letter-spacing:.5px; color:var(--muted); text-transform:uppercase;}
+  .discord-cta-btn{display:inline-flex; align-items:center; gap:8px; padding:10px 20px; border:1px solid var(--accent); border-radius:4px; background:transparent; color:var(--accent); font-family:'VT323',monospace; font-size:1.05rem; letter-spacing:1px; text-transform:uppercase; text-decoration:none; cursor:pointer; transition:background .15s, color .15s;}
+  .discord-cta-btn:hover{background:var(--accent); color:#03130a;}
+  .discord-cta-btn .icon{width:16px; height:16px; flex:none;}
+  .discord-cta-btn .discord-eye{fill:var(--bg);}
+  .discord-cta-btn:hover .discord-eye{fill:#03130a;}
   .item-row{display:flex; gap:8px; align-items:flex-end; margin-bottom:10px;}
   .item-row .name{flex:2;} .item-row .prix,.item-row .qte{flex:1;}
   .suggest-box{position:absolute; top:100%; left:0; right:0; background:var(--panel); border:1px solid var(--accent); border-top:none; max-height:190px; overflow-y:auto; z-index:30; border-radius:0 0 4px 4px; box-shadow:0 8px 18px rgba(0,0,0,.5);}
@@ -1448,6 +1455,25 @@
   </div>
 
   <footer data-i18n="footer">COURIERS UNITED // RISQUES INCLUS DANS LA COMMISSION // PAIEMENT À LA REMISE</footer>
+  <div class="discord-cta">
+    <span class="discord-cta-text" data-i18n="discordCtaText">Rejoins la communauté sur Discord</span>
+    <a class="discord-cta-btn" href="https://discord.gg/UAjkGJVrpZ" target="_blank" rel="noopener noreferrer">
+      <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">
+        <g fill="currentColor">
+          <rect x="3" y="3" width="10" height="8"/>
+          <rect x="2" y="4" width="1" height="6"/>
+          <rect x="13" y="4" width="1" height="6"/>
+          <rect x="5" y="11" width="2" height="2"/>
+          <rect x="9" y="11" width="2" height="2"/>
+        </g>
+        <g class="discord-eye" fill="currentColor">
+          <rect x="5" y="6" width="2" height="2"/>
+          <rect x="9" y="6" width="2" height="2"/>
+        </g>
+      </svg>
+      <span data-i18n="discordCtaBtn">JOIN US ON DISCORD</span>
+    </a>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -1770,6 +1796,7 @@ const T = {
     tabPending:"À TRAITER", tabMine:"ATTRIBUÉES", noAvailable:"Aucune commande disponible pour le moment.", noDeliveries:"Aucune livraison en cours.",
     accept:"ACCEPTER", markPurchased:"MARCHANDISE ACHETÉE", markTransit:"MARQUER EN TRANSIT", markDelivered:"MARQUER LIVRÉE",
     members:"Membres", footer:"COURIERS UNITED // RISQUES INCLUS DANS LA COMMISSION // PAIEMENT À LA REMISE",
+    discordCtaText:"Rejoins la communauté sur Discord", discordCtaBtn:"REJOINS-NOUS SUR DISCORD",
     dangerZoneTitle:"Zone dangereuse", resetProgressionBtn:"RESET PROGRESSION",
     resetProgressionNote:"Réinitialise pour TOUS les membres : statistiques, rangs, succès débloqués et historique des livraisons/ventes. Action irréversible.",
     confirmResetProgression:"Es-tu sûr(e) ? Ceci va effacer TOUTES les statistiques, rangs, succès et historiques de livraisons/ventes de TOUS les membres, définitivement.",
@@ -1895,6 +1922,7 @@ const T = {
     tabPending:"PENDING", tabMine:"ASSIGNED", noAvailable:"No orders available right now.", noDeliveries:"No deliveries in progress.",
     accept:"ACCEPT", markPurchased:"MARK PURCHASED", markTransit:"MARK IN TRANSIT", markDelivered:"MARK DELIVERED",
     members:"Members", footer:"COURIERS UNITED // RISK INCLUDED IN THE COMMISSION // PAYMENT ON DELIVERY",
+    discordCtaText:"Join our community on Discord", discordCtaBtn:"JOIN US ON DISCORD",
     dangerZoneTitle:"Danger zone", resetProgressionBtn:"RESET PROGRESSION",
     resetProgressionNote:"Resets, for ALL members: stats, ranks, unlocked achievements and delivery/sales history. Irreversible action.",
     confirmResetProgression:"Are you sure? This will permanently erase ALL stats, ranks, achievements and delivery/sales history for ALL members.",

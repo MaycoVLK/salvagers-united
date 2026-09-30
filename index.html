@@ -166,17 +166,33 @@
   .lang-btn.active{color:var(--accent); border-color:var(--accent);}
 
   /* --- APP TOPBAR --- */
-  .app-topbar{position:sticky; top:0; z-index:40; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 0 16px; background:linear-gradient(to bottom, var(--bg) 78%, transparent);}
+  .app-topbar{position:sticky; top:0; z-index:40; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:10px 0 16px; background:linear-gradient(to bottom, var(--bg) 78%, transparent); flex-wrap:wrap;}
   .app-topbar .brand{display:flex; align-items:center; gap:10px; min-width:0;}
+  .brand-lg{background:none; border:none; padding:0; margin:0; cursor:pointer; flex:none; text-align:left; border-radius:4px;}
+  .brand-lg:hover .logo-anim-header{filter:brightness(1.25) drop-shadow(0 0 10px var(--accent-dim));}
+  .logo-icon-wrap-header{position:relative; display:inline-block; transform:scale(.58); transform-origin:left center; margin-right:-24px; vertical-align:middle;}
+  .logo-anim-header{width:180px; aspect-ratio:1260/750; height:auto; filter:drop-shadow(0 0 8px var(--accent-dim));}
+  .logo-wordmark-header{display:inline-flex; flex-direction:column; vertical-align:middle; line-height:1; font-family:'VT323',monospace; text-align:left;}
+  .logo-wordmark-header .lw-main{font-size:1.35rem; color:var(--accent); letter-spacing:2px;}
+  .logo-wordmark-header .lw-sub{font-size:.62rem; color:var(--muted); letter-spacing:5px; margin-top:1px;}
   .logo-mark-sm-btn{background:none; border:none; padding:0; margin:0; cursor:pointer; flex:none; line-height:0; border-radius:4px;}
   .logo-mark-sm-btn:hover .logo-anim-sm{filter:brightness(1.25);}
-  .admin-view-bar{display:flex; gap:6px; margin:0 0 16px; overflow-x:auto; -webkit-overflow-scrolling:touch;}
-  .admin-view-bar .admin-view-btn{flex:1 1 0; min-width:80px; padding:9px 6px; font-family:'VT323',monospace; font-size:.85rem; letter-spacing:.5px; text-transform:uppercase; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:4px; cursor:pointer; transition:border-color .2s, color .2s, background .2s; white-space:nowrap;}
+  .admin-view-bar{display:flex; gap:6px; margin:0; overflow-x:auto; -webkit-overflow-scrolling:touch; flex:1 1 260px; justify-content:center;}
+  .admin-view-bar .admin-view-btn{flex:0 1 130px; min-width:80px; padding:9px 6px; font-family:'VT323',monospace; font-size:.85rem; letter-spacing:.5px; text-transform:uppercase; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:4px; cursor:pointer; transition:border-color .2s, color .2s, background .2s; white-space:nowrap;}
   .admin-view-bar .admin-view-btn:hover{border-color:var(--accent); color:var(--text);}
   .admin-view-bar .admin-view-btn.active{color:var(--bg); background:var(--accent); border-color:var(--accent);}
   .logo-anim-sm{width:52px; aspect-ratio:1260/750; height:auto; flex:none;}
-  .app-topbar h1{font-size:1.25rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .page-title-lg{font-size:1.9rem; margin:4px 0 18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .topbar-actions{display:flex; align-items:center; gap:8px; flex:none;}
+  .avatar-gear-btn{background:none; border:none; padding:0; margin:0; cursor:pointer; border-radius:50%; line-height:0;}
+  .avatar-gear-btn .avatar-wrap{transition:box-shadow .15s;}
+  .avatar-gear-btn:hover .avatar-wrap{box-shadow:0 0 0 2px var(--accent);}
+  .avatar-gear-btn .avatar-fallback{width:100%; height:100%; border-radius:50%; border:2px solid var(--accent);}
+  .settings-panel-profile{display:flex; flex-direction:column; gap:4px; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--border);}
+  @media (max-width:720px){
+    .app-topbar{justify-content:center;}
+    .admin-view-bar{order:3; flex:1 1 100%; justify-content:flex-start;}
+  }
   .gear-wrap{position:relative;}
   .create-wrap{position:relative;}
   .create-menu{position:absolute; top:48px; right:0; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:8px; min-width:220px; box-shadow:0 10px 26px rgba(0,0,0,.55); z-index:60; display:flex; flex-direction:column; gap:4px;}
@@ -185,6 +201,8 @@
   .create-menu .icon{width:15px; height:15px; color:var(--accent); flex:none;}
   .gear-btn{width:40px; height:40px; padding:0; border-radius:50%;}
   .gear-btn .icon{width:18px; height:18px;}
+  .messages-btn{position:relative;}
+  .messages-btn .notif-dot{top:4px; right:5px;}
   .settings-panel{position:absolute; top:48px; right:0; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:14px; min-width:210px; box-shadow:0 10px 26px rgba(0,0,0,.55); z-index:60; display:flex; flex-direction:column; gap:12px;}
   .settings-panel .row-label{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;}
   .settings-panel .lang-row, .settings-panel .theme-row{display:flex; gap:6px; flex-wrap:wrap;}
@@ -723,12 +741,26 @@
   <!-- APP (visiteur connecté) -->
   <div id="app" hidden>
     <div class="app-topbar">
-      <div class="brand">
-        <button class="logo-mark-sm-btn" onclick="goHome()" aria-label="Accueil">
-          <svg class="logo-anim-sm" viewBox="0 0 1260 750" role="img" aria-label="Couriers United"><use href="#cuLogoStatic"/></svg>
-        </button>
-        <h1 id="pageTitle">—</h1>
+      <button class="brand brand-lg" onclick="goHome()" aria-label="Accueil" type="button">
+        <div class="logo-icon-wrap logo-icon-wrap-header">
+          <svg class="logo-anim-header" viewBox="0 0 1260 750" role="img" aria-label="Couriers United"><use href="#cuLogoStatic"/></svg>
+          <svg class="logo-star s1" viewBox="0 0 7 7" shape-rendering="crispEdges"><use href="#cuStar"/></svg>
+          <svg class="logo-star s2" viewBox="0 0 7 7" shape-rendering="crispEdges"><use href="#cuStar"/></svg>
+          <svg class="logo-star s3" viewBox="0 0 7 7" shape-rendering="crispEdges"><use href="#cuStar"/></svg>
+        </div>
+        <div class="logo-wordmark logo-wordmark-header">
+          <div class="lw-main">COURIERS</div>
+          <div class="lw-sub">UNITED</div>
+        </div>
+      </button>
+
+      <div class="admin-view-bar" id="adminViewBar" hidden>
+        <button class="admin-view-btn" data-view="client" onclick="setAdminView('client')"><span data-i18n="navClient">CLIENT</span><span class="notif-dot" id="dotNavClient"></span></button>
+        <button class="admin-view-btn" data-view="courier" onclick="setAdminView('courier')" data-i18n="navCourier">COURSIER</button>
+        <button class="admin-view-btn" data-view="seller" onclick="setAdminView('seller')"><span data-i18n="navSeller">VENDEUR</span><span class="notif-dot" id="dotNavSeller"></span></button>
+        <button class="admin-view-btn" data-view="admin" onclick="setAdminView('admin')" data-i18n="navAdmin">GESTION</button>
       </div>
+
       <div class="topbar-actions">
         <button class="btn-primary" id="createOrderBtn" onclick="openCreateOrder()" hidden>
           <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="2" width="2" height="12"/><rect x="2" y="7" width="12" height="2"/></g></svg>
@@ -755,16 +787,34 @@
             </button>
           </div>
         </div>
+        <button class="gear-btn messages-btn" id="messagesBtn" onclick="openMessages()" aria-label="Messages" title="Messages">
+          <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+            <rect x="1" y="3" width="14" height="2"/>
+            <rect x="1" y="11" width="14" height="2"/>
+            <rect x="1" y="3" width="2" height="10"/>
+            <rect x="13" y="3" width="2" height="10"/>
+            <rect x="3" y="5" width="2" height="2"/>
+            <rect x="5" y="7" width="2" height="2"/>
+            <rect x="9" y="7" width="2" height="2"/>
+            <rect x="11" y="5" width="2" height="2"/>
+          </g></svg>
+          <span class="notif-dot" id="dotMessagesMain"></span>
+        </button>
         <div class="gear-wrap">
-          <button class="gear-btn" onclick="toggleSettings()" aria-label="Réglages">
-            <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-              <rect x="6" y="1" width="4" height="2"/><rect x="6" y="13" width="4" height="2"/>
-              <rect x="1" y="6" width="2" height="4"/><rect x="13" y="6" width="2" height="4"/>
-              <rect x="2.5" y="2.5" width="3" height="2" transform="rotate(45 4 3)"/>
-              <rect x="5" y="5" width="6" height="6"/><rect x="6.5" y="6.5" width="3" height="3" fill="var(--panel)"/>
-            </g></svg>
+          <button class="avatar-gear-btn" onclick="toggleSettings()" aria-label="Profil / Réglages">
+            <div class="avatar-wrap">
+              <img class="avatar" id="chipAvatarImg" hidden>
+              <div class="avatar-fallback" id="chipAvatarFallback">?</div>
+            </div>
           </button>
           <div class="settings-panel" id="settingsPanel" hidden>
+            <div class="settings-panel-profile">
+              <div class="chip-name" id="chipName">—</div>
+              <div class="role-badge">
+                <span id="chipRoleAnimWrap"></span>
+                <span id="chipRoleLabel">—</span>
+              </div>
+            </div>
             <div class="nav-row">
               <button onclick="openProfile()" data-i18n="navProfile">PROFIL</button>
             </div>
@@ -787,26 +837,7 @@
       </div>
     </div>
 
-    <div class="admin-view-bar" id="adminViewBar" hidden>
-      <button class="admin-view-btn" data-view="client" onclick="setAdminView('client')"><span data-i18n="navClient">CLIENT</span><span class="notif-dot" id="dotNavClient"></span></button>
-      <button class="admin-view-btn" data-view="courier" onclick="setAdminView('courier')" data-i18n="navCourier">COURSIER</button>
-      <button class="admin-view-btn" data-view="seller" onclick="setAdminView('seller')"><span data-i18n="navSeller">VENDEUR</span><span class="notif-dot" id="dotNavSeller"></span></button>
-      <button class="admin-view-btn" data-view="admin" onclick="setAdminView('admin')" data-i18n="navAdmin">GESTION</button>
-    </div>
-
-    <button class="profile-chip" onclick="openProfile()" type="button">
-      <div class="avatar-wrap">
-        <img class="avatar" id="chipAvatarImg" hidden>
-        <div class="avatar-fallback" id="chipAvatarFallback">?</div>
-      </div>
-      <div class="chip-text">
-        <div class="chip-name" id="chipName">—</div>
-        <div class="role-badge">
-          <span id="chipRoleAnimWrap"></span>
-          <span id="chipRoleLabel">—</span>
-        </div>
-      </div>
-    </button>
+    <h1 id="pageTitle" class="page-title-lg">—</h1>
 
     <!-- DASHBOARD CLIENT -->
     <section id="view-client-dash" hidden>
@@ -826,7 +857,7 @@
       <div id="clientTabMarketplace" hidden>
         <h3 data-i18n="marketplaceFeedTitle" style="margin-top:0;">Derniers objets en vente</h3>
         <div class="mkt-toolbar">
-          <input type="text" id="marketplaceSearchInput" class="mkt-search-input" data-i18n-ph="mktSearchPh" placeholder="Rechercher un objet…" oninput="applyMarketplaceFilters()">
+          <input type="text" id="marketplaceSearchInput" class="mkt-search-input" data-i18n-ph="mktSearchPh" placeholder="Rechercher un objet…" oninput="onMarketplaceSearchInput()">
           <div class="create-wrap mkt-filter-wrap" id="mktFilterWrap">
             <button type="button" class="btn-secondary mkt-filter-btn" id="mktFilterBtn" onclick="toggleMktFilterMenu()">
               <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
@@ -843,17 +874,48 @@
           </div>
         </div>
         <div id="marketplaceFeed" class="marketplace-grid"></div>
-        <h3 data-i18n="myInquiriesTitle" style="margin-top:26px;">Mes demandes</h3>
-        <div id="myInquiriesList"></div>
-        <button class="history-toggle" onclick="toggleMktHistory()">
-          <span data-i18n="mktHistoryLabel">Historique des achats</span> (<span id="mktHistoryCount">0</span>) <span id="mktHistoryToggleIcon">▾</span>
-        </button>
-        <div id="myInquiriesHistoryList" hidden></div>
       </div>
       <div id="clientTabResources" hidden>
         <h3 data-i18n="requestedResourcesTitle" style="margin-top:0;">Ressources demandées par les vendeurs</h3>
         <div id="resourceRequestsFeed"></div>
-        <h3 data-i18n="myResourceOffersTitle" style="margin-top:26px;">Mes propositions</h3>
+      </div>
+    </section>
+
+    <!-- MESSAGERIE UNIFIÉE -->
+    <section id="view-messages" hidden>
+      <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
+      <header><h1 data-i18n="messagesTitle">Messagerie</h1></header>
+      <div class="tabs">
+        <button class="tab-btn active" id="msgTabBtnClient" onclick="setMsgTab('client')"><span data-i18n="msgTabClient">CLIENT</span><span class="notif-dot" id="dotMsgTabClient"></span></button>
+        <button class="tab-btn" id="msgTabBtnSeller" onclick="setMsgTab('seller')" hidden><span data-i18n="msgTabSeller">VENDEUR</span><span class="notif-dot" id="dotMsgTabSeller"></span></button>
+        <button class="tab-btn" id="msgTabBtnSales" onclick="setMsgTab('sales')"><span data-i18n="msgTabSales">VENTES MARKETPLACE</span><span class="notif-dot" id="dotMsgTabSales"></span></button>
+        <button class="tab-btn" id="msgTabBtnDesired" onclick="setMsgTab('desired')"><span data-i18n="msgTabDesired">DESIRED ITEMS</span><span class="notif-dot" id="dotMsgTabDesired"></span></button>
+      </div>
+      <div id="msgTabClient">
+        <div id="myInquiriesList"></div>
+        <button class="history-toggle" onclick="toggleMktHistory()">
+          <span data-i18n="historyLabel">Historique</span> (<span id="mktHistoryCount">0</span>) <span id="mktHistoryToggleIcon">▾</span>
+        </button>
+        <div id="myInquiriesHistoryList" hidden></div>
+      </div>
+      <div id="msgTabSeller" hidden>
+        <h3><span data-i18n="receivedInquiriesTitle">PROPOSITIONS REÇUES</span><span class="tab-count-badge" id="inquiriesCountBadge" hidden>0</span></h3>
+        <div id="receivedInquiriesList"></div>
+        <button class="history-toggle" onclick="toggleSellerMktHistory()">
+          <span data-i18n="sellerMktHistoryLabel">Historique des ventes</span> (<span id="sellerMktHistoryCount">0</span>) <span id="sellerMktHistoryToggleIcon">▾</span>
+        </button>
+        <div id="receivedInquiriesHistoryList" hidden></div>
+      </div>
+      <div id="msgTabSales" hidden>
+        <h3 data-i18n="msgSalesOngoingTitle" style="margin-top:0;">Négociations en cours</h3>
+        <div id="msgSalesOngoingList"></div>
+        <h3 data-i18n="msgSalesHistoryTitle">Historique des ventes</h3>
+        <div id="msgSalesHistoryList"></div>
+      </div>
+      <div id="msgTabDesired" hidden>
+        <h3 data-i18n="msgDesiredReceivedTitle" style="margin-top:0;">Offres reçues</h3>
+        <div id="receivedResourceOffersList"></div>
+        <h3 data-i18n="myResourceOffersTitle">Mes propositions</h3>
         <div id="myResourceOffersList"></div>
       </div>
     </section>
@@ -1180,17 +1242,6 @@
             </button>
           </div>
           <div id="myListingsList" class="marketplace-grid"></div>
-        </div>
-
-        <div class="card seller-section-card">
-          <div class="shop-preview-head">
-            <h3><span data-i18n="receivedInquiriesTitle">PROPOSITIONS REÇUES</span><span class="tab-count-badge" id="inquiriesCountBadge" hidden>0</span></h3>
-          </div>
-          <div id="receivedInquiriesList"></div>
-          <button class="history-toggle" onclick="toggleSellerMktHistory()">
-            <span data-i18n="sellerMktHistoryLabel">Historique des ventes</span> (<span id="sellerMktHistoryCount">0</span>) <span id="sellerMktHistoryToggleIcon">▾</span>
-          </button>
-          <div id="receivedInquiriesHistoryList" hidden></div>
         </div>
 
         <div class="card seller-section-card">
@@ -1646,7 +1697,7 @@ let profile = null;
 // Un membre peut cumuler plusieurs casquettes (client + coursier + vendeur) : currentView retient
 // l'onglet actuellement affiché parmi celles disponibles pour ce compte. 'client' reste le point de départ par défaut.
 let currentView = 'client'; // 'client' | 'courier' | 'seller' | 'admin'
-const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-dash','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-resource','view-seller-all-listings','view-seller-all-resources','view-shop-all-listings','view-shop-all-resources'];
+const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-dash','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-resource','view-seller-all-listings','view-seller-all-resources','view-shop-all-listings','view-shop-all-resources','view-messages'];
 function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); }
 let clientTab = 'deliveries'; // 'deliveries' | 'marketplace' | 'resources'
 function setClientTab(tab){
@@ -1658,8 +1709,8 @@ function setClientTab(tab){
   $('clientTabMarketplace').hidden = tab !== 'marketplace';
   $('clientTabResources').hidden = tab !== 'resources';
   if(tab === 'deliveries'){ loadClientDashboard(); markCategoryRead('client_orders'); }
-  else if(tab === 'marketplace'){ loadMarketplaceFeed(); loadMyInquiries(); markCategoryRead('client_marketplace'); }
-  else { loadResourceRequestsFeed(); loadMyResourceOffers(); }
+  else if(tab === 'marketplace'){ loadMarketplaceFeed(); }
+  else { loadResourceRequestsFeed(); }
 }
 let hasBooted = false;
 let trackedShipPct = {}; // orderId -> pourcentage précédemment affiché (pour l'animation)
@@ -1679,7 +1730,7 @@ const T = {
     tagline:"Livraisons inter-système · Stanton · Nyx · Pyro", logout:"DÉCONNEXION",
     loginTitle:"Accès Terminal", loginSub:"Connecte-toi avec Discord pour accéder à ton espace.", loginBtn:"SE CONNECTER AVEC DISCORD",
     languageLabel:"Langue", themeLabel:"Thème", adminViewLabel:"Vue", navAdmin:"GESTION", navClient:"CLIENT", navCourier:"COURSIER", navSeller:"VENDEUR",
-    dashClient:"Mes commandes", dashCourier:"Espace Coursier", dashAdmin:"Panneau Admin", dashSeller:"Ma Marketplace",
+    dashClient:"Mes commandes", dashCourier:"Espace Coursier", dashAdmin:"Panneau Admin", dashSeller:"Espace Vendeur",
     createOrder:"CRÉER", back:"< RETOUR", newOrder:"Nouvelle commande",
     lblSystem:"Système de livraison souhaité", lblLieu:"Lieu exact de livraison", phLieu:"ex: People's Service Station Theta, Orison...", invalidLocationAlert:"Merci de choisir un lieu de livraison valide dans la liste (station, avant-poste ou ville).", noItemsAlert:"Ajoute au moins un objet à la commande avant de l'envoyer.",
     saveDefaultLoc:"📍 ENREGISTRER COMME LIEU PAR DÉFAUT", savedDefaultLoc:"LIEU PAR DÉFAUT ENREGISTRÉ !",
@@ -1801,7 +1852,7 @@ const T = {
     tagline:"Inter-system deliveries · Stanton · Nyx · Pyro", logout:"LOG OUT",
     loginTitle:"Terminal Access", loginSub:"Sign in with Discord to reach your dashboard.", loginBtn:"SIGN IN WITH DISCORD",
     languageLabel:"Language", themeLabel:"Theme", adminViewLabel:"View", navAdmin:"MANAGE", navClient:"CLIENT", navCourier:"COURIER", navSeller:"SELLER",
-    dashClient:"My orders", dashCourier:"Courier Area", dashAdmin:"Admin Panel", dashSeller:"My Marketplace",
+    dashClient:"My orders", dashCourier:"Courier Area", dashAdmin:"Admin Panel", dashSeller:"Seller Area",
     createOrder:"CREATE", back:"< BACK", newOrder:"New order",
     lblSystem:"Delivery system", lblLieu:"Exact delivery location", phLieu:"e.g. People's Service Station Theta, Orison...", invalidLocationAlert:"Please choose a valid delivery location from the list (station, outpost or city).", noItemsAlert:"Add at least one item to the order before sending it.",
     saveDefaultLoc:"📍 SAVE AS DEFAULT LOCATION", savedDefaultLoc:"DEFAULT LOCATION SAVED!",
@@ -2024,7 +2075,7 @@ function toggleSettings(){ $('settingsPanel').hidden = !$('settingsPanel').hidde
 document.addEventListener('click', (e) => {
   const panel = $('settingsPanel');
   if(panel.hidden) return;
-  if(!panel.contains(e.target) && !e.target.closest('.gear-btn')) panel.hidden = true;
+  if(!panel.contains(e.target) && !e.target.closest('.avatar-gear-btn')) panel.hidden = true;
 });
 
 // Bouton "CRÉER" du vendeur (topbar) : petit menu avec les deux sous-actions.
@@ -3038,22 +3089,48 @@ async function loadMarketplaceFeed(){
   }
   applyMarketplaceFilters();
 }
-// Recherche + tri appliqués côté client sur les annonces déjà chargées (pas de nouvel appel réseau).
-function applyMarketplaceFilters(){
+// Tri + recherche. Sans recherche : on trie le feed déjà chargé (30 dernières annonces).
+// Avec une recherche : on interroge toute la base (pas seulement les 30 dernières) pour ne rater aucun objet.
+let marketplaceSearchDebounceTimer = null;
+function onMarketplaceSearchInput(){
+  clearTimeout(marketplaceSearchDebounceTimer);
+  marketplaceSearchDebounceTimer = setTimeout(applyMarketplaceFilters, 250);
+}
+async function applyMarketplaceFilters(){
   const box = $('marketplaceFeed'); if(!box) return;
   const d = T[LANG];
-  if(!marketplaceFeedCache.length){ box.innerHTML = `<p class="muted">${d.marketplaceEmpty}</p>`; return; }
   const searchInput = $('marketplaceSearchInput');
-  const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
-  let list = marketplaceFeedCache.filter(l => !q || (l.item_name||'').toLowerCase().includes(q));
-  list = list.slice().sort((a,b) => {
+  const q = searchInput ? searchInput.value.trim() : '';
+  let list, sellerMap;
+  if(q){
+    box.innerHTML = `<p class="muted">…</p>`;
+    const { data, error } = await sb.from('marketplace_listings').select('*').ilike('item_name', `%${q}%`).order('created_at',{ascending:false}).limit(60);
+    if(error){ box.textContent = error.message; return; }
+    list = data || [];
+    const sellerIds = [...new Set(list.map(l=>l.seller_id))];
+    const missingIds = sellerIds.filter(id => !marketplaceSellerMapCache[id]);
+    if(missingIds.length){
+      const [{ data: sellers }, { data: shops }] = await Promise.all([
+        sb.from('profiles').select('id,discord_username,rsi_handle').in('id', missingIds),
+        sb.from('marketplace_shops').select('id,shop_name').in('id', missingIds)
+      ]);
+      const shopNameMap = {}; (shops||[]).forEach(s=>shopNameMap[s.id]=s.shop_name);
+      (sellers||[]).forEach(s=>{ marketplaceSellerMapCache[s.id] = { ...s, shop_name: shopNameMap[s.id] || null }; });
+    }
+    sellerMap = marketplaceSellerMapCache;
+  } else {
+    if(!marketplaceFeedCache.length){ box.innerHTML = `<p class="muted">${d.marketplaceEmpty}</p>`; return; }
+    list = marketplaceFeedCache.slice();
+    sellerMap = marketplaceSellerMapCache;
+  }
+  list.sort((a,b) => {
     if(marketplaceSortMode === 'price_asc') return (a.price||0) - (b.price||0);
     if(marketplaceSortMode === 'price_desc') return (b.price||0) - (a.price||0);
     if(marketplaceSortMode === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
     return new Date(b.created_at) - new Date(a.created_at); // newest (défaut)
   });
   if(!list.length){ box.innerHTML = `<p class="muted">${d.mktNoResults}</p>`; return; }
-  box.innerHTML = list.map(l => mktCardHtml(l, marketplaceSellerMapCache, marketplaceUnreadSet)).join('');
+  box.innerHTML = list.map(l => mktCardHtml(l, sellerMap, q ? new Set() : marketplaceUnreadSet)).join('');
 }
 function toggleMktFilterMenu(){ $('mktFilterMenu').hidden = !$('mktFilterMenu').hidden; }
 document.addEventListener('click', (e) => {

@@ -4705,7 +4705,8 @@ function deliveryMainCardHtml(o, clients){
       <div class="meta">${metaLine}</div>
       ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
       ${shipTrackHtml(o)}
-      <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty}</li>`).join('')}</ul>
+      <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty}${it.price!=null ? ' — '+fmt(it.price*it.qty) : ''}</li>`).join('')}</ul>
+      ${o.total_price!=null ? `<div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>` : ''}
       <div class="line margin-line"><span>${d.courierMarginLbl}</span><span>${fmt(o.commission)}</span></div>
       ${routeHtml}
       ${releaseBtn}

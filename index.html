@@ -178,7 +178,7 @@
   .logo-mark-sm-btn{background:none; border:none; padding:0; margin:0; cursor:pointer; flex:none; line-height:0; border-radius:4px;}
   .logo-mark-sm-btn:hover .logo-anim-sm{filter:brightness(1.25);}
   .admin-view-bar{display:flex; gap:8px; margin:0; overflow-x:auto; -webkit-overflow-scrolling:touch; justify-content:center; justify-self:center;}
-  .admin-view-bar .admin-view-btn{flex:0 1 150px; min-width:90px; padding:13px 10px; font-family:'VT323',monospace; font-size:1.05rem; letter-spacing:.8px; text-transform:uppercase; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:4px; cursor:pointer; transition:border-color .2s, color .2s, background .2s; white-space:nowrap;}
+  .admin-view-bar .admin-view-btn{flex:0 1 200px; min-width:110px; padding:13px 26px; font-family:'VT323',monospace; font-size:1.05rem; letter-spacing:1px; text-transform:uppercase; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:4px; cursor:pointer; transition:border-color .2s, color .2s, background .2s; white-space:nowrap;}
   .admin-view-bar .admin-view-btn:hover{border-color:var(--accent); color:var(--text);}
   .admin-view-bar .admin-view-btn.active{color:var(--bg); background:var(--accent); border-color:var(--accent);}
   .logo-anim-sm{width:52px; aspect-ratio:1260/750; height:auto; flex:none;}
@@ -194,6 +194,11 @@
     .app-topbar .brand-lg{grid-area:brand;}
     .app-topbar .topbar-actions{grid-area:actions;}
     .admin-view-bar{grid-area:tabs; justify-self:stretch; justify-content:flex-start;}
+    .admin-view-bar .admin-view-btn{flex:1 1 0; min-width:0; padding:13px 8px;}
+  }
+  @media (max-width:480px){
+    .admin-view-bar{gap:5px;}
+    .admin-view-bar .admin-view-btn{padding:13px 4px; font-size:.92rem; letter-spacing:.4px;}
   }
   .gear-wrap{position:relative;}
   .create-wrap{position:relative;}
@@ -2311,20 +2316,27 @@ async function openMsgThread(counterpartId){
   const { data: p } = await sb.from('profiles').select('id,discord_username,rsi_handle').eq('id', counterpartId).maybeSingle();
   $('msgThreadPartnerName').textContent = p ? displayName(p) : '—';
   await renderMsgThreadItems(g);
-  // Marque comme vus tous les messages non lus de ce fil (par élément, pas en masse pour toute la catégorie),
-  // et on ATTEND que les écritures soient bien passées avant de recalculer les pastilles pour éviter
-  // qu'un rafraîchissement trop rapide des compteurs ne les lise encore comme non lus.
-  const markReadOps = [];
-  g.items.forEach(it => {
-    ['client_marketplace','seller_marketplace','seller_resource_offer'].forEach(cat => {
-      if(msgUnreadSets[cat] && msgUnreadSets[cat].has(it.id)){
-        msgUnreadSets[cat].delete(it.id);
-        markReadOps.push(sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category',cat).eq('ref_id',it.id).eq('read',false));
-      }
-    });
-  });
+  // Marque comme lus tous les messages non lus de ce fil. On interroge directement la base pour
+  // récupérer les notifications non lues dont le ref_id correspond à un élément de cette conversation
+  // (peu importe la catégorie), puis on les marque lues par leur id de notification. On ne dépend plus
+  // d'un cache local (msgUnreadSets) qui n'était en réalité jamais rempli par loadMsgConversations —
+  // c'était la vraie cause du bug : le test restait toujours faux et aucune écriture n'était jamais faite.
+  const itemIds = g.items.map(it => it.id);
+  if(itemIds.length && session){
+    const { data: unreadNotifs, error: fetchErr } = await sb.from('notifications')
+      .select('id,category,ref_id')
+      .eq('user_id', session.user.id)
+      .eq('read', false)
+      .in('ref_id', itemIds);
+    if(fetchErr) console.error('Erreur lecture notifications non lues:', fetchErr);
+    if(unreadNotifs && unreadNotifs.length){
+      const notifIds = unreadNotifs.map(n => n.id);
+      const { error: updErr } = await sb.from('notifications').update({read:true}).in('id', notifIds);
+      if(updErr) console.error('Erreur marquage notifications comme lues:', updErr);
+      unreadNotifs.forEach(n => { if(msgUnreadSets[n.category]) msgUnreadSets[n.category].delete(n.ref_id); });
+    }
+  }
   g.unread = false;
-  if(markReadOps.length) await Promise.all(markReadOps);
   refreshNotifBadges();
 }
 async function renderMsgThreadItems(g){

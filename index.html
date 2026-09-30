@@ -2132,7 +2132,11 @@ async function refreshNotifBadges(){
   const isSeller = profile.is_seller || profile.role==='admin';
   const [sellerCnt, resOfferCnt, mktCnt, clientResOfferCnt, newListingCnt, ordCnt, courierCnt, resCnt] = await Promise.all([
     isSeller ? getUnreadCount('seller_marketplace') : Promise.resolve(0),
-    isSeller ? getUnreadCount('seller_resource_offer') : Promise.resolve(0),
+    // Pas de garde-fou "isSeller" ici (contrairement à seller_marketplace ci-dessus) : la pastille par
+    // conversation dans la messagerie (loadMsgUnreadSet) ne filtre déjà pas selon ce flag, donc si on le
+    // fait ici la pastille principale peut rester éteinte alors que celle de la conversation s'allume —
+    // c'était exactement le bug rapporté (notif visible dans la conversation, absente sur la bulle).
+    getUnreadCount('seller_resource_offer'),
     getUnreadCount('client_marketplace'),
     getUnreadCount('client_resource_offer'),
     getUnreadCount('client_new_listing'),

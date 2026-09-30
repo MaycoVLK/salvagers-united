@@ -203,6 +203,28 @@
   .gear-btn .icon{width:18px; height:18px;}
   .messages-btn{position:relative;}
   .messages-btn .notif-dot{top:4px; right:5px;}
+  .messages-panel{position:absolute; top:48px; right:0; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:12px; width:360px; max-width:88vw; max-height:70vh; overflow-y:auto; box-shadow:0 10px 26px rgba(0,0,0,.55); z-index:60;}
+  .messages-panel[hidden]{display:none;}
+  .messages-panel.msg-panel-anim{animation:msgPanelIn .22s steps(6) both;}
+  @keyframes msgPanelIn{0%{opacity:0; transform:translateY(-10px) scale(.94);} 100%{opacity:1; transform:translateY(0) scale(1);}}
+  .messages-panel-title{font-family:'VT323',monospace; font-size:1.1rem; letter-spacing:1px; text-transform:uppercase; color:var(--text); margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border);}
+  .msg-conv-list{display:flex; flex-direction:column; gap:4px;}
+  .msg-conv-row{display:flex; align-items:center; gap:10px; padding:8px; border-radius:4px; cursor:pointer; border:1px solid transparent; text-align:left;}
+  .msg-conv-row:hover{background:var(--bg2); border-color:var(--border);}
+  .msg-conv-row.unread .msg-conv-name{color:var(--accent);}
+  .msg-conv-avatar{position:relative; width:36px; height:36px; flex:none; border-radius:50%; overflow:hidden; background:var(--bg2); display:flex; align-items:center; justify-content:center;}
+  .msg-conv-avatar img{width:100%; height:100%; object-fit:cover; display:block;}
+  .msg-conv-avatar-fb{width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-family:'VT323',monospace; font-size:1.1rem; color:var(--accent);}
+  .msg-conv-info{min-width:0; flex:1;}
+  .msg-conv-name{font-family:'VT323',monospace; font-size:1rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .msg-conv-preview{font-size:.75rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .msg-thread-back{display:flex; align-items:center; gap:6px; width:100%; background:none; border:none; border-bottom:1px solid var(--border); color:var(--text); font-family:'VT323',monospace; font-size:1rem; text-transform:uppercase; letter-spacing:.5px; padding:0 0 10px; margin-bottom:10px; cursor:pointer; text-align:left;}
+  .msg-thread-back:hover{color:var(--accent);}
+  .msg-thread-items{display:flex; flex-direction:column; gap:10px;}
+  .msg-kind-label{display:inline-block; font-size:.68rem; text-transform:uppercase; letter-spacing:.5px; color:var(--accent); border:1px solid var(--accent-dim); border-radius:3px; padding:2px 6px; margin-bottom:6px;}
+  @media (max-width:480px){
+    .messages-panel{position:fixed; top:60px; left:8px; right:8px; width:auto; max-width:none;}
+  }
   .settings-panel{position:absolute; top:48px; right:0; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:14px; min-width:210px; box-shadow:0 10px 26px rgba(0,0,0,.55); z-index:60; display:flex; flex-direction:column; gap:12px;}
   .settings-panel .row-label{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;}
   .settings-panel .lang-row, .settings-panel .theme-row{display:flex; gap:6px; flex-wrap:wrap;}
@@ -589,10 +611,10 @@
   /* --- PROFILE CHIP (barre d'identité) --- */
   .profile-chip{width:100%; display:flex; align-items:center; gap:12px; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:10px 14px; margin-bottom:18px; text-align:left; text-transform:none;}
   .profile-chip:hover{border-color:var(--accent);}
-  .avatar-wrap{position:relative; width:40px; height:40px; flex:none;}
+  .avatar-wrap{position:relative; width:40px; height:40px; flex:none; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center;}
   .avatar-wrap.big{width:130px; height:130px; margin:0 auto 10px;}
   .avatar{width:100%; height:100%; border-radius:50%; object-fit:cover; border:2px solid var(--accent); display:block;}
-  .avatar-fallback{display:flex; align-items:center; justify-content:center; background:var(--bg2); color:var(--accent); font-family:'VT323',monospace; font-size:1.3rem;}
+  .avatar-fallback{width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--bg2); color:var(--accent); font-family:'VT323',monospace; font-size:1.3rem;}
   .avatar-wrap.big .avatar-fallback{font-size:3.6rem;}
   .chip-text{display:flex; flex-direction:column; gap:4px; min-width:0;}
   .chip-name{font-family:'VT323',monospace; font-size:1.1rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
@@ -787,20 +809,34 @@
             </button>
           </div>
         </div>
-        <button class="gear-btn messages-btn" id="messagesBtn" onclick="openMessages()" aria-label="Messages" title="Messages">
-          <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-            <rect x="1" y="2" width="14" height="2"/>
-            <rect x="1" y="9" width="14" height="2"/>
-            <rect x="1" y="2" width="2" height="9"/>
-            <rect x="13" y="2" width="2" height="9"/>
-            <rect x="3" y="11" width="2" height="2"/>
-            <rect x="5" y="11" width="2" height="1"/>
-            <rect x="4" y="5" width="2" height="2"/>
-            <rect x="7" y="5" width="2" height="2"/>
-            <rect x="10" y="5" width="2" height="2"/>
-          </g></svg>
-          <span class="notif-dot" id="dotMessagesMain"></span>
-        </button>
+        <div class="gear-wrap">
+          <button class="gear-btn messages-btn" id="messagesBtn" onclick="toggleMessagesPanel()" aria-label="Messages" title="Messages">
+            <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+              <rect x="1" y="2" width="14" height="2"/>
+              <rect x="1" y="9" width="14" height="2"/>
+              <rect x="1" y="2" width="2" height="9"/>
+              <rect x="13" y="2" width="2" height="9"/>
+              <rect x="3" y="11" width="2" height="2"/>
+              <rect x="5" y="11" width="2" height="1"/>
+              <rect x="4" y="5" width="2" height="2"/>
+              <rect x="7" y="5" width="2" height="2"/>
+              <rect x="10" y="5" width="2" height="2"/>
+            </g></svg>
+            <span class="notif-dot" id="dotMessagesMain"></span>
+          </button>
+          <div class="messages-panel" id="messagesPanel" hidden>
+            <div id="msgListView">
+              <div class="messages-panel-title" data-i18n="messagesTitle">Messagerie</div>
+              <div id="msgConversationsList" class="msg-conv-list"></div>
+            </div>
+            <div id="msgThreadView" hidden>
+              <button type="button" class="msg-thread-back" onclick="closeMsgThread()">
+                <span aria-hidden="true">&lt;</span> <span id="msgThreadPartnerName">—</span>
+              </button>
+              <div id="msgThreadItems" class="msg-thread-items"></div>
+            </div>
+          </div>
+        </div>
         <div class="gear-wrap">
           <button class="avatar-gear-btn" onclick="toggleSettings()" aria-label="Profil / Réglages">
             <div class="avatar-wrap">
@@ -879,45 +915,6 @@
       <div id="clientTabResources" hidden>
         <h3 data-i18n="requestedResourcesTitle" style="margin-top:0;">Ressources demandées par les vendeurs</h3>
         <div id="resourceRequestsFeed"></div>
-      </div>
-    </section>
-
-    <!-- MESSAGERIE UNIFIÉE -->
-    <section id="view-messages" hidden>
-      <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
-      <header><h1 data-i18n="messagesTitle">Messagerie</h1></header>
-      <div class="tabs">
-        <button class="tab-btn active" id="msgTabBtnClient" onclick="setMsgTab('client')"><span data-i18n="msgTabClient">CLIENT</span><span class="notif-dot" id="dotMsgTabClient"></span></button>
-        <button class="tab-btn" id="msgTabBtnSeller" onclick="setMsgTab('seller')" hidden><span data-i18n="msgTabSeller">VENDEUR</span><span class="notif-dot" id="dotMsgTabSeller"></span></button>
-        <button class="tab-btn" id="msgTabBtnSales" onclick="setMsgTab('sales')"><span data-i18n="msgTabSales">VENTES MARKETPLACE</span><span class="notif-dot" id="dotMsgTabSales"></span></button>
-        <button class="tab-btn" id="msgTabBtnDesired" onclick="setMsgTab('desired')"><span data-i18n="msgTabDesired">DESIRED ITEMS</span><span class="notif-dot" id="dotMsgTabDesired"></span></button>
-      </div>
-      <div id="msgTabClient">
-        <div id="myInquiriesList"></div>
-        <button class="history-toggle" onclick="toggleMktHistory()">
-          <span data-i18n="historyLabel">Historique</span> (<span id="mktHistoryCount">0</span>) <span id="mktHistoryToggleIcon">▾</span>
-        </button>
-        <div id="myInquiriesHistoryList" hidden></div>
-      </div>
-      <div id="msgTabSeller" hidden>
-        <h3><span data-i18n="receivedInquiriesTitle">PROPOSITIONS REÇUES</span><span class="tab-count-badge" id="inquiriesCountBadge" hidden>0</span></h3>
-        <div id="receivedInquiriesList"></div>
-        <button class="history-toggle" onclick="toggleSellerMktHistory()">
-          <span data-i18n="sellerMktHistoryLabel">Historique des ventes</span> (<span id="sellerMktHistoryCount">0</span>) <span id="sellerMktHistoryToggleIcon">▾</span>
-        </button>
-        <div id="receivedInquiriesHistoryList" hidden></div>
-      </div>
-      <div id="msgTabSales" hidden>
-        <h3 data-i18n="msgSalesOngoingTitle" style="margin-top:0;">Négociations en cours</h3>
-        <div id="msgSalesOngoingList"></div>
-        <h3 data-i18n="msgSalesHistoryTitle">Historique des ventes</h3>
-        <div id="msgSalesHistoryList"></div>
-      </div>
-      <div id="msgTabDesired" hidden>
-        <h3 data-i18n="msgDesiredReceivedTitle" style="margin-top:0;">Offres reçues</h3>
-        <div id="receivedResourceOffersList"></div>
-        <h3 data-i18n="myResourceOffersTitle">Mes propositions</h3>
-        <div id="myResourceOffersList"></div>
       </div>
     </section>
 
@@ -1698,7 +1695,7 @@ let profile = null;
 // Un membre peut cumuler plusieurs casquettes (client + coursier + vendeur) : currentView retient
 // l'onglet actuellement affiché parmi celles disponibles pour ce compte. 'client' reste le point de départ par défaut.
 let currentView = 'client'; // 'client' | 'courier' | 'seller' | 'admin'
-const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-dash','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-resource','view-seller-all-listings','view-seller-all-resources','view-shop-all-listings','view-shop-all-resources','view-messages'];
+const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-dash','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-resource','view-seller-all-listings','view-seller-all-resources','view-shop-all-listings','view-shop-all-resources'];
 function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); }
 let clientTab = 'deliveries'; // 'deliveries' | 'marketplace' | 'resources'
 function setClientTab(tab){
@@ -1830,11 +1827,9 @@ const T = {
     myInquiriesTitle:"Mes demandes", noInquiries:"Tu n'as envoyé aucune demande pour le moment.",
     receivedInquiriesTitle:"Propositions reçues", noReceivedInquiries:"Aucune proposition reçue pour le moment.",
     sellerMktHistoryLabel:"Historique des ventes", sellerMktHistoryEmpty:"Aucune vente terminée pour le moment.",
-    messagesTitle:"Messagerie", msgTabClient:"CLIENT", msgTabSeller:"VENDEUR", msgTabSales:"VENTES MARKETPLACE", msgTabDesired:"DESIRED ITEMS",
-    msgRoleBuyer:"Achat", msgRoleSeller:"Vente",
-    msgSalesOngoingTitle:"Négociations en cours", msgSalesHistoryTitle:"Historique des ventes",
-    msgSalesOngoingEmpty:"Aucune négociation en cours.", msgSalesHistoryEmpty:"Aucune vente terminée pour le moment.",
-    msgDesiredReceivedTitle:"Offres reçues", noReceivedResourceOffers:"Aucune offre reçue pour le moment.",
+    messagesTitle:"Messagerie", msgNoConversations:"Aucun message pour le moment.",
+    msgKindInqReceived:"Offre marketplace reçue", msgKindInqSent:"Demande marketplace envoyée",
+    msgKindOfferReceived:"Offre reçue sur ton objet recherché", msgKindOfferSent:"Proposition envoyée pour un objet recherché",
     inquiryStatus:{pending:"En attente", accepted:"Acceptée", rejected:"Refusée", completed:"Terminée", countered:"Contre-offre", cancelled:"Annulée"},
     confirmCancelInquiry:"Annuler cette demande ? Le vendeur en sera informé.",
     orderAlreadyTaken:"Trop tard, un autre coursier vient de prendre cette commande.",
@@ -2079,10 +2074,6 @@ async function refreshNotifBadges(){
   toggleDot('dotTabPending', courierCnt>0);
   toggleDot('dotTabResources', resCnt>0);
   toggleDot('dotMessagesMain', (mktCnt+sellerTotal)>0);
-  toggleDot('dotMsgTabClient', mktCnt>0);
-  toggleDot('dotMsgTabSeller', sellerCnt>0);
-  toggleDot('dotMsgTabSales', (mktCnt+sellerCnt)>0);
-  toggleDot('dotMsgTabDesired', resOfferCnt>0);
 }
 
 const COLORS = ['orange','vert','bleu','violet','blanc','jaune'];
@@ -2220,69 +2211,228 @@ function goHome(){
   routeApp();
 }
 
-// --- MESSAGERIE UNIFIÉE ---
-let msgTab = 'client'; // 'client' | 'seller' | 'sales' | 'desired'
-function openMessages(){
-  $('settingsPanel').hidden = true;
-  hideAllViews();
-  $('view-messages').hidden = false;
-  const isSeller = profile && (profile.is_seller || profile.role === 'admin');
-  $('msgTabBtnSeller').hidden = !isSeller;
-  if(msgTab === 'seller' && !isSeller) msgTab = 'client';
-  setMsgTab(msgTab);
+// --- MESSAGERIE UNIFIÉE (popup, une conversation par personne) ---
+function toggleMessagesPanel(){
+  const panel = $('messagesPanel');
+  const wasHidden = panel.hidden;
+  if(wasHidden){
+    $('settingsPanel').hidden = true;
+    $('sellerCreateMenu') && ($('sellerCreateMenu').hidden = true);
+    panel.hidden = false;
+    panel.classList.remove('msg-panel-anim'); void panel.offsetWidth; panel.classList.add('msg-panel-anim');
+    openMsgList();
+  } else {
+    panel.hidden = true;
+  }
 }
-function setMsgTab(tab){
-  msgTab = tab;
-  $('msgTabBtnClient').classList.toggle('active', tab === 'client');
-  $('msgTabBtnSeller').classList.toggle('active', tab === 'seller');
-  $('msgTabBtnSales').classList.toggle('active', tab === 'sales');
-  $('msgTabBtnDesired').classList.toggle('active', tab === 'desired');
-  $('msgTabClient').hidden = tab !== 'client';
-  $('msgTabSeller').hidden = tab !== 'seller';
-  $('msgTabSales').hidden = tab !== 'sales';
-  $('msgTabDesired').hidden = tab !== 'desired';
-  if(tab === 'client') loadMyInquiries();
-  else if(tab === 'seller') loadReceivedInquiries();
-  else if(tab === 'sales') loadMsgSales();
-  else { loadReceivedResourceOffers(); loadMyResourceOffers(); }
+document.addEventListener('click', (e) => {
+  const panel = $('messagesPanel');
+  if(!panel || panel.hidden) return;
+  if(!panel.contains(e.target) && !e.target.closest('.messages-btn')) panel.hidden = true;
+});
+function openMsgList(){
+  $('msgListView').hidden = false;
+  $('msgThreadView').hidden = true;
+  currentMsgThreadPartnerId = null;
+  loadMsgConversations();
 }
-// Vue fusionnée "Ventes marketplace" : toutes les demandes marketplace où je suis acheteur OU vendeur,
-// séparées entre négociations en cours et historique (demandé explicitement par l'utilisateur).
-async function loadMsgSales(){
-  const ongoingBox = $('msgSalesOngoingList'); const histBox = $('msgSalesHistoryList');
-  if(!ongoingBox || !histBox || !session) return;
+function closeMsgThread(){ openMsgList(); }
+// Rafraîchit la liste des conversations et, si un fil est ouvert, le fil en cours (appelé après toute action
+// qui change l'état d'une demande/offre : accepter, refuser, contre-offre, annuler, marquer récupéré...).
+function msgRefreshAfterAction(){
+  if($('messagesPanel') && !$('messagesPanel').hidden){
+    if(!$('msgThreadView').hidden && currentMsgThreadPartnerId) openMsgThread(currentMsgThreadPartnerId);
+    else loadMsgConversations();
+  }
+  refreshNotifBadges();
+}
+function msgKindLabel(kind){
   const d = T[LANG];
-  const { data, error } = await sb.from('marketplace_inquiries').select('*').or(`buyer_id.eq.${session.user.id},seller_id.eq.${session.user.id}`).order('created_at',{ascending:false});
-  if(error){ ongoingBox.textContent = error.message; return; }
-  const rows = data || [];
-  const ongoing = rows.filter(r => !['completed','rejected','cancelled'].includes(r.status));
-  const history = rows.filter(r => ['completed','rejected','cancelled'].includes(r.status));
-  const listingIds=[...new Set(rows.map(r=>r.listing_id))];
-  const peopleIds=[...new Set(rows.flatMap(r=>[r.buyer_id, r.seller_id]))];
-  const [listings, people] = await Promise.all([
-    listingIds.length ? sb.from('marketplace_listings').select('id,item_name,price').in('id', listingIds).then(r=>r.data||[]) : Promise.resolve([]),
-    peopleIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', peopleIds).then(r=>r.data||[]) : Promise.resolve([])
+  return { inq_received:d.msgKindInqReceived, inq_sent:d.msgKindInqSent, offer_received:d.msgKindOfferReceived, offer_sent:d.msgKindOfferSent }[kind] || '';
+}
+let msgConversationsCache = {};
+let currentMsgThreadPartnerId = null;
+async function loadMsgConversations(){
+  const box = $('msgConversationsList'); if(!box || !session) return;
+  const d = T[LANG];
+  const uid = session.user.id;
+  const [inqRes, offRes, unreadClientMkt, unreadSellerMkt, unreadResOffer] = await Promise.all([
+    sb.from('marketplace_inquiries').select('*').or(`buyer_id.eq.${uid},seller_id.eq.${uid}`).order('created_at',{ascending:false}),
+    sb.from('resource_offers').select('*').or(`client_id.eq.${uid},seller_id.eq.${uid}`).order('created_at',{ascending:false}),
+    loadMsgUnreadSet('client_marketplace'),
+    loadMsgUnreadSet('seller_marketplace'),
+    loadMsgUnreadSet('seller_resource_offer')
+  ]);
+  const unreadIds = new Set([...unreadClientMkt, ...unreadSellerMkt, ...unreadResOffer]);
+  const groups = {};
+  function addItem(item, kind, counterpartId){
+    if(!counterpartId) return;
+    if(!groups[counterpartId]) groups[counterpartId] = { id:counterpartId, items:[], lastAt:item.created_at, unread:false };
+    const g = groups[counterpartId];
+    g.items.push({ ...item, __kind:kind });
+    if(new Date(item.created_at) > new Date(g.lastAt)) g.lastAt = item.created_at;
+    if(unreadIds.has(item.id)) g.unread = true;
+  }
+  (inqRes.data||[]).forEach(r => {
+    const iAmSeller = r.seller_id === uid;
+    addItem(r, iAmSeller ? 'inq_received' : 'inq_sent', iAmSeller ? r.buyer_id : r.seller_id);
+  });
+  (offRes.data||[]).forEach(r => {
+    const iAmSeller = r.seller_id === uid; // seller_id = celui qui a posté l'objet recherché (destinataire de l'offre)
+    addItem(r, iAmSeller ? 'offer_received' : 'offer_sent', iAmSeller ? r.client_id : r.seller_id);
+  });
+  msgConversationsCache = groups;
+  const counterpartIds = Object.keys(groups);
+  if(!counterpartIds.length){ box.innerHTML = `<p class="muted">${d.msgNoConversations}</p>`; return; }
+  const { data: people } = await sb.from('profiles').select('id,discord_username,rsi_handle,avatar_url').in('id', counterpartIds);
+  const pMap = {}; (people||[]).forEach(p=>pMap[p.id]=p);
+  const sorted = counterpartIds.map(id=>groups[id]).sort((a,b)=> new Date(b.lastAt) - new Date(a.lastAt));
+  box.innerHTML = sorted.map(g => {
+    const p = pMap[g.id];
+    const name = p ? displayName(p) : '—';
+    const latest = g.items.slice().sort((a,b)=> new Date(b.created_at)-new Date(a.created_at))[0];
+    const avatarHtml = p && p.avatar_url ? `<img src="${p.avatar_url}" alt="">` : `<div class="msg-conv-avatar-fb">${(name||'?').charAt(0).toUpperCase()}</div>`;
+    return `
+      <div class="msg-conv-row${g.unread?' unread':''}" onclick="openMsgThread('${g.id}')">
+        <div class="msg-conv-avatar">${avatarHtml}</div>
+        <div class="msg-conv-info">
+          <div class="msg-conv-name">${name}${g.unread ? '<span class="new-order-dot" style="position:relative; top:auto; right:auto; display:inline-block; margin-left:6px;"></span>' : ''}</div>
+          <div class="msg-conv-preview">${msgKindLabel(latest.__kind)} — ${inquiryStatusBadge(latest.status)}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+async function openMsgThread(counterpartId){
+  const g = msgConversationsCache[counterpartId];
+  if(!g) return;
+  currentMsgThreadPartnerId = counterpartId;
+  $('msgListView').hidden = true;
+  $('msgThreadView').hidden = false;
+  const { data: p } = await sb.from('profiles').select('id,discord_username,rsi_handle').eq('id', counterpartId).maybeSingle();
+  $('msgThreadPartnerName').textContent = p ? displayName(p) : '—';
+  await renderMsgThreadItems(g);
+  // Marque comme vus tous les messages non lus de ce fil (par élément, pas en masse pour toute la catégorie).
+  g.items.forEach(it => {
+    ['client_marketplace','seller_marketplace','seller_resource_offer'].forEach(cat => {
+      if(msgUnreadSets[cat] && msgUnreadSets[cat].has(it.id)){
+        msgUnreadSets[cat].delete(it.id);
+        sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category',cat).eq('ref_id',it.id).eq('read',false).then(()=>{});
+      }
+    });
+  });
+  refreshNotifBadges();
+}
+async function renderMsgThreadItems(g){
+  const box = $('msgThreadItems'); if(!box || !session) return;
+  const uid = session.user.id;
+  const inqItems = g.items.filter(it => it.__kind === 'inq_received' || it.__kind === 'inq_sent');
+  const offItems = g.items.filter(it => it.__kind === 'offer_received' || it.__kind === 'offer_sent');
+  const listingIds = [...new Set(inqItems.map(r=>r.listing_id).filter(Boolean))];
+  const requestIds = [...new Set(offItems.map(r=>r.request_id).filter(Boolean))];
+  const [listings, requests] = await Promise.all([
+    listingIds.length ? sb.from('marketplace_listings').select('*').in('id', listingIds).then(r=>r.data||[]) : Promise.resolve([]),
+    requestIds.length ? sb.from('resource_requests').select('id,item_name,quantity').in('id', requestIds).then(r=>r.data||[]) : Promise.resolve([])
   ]);
   const lMap={}; listings.forEach(l=>lMap[l.id]=l);
-  const pMap={}; people.forEach(p=>pMap[p.id]=p);
-  function rowHtml(r){
-    const listing = lMap[r.listing_id];
-    const isSellerSide = r.seller_id === session.user.id;
-    const counterpart = pMap[isSellerSide ? r.buyer_id : r.seller_id];
-    const roleLbl = isSellerSide ? d.msgRoleSeller : d.msgRoleBuyer;
+  const rMap={}; requests.forEach(r=>rMap[r.id]=r);
+  const sorted = g.items.slice().sort((a,b)=> new Date(a.created_at)-new Date(b.created_at));
+  box.innerHTML = sorted.map(it => {
+    if(it.__kind === 'inq_received' || it.__kind === 'inq_sent') return inquiryThreadItemHtml(it, it.__kind === 'inq_received', lMap[it.listing_id]);
+    return offerThreadItemHtml(it, it.__kind === 'offer_received', rMap[it.request_id]);
+  }).join('');
+  animateShipTracks(box);
+}
+function inquiryThreadItemHtml(r, iAmSeller, listing){
+  const d = T[LANG];
+  let priceLine = '';
+  const isTerminal = ['completed','rejected','cancelled'].includes(r.status);
+  if(isTerminal){
     const finalPrice = inquiryFinalPrice(r, listing);
-    return `
-      <div class="inquiry-row">
-        <div class="inquiry-head">
-          <div class="inquiry-item">${inquiryItemName(r, listing)}</div>
-          ${inquiryStatusBadge(r.status)}
-        </div>
-        <div class="inquiry-meta">${roleLbl} — ${d.inquiryFrom}${counterpart ? displayName(counterpart) : '—'}</div>
-        ${finalPrice != null ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(finalPrice)}</strong></div>` : ''}
-      </div>`;
+    if(finalPrice != null) priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(finalPrice)}</strong></div>`;
+  } else if(r.requested_qty != null){
+    const unit = listing ? Number(listing.price) : (r.snap_price != null ? Number(r.snap_price) : 0);
+    priceLine = `<div class="inquiry-price-line">${d.qtyRequestedLbl} ${r.requested_qty} × ${fmt(unit)} = <strong>${fmt(unit * r.requested_qty)}</strong></div>`;
+  } else if(listing){
+    if(r.status === 'countered'){
+      priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <span class="orig">${fmt(listing.price)}</span> ${d.counterFrom} <strong>${fmt(r.counter_price)}</strong></div>`;
+    } else if(r.offer_price != null && Number(r.offer_price) !== Number(listing.price)){
+      priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <span class="orig">${fmt(listing.price)}</span> ${d.offerFrom} <strong>${fmt(r.offer_price)}</strong></div>`;
+    } else {
+      priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(listing.price)}</strong></div>`;
+    }
   }
-  ongoingBox.innerHTML = ongoing.length ? ongoing.map(rowHtml).join('') : `<p class="muted">${d.msgSalesOngoingEmpty}</p>`;
-  histBox.innerHTML = history.length ? history.map(rowHtml).join('') : `<p class="muted">${d.msgSalesHistoryEmpty}</p>`;
+  let actions = '';
+  if(iAmSeller){
+    if(r.status === 'pending'){
+      actions = `<div class="inquiry-actions">
+        <button class="btn-secondary" onclick="acceptInquiry('${r.id}')">${d.acceptInquiryBtn}</button>
+        <button class="btn-secondary" onclick="toggleCounterForm('${r.id}')">${d.counterBtn}</button>
+        <button class="btn-logout" onclick="rejectInquiry('${r.id}')">${d.rejectInquiryBtn}</button>
+      </div>
+      <div class="mkt-counter-form" id="cform-${r.id}" hidden>
+        <input type="number" id="cprice-${r.id}" step="0.01" min="0" placeholder="${listing ? fmtNum(listing.price) : ''}">
+        <button type="button" class="btn-primary" onclick="sendCounter('${r.id}')">${d.sendCounterBtn}</button>
+      </div>`;
+    } else if(r.status === 'countered'){
+      actions = `<div class="inquiry-meta">${d.waitingBuyerResponse}</div>`;
+    } else if(r.status === 'accepted'){
+      if(r.delivery_method === 'pickup'){
+        actions = `<div class="inquiry-actions"><button class="btn-secondary" onclick="markPickedUp('${r.id}')">${d.markPickedUpBtn}</button></div>`;
+      } else if(r.order_id){
+        actions = `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
+      } else {
+        actions = `<div class="inquiry-actions">
+          <button class="btn-secondary" onclick="toggleInquiryDeliveryForm('${r.id}')">${d.requestDeliveryBtn}</button>
+        </div>
+        <div class="delivery-request-form" id="idform-${r.id}" hidden>
+          <select id="idsys-${r.id}">
+            <option value="Stanton">Stanton</option><option value="Nyx">Nyx</option><option value="Pyro">Pyro</option>
+          </select>
+          <input type="text" id="idloc-${r.id}" data-i18n-ph="phLieu" placeholder="${d.phLieu}">
+          <input type="text" id="idbuyer-${r.id}" placeholder="${d.phBuyerHandle}">
+          <button class="btn-primary" onclick="requestInquiryDelivery('${r.id}')">${d.confirmDeliveryBtn}</button>
+        </div>`;
+      }
+    }
+  } else {
+    if(r.status === 'countered'){
+      actions = `<div class="inquiry-actions">
+        <button class="btn-secondary" onclick="buyerAcceptCounter('${r.id}', ${Number(r.counter_price)})">${d.acceptCounterBtn}</button>
+        <button class="btn-logout" onclick="buyerRejectCounter('${r.id}')">${d.rejectCounterBtn}</button>
+      </div>`;
+    } else if(r.status === 'accepted' && r.delivery_method === 'courier' && r.order_id){
+      actions = `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
+    }
+    const canCancel = !r.order_id && ['pending','countered','accepted'].includes(r.status);
+    if(canCancel) actions += `<button class="btn-cancel" onclick="cancelInquiry('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>`;
+  }
+  return `
+    <div class="inquiry-row">
+      <span class="msg-kind-label">${msgKindLabel(iAmSeller ? 'inq_received' : 'inq_sent')}</span>
+      <div class="inquiry-head">
+        <div class="inquiry-item">${listing ? listing.item_name : (r.snap_item_name || '—')}</div>
+        ${inquiryStatusBadge(r.status)}
+      </div>
+      <div class="inquiry-meta">${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
+      ${priceLine}
+      ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
+      ${actions}
+    </div>`;
+}
+function offerThreadItemHtml(r, iAmSeller, req){
+  const d = T[LANG];
+  const cancelBtn = (!iAmSeller && r.status === 'pending') ? `<button class="btn-cancel" style="width:100%; margin-top:8px;" onclick="cancelResourceOffer('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>` : '';
+  return `
+    <div class="inquiry-row">
+      <span class="msg-kind-label">${msgKindLabel(iAmSeller ? 'offer_received' : 'offer_sent')}</span>
+      <div class="inquiry-head">
+        <div class="inquiry-item">${d.resourceOfferLabel} ${req ? req.item_name : '—'}</div>
+        ${inquiryStatusBadge(r.status)}
+      </div>
+      ${r.price ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(r.price)}</strong></div>` : ''}
+      ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
+      ${cancelBtn}
+    </div>`;
 }
 
 function openCreateOrder(){
@@ -3148,7 +3298,7 @@ async function submitOfferModal(){
   pixelBurst($('offerModalSendBtn'));
   toastShow(d.inquirySent);
   closeOfferModal();
-  loadMyInquiries();
+  msgRefreshAfterAction();
 }
 let marketplaceFeedCache = [];
 let marketplaceSellerMapCache = {};
@@ -3341,45 +3491,13 @@ async function submitResourceOfferModal(){
   pushNotification(resourceOfferModalSellerId, 'seller_resource_offer', newOffer ? newOffer.id : null);
   toastShow(d.resourceOfferSent);
   closeResourceOfferModal();
-  loadMyResourceOffers();
-}
-async function loadMyResourceOffers(){
-  const box = $('myResourceOffersList'); if(!box || !session) return;
-  const d = T[LANG];
-  const { data, error } = await sb.from('resource_offers').select('*').eq('client_id', session.user.id).order('created_at',{ascending:false});
-  if(error){ box.textContent = error.message; return; }
-  const rows = data || [];
-  if(!rows.length){ box.innerHTML = `<p class="muted">${d.noResourceOffers}</p>`; return; }
-  const requestIds = [...new Set(rows.map(r=>r.request_id))];
-  const sellerIds = [...new Set(rows.map(r=>r.seller_id))];
-  const [requests, sellers] = await Promise.all([
-    requestIds.length ? sb.from('resource_requests').select('id,item_name,quantity').in('id', requestIds).then(r=>r.data||[]) : Promise.resolve([]),
-    sellerIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds).then(r=>r.data||[]) : Promise.resolve([])
-  ]);
-  const rMap = {}; requests.forEach(r=>rMap[r.id]=r);
-  const sMap = {}; sellers.forEach(s=>sMap[s.id]=s);
-  box.innerHTML = rows.map(r => {
-    const req = rMap[r.request_id];
-    const seller = sMap[r.seller_id];
-    const cancelBtn = r.status === 'pending' ? `<button class="btn-cancel" style="width:100%; margin-top:8px;" onclick="cancelResourceOffer('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>` : '';
-    return `
-      <div class="inquiry-row">
-        <div class="inquiry-head">
-          <div class="inquiry-item">${req ? req.item_name : '—'}</div>
-          ${inquiryStatusBadge(r.status)}
-        </div>
-        <div class="inquiry-meta">${d.resourceRequestedBy}${seller ? displayName(seller) : '—'}</div>
-        ${r.price ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(r.price)}</strong></div>` : ''}
-        ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
-        ${cancelBtn}
-      </div>`;
-  }).join('');
+  msgRefreshAfterAction();
 }
 async function cancelResourceOffer(id){
   if(!confirm(T[LANG].confirmCancel)) return;
   const { error } = await sb.from('resource_offers').delete().eq('id', id).eq('status','pending');
   if(error){ alert('Erreur : '+error.message); return; }
-  loadMyResourceOffers();
+  msgRefreshAfterAction();
 }
 function inquiryStatusBadge(status){
   const d = T[LANG];
@@ -3391,116 +3509,24 @@ function inquiryFinalPrice(r, listing){
   if(r.offer_price != null) return Number(r.offer_price);
   return listing ? Number(listing.price) : null;
 }
-async function loadMyInquiries(){
-  const box = $('myInquiriesList'); if(!box || !session) return;
-  const d = T[LANG];
-  const { data, error } = await sb.from('marketplace_inquiries').select('*').eq('buyer_id', session.user.id).order('created_at',{ascending:false});
-  if(error){ box.textContent = error.message; return; }
-  const rows = data || [];
-  msgUnreadSets.client_marketplace = await loadMsgUnreadSet('client_marketplace');
-  const current = rows.filter(r => !['completed','rejected','cancelled'].includes(r.status));
-  const history = rows.filter(r => ['completed','rejected','cancelled'].includes(r.status));
-  const listingIds=[...new Set(rows.map(r=>r.listing_id))];
-  const sellerIds=[...new Set(rows.map(r=>r.seller_id))];
-  const orderIds=rows.filter(r=>r.order_id).map(r=>r.order_id);
-  const [listings, sellers, orders] = await Promise.all([
-    listingIds.length ? sb.from('marketplace_listings').select('id,item_name,price').in('id', listingIds).then(r=>r.data||[]) : Promise.resolve([]),
-    sellerIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds).then(r=>r.data||[]) : Promise.resolve([]),
-    orderIds.length ? sb.from('orders').select('*').in('id', orderIds).then(r=>r.data||[]) : Promise.resolve([])
-  ]);
-  const lMap={}; listings.forEach(l=>lMap[l.id]=l);
-  const sMap={}; sellers.forEach(s=>sMap[s.id]=s);
-  const oMap={}; orders.forEach(o=>oMap[o.id]=o);
-
-  if(!current.length){ box.innerHTML = `<p class="muted">${d.noInquiries}</p>`; }
-  else box.innerHTML = current.map(r => {
-    const listing = lMap[r.listing_id];
-    const seller = sMap[r.seller_id];
-    const order = r.order_id ? oMap[r.order_id] : null;
-    let body = '';
-    let priceLine = '';
-    if(r.requested_qty != null){
-      const unit = listing ? Number(listing.price) : (r.snap_price != null ? Number(r.snap_price) : 0);
-      priceLine = `<div class="inquiry-price-line">${d.qtyRequestedLbl} ${r.requested_qty} × ${fmt(unit)} = <strong>${fmt(unit * r.requested_qty)}</strong></div>`;
-    } else if(listing){
-      if(r.status === 'countered'){
-        priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <span class="orig">${fmt(listing.price)}</span> ${d.counterFrom} <strong>${fmt(r.counter_price)}</strong></div>`;
-      } else if(r.offer_price != null && Number(r.offer_price) !== Number(listing.price)){
-        priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <span class="orig">${fmt(listing.price)}</span> ${d.offerFrom} <strong>${fmt(r.offer_price)}</strong></div>`;
-      } else {
-        priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(listing.price)}</strong></div>`;
-      }
-    }
-    if(r.status === 'countered'){
-      body = `<div class="inquiry-actions">
-        <button class="btn-secondary" onclick="buyerAcceptCounter('${r.id}', ${Number(r.counter_price)})">${d.acceptCounterBtn}</button>
-        <button class="btn-logout" onclick="buyerRejectCounter('${r.id}')">${d.rejectCounterBtn}</button>
-      </div>`;
-    } else if(r.status === 'accepted' && r.delivery_method === 'courier'){
-      body = order ? shipTrackHtml(order) : `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
-    }
-    const canCancel = !r.order_id && ['pending','countered','accepted'].includes(r.status);
-    const cancelBtn = canCancel ? `<button class="btn-cancel" onclick="cancelInquiry('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>` : '';
-    const isNew = msgUnreadSets.client_marketplace.has(r.id);
-    const hoverAttr = isNew ? ` onmouseenter="markMsgSeen('client_marketplace','${r.id}', this)"` : '';
-    return `
-      <div class="inquiry-row"${hoverAttr}>
-        <div class="inquiry-head">
-          <div class="inquiry-item">${inquiryItemName(r, listing)}${isNew ? '<span class="new-order-dot" style="position:relative; top:auto; right:auto; display:inline-block; margin-left:8px;"></span>' : ''}</div>
-          ${inquiryStatusBadge(r.status)}
-        </div>
-        <div class="inquiry-meta">${d.inquiryFrom}${seller ? displayName(seller) : '—'} — ${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
-        ${priceLine}
-        ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
-        ${body}
-        ${cancelBtn}
-      </div>`;
-  }).join('');
-  animateShipTracks(box);
-
-  $('mktHistoryCount').textContent = history.length;
-  const histBox = $('myInquiriesHistoryList');
-  if(histBox){
-    if(!history.length){ histBox.innerHTML = `<p class="muted">${d.mktHistoryEmpty}</p>`; }
-    else histBox.innerHTML = history.map(r => {
-      const listing = lMap[r.listing_id];
-      const seller = sMap[r.seller_id];
-      const finalPrice = inquiryFinalPrice(r, listing);
-      return `
-        <div class="inquiry-row">
-          <div class="inquiry-head">
-            <div class="inquiry-item">${inquiryItemName(r, listing)}</div>
-            ${inquiryStatusBadge(r.status)}
-          </div>
-          <div class="inquiry-meta">${d.inquiryFrom}${seller ? displayName(seller) : '—'} — ${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
-          ${finalPrice != null ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(finalPrice)}</strong></div>` : ''}
-        </div>`;
-    }).join('');
-  }
-}
 async function cancelInquiry(id){
   if(!confirm(T[LANG].confirmCancelInquiry)) return;
   const { data, error } = await sb.from('marketplace_inquiries').update({ status:'cancelled', updated_at: new Date().toISOString() }).eq('id', id).select('seller_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
   if(data) pushNotification(data.seller_id, 'seller_marketplace', id);
-  sweep(); loadMyInquiries();
-}
-function toggleMktHistory(){
-  const box = $('myInquiriesHistoryList');
-  box.hidden = !box.hidden;
-  $('mktHistoryToggleIcon').textContent = box.hidden ? '▾' : '▴';
+  sweep(); msgRefreshAfterAction();
 }
 async function buyerAcceptCounter(id, counterPrice){
   const { data, error } = await sb.from('marketplace_inquiries').update({ status:'accepted', offer_price: counterPrice, updated_at: new Date().toISOString() }).eq('id', id).select('seller_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
   if(data) pushNotification(data.seller_id, 'seller_marketplace', id);
-  sweep(); loadMyInquiries();
+  sweep(); msgRefreshAfterAction();
 }
 async function buyerRejectCounter(id){
   const { data, error } = await sb.from('marketplace_inquiries').update({ status:'rejected', updated_at: new Date().toISOString() }).eq('id', id).select('seller_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
   if(data) pushNotification(data.seller_id, 'seller_marketplace', id);
-  sweep(); loadMyInquiries();
+  sweep(); msgRefreshAfterAction();
 }
 
 // --- DASHBOARD VENDEUR ---
@@ -3918,154 +3944,6 @@ async function sellerCancelDelivery(orderId, currentStatus){
   }
 }
 
-async function loadReceivedInquiries(){
-  const box = $('receivedInquiriesList'); if(!box || !session) return;
-  const d = T[LANG];
-  const { data, error } = await sb.from('marketplace_inquiries').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
-  if(error){ box.textContent = error.message; return; }
-  const rows = data || [];
-  updateInquiriesBadge(rows);
-  msgUnreadSets.seller_marketplace = await loadMsgUnreadSet('seller_marketplace');
-  const current = rows.filter(r => !['completed','rejected','cancelled'].includes(r.status));
-  const history = rows.filter(r => ['completed','rejected','cancelled'].includes(r.status));
-  const histCountEl = $('sellerMktHistoryCount');
-  if(histCountEl) histCountEl.textContent = history.length;
-  const listingIds=[...new Set(rows.map(r=>r.listing_id))];
-  const buyerIds=[...new Set(rows.map(r=>r.buyer_id))];
-  const [listings, buyers] = await Promise.all([
-    listingIds.length ? sb.from('marketplace_listings').select('id,item_name,price,quantity').in('id', listingIds).then(r=>r.data||[]) : Promise.resolve([]),
-    buyerIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle,default_system,default_location').in('id', buyerIds).then(r=>r.data||[]) : Promise.resolve([])
-  ]);
-  const lMap={}; listings.forEach(l=>lMap[l.id]=l);
-  const bMap={}; buyers.forEach(b=>bMap[b.id]=b);
-  const histBox = $('receivedInquiriesHistoryList');
-  if(histBox){
-    if(!history.length){ histBox.innerHTML = `<p class="muted">${d.sellerMktHistoryEmpty}</p>`; }
-    else histBox.innerHTML = history.map(r => {
-      const listing = lMap[r.listing_id];
-      const buyer = bMap[r.buyer_id];
-      const finalPrice = inquiryFinalPrice(r, listing);
-      return `
-        <div class="inquiry-row">
-          <div class="inquiry-head">
-            <div class="inquiry-item">${listing ? listing.item_name : (r.snap_item_name || '—')}</div>
-            ${inquiryStatusBadge(r.status)}
-          </div>
-          <div class="inquiry-meta">${d.inquiryFrom}${buyer ? displayName(buyer) : '—'} — ${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
-          ${finalPrice != null ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(finalPrice)}</strong></div>` : ''}
-        </div>`;
-    }).join('');
-  }
-  if(!current.length){ box.innerHTML = `<p class="muted">${d.noReceivedInquiries}</p>`; return; }
-  box.innerHTML = current.map(r => {
-    const listing = lMap[r.listing_id];
-    const buyer = bMap[r.buyer_id];
-    let actions = '';
-    let priceLine = '';
-    if(r.requested_qty != null){
-      const unit = listing ? Number(listing.price) : (r.snap_price != null ? Number(r.snap_price) : 0);
-      priceLine = `<div class="inquiry-price-line">${d.qtyRequestedLbl} ${r.requested_qty} × ${fmt(unit)} = <strong>${fmt(unit * r.requested_qty)}</strong></div>`;
-    } else if(listing){
-      if(r.status === 'countered'){
-        priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <span class="orig">${fmt(listing.price)}</span> ${d.counterFrom} <strong>${fmt(r.counter_price)}</strong></div>`;
-      } else if(r.offer_price != null && Number(r.offer_price) !== Number(listing.price)){
-        priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <span class="orig">${fmt(listing.price)}</span> ${d.offerFrom} <strong>${fmt(r.offer_price)}</strong></div>`;
-      } else {
-        priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(listing.price)}</strong></div>`;
-      }
-    } else if(r.snap_price != null){
-      priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(r.snap_price)}</strong></div>`;
-    }
-    if(r.status === 'pending'){
-      actions = `<div class="inquiry-actions">
-        <button class="btn-secondary" onclick="acceptInquiry('${r.id}')">${d.acceptInquiryBtn}</button>
-        <button class="btn-secondary" onclick="toggleCounterForm('${r.id}')">${d.counterBtn}</button>
-        <button class="btn-logout" onclick="rejectInquiry('${r.id}')">${d.rejectInquiryBtn}</button>
-      </div>
-      <div class="mkt-counter-form" id="cform-${r.id}" hidden>
-        <input type="number" id="cprice-${r.id}" step="0.01" min="0" placeholder="${listing ? fmtNum(listing.price) : ''}">
-        <button type="button" class="btn-primary" onclick="sendCounter('${r.id}')">${d.sendCounterBtn}</button>
-      </div>`;
-    } else if(r.status === 'countered'){
-      actions = `<div class="inquiry-meta">${d.waitingBuyerResponse}</div>`;
-    } else if(r.status === 'accepted'){
-      if(r.delivery_method === 'pickup'){
-        actions = `<div class="inquiry-actions"><button class="btn-secondary" onclick="markPickedUp('${r.id}')">${d.markPickedUpBtn}</button></div>`;
-      } else if(r.order_id){
-        actions = `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
-      } else {
-        const sys = (buyer && buyer.default_system) || 'Stanton';
-        const loc = (buyer && buyer.default_location) || '';
-        const buyerHandleVal = buyer ? displayName(buyer) : '';
-        actions = `<div class="inquiry-actions">
-          <button class="btn-secondary" onclick="toggleInquiryDeliveryForm('${r.id}')">${d.requestDeliveryBtn}</button>
-        </div>
-        <div class="delivery-request-form" id="idform-${r.id}" hidden>
-          <select id="idsys-${r.id}">
-            <option value="Stanton" ${sys==='Stanton'?'selected':''}>Stanton</option>
-            <option value="Nyx" ${sys==='Nyx'?'selected':''}>Nyx</option>
-            <option value="Pyro" ${sys==='Pyro'?'selected':''}>Pyro</option>
-          </select>
-          <input type="text" id="idloc-${r.id}" data-i18n-ph="phLieu" placeholder="${d.phLieu}" value="${loc}">
-          <input type="text" id="idbuyer-${r.id}" placeholder="${d.phBuyerHandle}" value="${buyerHandleVal}">
-          <button class="btn-primary" onclick="requestInquiryDelivery('${r.id}')">${d.confirmDeliveryBtn}</button>
-        </div>`;
-      }
-    }
-    const isNew = msgUnreadSets.seller_marketplace.has(r.id);
-    const hoverAttr = isNew ? ` onmouseenter="markMsgSeen('seller_marketplace','${r.id}', this)"` : '';
-    return `
-      <div class="inquiry-row"${hoverAttr}>
-        <div class="inquiry-head">
-          <div class="inquiry-item">${listing ? listing.item_name : (r.snap_item_name || '—')}${isNew ? '<span class="new-order-dot" style="position:relative; top:auto; right:auto; display:inline-block; margin-left:8px;"></span>' : ''}</div>
-          ${inquiryStatusBadge(r.status)}
-        </div>
-        <div class="inquiry-meta">${d.inquiryFrom}${buyer ? displayName(buyer) : '—'} — ${d.inquiryDeliveryVia}${r.delivery_method==='courier' ? d.deliveryMethodCourier : d.deliveryMethodPickup}</div>
-        ${priceLine}
-        ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
-        ${actions}
-      </div>`;
-  }).join('');
-}
-// Propositions reçues sur les "ressources demandées" postées par ce vendeur (onglet Messagerie > Desired Items).
-async function loadReceivedResourceOffers(){
-  const box = $('receivedResourceOffersList'); if(!box || !session) return;
-  const d = T[LANG];
-  const { data: resOffers, error } = await sb.from('resource_offers').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
-  if(error){ box.textContent = error.message; return; }
-  msgUnreadSets.seller_resource_offer = await loadMsgUnreadSet('seller_resource_offer');
-  const resOffersList = resOffers || [];
-  if(!resOffersList.length){ box.innerHTML = `<p class="muted">${d.noReceivedResourceOffers}</p>`; return; }
-  const requestIds = [...new Set(resOffersList.map(r=>r.request_id))];
-  const clientIds = [...new Set(resOffersList.map(r=>r.client_id))];
-  const [requests, clients] = await Promise.all([
-    requestIds.length ? sb.from('resource_requests').select('id,item_name,quantity').in('id', requestIds).then(r=>r.data||[]) : Promise.resolve([]),
-    clientIds.length ? sb.from('profiles').select('id,discord_username,rsi_handle').in('id', clientIds).then(r=>r.data||[]) : Promise.resolve([])
-  ]);
-  const rMap={}; requests.forEach(r=>rMap[r.id]=r);
-  const cMap={}; clients.forEach(c=>cMap[c.id]=c);
-  box.innerHTML = resOffersList.map(r => {
-    const req = rMap[r.request_id];
-    const client = cMap[r.client_id];
-    const isNew = msgUnreadSets.seller_resource_offer.has(r.id);
-    const hoverAttr = isNew ? ` onmouseenter="markMsgSeen('seller_resource_offer','${r.id}', this)"` : '';
-    return `
-      <div class="inquiry-row"${hoverAttr}>
-        <div class="inquiry-head">
-          <div class="inquiry-item">${d.resourceOfferLabel} ${req ? req.item_name : '—'}${isNew ? '<span class=\"new-order-dot\" style=\"position:relative; top:auto; right:auto; display:inline-block; margin-left:8px;\"></span>' : ''}</div>
-          ${inquiryStatusBadge(r.status)}
-        </div>
-        <div class="inquiry-meta">${d.inquiryFrom}${client ? displayName(client) : '—'}</div>
-        ${r.price ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(r.price)}</strong></div>` : ''}
-        ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
-      </div>`;
-  }).join('');
-}
-function toggleSellerMktHistory(){
-  const box = $('receivedInquiriesHistoryList');
-  box.hidden = !box.hidden;
-  $('sellerMktHistoryToggleIcon').textContent = box.hidden ? '▾' : '▴';
-}
 function toggleInquiryDeliveryForm(id){
   const form = $('idform-'+id); if(!form) return;
   form.hidden = !form.hidden;
@@ -4104,19 +3982,19 @@ async function acceptInquiry(id){
   const { data, error } = await sb.from('marketplace_inquiries').update(updates).eq('id', id).select('buyer_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
   if(data) pushNotification(data.buyer_id, 'client_marketplace', id);
-  sweep(); loadReceivedInquiries(); loadMyListings();
+  sweep(); msgRefreshAfterAction(); loadMyListings();
 }
 async function rejectInquiry(id){
   const { data, error } = await sb.from('marketplace_inquiries').update({ status:'rejected', updated_at: new Date().toISOString() }).eq('id', id).select('buyer_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
   if(data) pushNotification(data.buyer_id, 'client_marketplace', id);
-  sweep(); loadReceivedInquiries();
+  sweep(); msgRefreshAfterAction();
 }
 async function counterInquiry(id, price){
   const { data, error } = await sb.from('marketplace_inquiries').update({ status:'countered', counter_price: price, updated_at: new Date().toISOString() }).eq('id', id).select('buyer_id').single();
   if(error){ alert('Erreur : '+error.message); return; }
   if(data) pushNotification(data.buyer_id, 'client_marketplace', id);
-  sweep(); loadReceivedInquiries();
+  sweep(); msgRefreshAfterAction();
 }
 async function markPickedUp(id){
   const { data: inquiry, error: iErr } = await sb.from('marketplace_inquiries').select('*').eq('id', id).single();
@@ -4139,7 +4017,7 @@ async function markPickedUp(id){
   if(!updated){ alert('Erreur : la mise à jour a été bloquée (droits insuffisants sur la base). La vente n\'a PAS été validée, réessaie ou contacte l\'admin.'); return; }
   if(!isStockSale && listing) await sb.from('marketplace_listings').delete().eq('id', listing.id);
   pushNotification(inquiry.buyer_id, 'client_marketplace', id);
-  sweep(); loadReceivedInquiries(); loadMyListings();
+  sweep(); msgRefreshAfterAction(); loadMyListings();
   checkAndRenderSellerAchievements('sellerDashAchvCard');
   fetchSellerShopStats(session.user.id).then(stats => {
     renderShopStats($('sellerDashStatsCard'), stats);
@@ -4186,7 +4064,7 @@ async function requestInquiryDelivery(id){
   notifyAllCouriers(order.id);
   sweep();
   toastShow(d.deliveryRequested);
-  loadReceivedInquiries();
+  msgRefreshAfterAction();
 }
 
 // --- BOUTIQUE PUBLIQUE D'UN VENDEUR ---
@@ -5722,10 +5600,10 @@ async function initAuth(){
 
   sb.channel('inquiries-realtime')
     .on('postgres_changes', { event:'*', schema:'public', table:'marketplace_inquiries' }, () => {
-      if(!$('view-messages').hidden){
-        if(msgTab === 'client') loadMyInquiries();
-        else if(msgTab === 'seller') loadReceivedInquiries();
-        else if(msgTab === 'sales') loadMsgSales();
+      const panel = $('messagesPanel');
+      if(panel && !panel.hidden){
+        if(!$('msgThreadView').hidden && currentMsgThreadPartnerId) openMsgThread(currentMsgThreadPartnerId);
+        else loadMsgConversations();
       }
       refreshNotifBadges();
     })

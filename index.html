@@ -1019,6 +1019,19 @@
       </div>
     </div>
 
+    <!-- CONFIRMATION VIDER UNE CONVERSATION (modale) -->
+    <div class="modal-overlay" id="clearMsgModalOverlay" hidden onclick="if(event.target===this) closeClearMsgModal()">
+      <div class="card modal-card" style="max-width:420px;">
+        <button type="button" class="modal-close" onclick="closeClearMsgModal()">&times;</button>
+        <h3 data-i18n="clearMsgModalTitle">Vider cette conversation ?</h3>
+        <p class="muted" data-i18n="clearMsgModalWarning">Tous les messages de cette conversation vont disparaître définitivement de ton affichage, y compris ceux encore en attente d'une réponse. Cette action est irréversible.</p>
+        <div style="display:flex; gap:10px; margin-top:14px;">
+          <button type="button" class="btn-secondary" style="flex:1;" onclick="closeClearMsgModal()" data-i18n="cancelBtn">ANNULER</button>
+          <button type="button" class="btn-logout" style="flex:1;" onclick="confirmClearMsgConversation()" data-i18n="confirmClearBtn">VIDER</button>
+        </div>
+      </div>
+    </div>
+
     <!-- CRÉER UNE COMMANDE -->
     <section id="view-create" hidden>
       <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
@@ -1814,6 +1827,7 @@ const T = {
     members:"Membres", footer:"COURIERS UNITED // RISQUES INCLUS DANS LA COMMISSION // PAIEMENT À LA REMISE",
     discordCtaText:"Rejoins la communauté sur Discord", discordCtaBtn:"REJOINS-NOUS SUR DISCORD",
     msgClearBtn:"EFFACER", confirmClearConversation:"Vider cette conversation ? Les éléments encore en attente d'une réponse resteront affichés.", msgThreadCleared:"Conversation vidée. Les nouveaux échanges apparaîtront ici.",
+    clearMsgModalTitle:"Vider cette conversation ?", clearMsgModalWarning:"Tous les messages de cette conversation vont disparaître définitivement de ton affichage, y compris ceux encore en attente d'une réponse. Cette action est irréversible.", confirmClearBtn:"VIDER",
     dangerZoneTitle:"Zone dangereuse", resetProgressionBtn:"RESET PROGRESSION",
     resetProgressionNote:"Réinitialise pour TOUS les membres : statistiques, rangs, succès débloqués et historique des livraisons/ventes. Action irréversible.",
     confirmResetProgression:"Es-tu sûr(e) ? Ceci va effacer TOUTES les statistiques, rangs, succès et historiques de livraisons/ventes de TOUS les membres, définitivement.",
@@ -1915,6 +1929,7 @@ const T = {
     inquiryAcceptedNotif:"🎉 Le vendeur a accepté ta demande !", inquiryRejectedNotif:"Le vendeur a refusé ta demande.",
     inquiryFrom:"De la part de : ", inquiryDeliveryVia:"Via : ", pickupDoneNote:"Objet récupéré en main propre.",
     waitingCourierHandoff:"En attente que le vendeur remette l'objet à un coursier.",
+    buyerRequestDeliveryBtn:"DEMANDER UNE LIVRAISON PAR COURSIER", buyerDeliveryRequestedNote:"Livraison par coursier demandée — en attente de la réponse du vendeur.", sellerDeliveryWantedNote:"🚚 Le client souhaite une livraison par coursier.",
     bootLogin:["COURIERS UNITED — AUTHENTIFICATION","VÉRIFICATION IDENTITÉ DISCORD.......OK","CHARGEMENT DU PROFIL................OK"],
     bootClient:["CHARGEMENT MODULE CLIENT.SYS.........OK","SYNCHRONISATION DES COMMANDES........OK"],
     bootCourier:["CHARGEMENT MODULE COURSIER.SYS.......OK","VÉRIFICATION BADGE D'ACCÈS...........OK"],
@@ -1943,6 +1958,7 @@ const T = {
     members:"Members", footer:"COURIERS UNITED // RISK INCLUDED IN THE COMMISSION // PAYMENT ON DELIVERY",
     discordCtaText:"Join our community on Discord", discordCtaBtn:"JOIN US ON DISCORD",
     msgClearBtn:"CLEAR", confirmClearConversation:"Clear this conversation? Items still awaiting a response will stay visible.", msgThreadCleared:"Conversation cleared. New exchanges will show up here.",
+    clearMsgModalTitle:"Clear this conversation?", clearMsgModalWarning:"Every message in this conversation will permanently disappear from your view, including anything still awaiting a response. This cannot be undone.", confirmClearBtn:"CLEAR",
     dangerZoneTitle:"Danger zone", resetProgressionBtn:"RESET PROGRESSION",
     resetProgressionNote:"Resets, for ALL members: stats, ranks, unlocked achievements and delivery/sales history. Irreversible action.",
     confirmResetProgression:"Are you sure? This will permanently erase ALL stats, ranks, achievements and delivery/sales history for ALL members.",
@@ -2044,6 +2060,7 @@ const T = {
     inquiryAcceptedNotif:"🎉 The seller accepted your request!", inquiryRejectedNotif:"The seller rejected your request.",
     inquiryFrom:"From: ", inquiryDeliveryVia:"Via: ", pickupDoneNote:"Item picked up in person.",
     waitingCourierHandoff:"Waiting for the seller to hand the item to a courier.",
+    buyerRequestDeliveryBtn:"REQUEST A COURIER DELIVERY", buyerDeliveryRequestedNote:"Courier delivery requested — waiting on the seller's response.", sellerDeliveryWantedNote:"🚚 The buyer would like a courier delivery.",
     bootLogin:["COURIERS UNITED — AUTHENTICATION","CHECKING DISCORD IDENTITY...........OK","LOADING PROFILE.....................OK"],
     bootClient:["LOADING MODULE CLIENT.SYS............OK","SYNCING ORDERS.......................OK"],
     bootCourier:["LOADING MODULE COURIER.SYS...........OK","CHECKING ACCESS BADGE................OK"],
@@ -2368,11 +2385,19 @@ function setMsgCleared(counterpartId, ts){
 }
 function clearMsgConversation(){
   if(!currentMsgThreadPartnerId) return;
-  if(!confirm(T[LANG].confirmClearConversation)) return;
+  $('clearMsgModalOverlay').hidden = false;
+}
+function closeClearMsgModal(){
+  $('clearMsgModalOverlay').hidden = true;
+}
+function confirmClearMsgConversation(){
+  if(!currentMsgThreadPartnerId){ closeClearMsgModal(); return; }
   const g = msgConversationsCache[currentMsgThreadPartnerId];
-  // Vide l'intérieur de CE fil (garde les éléments encore en attente d'une réponse) sans faire disparaître
-  // la conversation de la liste de messagerie, et sans rien supprimer en base : on reste sur le fil, juste réaffiché.
+  // Vide RÉELLEMENT l'intérieur de CE fil (plus aucune exception pour les éléments en attente) sans faire
+  // disparaître la conversation de la liste de messagerie, et sans rien supprimer en base : on reste sur le
+  // fil, juste réaffiché. Tout ce qui a été créé avant cet instant est masqué pour de bon côté affichage.
   setMsgCleared(currentMsgThreadPartnerId, new Date().toISOString());
+  closeClearMsgModal();
   if(g) renderMsgThreadItems(g);
 }
 // Rafraîchit la liste des conversations et, si un fil est ouvert, le fil en cours (appelé après toute action
@@ -2507,14 +2532,12 @@ async function renderMsgThreadItems(g){
   ]);
   const lMap={}; listings.forEach(l=>lMap[l.id]=l);
   const rMap={}; requests.forEach(r=>rMap[r.id]=r);
-  // "Clear" (voir clearMsgConversation) vide l'intérieur de CETTE conversation, mais jamais la conversation
-  // elle-même dans la messagerie : on ne filtre que l'affichage des éléments, on ne les supprime jamais en base.
-  // Un élément encore "en attente d'une réponse" (pending/countered) reste toujours visible, même s'il est
-  // antérieur au clear ; seuls les éléments déjà résolus (acceptée/refusée/terminée/annulée) créés avant
-  // le clear sont masqués.
-  const AWAITING_RESPONSE = ['pending','countered'];
+  // "Clear" (voir clearMsgConversation) vide RÉELLEMENT l'intérieur de CETTE conversation, sans jamais la
+  // faire disparaître de la liste de messagerie : on ne filtre que l'affichage des éléments (on ne les
+  // supprime jamais en base). Tout élément créé avant l'instant du clear reste masqué pour de bon, même s'il
+  // est encore en attente d'une réponse — c'est un choix explicite de la personne qui a cliqué "Vider".
   const clearedAt = getMsgClearedMap()[g.id];
-  const visibleItems = g.items.filter(it => AWAITING_RESPONSE.includes(it.status) || !clearedAt || new Date(it.created_at) > new Date(clearedAt));
+  const visibleItems = g.items.filter(it => !clearedAt || new Date(it.created_at) > new Date(clearedAt));
   const sorted = visibleItems.slice().sort((a,b)=> new Date(a.created_at)-new Date(b.created_at));
   const d = T[LANG];
   box.innerHTML = sorted.length ? sorted.map(it => {
@@ -2545,7 +2568,8 @@ function inquiryThreadItemHtml(r, iAmSeller, listing){
   let actions = '';
   if(iAmSeller){
     if(r.status === 'pending'){
-      actions = `<div class="inquiry-actions">
+      actions = `${r.wants_courier ? `<div class="inquiry-meta courier-wanted-note">${d.sellerDeliveryWantedNote}</div>` : ''}
+      <div class="inquiry-actions">
         <button class="btn-secondary" onclick="acceptInquiry('${r.id}')">${d.acceptInquiryBtn}</button>
         <button class="btn-secondary" onclick="toggleCounterForm('${r.id}')">${d.counterBtn}</button>
         <button class="btn-logout" onclick="rejectInquiry('${r.id}')">${d.rejectInquiryBtn}</button>
@@ -2575,7 +2599,11 @@ function inquiryThreadItemHtml(r, iAmSeller, listing){
       }
     }
   } else {
-    if(r.status === 'countered'){
+    if(r.status === 'pending'){
+      actions = r.wants_courier
+        ? `<div class="inquiry-meta">${d.buyerDeliveryRequestedNote}</div>`
+        : `<div class="inquiry-actions"><button class="btn-secondary" onclick="buyerRequestDelivery('${r.id}')">${d.buyerRequestDeliveryBtn}</button></div>`;
+    } else if(r.status === 'countered'){
       actions = `<div class="inquiry-actions">
         <button class="btn-secondary" onclick="buyerAcceptCounter('${r.id}', ${Number(r.counter_price)})">${d.acceptCounterBtn}</button>
         <button class="btn-logout" onclick="buyerRejectCounter('${r.id}')">${d.rejectCounterBtn}</button>
@@ -3704,6 +3732,12 @@ function inquiryFinalPrice(r, listing){
   if(r.snap_price != null) return Number(r.snap_price);
   if(r.offer_price != null) return Number(r.offer_price);
   return listing ? Number(listing.price) : null;
+}
+async function buyerRequestDelivery(id){
+  const { data, error } = await sb.from('marketplace_inquiries').update({ wants_courier:true, updated_at: new Date().toISOString() }).eq('id', id).select('seller_id').single();
+  if(error){ alert('Erreur : '+error.message); return; }
+  if(data) pushNotification(data.seller_id, 'seller_marketplace', id);
+  sweep(); msgRefreshAfterAction();
 }
 async function cancelInquiry(id){
   if(!confirm(T[LANG].confirmCancelInquiry)) return;
@@ -5641,12 +5675,11 @@ function subscribeNotifChannel(){
   if(notifChannel || !session) return;
   notifChannel = sb.channel('notifications-self-'+session.user.id)
     .on('postgres_changes', { event:'*', schema:'public', table:'notifications', filter:`user_id=eq.${session.user.id}` }, (payload) => {
-      console.log('[DEBUG notif realtime]', payload && payload.eventType, payload && payload.new, 'notifSoundEnabled=', notifSoundEnabled, 'notifAudioUnlocked=', notifAudioUnlocked);
       refreshNotifBadges();
       if(payload && payload.eventType === 'INSERT' && payload.new){ playNotifSound(payload.new.category); }
       if(profile && profile.role === 'admin' && !$('view-admin-dash').hidden){ loadCourierApplications(); loadSellerApplications(); }
     })
-    .subscribe((status) => { console.log('[DEBUG notifChannel status]', status); });
+    .subscribe();
 }
 function unsubscribeNotifChannel(){
   if(notifChannel){ sb.removeChannel(notifChannel); notifChannel = null; }

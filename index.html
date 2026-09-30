@@ -479,12 +479,15 @@
   .mkt-delivery-badge{display:inline-block; background:var(--accent); color:var(--bg); font-family:'VT323',monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.5px; padding:2px 8px; border-radius:3px; margin-bottom:6px;}
   .mkt-delivery-note{font-size:.68rem; color:var(--muted); border-left:2px solid var(--accent); padding-left:8px; margin:6px 0;}
 
-  /* Thème de boutique vendeur : indépendant du thème global du site */
-  #view-seller-shop[data-shop-color="vert"]{ --accent:#39ff6a; --accent-dim:#39ff6a55; }
-  #view-seller-shop[data-shop-color="bleu"]{ --accent:#4fc8ff; --accent-dim:#4fc8ff55; }
-  #view-seller-shop[data-shop-color="violet"]{ --accent:#c07bff; --accent-dim:#c07bff55; }
-  #view-seller-shop[data-shop-color="blanc"]{ --accent:#f2f2f2; --accent-dim:#f2f2f255; }
-  #view-seller-shop[data-shop-color="jaune"]{ --accent:#ffcf40; --accent-dim:#ffcf4055; }
+  /* Thème de boutique vendeur : indépendant du thème global du site.
+     La couleur (hexa libre) est appliquée en inline style (--accent/--accent-dim) par openSellerShop(). */
+  .shop-color-picker{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+  .shop-color-wheel{-webkit-appearance:none; appearance:none; width:44px; height:44px; padding:0; border:2px solid var(--border); border-radius:8px; background:none; cursor:pointer; flex:none;}
+  .shop-color-wheel::-webkit-color-swatch-wrapper{padding:3px;}
+  .shop-color-wheel::-webkit-color-swatch{border:none; border-radius:6px;}
+  .shop-color-wheel::-moz-color-swatch{border:none; border-radius:6px;}
+  .shop-color-hex{flex:1; min-width:0; font-family:'VT323',monospace; font-size:1.15rem; letter-spacing:1px; text-transform:uppercase;}
+  .shop-color-presets{margin-top:2px;}
 
   /* Aperçu boutique (profil public) */
   .shop-preview-head{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
@@ -1372,7 +1375,11 @@
         <label for="shopNameInput" data-i18n="shopNameLbl">Nom de la marketplace</label>
         <input id="shopNameInput" type="text" data-i18n-ph="phShopName" placeholder="ex: Le Comptoir de Mayco">
         <label data-i18n="shopThemeLbl">Couleur de la boutique</label>
-        <div class="theme-row" id="shopThemePicker"></div>
+        <div class="shop-color-picker">
+          <input type="color" id="shopColorWheel" class="shop-color-wheel" value="#ff8c1a" oninput="setShopColor(this.value, true)" aria-label="Color wheel">
+          <input type="text" id="shopColorHex" class="shop-color-hex" maxlength="7" placeholder="#FF8C1A" oninput="onShopColorHexInput(this.value)">
+        </div>
+        <div class="theme-row shop-color-presets" id="shopThemePicker"></div>
         <label data-i18n="shopDescLbl">Description de la boutique (optionnel)</label>
         <textarea id="shopDescInput" data-i18n-ph="phShopDesc" placeholder="ex: Spécialiste minerais rares, livraison rapide sur Stanton."></textarea>
         <label data-i18n="shopLogoLbl">Logo de la boutique (optionnel, GIF accepté)</label>
@@ -3720,20 +3727,45 @@ async function buyerRejectCounter(id){
 }
 
 // --- DASHBOARD VENDEUR ---
-let selectedShopColor = 'orange';
+// Couleur de boutique : hexa libre (roue + code), indépendante du thème du site.
+// Les anciennes boutiques stockaient un nom de préréglage ('orange','vert',...) ; on les convertit à la volée.
+const SHOP_COLOR_PRESETS = ['#ff8c1a','#39ff6a','#4fc8ff','#c07bff','#f2f2f2','#ffcf40'];
+const LEGACY_SHOP_COLOR_MAP = { orange:'#ff8c1a', vert:'#39ff6a', bleu:'#4fc8ff', violet:'#c07bff', blanc:'#f2f2f2', jaune:'#ffcf40' };
+const DEFAULT_SHOP_COLOR = '#ff8c1a';
+function isValidHexColor(v){ return /^#[0-9a-fA-F]{6}$/.test(v||''); }
+function normalizeShopColor(v){
+  if(!v) return DEFAULT_SHOP_COLOR;
+  if(LEGACY_SHOP_COLOR_MAP[v]) return LEGACY_SHOP_COLOR_MAP[v];
+  return isValidHexColor(v) ? v.toLowerCase() : DEFAULT_SHOP_COLOR;
+}
+let selectedShopColor = DEFAULT_SHOP_COLOR;
 function initShopThemePicker(){
   const picker = $('shopThemePicker'); if(!picker) return;
   if(!picker.dataset.built){
-    COLORS.forEach(c => {
+    SHOP_COLOR_PRESETS.forEach(c => {
       const b = document.createElement('button'); b.className='swatch'; b.dataset.c=c; b.type='button'; b.title=c;
-      b.addEventListener('click', () => { selectedShopColor = c; highlightShopColorPicker(); });
+      b.style.background = c;
+      b.addEventListener('click', () => setShopColor(c, true));
       picker.appendChild(b);
     });
     picker.dataset.built = '1';
   }
-  highlightShopColorPicker();
+  syncShopColorPicker();
 }
-function highlightShopColorPicker(){
+// updateHexField=false quand on tape dans le champ hexa lui-même (pour ne pas s'auto-écraser pendant la frappe)
+function setShopColor(hex, updateHexField){
+  if(!isValidHexColor(hex)) return;
+  selectedShopColor = hex.toLowerCase();
+  syncShopColorPicker(updateHexField);
+}
+function onShopColorHexInput(v){
+  let hex = (v||'').trim();
+  if(hex && hex[0] !== '#') hex = '#'+hex;
+  if(isValidHexColor(hex)) setShopColor(hex, false);
+}
+function syncShopColorPicker(updateHexField){
+  const wheel = $('shopColorWheel'); if(wheel) wheel.value = selectedShopColor;
+  const hexInput = $('shopColorHex'); if(hexInput && updateHexField !== false) hexInput.value = selectedShopColor.toUpperCase();
   document.querySelectorAll('#shopThemePicker .swatch').forEach(s => s.classList.toggle('active', s.dataset.c === selectedShopColor));
 }
 async function saveShopSettings(){
@@ -3765,7 +3797,7 @@ async function openSellerShopEdit(){
   const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle();
   $('shopNameInput').value = shop?.shop_name || '';
   $('shopDescInput').value = shop?.description || '';
-  selectedShopColor = shop?.theme_color || 'orange';
+  selectedShopColor = normalizeShopColor(shop?.theme_color);
   pendingShopLogoFile = null;
   $('shopLogoPreviewName').textContent = '';
   const logoPreview = $('shopLogoPreviewImg');
@@ -4293,7 +4325,9 @@ async function openSellerShop(sellerId){
     sb.from('resource_requests').select('*').eq('seller_id', sellerId).eq('status','open').order('created_at',{ascending:false})
   ]);
   if(shop?.logo_url) $('shopHeroIcon').innerHTML = `<img class="shop-hero-logo-img" src="${shop.logo_url}" alt="">`;
-  shopEl.setAttribute('data-shop-color', (shop && shop.theme_color) || 'orange');
+  const shopColorHex = normalizeShopColor(shop && shop.theme_color);
+  shopEl.style.setProperty('--accent', shopColorHex);
+  shopEl.style.setProperty('--accent-dim', shopColorHex + '55');
   $('shopPageTitle').textContent = (shop && shop.shop_name) || (p ? displayName(p) : '—');
   $('shopOwnerName').textContent = d.shopOwnerLbl + (p ? displayName(p) : '—');
   if(descEl && shop?.description){ descEl.textContent = shop.description; descEl.hidden = false; }

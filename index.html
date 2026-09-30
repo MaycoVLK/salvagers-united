@@ -932,6 +932,7 @@
       </div>
       <div id="clientTabDeliveries">
         <div class="card courier-ad" id="courierAdCard" hidden></div>
+        <div class="card courier-ad" id="sellerAdCard" hidden></div>
         <div id="clientCurrentOrders"></div>
         <button class="history-toggle" onclick="toggleHistory()">
           <span data-i18n="historyLabel">Historique</span> (<span id="historyCount">0</span>) <span id="historyToggleIcon">▾</span>
@@ -1853,7 +1854,8 @@ const T = {
     lblShipName:"Nom du vaisseau", phShipName:"ex: L'Étoile Vagabonde", savedShipInfo:"VAISSEAU ENREGISTRÉ !",
     craftOnlyNote:"Objet non vendu en boutique — prix à négocier directement avec un crafteur/looter.",
     craftOnlyNotice:"Cet objet n'est pas disponible en boutique. Rapproche-toi d'un crafteur ou d'un looter, le prix sera à définir avec lui.",
-    courierAdTitle:"Envie de rejoindre les coursiers Couriers United ?", courierAdSub:"Livre des commandes, gagne des aUEC et débloque des succès.", courierAdBtn:"ENVOYER MA CANDIDATURE",
+    courierAdTitle:"Envie de rejoindre les coursiers Couriers United ?", courierAdSub:"Livre des commandes, gagne des aUEC et débloque des succès.", courierAdBtn:"JE VEUX ME LANCER DANS LA LIVRAISON",
+    sellerAdTitle:"Envie d'ouvrir ta propre boutique sur Couriers United ?", sellerAdSub:"Vends tes objets, gère ton stock et débloque des succès de vendeur.", sellerAdBtn:"JE VEUX OUVRIR MA BOUTIQUE", sellerPending:"Ta candidature est en attente de validation par l'administrateur.",
     rsiTitle:"Pseudo RSI (Handle)", rsiHint:"Permet aux autres membres de t'ajouter facilement en jeu.", phRsiHandle:"ex: Mayco_SC", savedRsi:"PSEUDO RSI ENREGISTRÉ !",
     soundNotifTitle:"Sons de notification", soundNotifHint:"Joue un petit son quand tu reçois un message ou une nouvelle course (coursiers).", soundOn:"🔊 ACTIVÉS", soundOff:"🔇 COUPÉS",
     rankLabels:{rookie:"Rookie", junior:"Junior", senior:"Senior", master:"Master"}, rankDeliveries:"livraisons",
@@ -1984,7 +1986,8 @@ const T = {
     lblShipName:"Ship name", phShipName:"e.g. The Wandering Star", savedShipInfo:"SHIP SAVED!",
     craftOnlyNote:"Not sold in shops — price to negotiate directly with a crafter/looter.",
     craftOnlyNotice:"This item isn't available in shops. Reach out to a crafter or a looter — the price will need to be set with them directly.",
-    courierAdTitle:"Want to join the Couriers United couriers?", courierAdSub:"Deliver orders, earn aUEC and unlock achievements.", courierAdBtn:"SEND MY APPLICATION",
+    courierAdTitle:"Want to join the Couriers United couriers?", courierAdSub:"Deliver orders, earn aUEC and unlock achievements.", courierAdBtn:"I WANT TO START DELIVERING",
+    sellerAdTitle:"Want to open your own shop on Couriers United?", sellerAdSub:"Sell your items, manage your stock and unlock seller achievements.", sellerAdBtn:"I WANT TO OPEN MY SHOP", sellerPending:"Your application is pending admin review.",
     rsiTitle:"RSI Handle", rsiHint:"Lets other members add you easily in-game.", phRsiHandle:"e.g. Mayco_SC", savedRsi:"RSI HANDLE SAVED!",
     soundNotifTitle:"Notification sounds", soundNotifHint:"Plays a short sound when you get a message or a new order (couriers).", soundOn:"🔊 ON", soundOff:"🔇 OFF",
     rankLabels:{rookie:"Rookie", junior:"Junior", senior:"Senior", master:"Master"}, rankDeliveries:"deliveries",
@@ -3267,6 +3270,7 @@ function animateShipTracks(container){
 async function loadClientDashboard(){
   if(!session) return;
   renderCourierAd();
+  renderSellerAd();
   const { data, error } = await sb.from('orders').select('*').eq('client_id', session.user.id).order('created_at',{ascending:false});
   if(error){ $('clientCurrentOrders').textContent = error.message; return; }
   const orders = (data || []).filter(o => o.order_type !== 'marketplace');
@@ -5600,6 +5604,7 @@ async function requestSeller(){
   if(error){ alert('Erreur : '+error.message); return; }
   notifyAllAdmins('admin_seller_app', session.user.id);
   await loadProfile();
+  renderSellerAd();
   sweep();
 }
 async function requestCourier(){
@@ -5635,6 +5640,32 @@ function renderCourierAd(){
       <div class="courier-ad-icon">${courierAdLogo}</div>
       <div class="courier-ad-text"><strong>${d.courierAdTitle}</strong><p>${d.courierAdSub}</p></div>
       <button class="btn-secondary" onclick="requestCourier()">${d.courierAdBtn}</button>
+    `;
+  }
+}
+// --- PUB "OUVRIR UNE BOUTIQUE" (bannière sur le dashboard client, miroir de la pub coursier) ---
+function renderSellerAd(){
+  const box = $('sellerAdCard'); if(!box || !profile) return;
+  if(profile.role === 'admin' || profile.is_seller){ box.hidden = true; return; }
+  const d = T[LANG];
+  box.hidden = false;
+  const sellerAdLogo = `
+    <div class="logo-icon-wrap">
+      <svg class="logo-anim-hero" viewBox="0 0 1260 750" role="img" aria-label="Couriers United"><use href="#cuLogoStatic"/></svg>
+      <svg class="logo-star s1" viewBox="0 0 7 7" shape-rendering="crispEdges"><use href="#cuStar"/></svg>
+      <svg class="logo-star s2" viewBox="0 0 7 7" shape-rendering="crispEdges"><use href="#cuStar"/></svg>
+      <svg class="logo-star s3" viewBox="0 0 7 7" shape-rendering="crispEdges"><use href="#cuStar"/></svg>
+    </div>`;
+  if(profile.seller_request === 'pending'){
+    box.innerHTML = `
+      <div class="courier-ad-icon">${sellerAdLogo}</div>
+      <div class="courier-ad-text"><strong>${d.sellerAdTitle}</strong><p>${d.sellerPending}</p></div>
+    `;
+  } else {
+    box.innerHTML = `
+      <div class="courier-ad-icon">${sellerAdLogo}</div>
+      <div class="courier-ad-text"><strong>${d.sellerAdTitle}</strong><p>${d.sellerAdSub}</p></div>
+      <button class="btn-secondary" onclick="requestSeller()">${d.sellerAdBtn}</button>
     `;
   }
 }
@@ -5719,7 +5750,7 @@ function subscribeProfileChannel(){
       checkCourierNotification();
       updateProfileChip();
       if(!$('view-profile').hidden) renderProfileView();
-      if(!$('view-client-dash').hidden) renderCourierAd();
+      if(!$('view-client-dash').hidden){ renderCourierAd(); renderSellerAd(); }
       if(profile && profile.role === 'admin' && !$('view-admin-dash').hidden){ loadAdmin(); }
     })
     .subscribe();

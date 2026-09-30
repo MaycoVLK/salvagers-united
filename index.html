@@ -197,6 +197,14 @@
     .admin-view-bar{grid-area:tabs; justify-self:stretch; justify-content:flex-start;}
     .admin-view-bar .admin-view-btn{flex:1 1 0; min-width:0; padding:13px 8px;}
     .page-title-lg{font-size:1.35rem; white-space:normal; overflow:visible; text-overflow:clip; word-break:break-word; line-height:1.25;}
+    /* Le logo "COURIERS UNITED" était dimensionné pour desktop (icône 180px + texte 2.6rem) : sur mobile,
+       cette largeur réservée dépassait la colonne de gauche de la barre du haut et venait recouvrir/être
+       recouverte par le bouton CRÉER. On le réduit ici pour qu'il tienne dans sa colonne. */
+    .app-topbar .brand-lg{min-width:0; max-width:100%; overflow:hidden;}
+    .logo-icon-wrap-header{transform:none; margin-right:0;}
+    .logo-anim-header{width:42px;}
+    .logo-wordmark-header .lw-main{font-size:1.3rem; letter-spacing:.5px;}
+    .logo-wordmark-header .lw-sub{font-size:.68rem; letter-spacing:1.5px; margin-top:1px;}
   }
   @media (max-width:480px){
     .admin-view-bar{gap:5px;}
@@ -3328,7 +3336,7 @@ async function loadMarketplaceFeed(){
   const box = $('marketplaceFeed'); if(!box) return;
   const d = T[LANG];
   box.innerHTML = `<p class="muted">…</p>`;
-  const { data, error } = await sb.from('marketplace_listings').select('*').order('created_at',{ascending:false}).limit(30);
+  const { data, error } = await sb.from('marketplace_listings').select('*').order('created_at',{ascending:false}).limit(200);
   if(error){ box.textContent = error.message; return; }
   marketplaceFeedCache = data || [];
   if(!marketplaceFeedCache.length){ box.innerHTML = `<p class="muted">${d.marketplaceEmpty}</p>`; return; }
@@ -3356,8 +3364,8 @@ async function loadMarketplaceFeed(){
   }
   applyMarketplaceFilters();
 }
-// Tri + recherche. Sans recherche : on trie le feed déjà chargé (30 dernières annonces).
-// Avec une recherche : on interroge toute la base (pas seulement les 30 dernières) pour ne rater aucun objet.
+// Tri + recherche. Sans recherche : on trie le feed déjà chargé (200 dernières annonces).
+// Avec une recherche : on interroge toute la base (pas seulement les 200 dernières) pour ne rater aucun objet.
 let marketplaceSearchDebounceTimer = null;
 function onMarketplaceSearchInput(){
   clearTimeout(marketplaceSearchDebounceTimer);

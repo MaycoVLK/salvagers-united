@@ -5641,6 +5641,7 @@ function subscribeNotifChannel(){
   if(notifChannel || !session) return;
   notifChannel = sb.channel('notifications-self-'+session.user.id)
     .on('postgres_changes', { event:'*', schema:'public', table:'notifications', filter:`user_id=eq.${session.user.id}` }, (payload) => {
+      console.log('[DEBUG notif realtime]', payload && payload.eventType, payload && payload.new, 'notifSoundEnabled=', notifSoundEnabled, 'notifAudioUnlocked=', notifAudioUnlocked);
       refreshNotifBadges();
       if(payload && payload.eventType === 'INSERT' && payload.new){ playNotifSound(payload.new.category); }
       if(profile && profile.role === 'admin' && !$('view-admin-dash').hidden){ loadCourierApplications(); loadSellerApplications(); }

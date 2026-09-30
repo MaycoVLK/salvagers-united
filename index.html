@@ -168,7 +168,8 @@
   /* --- APP TOPBAR --- */
   .app-topbar{position:sticky; top:0; z-index:40; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:16px; padding:10px 0 16px; background:linear-gradient(to bottom, var(--bg) 78%, transparent);}
   .app-topbar .brand{display:flex; align-items:center; gap:10px; min-width:0;}
-  .brand-lg{background:none; border:none; padding:0; margin:0; cursor:pointer; flex:none; text-align:left; border-radius:4px;}
+  .brand-lg{background:none; border:none; padding:0; margin:0; cursor:pointer; flex:none; text-align:left; border-radius:4px; justify-content:flex-start; justify-self:start;}
+  .brand-lg:hover{background:none;}
   .brand-lg:hover .logo-anim-header{filter:brightness(1.25) drop-shadow(0 0 10px var(--accent-dim));}
   .logo-icon-wrap-header{position:relative; display:inline-block; transform:scale(.58); transform-origin:left center; margin-right:-72px; vertical-align:middle;}
   .logo-anim-header{width:180px; aspect-ratio:1260/750; height:auto; filter:drop-shadow(0 0 8px var(--accent-dim));}
@@ -195,10 +196,12 @@
     .app-topbar .topbar-actions{grid-area:actions;}
     .admin-view-bar{grid-area:tabs; justify-self:stretch; justify-content:flex-start;}
     .admin-view-bar .admin-view-btn{flex:1 1 0; min-width:0; padding:13px 8px;}
+    .page-title-lg{font-size:1.35rem; white-space:normal; overflow:visible; text-overflow:clip; word-break:break-word; line-height:1.25;}
   }
   @media (max-width:480px){
     .admin-view-bar{gap:5px;}
     .admin-view-bar .admin-view-btn{padding:13px 4px; font-size:.92rem; letter-spacing:.4px;}
+    .page-title-lg{font-size:1.15rem;}
   }
   .gear-wrap{position:relative;}
   .create-wrap{position:relative;}

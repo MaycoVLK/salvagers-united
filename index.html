@@ -303,10 +303,16 @@
   .mkt-tag.tag-q700{color:#8fd3ff; border-color:#8fd3ff;}
   .mkt-tag.tag-q800{color:#b9a3ff; border-color:#b9a3ff;}
   .mkt-tag.tag-q900{color:#ffd166; border-color:#ffd166;}
-  .stock-toggle-row{display:flex; align-items:center; gap:8px; cursor:pointer; margin:2px 0 6px; font-family:'VT323',monospace; font-size:.95rem; color:var(--text); text-transform:none; letter-spacing:0;}
-  .stock-toggle-row input[type="checkbox"]{width:16px; height:16px; accent-color:var(--accent); cursor:pointer; margin:0;}
   .mkt-price-unit{font-size:.68rem; color:var(--muted); margin-left:2px; text-transform:none;}
   .mkt-stock-note{font-size:.72rem; color:var(--muted); margin-top:2px;}
+  .listing-mode-tabs{margin:0 0 4px; border-bottom:1px solid var(--border);}
+  .listing-mode-tabs .tab-btn{font-size:.82rem;}
+  @keyframes listingFieldsSwoosh{
+    0%{opacity:0; transform:translateX(-18px) skewX(-6deg); filter:blur(1px);}
+    55%{opacity:1; transform:translateX(3px) skewX(0deg); filter:blur(0);}
+    100%{opacity:1; transform:translateX(0);}
+  }
+  #listingModeFields.mode-swoosh{animation:listingFieldsSwoosh .28s steps(8) both;}
   .listing-tags-toggle{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:4px;}
   .tag-toggle-btn{width:auto; flex:1 1 auto; padding:13px 10px; font-size:1rem; text-transform:uppercase; letter-spacing:.5px; border:1px solid var(--border); border-radius:3px; background:var(--bg2); color:var(--muted); cursor:pointer; font-family:'VT323',monospace; transition:border-color .15s, color .15s, background .15s;}
   .tag-toggle-btn.active{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
@@ -1206,15 +1212,18 @@
       <div class="card">
         <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
         <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute">
-        <label class="stock-toggle-row" for="listingStockMode">
-          <input type="checkbox" id="listingStockMode" onchange="onListingStockModeChange()">
-          <span data-i18n="listingStockModeLbl">Vendre par unité (gérer un stock)</span>
-        </label>
-        <div class="muted" id="listingStockModeHint" style="font-size:.75rem; margin:-4px 0 10px;" data-i18n="listingStockModeHint">Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.</div>
-        <label for="listingPrice" id="listingPriceLblEl" data-i18n="listingPriceLbl">Prix de vente (aUEC)</label>
-        <input id="listingPrice" type="number" min="0" step="1">
-        <label for="listingQty" id="listingQtyLblEl" data-i18n="listingQtyLbl">Quantité</label>
-        <input id="listingQty" type="number" min="1" step="1" value="1">
+        <input type="checkbox" id="listingStockMode" hidden>
+        <div class="tabs listing-mode-tabs">
+          <button type="button" class="tab-btn active" id="listingModeTabSingle" onclick="setListingMode(false, this)"><span data-i18n="listingModeSingleTab">VENTE UNIQUE</span></button>
+          <button type="button" class="tab-btn" id="listingModeTabStock" onclick="setListingMode(true, this)"><span data-i18n="listingModeStockTab">VENTE PAR QUANTITÉ</span></button>
+        </div>
+        <div id="listingModeFields">
+          <div class="muted" id="listingStockModeHint" style="font-size:.75rem; margin:8px 0 10px;" data-i18n="listingStockModeHint" hidden>Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.</div>
+          <label for="listingPrice" id="listingPriceLblEl" data-i18n="listingPriceLbl">Prix de vente (aUEC)</label>
+          <input id="listingPrice" type="number" min="0" step="1">
+          <label for="listingQty" id="listingQtyLblEl" data-i18n="listingQtyLbl">Quantité</label>
+          <input id="listingQty" type="number" min="1" step="1" value="1">
+        </div>
         <label data-i18n="listingTagsLbl">Tags (optionnel)</label>
         <div class="listing-tags-toggle">
           <button type="button" class="tag-toggle-btn" id="tagBtn-crafted" onclick="toggleListingTag('crafted')" data-i18n="tagCrafted">CRAFTÉ</button>
@@ -1750,7 +1759,7 @@ const T = {
     sellerRankLabels:{novice:"Novice", trader:"Négociant", merchant:"Marchand", tycoon:"Magnat"}, rankSales:"ventes",
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
     newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
-    listingStockModeLbl:"Vendre par unité (gérer un stock)", listingStockModeHint:"Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.", listingPriceUnitLbl:"Prix unitaire (aUEC)", listingStockLbl:"Stock disponible", perUnitSuffix:" / unité", stockLbl:"Stock :", yourQtyLbl:"Quantité souhaitée :", stockAvailableLbl:"Disponible :", stockTooLowAlert:"Erreur : il n'y a plus assez de stock disponible pour cette quantité.", invalidQtyAlert:"Erreur : quantité invalide.",
+    listingStockModeLbl:"Vendre par unité (gérer un stock)", listingStockModeHint:"Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.", listingPriceUnitLbl:"Prix unitaire (aUEC)", listingStockLbl:"Stock disponible", perUnitSuffix:" / unité", stockLbl:"Stock :", yourQtyLbl:"Quantité souhaitée :", stockAvailableLbl:"Disponible :", stockTooLowAlert:"Erreur : il n'y a plus assez de stock disponible pour cette quantité.", invalidQtyAlert:"Erreur : quantité invalide.", qtyRequestedLbl:"Quantité :", listingModeSingleTab:"VENTE UNIQUE", listingModeStockTab:"VENTE PAR QUANTITÉ",
     listingTagsLbl:"Tags (optionnel)", tagCrafted:"CRAFTÉ", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", editListingBtn:"MODIFIER",
     requestResourcesTitle:"Poster un objet recherché", requestResourcesBtn:"OBJET RECHERCHÉ", resourceNameLbl:"Objet recherché", phResourceName:"ex: Laranite brute, casque d'armure lourde...", resourceQtyLbl:"Quantité souhaitée", resourcePriceLbl:"Prix proposé (aUEC, optionnel)", resourceNoteLbl:"Note (optionnel)", phResourceNote:"ex: Livraison sur Nyx, quantité négociable...", submitResourceRequestBtn:"PUBLIER L'ANNONCE", resourceRequestSaved:"ANNONCE PUBLIÉE !",
     myResourceRequestsTitle:"Objets recherchés", noResourceRequests:"Tu n'as posté aucune annonce d'objet recherché pour le moment.",
@@ -1872,7 +1881,7 @@ const T = {
     sellerRankLabels:{novice:"Novice", trader:"Trader", merchant:"Merchant", tycoon:"Tycoon"}, rankSales:"sales",
     rankToNextSales:"{n} more sale(s) to reach {rank}",
     newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
-    listingStockModeLbl:"Sell by unit (manage a stock)", listingStockModeHint:"The price is counted per unit and the buyer picks how many they want. Stock goes down automatically with each sale.", listingPriceUnitLbl:"Unit price (aUEC)", listingStockLbl:"Stock available", perUnitSuffix:" / unit", stockLbl:"Stock:", yourQtyLbl:"Quantity wanted:", stockAvailableLbl:"Available:", stockTooLowAlert:"Error: there isn't enough stock left for that quantity.", invalidQtyAlert:"Error: invalid quantity.",
+    listingStockModeLbl:"Sell by unit (manage a stock)", listingStockModeHint:"The price is counted per unit and the buyer picks how many they want. Stock goes down automatically with each sale.", listingPriceUnitLbl:"Unit price (aUEC)", listingStockLbl:"Stock available", perUnitSuffix:" / unit", stockLbl:"Stock:", yourQtyLbl:"Quantity wanted:", stockAvailableLbl:"Available:", stockTooLowAlert:"Error: there isn't enough stock left for that quantity.", invalidQtyAlert:"Error: invalid quantity.", qtyRequestedLbl:"Quantity:", listingModeSingleTab:"SINGLE SALE", listingModeStockTab:"SELL BY QUANTITY",
     listingTagsLbl:"Tags (optional)", tagCrafted:"CRAFTED", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", editListingBtn:"EDIT",
     requestResourcesTitle:"Post a desired item", requestResourcesBtn:"DESIRED ITEM", resourceNameLbl:"Item wanted", phResourceName:"e.g. Raw Laranite, heavy armor helmet...", resourceQtyLbl:"Quantity wanted", resourcePriceLbl:"Price offered (aUEC, optional)", resourceNoteLbl:"Note (optional)", phResourceNote:"e.g. Delivery to Nyx, quantity negotiable...", submitResourceRequestBtn:"POST AD", resourceRequestSaved:"AD POSTED!",
     myResourceRequestsTitle:"Desired items", noResourceRequests:"You haven't posted any desired item ad yet.",
@@ -3235,7 +3244,10 @@ async function loadMyInquiries(){
     const order = r.order_id ? oMap[r.order_id] : null;
     let body = '';
     let priceLine = '';
-    if(listing){
+    if(r.requested_qty != null){
+      const unit = listing ? Number(listing.price) : (r.snap_price != null ? Number(r.snap_price) : 0);
+      priceLine = `<div class="inquiry-price-line">${d.qtyRequestedLbl} ${r.requested_qty} × ${fmt(unit)} = <strong>${fmt(unit * r.requested_qty)}</strong></div>`;
+    } else if(listing){
       if(r.status === 'countered'){
         priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <span class="orig">${fmt(listing.price)}</span> ${d.counterFrom} <strong>${fmt(r.counter_price)}</strong></div>`;
       } else if(r.offer_price != null && Number(r.offer_price) !== Number(listing.price)){
@@ -3434,11 +3446,27 @@ function onListingStockModeChange(){
   const priceLbl = $('listingPriceLblEl'); const qtyLbl = $('listingQtyLblEl');
   if(priceLbl){ priceLbl.dataset.i18n = isStock ? 'listingPriceUnitLbl' : 'listingPriceLbl'; priceLbl.textContent = isStock ? d.listingPriceUnitLbl : d.listingPriceLbl; }
   if(qtyLbl){ qtyLbl.dataset.i18n = isStock ? 'listingStockLbl' : 'listingQtyLbl'; qtyLbl.textContent = isStock ? d.listingStockLbl : d.listingQtyLbl; }
+  const hint = $('listingStockModeHint'); if(hint) hint.hidden = !isStock;
+}
+// Applique le mode (vente unique / vente par quantité) sans animation — utilisé au chargement/reset/édition.
+function applyListingMode(isStock){
+  $('listingStockMode').checked = isStock;
+  const tabSingle = $('listingModeTabSingle'); const tabStock = $('listingModeTabStock');
+  if(tabSingle) tabSingle.classList.toggle('active', !isStock);
+  if(tabStock) tabStock.classList.toggle('active', isStock);
+  onListingStockModeChange();
+}
+// Appelé au clic sur un onglet : change de mode + déclenche l'animation "swoosh" pixel.
+function setListingMode(isStock, btnEl){
+  if($('listingStockMode').checked === isStock) return;
+  applyListingMode(isStock);
+  pixelSwoosh(btnEl || (isStock ? $('listingModeTabStock') : $('listingModeTabSingle')));
+  const fields = $('listingModeFields');
+  if(fields){ fields.classList.remove('mode-swoosh'); void fields.offsetWidth; fields.classList.add('mode-swoosh'); }
 }
 function resetListingForm(){
   $('listingItem').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
-  $('listingStockMode').checked = false;
-  onListingStockModeChange();
+  applyListingMode(false);
   listingTagsState = { crafted:false, q700:false, q800:false, q900:false };
   renderListingTagButtons();
 }
@@ -3453,8 +3481,7 @@ function openEditListing(id){
   $('listingItem').value = l.item_name;
   $('listingPrice').value = l.price;
   $('listingQty').value = l.quantity;
-  $('listingStockMode').checked = !!l.is_stock;
-  onListingStockModeChange();
+  applyListingMode(!!l.is_stock);
   pendingListingPhotoFile = null;
   $('listingPhotoInput').value = '';
   $('listingPhotoPreviewName').textContent = l.photo_url ? d.listingPhotoKeepNote : '';
@@ -3788,7 +3815,10 @@ async function loadReceivedInquiries(){
     const buyer = bMap[r.buyer_id];
     let actions = '';
     let priceLine = '';
-    if(listing){
+    if(r.requested_qty != null){
+      const unit = listing ? Number(listing.price) : (r.snap_price != null ? Number(r.snap_price) : 0);
+      priceLine = `<div class="inquiry-price-line">${d.qtyRequestedLbl} ${r.requested_qty} × ${fmt(unit)} = <strong>${fmt(unit * r.requested_qty)}</strong></div>`;
+    } else if(listing){
       if(r.status === 'countered'){
         priceLine = `<div class="inquiry-price-line">${d.listingPriceLbl} <span class="orig">${fmt(listing.price)}</span> ${d.counterFrom} <strong>${fmt(r.counter_price)}</strong></div>`;
       } else if(r.offer_price != null && Number(r.offer_price) !== Number(listing.price)){
@@ -4454,8 +4484,11 @@ async function advanceOrder(id, next){
   if(row) pushNotification(row.client_id, 'client_orders');
   if(row && next === 'purchased') notifyDiscordPurchased(row);
   if(row && row.order_type === 'marketplace' && next === 'delivered'){
+    const { data: inq } = await sb.from('marketplace_inquiries').select('requested_qty').eq('order_id', id).maybeSingle();
     await sb.from('marketplace_inquiries').update({ status:'completed', updated_at: new Date().toISOString() }).eq('order_id', id);
-    if(row.listing_id) await sb.from('marketplace_listings').delete().eq('id', row.listing_id);
+    // Vente au stock : le stock a déjà été décrémenté (ou l'annonce déjà retirée) au moment de l'acceptation, on n'y retouche pas ici.
+    const isStockSale = inq && inq.requested_qty != null;
+    if(!isStockSale && row.listing_id) await sb.from('marketplace_listings').delete().eq('id', row.listing_id);
   }
   sweep(); loadCourierData();
 }

@@ -200,7 +200,7 @@
 
   /* --- ORDER CARDS --- */
   .order-card{position:relative; border:1px solid var(--border); border-radius:4px; padding:14px; margin-bottom:12px; background:var(--bg2);}
-  .new-order-dot{position:absolute; top:10px; right:14px; width:10px; height:10px; background:var(--danger); border-radius:50%; box-shadow:0 0 0 2px var(--bg2), 0 0 6px var(--danger); animation:notifPulse 1.5s ease-in-out infinite; pointer-events:none;}
+  .new-order-dot{position:absolute; top:10px; right:14px; width:10px; height:10px; background:var(--danger); border-radius:50%; box-shadow:0 0 0 2px var(--bg2), 0 0 6px var(--danger); animation:notifPulse 1.5s ease-in-out infinite; pointer-events:none; z-index:6;}
   .order-card.big{padding:22px 28px 18px;}
   /* --- LIVRAISONS COURSIER : commande principale + liste compacte des autres, côte à côte --- */
   .delivery-layout{display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;}

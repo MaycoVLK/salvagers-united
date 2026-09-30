@@ -910,6 +910,11 @@
               <div class="theme-row" id="themePicker"></div>
             </div>
             <hr>
+            <div>
+              <div class="row-label" data-i18n="soundNotifTitle">Sons de notification</div>
+              <button class="lang-btn active" id="panelSoundToggleBtn" style="width:100%; padding:8px;" onclick="toggleNotifSound()"></button>
+            </div>
+            <hr>
             <button class="btn-logout" onclick="doLogout()" data-i18n="logout">DÉCONNEXION</button>
           </div>
         </div>
@@ -1161,11 +1166,6 @@
         <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="saveProfileDefaults()">
           <span data-i18n="saveDefaultLoc2">ENREGISTRER</span>
         </button>
-      </div>
-      <div class="card">
-        <h3 data-i18n="soundNotifTitle">Sons de notification</h3>
-        <p class="muted" data-i18n="soundNotifHint" style="margin:-4px 0 8px;">Joue un petit son quand tu reçois un message ou une nouvelle course (coursiers).</p>
-        <button class="lang-btn active" id="soundToggleBtn" style="width:100%; padding:10px;" onclick="toggleNotifSound()"></button>
       </div>
       <div class="card" id="shipInfoCard" hidden>
         <h3 data-i18n="shipInfoTitle">Vaisseau livreur par défaut</h3>
@@ -2069,6 +2069,7 @@ function applyLang(){
   document.documentElement.lang = LANG;
   if(session) updatePageTitle();
   syncDiscordCtaWidth();
+  updateSoundToggleBtn();
 }
 function setLang(l){ LANG = l; try{ localStorage.setItem('su-lang', l); }catch(e){} applyLang(); }
 // Aligne la largeur de l'encart Discord sur celle du texte du footer (qui change de longueur selon
@@ -2199,7 +2200,7 @@ function applyColor(c){
   LANG = savedLang;
 })();
 
-function toggleSettings(){ $('settingsPanel').hidden = !$('settingsPanel').hidden; }
+function toggleSettings(){ $('settingsPanel').hidden = !$('settingsPanel').hidden; updateSoundToggleBtn(); }
 document.addEventListener('click', (e) => {
   const panel = $('settingsPanel');
   if(panel.hidden) return;
@@ -5586,12 +5587,31 @@ const SND_ORDER_B64 = "SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAA
 let notifSoundEnabled = true;
 try{ notifSoundEnabled = (localStorage.getItem('su-sound') !== 'off'); }catch(e){}
 let sndMsgEl = null, sndOrderEl = null;
+let notifAudioUnlocked = false;
 function initNotifSounds(){
   try{
     sndMsgEl = new Audio('data:audio/mpeg;base64,' + SND_MSG_B64);
     sndOrderEl = new Audio('data:audio/mpeg;base64,' + SND_ORDER_B64);
     sndMsgEl.volume = 0.55; sndOrderEl.volume = 0.6;
+    sndMsgEl.preload = 'auto'; sndOrderEl.preload = 'auto';
   }catch(e){}
+  // Les navigateurs bloquent souvent la lecture audio déclenchée par un événement realtime
+  // (pas un vrai clic). On "débloque" donc la lecture dès la toute première interaction de
+  // la personne sur la page (clic, touche, tap), en jouant puis coupant aussitôt chaque son.
+  const unlock = () => {
+    if(notifAudioUnlocked) return;
+    notifAudioUnlocked = true;
+    [sndMsgEl, sndOrderEl].forEach(el => {
+      if(!el) return;
+      try{
+        const p = el.play();
+        if(p && p.catch) p.catch(()=>{});
+        el.pause(); el.currentTime = 0;
+      }catch(e){}
+    });
+    ['pointerdown','keydown'].forEach(ev => document.removeEventListener(ev, unlock));
+  };
+  ['pointerdown','keydown'].forEach(ev => document.addEventListener(ev, unlock, { once:false, passive:true }));
 }
 function playNotifSound(category){
   if(!notifSoundEnabled) return;
@@ -5600,11 +5620,12 @@ function playNotifSound(category){
   try{
     const clone = el.cloneNode(true);
     clone.volume = el.volume;
-    clone.play().catch(()=>{});
-  }catch(e){}
+    const p = clone.play();
+    if(p && p.catch) p.catch(err => console.warn('Son de notif bloqué par le navigateur :', err));
+  }catch(e){ console.warn('Son de notif erreur :', e); }
 }
 function updateSoundToggleBtn(){
-  const btn = $('soundToggleBtn'); if(!btn) return;
+  const btn = $('panelSoundToggleBtn'); if(!btn) return;
   const d = T[LANG];
   btn.textContent = notifSoundEnabled ? d.soundOn : d.soundOff;
   btn.classList.toggle('active', notifSoundEnabled);
@@ -5613,6 +5634,7 @@ function toggleNotifSound(){
   notifSoundEnabled = !notifSoundEnabled;
   try{ localStorage.setItem('su-sound', notifSoundEnabled ? 'on' : 'off'); }catch(e){}
   updateSoundToggleBtn();
+  if(notifSoundEnabled) playNotifSound('msg');
 }
 
 function subscribeNotifChannel(){

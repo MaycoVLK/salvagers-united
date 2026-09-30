@@ -4513,6 +4513,20 @@ function openShopAllResources(){
 function closeSellerShop(){ routeApp(); }
 
 // --- CANDIDATURES VENDEUR (admin) ---
+// Nettoie les notifications d'application admin (courier/seller) devenues orphelines : une demande déjà
+// traitée par un autre admin ne disparaît de la base pour PERSONNE d'autre que celui qui l'a traitée — les
+// autres admins gardaient donc une pastille bloquée à vie sur l'onglet "Manage" pour une candidature qui
+// n'existe plus. On marque ici comme lue toute notif non lue de cette catégorie dont la candidature n'est
+// plus dans la liste actuelle des demandes en attente.
+async function cleanupStaleAdminAppNotifs(category, currentIds){
+  if(!session) return;
+  const { data: unreadRowsAll } = await sb.from('notifications').select('id,ref_id').eq('user_id',session.user.id).eq('category',category).eq('read',false);
+  const staleIds = (unreadRowsAll||[]).filter(n => !n.ref_id || !currentIds.has(n.ref_id)).map(n=>n.id);
+  if(staleIds.length){
+    await sb.from('notifications').update({read:true}).in('id', staleIds);
+    refreshNotifBadges();
+  }
+}
 async function loadSellerApplications(){
   const box = $('sellerAppsList'); if(!box) return;
   const d = T[LANG];
@@ -4521,6 +4535,7 @@ async function loadSellerApplications(){
     loadMsgUnreadSet('admin_seller_app')
   ]);
   if(error){ box.textContent = error.message; return; }
+  cleanupStaleAdminAppNotifs('admin_seller_app', new Set((data||[]).map(p=>p.id)));
   if(!data || !data.length){ box.innerHTML = `<p class="muted">${d.noSellerApplications}</p>`; return; }
   box.innerHTML = data.map(p => {
     const isNew = unreadSet.has(p.id);
@@ -5778,6 +5793,7 @@ async function loadCourierApplications(){
     loadMsgUnreadSet('admin_courier_app')
   ]);
   if(error){ box.textContent = error.message; return; }
+  cleanupStaleAdminAppNotifs('admin_courier_app', new Set((data||[]).map(p=>p.id)));
   if(!data || !data.length){ box.innerHTML = `<p class="muted">${d.noApplications}</p>`; return; }
   box.innerHTML = data.map(p => {
     const isNew = unreadSet.has(p.id);

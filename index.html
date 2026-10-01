@@ -257,23 +257,28 @@
   .online-dot-sm{width:7px; height:7px; border-radius:50%; background:#39ff6a; box-shadow:0 0 5px rgba(57,255,106,.8); flex:none;}
   .online-empty{color:var(--muted); font-size:.85rem; padding:4px 8px;}
 
-  .crate-fx-layer{position:fixed; left:0; top:40%; width:100%; height:60px; pointer-events:none; z-index:200; overflow:hidden; display:none;}
+  .crate-fx-layer{position:fixed; left:0; top:0; width:72px; height:72px; pointer-events:none; z-index:200; overflow:visible; display:none;}
   .crate-fx-layer.run{display:block;}
-  .crate-fx-trail{position:absolute; top:50%; left:-25%; width:50%; height:4px; transform:translateY(-50%); background:linear-gradient(90deg, transparent, var(--accent) 55%, #fff); opacity:0; filter:blur(.5px);}
-  .crate-fx-box{position:absolute; top:50%; left:-40px; width:40px; height:40px; transform:translateY(-50%); opacity:0; filter:drop-shadow(0 0 5px var(--accent)) drop-shadow(0 0 14px var(--accent));}
-  .crate-fx-layer.run .crate-fx-trail{animation:crateTrail .7s cubic-bezier(.3,.6,.1,1) forwards;}
-  .crate-fx-layer.run .crate-fx-box{animation:crateFly .7s cubic-bezier(.3,.6,.1,1) forwards;}
-  @keyframes crateFly{
-    0%{ left:-40px; opacity:0; }
-    8%{ opacity:1; }
-    82%{ opacity:1; }
-    100%{ left:112%; opacity:0; }
+  .crate-fx-lines{position:absolute; inset:-6px; border-radius:50%; overflow:hidden; opacity:0;}
+  .crate-fx-lines::before{content:""; position:absolute; inset:-40% -10%; background-image:repeating-linear-gradient(100deg, transparent 0 8px, var(--accent) 8px 10px, transparent 10px 26px); background-size:200% 100%;}
+  .crate-fx-box{position:absolute; left:50%; top:50%; width:34px; height:34px; margin:-17px 0 0 -17px; opacity:0; filter:drop-shadow(0 0 5px var(--accent)) drop-shadow(0 0 12px var(--accent));}
+  .crate-fx-layer.run .crate-fx-lines{animation:crateLinesFade 1s ease forwards;}
+  .crate-fx-layer.run .crate-fx-lines::before{animation:crateLinesScroll 1s linear forwards;}
+  .crate-fx-layer.run .crate-fx-box{animation:crateLevitate 1s cubic-bezier(.3,.6,.2,1) forwards;}
+  @keyframes crateLevitate{
+    0%{ opacity:0; transform:translateY(14px) scale(.4) rotate(-8deg); }
+    18%{ opacity:1; transform:translateY(-14px) scale(1) rotate(0deg); }
+    40%{ transform:translateY(-20px) scale(1) rotate(3deg); }
+    60%{ transform:translateY(-13px) scale(1) rotate(-3deg); }
+    80%{ opacity:1; transform:translateY(-20px) scale(1) rotate(2deg); }
+    100%{ opacity:0; transform:translateY(-34px) scale(.8) rotate(0deg); }
   }
-  @keyframes crateTrail{
-    0%{ left:-25%; opacity:0; }
-    10%{ opacity:.9; }
-    82%{ opacity:.5; }
-    100%{ left:95%; opacity:0; }
+  @keyframes crateLinesFade{
+    0%{ opacity:0; } 15%{ opacity:.85; } 78%{ opacity:.65; } 100%{ opacity:0; }
+  }
+  @keyframes crateLinesScroll{
+    from{ background-position:0 0; }
+    to{ background-position:-200% 0; }
   }
   .msg-conv-row{display:flex; align-items:center; gap:10px; padding:8px; border-radius:4px; cursor:pointer; border:1px solid transparent; text-align:left;}
   .msg-conv-row:hover{background:var(--bg2); border-color:var(--border);}
@@ -974,7 +979,7 @@
     </div>
 
     <div class="crate-fx-layer" id="crateFxLayer" hidden>
-      <div class="crate-fx-trail"></div>
+      <div class="crate-fx-lines"></div>
       <svg class="crate-fx-box" viewBox="0 0 8 8" shape-rendering="crispEdges"><g id="crateFxBoxG"></g></svg>
     </div>
 
@@ -5825,12 +5830,12 @@ function renderCourierAvailToggle(){
         <strong>${d.availForDeliveryTitle}</strong>
         <p class="muted" style="margin:4px 0 0;">${d.availForDeliveryHint}</p>
       </div>
-      <button class="${on ? 'btn-primary' : 'btn-secondary'}" style="min-width:170px;" onclick="toggleAvailForDelivery()">${on ? AVAIL_CHECK_ICON : ''}${on ? d.availForDeliveryOn : d.availForDeliveryOff}</button>
+      <button class="${on ? 'btn-primary' : 'btn-secondary'}" style="min-width:170px;" onclick="toggleAvailForDelivery(this)">${on ? AVAIL_CHECK_ICON : ''}${on ? d.availForDeliveryOn : d.availForDeliveryOff}</button>
     </div>`;
 }
-async function toggleAvailForDelivery(){
+async function toggleAvailForDelivery(btnEl){
   if(!session || !profile) return;
-  playCrateFx();
+  playCrateFx(btnEl);
   const newVal = !profile.available_for_delivery;
   const { error } = await sb.from('profiles').update({ available_for_delivery: newVal }).eq('id', session.user.id);
   if(error){ alert('Erreur : '+error.message); return; }
@@ -5843,7 +5848,7 @@ const CRATE_FX_GRID = ["22222222","21111112","21211212","21122112","21122112","2
 const CRATE_FX_COLORS = { '1':'#c9893f', '2':'#5c3a1a' };
 let crateFxBuilt = false;
 let crateFxTimer = null;
-function playCrateFx(){
+function playCrateFx(btnEl){
   const layer = $('crateFxLayer'); if(!layer) return;
   if(!crateFxBuilt){
     const g = $('crateFxBoxG');
@@ -5861,10 +5866,15 @@ function playCrateFx(){
     }
     crateFxBuilt = true;
   }
+  const rect = btnEl && btnEl.getBoundingClientRect ? btnEl.getBoundingClientRect() : null;
+  if(rect){
+    layer.style.left = (rect.left + rect.width / 2 - 36) + 'px';
+    layer.style.top = (rect.top - 60) + 'px';
+  }
   layer.hidden = false;
   layer.classList.remove('run'); void layer.offsetWidth; layer.classList.add('run');
   clearTimeout(crateFxTimer);
-  crateFxTimer = setTimeout(() => { layer.hidden = true; layer.classList.remove('run'); }, 750);
+  crateFxTimer = setTimeout(() => { layer.hidden = true; layer.classList.remove('run'); }, 1050);
 }
 
 // --- SONS DE NOTIFICATION (messagerie + nouvelles courses coursier) ---

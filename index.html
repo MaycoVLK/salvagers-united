@@ -282,6 +282,8 @@
   .online-member-row{display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:4px; font-size:.95rem;}
   .online-member-row.is-courier-avail{border:1px solid var(--accent); background:var(--accent-dim);}
   .online-dot-sm{width:7px; height:7px; border-radius:50%; background:#39ff6a; box-shadow:0 0 5px rgba(57,255,106,.8); flex:none;}
+  .online-member-name-link{cursor:pointer;}
+  .online-member-name-link:hover{color:var(--accent); text-decoration:underline;}
   .online-empty{color:var(--muted); font-size:.85rem; padding:4px 8px;}
 
   .crate-fx-layer{position:fixed; left:0; top:0; width:34px; height:34px; pointer-events:none; z-index:200; overflow:visible; display:none;}
@@ -6040,7 +6042,11 @@ document.addEventListener('click', (e) => {
 });
 function onlineMemberRowHtml(p, highlight){
   const name = (p && (p.rsi_handle || p.discord_username)) || '—';
-  return `<div class="online-member-row${highlight ? ' is-courier-avail' : ''}"><span class="online-dot-sm"></span><span>${name}</span></div>`;
+  const clickable = p && p.id;
+  const nameHtml = clickable
+    ? `<span class="online-member-name-link" onclick="event.stopPropagation(); openPublicProfile('${p.id}'); $('onlinePanel').hidden = true;">${name}</span>`
+    : `<span>${name}</span>`;
+  return `<div class="online-member-row${highlight ? ' is-courier-avail' : ''}"><span class="online-dot-sm"></span>${nameHtml}</div>`;
 }
 async function renderOnlinePanelContent(){
   const d = T[LANG];

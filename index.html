@@ -63,12 +63,14 @@
 
   .shop-leaderboard-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:10px;}
   .shop-lb-slot{display:flex; flex-direction:column; align-items:center; text-align:center; gap:5px; border:1px solid var(--border); border-radius:4px; padding:10px 6px;}
-  .shop-lb-slot-logo{width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); background:var(--bg2);}
-  .shop-lb-slot-logo-fallback{width:52px; height:52px; border-radius:50%; border:2px solid var(--border); background:var(--bg2); display:flex; align-items:center; justify-content:center; color:var(--muted); font-family:'VT323',monospace; font-size:1.3rem;}
-  .shop-lb-slot-logo-btn{padding:0; border:none; background:none; cursor:pointer; line-height:0; border-radius:50%; transition:transform .15s ease;}
+  /* Même gabarit que le logo de la bannière boutique (coins arrondis, pas un rond) ; chaque slot porte
+     --accent/--accent-dim en inline-style avec la couleur de la boutique gagnante, donc le logo (et le
+     glow au survol) prend automatiquement la couleur propre à chaque boutique du podium. */
+  .shop-lb-slot-logo{width:52px; height:52px; border-radius:10px; object-fit:cover; border:2px solid var(--accent); background:var(--bg2); box-shadow:0 0 10px var(--accent-dim);}
+  .shop-lb-slot-logo-fallback{width:52px; height:52px; border-radius:10px; border:2px solid var(--accent); background:var(--bg2); display:flex; align-items:center; justify-content:center; color:var(--accent); font-family:'VT323',monospace; font-size:1.3rem; box-shadow:0 0 10px var(--accent-dim);}
+  .shop-lb-slot-logo-btn{padding:0; border:none; background:none; cursor:pointer; line-height:0; border-radius:10px; transition:transform .15s ease;}
   .shop-lb-slot-logo-btn:hover{transform:scale(1.08);}
-  .shop-lb-slot-logo-btn:hover .shop-lb-slot-logo{border-color:var(--text);}
-  .shop-lb-slot-logo-btn:hover .shop-lb-slot-logo-fallback{border-color:var(--accent); color:var(--text);}
+  .shop-lb-slot-logo-btn:hover .shop-lb-slot-logo,.shop-lb-slot-logo-btn:hover .shop-lb-slot-logo-fallback{border-color:var(--text);}
   .shop-lb-slot-shopname{font-family:'VT323',monospace; font-size:1.05rem; color:var(--text); line-height:1.15; word-break:break-word;}
   .shop-lb-slot-lbl{font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
   .shop-lb-slot-val{font-family:'VT323',monospace; font-size:1.3rem; color:var(--accent); line-height:1.1;}
@@ -76,7 +78,7 @@
   @media (max-width:480px){
     .shop-leaderboard-grid{gap:4px;}
     .shop-lb-slot{padding:8px 3px;}
-    .shop-lb-slot-logo, .shop-lb-slot-logo-fallback{width:38px; height:38px;}
+    .shop-lb-slot-logo, .shop-lb-slot-logo-fallback{width:38px; height:38px; border-radius:7px;}
     .shop-lb-slot-logo-fallback{font-size:1rem;}
     .shop-lb-slot-shopname{font-size:.82rem;}
     .shop-lb-slot-lbl{font-size:.58rem;}
@@ -808,10 +810,11 @@
     text-decoration:none; text-transform:uppercase; letter-spacing:.4px; margin:0; line-height:1.3; white-space:nowrap;}
   .shop-banner-actions{display:flex; align-items:center; gap:10px; flex:none;}
   .shop-banner-actions .shop-upvote-btn{flex:none;}
-  /* Fond semi-opaque derrière la description : sans ça, certaines textures (grille/scanlines) rendent
-     le texte difficile à lire par-dessus. */
+  /* Fond entièrement opaque derrière la description (plus de motif de texture visible dedans, quelle que
+     soit la texture choisie) mais teinté dans les tons de la couleur de la boutique plutôt qu'un gris
+     neutre qui jurait parfois avec certaines couleurs d'accent. */
   .shop-banner-card .shop-description{position:relative; z-index:1; margin:16px 0 0; padding:12px 14px;
-    background:color-mix(in srgb, var(--panel) 78%, transparent); border:1px solid var(--border); border-radius:6px;}
+    background:color-mix(in srgb, var(--bg2) 88%, var(--accent) 12%); border:1px solid var(--accent-dim); border-radius:6px;}
   @media (max-width:640px){
     .shop-banner-card{padding:16px;}
     .shop-banner-row{flex-direction:column; align-items:stretch; text-align:center; gap:14px;}
@@ -4145,7 +4148,7 @@ async function loadShopLeaderboard(){
   if(neededIds.length){
     const [{ data: profs }, { data: shops }] = await Promise.all([
       sb.from('profiles').select('id,discord_username,rsi_handle').in('id', neededIds),
-      sb.from('marketplace_shops').select('id,shop_name,logo_url').in('id', neededIds)
+      sb.from('marketplace_shops').select('id,shop_name,logo_url,theme_color').in('id', neededIds)
     ]);
     (profs||[]).forEach(p => { profById[p.id] = p; });
     (shops||[]).forEach(s => { shopById[s.id] = s; });
@@ -4155,11 +4158,14 @@ async function loadShopLeaderboard(){
     const shop = shopById[sellerId];
     const prof = profById[sellerId];
     const name = (shop && shop.shop_name) || (prof && (prof.rsi_handle || prof.discord_username)) || '—';
+    // Même gabarit que le logo de la bannière boutique (coins arrondis, pas un rond) et même couleur
+    // que celle choisie par le vendeur pour sa boutique, au lieu d'un rond générique à la couleur du site.
+    const colorHex = normalizeShopColor(shop && shop.theme_color);
     const logo = shop && shop.logo_url
       ? `<img class="shop-lb-slot-logo" src="${shop.logo_url}" alt="">`
       : `<div class="shop-lb-slot-logo-fallback">${(name[0]||'?').toUpperCase()}</div>`;
     const logoLink = `<button type="button" class="shop-lb-slot-logo-btn" onclick="openSellerShop('${sellerId}')" aria-label="${name}">${logo}</button>`;
-    return { name, logo: logoLink, valueHtml };
+    return { name, logo: logoLink, valueHtml, colorHex };
   };
 
   const slots = [
@@ -4172,7 +4178,7 @@ async function loadShopLeaderboard(){
     if(!slot.winner){
       return `<div class="shop-lb-slot"><div class="shop-lb-slot-lbl">${slot.lbl}</div><div class="shop-lb-slot-empty">${d.lbNoDataYet}</div></div>`;
     }
-    return `<div class="shop-lb-slot">
+    return `<div class="shop-lb-slot" style="--accent:${slot.winner.colorHex}; --accent-dim:${slot.winner.colorHex}55;">
       ${slot.winner.logo}
       <div class="shop-lb-slot-shopname">${slot.winner.name}</div>
       <div class="shop-lb-slot-lbl">${slot.lbl}</div>

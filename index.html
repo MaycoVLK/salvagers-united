@@ -783,17 +783,27 @@
   }
 
   /* --- STATS & SUCCÈS SUR LA PAGE BOUTIQUE : mis en valeur mais compact (#pubSellerStatsCard/#pubSellerAchvCard
-     du profil public gardent leur affichage existant, on ne touche pas à ça ici). --- */
+     du profil public gardent leur affichage existant, on ne touche pas à ça ici). Les deux cartes sont
+     côte à côte sur desktop/tablette, empilées seulement sur mobile. --- */
+  .shop-stats-achv-row{display:flex; gap:20px; align-items:stretch; margin-bottom:22px;}
+  .shop-stats-achv-row > .card{flex:1 1 0; min-width:0; margin-bottom:0;}
+  @media (max-width:900px){
+    .shop-stats-achv-row{flex-direction:column; gap:0;}
+    .shop-stats-achv-row > .card{margin-bottom:22px;}
+    .shop-stats-achv-row > .card:last-child{margin-bottom:0;}
+  }
   #shopStatsCard.shop-stats-card{padding:16px 18px;}
   #shopStatsCard .career-stats-grid{grid-template-columns:repeat(4,1fr); gap:10px; margin-top:10px;}
-  @media (max-width:860px){ #shopStatsCard .career-stats-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:1100px){ #shopStatsCard .career-stats-grid{grid-template-columns:1fr 1fr;} }
   #shopStatsCard .career-stat{background:linear-gradient(165deg, var(--bg2), var(--panel)); border-color:var(--accent-dim);
     padding:10px 10px; border-radius:5px; transition:border-color .2s, transform .2s;}
   #shopStatsCard .career-stat:hover{border-color:var(--accent); transform:translateY(-2px);}
   #shopStatsCard .career-stat .val{font-size:1.45rem; text-shadow:0 0 10px var(--accent-dim);}
   #shopStatsCard .career-stat .val.val-sm{font-size:1.05rem;}
   #shopStatsCard .career-stat .lbl{margin-top:2px; font-size:.62rem;}
-  #shopAchvCard.shop-progress-card{padding:16px 18px;}
+  #shopAchvCard.shop-progress-card{padding:16px 18px; display:flex; flex-direction:column;}
+  .shop-achv-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+  .shop-achv-viewall{width:auto; flex:none; font-size:.66rem; padding:6px 10px; white-space:nowrap;}
   #shopAchvCard .rank-track{margin:14px 2px 8px; gap:14px;}
   #shopAchvCard .rank-track-icon{width:30px; height:30px;}
   #shopAchvCard .rank-track-bar{height:16px;}
@@ -804,6 +814,12 @@
   #shopAchvCard .achv-badge{padding:10px 6px; border-radius:7px;}
   #shopAchvCard .achv-badge svg{width:26px; height:26px;}
   #shopAchvCard .achv-badge.unlocked{box-shadow:0 0 14px var(--accent-dim);}
+  /* Collapsible : par défaut une seule ligne de badges (le reste est coupé), avec un bouton "voir tout"
+     qui bascule vers la grille complète — évite que la carte succès s'étire plus haut que la carte stats
+     juste à côté quand la colonne devient trop étroite pour afficher les 9 badges sur une ligne. */
+  #shopAchvCard .achv-grid.achv-grid-collapsible{display:flex; flex-wrap:nowrap; overflow:hidden;}
+  #shopAchvCard .achv-grid.achv-grid-collapsible .achv-badge{flex:0 0 96px;}
+  #shopAchvCard.achv-expanded .achv-grid.achv-grid-collapsible{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); overflow:visible;}
 
   /* --- CARTES D'ANNONCES SUR LA PAGE BOUTIQUE : variante un peu plus premium que les cards génériques
      de la marketplace (photo carrée, glow accent au survol), scoping par id pour ne rien changer ailleurs. --- */
@@ -824,21 +840,32 @@
     #view-seller-shop .shop-preview-head{margin-bottom:8px;}
     #view-seller-shop .shop-preview-head h3{font-size:1rem;}
     #shopStatsCard.shop-stats-card, #shopAchvCard.shop-progress-card{padding:12px 14px;}
+    /* Grille "bento" : des tuiles de tailles variables qui remplissent toute la carte sans case vide,
+       plutôt qu'une grille 4 colonnes régulière qui laisse un trou sur la dernière ligne incomplète.
+       Total gagné (large) + ventes + objets sur la 1ère ligne, objet le plus cher (texte, large) + upvotes
+       sur la 2e : 4 colonnes occupées sur chaque ligne. */
     #shopStatsCard .career-stats-grid{grid-template-columns:repeat(4,1fr); gap:6px;}
-    #shopStatsCard .career-stat{padding:7px 4px;}
+    #shopStatsCard .career-stat{padding:7px 4px; display:flex; flex-direction:column; justify-content:center;}
     #shopStatsCard .career-stat .val{font-size:.92rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
     #shopStatsCard .career-stat .lbl{font-size:.5rem; letter-spacing:0; line-height:1.2;}
-    /* La 4e tuile (objet le plus cher) contient du texte variable, pas un chiffre : on lui donne toute
-       la largeur plutôt que de la faire tenir dans une case carrée illisible. */
-    #shopStatsCard .career-stat:nth-child(4){grid-column:1/-1; padding:7px 10px;}
-    #shopStatsCard .career-stat:nth-child(4) .val.val-sm{font-size:.78rem; white-space:normal;}
+    #shopStatsCard .career-stat:nth-child(1){grid-column:span 2;}
+    #shopStatsCard .career-stat:nth-child(2){grid-column:span 1;}
+    #shopStatsCard .career-stat:nth-child(3){grid-column:span 1;}
+    #shopStatsCard .career-stat.career-stat-expensive{grid-column:span 3; padding:7px 10px;}
+    #shopStatsCard .career-stat.career-stat-expensive .val.val-sm{font-size:.78rem; white-space:normal;}
+    #shopStatsCard .career-stat:nth-child(5){grid-column:span 1;}
+    /* Un seul stat affiché (pas encore de ventes) : qu'il prenne toute la largeur plutôt qu'une case
+       perdue au milieu d'une grille vide. */
+    #shopStatsCard .career-stats-grid > .career-stat:only-child{grid-column:1/-1;}
     #shopAchvCard .rank-track{margin:10px 2px 6px; gap:10px;}
     #shopAchvCard .rank-track-icon{width:24px; height:24px;}
     #shopAchvCard .rank-track-label{font-size:.62rem; margin-bottom:8px;}
     /* Succès : bande horizontale défilante façon stories/badges de profil, au lieu d'un pavé qui s'étale
-       sur plusieurs lignes et pousse tout le reste de la page plus bas. */
-    #shopAchvCard .achv-grid{display:flex; flex-wrap:nowrap; overflow-x:auto; gap:8px; padding-bottom:4px; -webkit-overflow-scrolling:touch;}
-    #shopAchvCard .achv-badge{flex:0 0 78px; padding:8px 4px;}
+       sur plusieurs lignes et pousse tout le reste de la page plus bas. Le bouton "voir tout" bascule
+       vers la grille complète si besoin. */
+    #shopAchvCard .achv-grid.achv-grid-collapsible{gap:8px; padding-bottom:4px; overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    #shopAchvCard .achv-grid.achv-grid-collapsible .achv-badge{flex:0 0 78px; padding:8px 4px;}
+    #shopAchvCard.achv-expanded .achv-grid.achv-grid-collapsible{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));}
     #shopAchvCard .achv-badge svg{width:22px; height:22px;}
     #shopAchvCard .achv-badge span{font-size:.56rem;}
   }
@@ -1807,8 +1834,10 @@
           <div class="shop-description" id="shopDescription" hidden></div>
         </div>
 
-        <div class="card shop-progress-card" id="shopAchvCard" hidden></div>
-        <div class="card shop-stats-card" id="shopStatsCard"></div>
+        <div class="shop-stats-achv-row">
+          <div class="card shop-progress-card" id="shopAchvCard" hidden></div>
+          <div class="card shop-stats-card" id="shopStatsCard"></div>
+        </div>
 
         <div class="card seller-section-card">
           <div class="shop-preview-head">
@@ -2266,7 +2295,7 @@ const T = {
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
     shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
-    sellerAchvTitle:"Succès vendeur",
+    sellerAchvTitle:"Succès vendeur", viewAllAchvBtn:"VOIR TOUT", viewLessAchvBtn:"RÉDUIRE",
     sellerAchvLabels:{first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command"},
     sellerAchvDesc:{first_sale:"Conclus ta première vente.", first_courier_sale:"Fais livrer une vente par un coursier.", five_sales:"Conclus 5 ventes.", pockets_full:"Mets en ligne 15 annonces ou plus.", good_fences:"Valide une vente de plus de 2 000 000 aUEC en une seule fois.", crafter_confirmed:"Mets en vente un item crafté de qualité 800 ou plus.", not_stolen:"Valide la vente d'une bombe Colossus.", couldnt_be_bothered:"Mets en ligne une annonce sans photo.", your_wish:"Valide la proposition d'un client sur un de tes desired items."},
     sellerRankLabels:{novice:"Novice", trader:"Négociant", merchant:"Marchand", tycoon:"Magnat"}, rankSales:"ventes",
@@ -2410,7 +2439,7 @@ const T = {
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
     shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
-    sellerAchvTitle:"Seller achievements",
+    sellerAchvTitle:"Seller achievements", viewAllAchvBtn:"VIEW ALL", viewLessAchvBtn:"COLLAPSE",
     sellerAchvLabels:{first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command"},
     sellerAchvDesc:{first_sale:"Close your first sale.", first_courier_sale:"Have a sale delivered by a courier.", five_sales:"Close 5 sales.", pockets_full:"List 15 or more items for sale.", good_fences:"Close a single sale worth more than 2,000,000 aUEC.", crafter_confirmed:"List a crafted item with quality 800 or higher.", not_stolen:"Complete the sale of a Colossus bomb.", couldnt_be_bothered:"List an item with no photo.", your_wish:"Accept a client's offer on one of your desired items."},
     sellerRankLabels:{novice:"Novice", trader:"Trader", merchant:"Merchant", tycoon:"Tycoon"}, rankSales:"sales",
@@ -6188,7 +6217,7 @@ function renderShopStats(box, stats){
       <div class="career-stat"><div class="val">${fmt(stats.totalEarned)}</div><div class="lbl">${d.shopTotalEarned}</div></div>
       <div class="career-stat"><div class="val">${stats.salesCount}</div><div class="lbl">${d.shopSalesCount}</div></div>
       <div class="career-stat"><div class="val">${stats.itemsSold}</div><div class="lbl">${d.shopItemsSold}</div></div>
-      <div class="career-stat"><div class="val val-sm">${stats.mostExpensive ? stats.mostExpensive.name + ' ('+fmt(stats.mostExpensive.price)+')' : '—'}</div><div class="lbl">${d.shopMostExpensive}</div></div>
+      <div class="career-stat career-stat-expensive"><div class="val val-sm">${stats.mostExpensive ? stats.mostExpensive.name + ' ('+fmt(stats.mostExpensive.price)+')' : '—'}</div><div class="lbl">${d.shopMostExpensive}</div></div>
       ${upvoteStatHtml}
     </div>
   `;
@@ -6229,10 +6258,17 @@ function renderSellerAchievements(unlockedSet, stats, boxId){
   box.hidden = false;
   const d = T[LANG];
   const salesCount = stats ? stats.salesCount : 0;
+  // Sur la page boutique (desormais à côté des stats, colonne plus étroite), on ajoute un bouton
+  // "voir tout" qui n'apparaît que si les badges ne tiennent pas tous sur une seule ligne — le profil
+  // public (autre boxId) garde l'affichage existant, inchangé.
+  const isShopPage = boxId === 'shopAchvCard';
   box.innerHTML = `
-    <h3 style="margin:0 0 4px;" data-i18n="sellerAchvTitle">${d.sellerAchvTitle}</h3>
+    <div class="shop-achv-head">
+      <h3 style="margin:0;" data-i18n="sellerAchvTitle">${d.sellerAchvTitle}</h3>
+      ${isShopPage ? `<button type="button" class="btn-secondary shop-achv-viewall" id="shopAchvViewAllBtn" onclick="toggleShopAchvExpanded()" hidden>${d.viewAllAchvBtn}</button>` : ''}
+    </div>
     ${sellerRankProgressHtml(salesCount)}
-    <div class="achv-grid">
+    <div class="achv-grid${isShopPage ? ' achv-grid-collapsible' : ''}">
       ${SELLER_ACHIEVEMENTS.map(a => `
         <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-skey="${a.key}" data-tip="${d.sellerAchvDesc[a.key]}">
           ${SELLER_ACHV_ICONS[a.key]}
@@ -6241,7 +6277,35 @@ function renderSellerAchievements(unlockedSet, stats, boxId){
       `).join('')}
     </div>
   `;
+  if(isShopPage){
+    shopAchvExpanded = false;
+    const card = $('shopAchvCard'); if(card) card.classList.remove('achv-expanded');
+    requestAnimationFrame(updateShopAchvViewAllVisibility);
+  }
 }
+let shopAchvExpanded = false;
+let shopAchvHasOverflow = false;
+function updateShopAchvViewAllVisibility(){
+  const grid = document.querySelector('#shopAchvCard .achv-grid-collapsible');
+  const btn = $('shopAchvViewAllBtn');
+  if(!grid || !btn) return;
+  if(!shopAchvExpanded) shopAchvHasOverflow = grid.scrollWidth > grid.clientWidth + 2;
+  btn.hidden = !shopAchvHasOverflow;
+}
+function toggleShopAchvExpanded(){
+  shopAchvExpanded = !shopAchvExpanded;
+  const card = $('shopAchvCard');
+  if(card) card.classList.toggle('achv-expanded', shopAchvExpanded);
+  const btn = $('shopAchvViewAllBtn');
+  if(btn) btn.textContent = shopAchvExpanded ? T[LANG].viewLessAchvBtn : T[LANG].viewAllAchvBtn;
+}
+let shopAchvResizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(shopAchvResizeTimer);
+  shopAchvResizeTimer = setTimeout(() => {
+    if($('shopAchvCard') && !$('shopAchvCard').hidden) updateShopAchvViewAllVisibility();
+  }, 200);
+});
 function announceSellerAchievement(key){
   const d = T[LANG];
   toastShow('🏆 ' + d.achvUnlocked + ' ' + d.sellerAchvLabels[key]);

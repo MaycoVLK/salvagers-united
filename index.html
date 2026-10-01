@@ -657,6 +657,13 @@
   .shop-texture-layer.tex-dots{background-image:radial-gradient(color-mix(in srgb, var(--accent) 18%, transparent) 1.5px, transparent 1.5px); background-size:13px 13px;}
   .shop-texture-layer.tex-scan{background-image:repeating-linear-gradient(0deg, color-mix(in srgb, var(--accent) 14%, transparent) 0px, color-mix(in srgb, var(--accent) 14%, transparent) 1px, transparent 1px, transparent 4px);}
   .shop-texture-layer.tex-grid{background-image:linear-gradient(color-mix(in srgb, var(--accent) 16%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--accent) 16%, transparent) 1px, transparent 1px); background-size:16px 16px;}
+  .shop-texture-layer.tex-diag{background-image:repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 16%, transparent) 0px, color-mix(in srgb, var(--accent) 16%, transparent) 2px, transparent 2px, transparent 11px);}
+  .shop-texture-layer.tex-circuit{background-image:
+      linear-gradient(color-mix(in srgb, var(--accent) 13%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--accent) 13%, transparent) 1px, transparent 1px),
+      radial-gradient(color-mix(in srgb, var(--accent) 32%, transparent) 1.5px, transparent 1.5px);
+    background-size:22px 22px, 22px 22px, 22px 22px;}
+  .shop-texture-layer.tex-noise{background-image:radial-gradient(color-mix(in srgb, var(--accent) 13%, transparent) 1px, transparent 1px), radial-gradient(color-mix(in srgb, var(--accent) 9%, transparent) 1px, transparent 1px); background-size:7px 7px, 17px 17px; background-position:0 0, 4px 6px;}
   .shop-texture-layer.tex-none{background-image:none;}
 
   /* Pastilles de sélection de texture : chacune montre un échantillon miniature du motif réel. */
@@ -669,19 +676,10 @@
   .shop-texture-item .shop-texture-lbl{font-size:.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:.3px;}
   .shop-texture-item.active .shop-texture-lbl{color:var(--accent);}
 
-  /* Aperçu en direct agrandi : reproduit la mise en page réelle de la page boutique (bannière + logo +
-     nom + localisation + description) et ajoute un aperçu factice de la grille d'annonces en dessous,
-     pour que ça ressemble vraiment à la page finale et pas juste à une petite carte isolée. */
+  /* Aperçu en direct agrandi : réutilise les classes réelles de la bannière boutique (.shop-banner-card
+     etc., définies plus bas) pour être fidèle pixel pour pixel à la page réelle, et ajoute un aperçu
+     factice de la grille d'annonces en dessous pour que ça ressemble vraiment à la page finale. */
   .shop-live-preview-frame{border:1px solid var(--border); border-radius:6px; padding:14px; background:var(--panel);}
-  .shop-live-preview{display:flex; flex-direction:column; gap:12px; padding:18px; border-radius:4px;}
-  .shop-live-preview-head{display:flex; align-items:center; gap:14px;}
-  .shop-live-preview-logo{width:68px; height:68px; border-radius:50%; flex:none; border:2px solid var(--accent); background:var(--bg2); display:flex; align-items:center; justify-content:center; overflow:hidden; font-family:'VT323',monospace; font-size:1.7rem; color:var(--accent);}
-  .shop-live-preview-logo img{width:100%; height:100%; object-fit:cover;}
-  .shop-live-preview-id{min-width:0; flex:1;}
-  .shop-live-preview-name{font-family:'VT323',monospace; font-size:1.8rem; color:var(--text); line-height:1.15; word-break:break-word;}
-  .shop-live-preview-loc{display:inline-flex; align-items:center; gap:4px; font-size:.72rem; color:var(--accent); text-transform:uppercase; letter-spacing:.4px; margin-top:4px;}
-  .shop-live-preview-loc .icon{width:11px; height:11px; flex:none;}
-  .shop-live-preview-desc{font-size:.82rem; color:var(--muted); line-height:1.4; max-height:4.2em; overflow:hidden;}
   .shop-live-preview-listings{margin-top:14px;}
   .shop-live-preview-listings-title{font-family:'VT323',monospace; font-size:1.05rem; color:var(--text); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border);}
   .shop-live-preview-fake-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
@@ -760,11 +758,20 @@
   .shop-banner-id{flex:1; min-width:0;}
   .shop-banner-title-row{display:flex; align-items:center; gap:10px;}
   .shop-banner-title-row h1{margin:0; flex:1; min-width:0; font-size:1.9rem; line-height:1.15; word-break:break-word;}
-  .shop-banner-meta{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:10px;}
+  /* Localisation + propriétaire resserrés juste sous le nom, pour que ça se lise comme un sous-titre
+     plutôt que de flotter dans la bannière. Les deux pastilles partagent maintenant le même gabarit. */
+  .shop-banner-meta{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:5px;}
   .shop-banner-meta .shop-loc-tag{margin-top:0;}
-  .shop-banner-meta .shop-owner-box{margin:0;}
+  .shop-banner-meta .shop-owner-box{margin:0; display:inline-flex; align-items:center; width:auto; max-width:none; flex:none;
+    background:none; border:1px solid var(--accent-dim); border-radius:3px; padding:3px 8px; cursor:pointer; transition:border-color .2s;}
+  .shop-banner-meta .shop-owner-box:hover{border-color:var(--accent); transform:none;}
+  .shop-banner-meta .shop-owner-box .courier-box-name{font-family:inherit; font-size:.7rem; color:var(--accent);
+    text-decoration:none; text-transform:uppercase; letter-spacing:.4px; margin:0; line-height:1.3; white-space:nowrap;}
   .shop-banner-row .shop-upvote-btn{flex:none;}
-  .shop-banner-card .shop-description{position:relative; z-index:1; margin:16px 0 0; padding-top:14px; border-top:1px dashed var(--border);}
+  /* Fond semi-opaque derrière la description : sans ça, certaines textures (grille/scanlines) rendent
+     le texte difficile à lire par-dessus. */
+  .shop-banner-card .shop-description{position:relative; z-index:1; margin:16px 0 0; padding:12px 14px;
+    background:color-mix(in srgb, var(--panel) 78%, transparent); border:1px solid var(--border); border-radius:6px;}
   @media (max-width:640px){
     .shop-banner-card{padding:16px;}
     .shop-banner-row{flex-direction:column; align-items:stretch; text-align:center; gap:14px;}
@@ -775,32 +782,28 @@
     .shop-banner-row .shop-upvote-btn{width:100%; justify-content:center;}
   }
 
-  /* --- STATS & SUCCÈS SUR LA PAGE BOUTIQUE : traitement "hero", plus marquant que l'affichage compact
-     du profil public (#pubSellerStatsCard/#pubSellerAchvCard, qu'on ne touche pas ici). --- */
-  #shopStatsCard.shop-stats-card{padding:22px 24px;}
-  #shopStatsCard .career-stats-grid{grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px;}
+  /* --- STATS & SUCCÈS SUR LA PAGE BOUTIQUE : mis en valeur mais compact (#pubSellerStatsCard/#pubSellerAchvCard
+     du profil public gardent leur affichage existant, on ne touche pas à ça ici). --- */
+  #shopStatsCard.shop-stats-card{padding:16px 18px;}
+  #shopStatsCard .career-stats-grid{grid-template-columns:repeat(4,1fr); gap:10px; margin-top:10px;}
   @media (max-width:860px){ #shopStatsCard .career-stats-grid{grid-template-columns:1fr 1fr;} }
   #shopStatsCard .career-stat{background:linear-gradient(165deg, var(--bg2), var(--panel)); border-color:var(--accent-dim);
-    padding:16px 12px; border-radius:6px; transition:border-color .2s, transform .2s;}
+    padding:10px 10px; border-radius:5px; transition:border-color .2s, transform .2s;}
   #shopStatsCard .career-stat:hover{border-color:var(--accent); transform:translateY(-2px);}
-  #shopStatsCard .career-stat .val{font-size:2rem; text-shadow:0 0 14px var(--accent-dim);}
-  #shopStatsCard .career-stat .lbl{margin-top:4px;}
-  #shopAchvCard.shop-progress-card{padding:22px 24px;}
-  #shopAchvCard .rank-track{margin:16px 2px 8px; gap:14px;}
-  #shopAchvCard .rank-track-icon{width:34px; height:34px;}
+  #shopStatsCard .career-stat .val{font-size:1.45rem; text-shadow:0 0 10px var(--accent-dim);}
+  #shopStatsCard .career-stat .val.val-sm{font-size:1.05rem;}
+  #shopStatsCard .career-stat .lbl{margin-top:2px; font-size:.62rem;}
+  #shopAchvCard.shop-progress-card{padding:16px 18px;}
+  #shopAchvCard .rank-track{margin:14px 2px 8px; gap:14px;}
+  #shopAchvCard .rank-track-icon{width:30px; height:30px;}
   #shopAchvCard .rank-track-bar{height:16px;}
   #shopAchvCard .rank-track-rail,#shopAchvCard .rank-track-fill{height:3px; top:6.5px;}
   #shopAchvCard .rank-track-marker{width:13px; height:13px; top:1.5px;}
-  #shopAchvCard .rank-track-label{font-size:.75rem; margin-bottom:12px;}
-  #shopAchvCard .achv-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:12px;}
-  #shopAchvCard .achv-badge{padding:14px 8px; border-radius:8px;}
-  #shopAchvCard .achv-badge svg{width:30px; height:30px;}
-  #shopAchvCard .achv-badge.unlocked{box-shadow:0 0 16px var(--accent-dim);}
-  @media (max-width:480px){
-    #shopStatsCard.shop-stats-card, #shopAchvCard.shop-progress-card{padding:16px;}
-    #shopStatsCard .career-stats-grid{grid-template-columns:1fr 1fr; gap:8px;}
-    #shopAchvCard .achv-grid{grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:8px;}
-  }
+  #shopAchvCard .rank-track-label{font-size:.72rem; margin-bottom:10px;}
+  #shopAchvCard .achv-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:10px;}
+  #shopAchvCard .achv-badge{padding:10px 6px; border-radius:7px;}
+  #shopAchvCard .achv-badge svg{width:26px; height:26px;}
+  #shopAchvCard .achv-badge.unlocked{box-shadow:0 0 14px var(--accent-dim);}
 
   /* --- CARTES D'ANNONCES SUR LA PAGE BOUTIQUE : variante un peu plus premium que les cards génériques
      de la marketplace (photo carrée, glow accent au survol), scoping par id pour ne rien changer ailleurs. --- */
@@ -811,6 +814,34 @@
   #shopListingsGrid .mkt-photo-wrap, #shopListingsGridFull .mkt-photo-wrap{aspect-ratio:1/1;}
   #shopListingsGrid .mkt-item-name, #shopListingsGridFull .mkt-item-name{font-size:1.25rem;}
   #shopListingsGrid .mkt-price, #shopListingsGridFull .mkt-price{font-size:1.5rem; text-shadow:0 0 10px var(--accent-dim);}
+
+  /* --- VERSION MOBILE DE LA PAGE BOUTIQUE : inspirée des profils type réseau social (bannière compacte,
+     stats en bandeau serré, succès en bande défilante horizontale) pour éviter le scroll à rallonge, tout
+     en gardant les mêmes blocs et le même ordre que la version desktop. --- */
+  @media (max-width:640px){
+    #view-seller-shop .card{padding:14px; margin-bottom:14px;}
+    #view-seller-shop .seller-section-card{margin-top:14px;}
+    #view-seller-shop .shop-preview-head{margin-bottom:8px;}
+    #view-seller-shop .shop-preview-head h3{font-size:1rem;}
+    #shopStatsCard.shop-stats-card, #shopAchvCard.shop-progress-card{padding:12px 14px;}
+    #shopStatsCard .career-stats-grid{grid-template-columns:repeat(4,1fr); gap:6px;}
+    #shopStatsCard .career-stat{padding:7px 4px;}
+    #shopStatsCard .career-stat .val{font-size:.92rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    #shopStatsCard .career-stat .lbl{font-size:.5rem; letter-spacing:0; line-height:1.2;}
+    /* La 4e tuile (objet le plus cher) contient du texte variable, pas un chiffre : on lui donne toute
+       la largeur plutôt que de la faire tenir dans une case carrée illisible. */
+    #shopStatsCard .career-stat:nth-child(4){grid-column:1/-1; padding:7px 10px;}
+    #shopStatsCard .career-stat:nth-child(4) .val.val-sm{font-size:.78rem; white-space:normal;}
+    #shopAchvCard .rank-track{margin:10px 2px 6px; gap:10px;}
+    #shopAchvCard .rank-track-icon{width:24px; height:24px;}
+    #shopAchvCard .rank-track-label{font-size:.62rem; margin-bottom:8px;}
+    /* Succès : bande horizontale défilante façon stories/badges de profil, au lieu d'un pavé qui s'étale
+       sur plusieurs lignes et pousse tout le reste de la page plus bas. */
+    #shopAchvCard .achv-grid{display:flex; flex-wrap:nowrap; overflow-x:auto; gap:8px; padding-bottom:4px; -webkit-overflow-scrolling:touch;}
+    #shopAchvCard .achv-badge{flex:0 0 78px; padding:8px 4px;}
+    #shopAchvCard .achv-badge svg{width:22px; height:22px;}
+    #shopAchvCard .achv-badge span{font-size:.56rem;}
+  }
 
   /* --- TABLEAU DE BORD VENDEUR / PAGE BOUTIQUE --- */
   .seller-profile-divider{border-top:1px dashed var(--border); margin:18px 0;}
@@ -1703,16 +1734,25 @@
         <div class="shop-edit-preview-wrap">
           <div class="shop-preview-label" data-i18n="shopPreviewTitle">Aperçu en direct — à quoi ressemblera ta page boutique</div>
           <div class="shop-live-preview-frame">
-            <div class="shop-live-preview shop-texture-host" id="shopLivePreview">
+            <!-- Réutilise exactement la structure/les classes de la vraie bannière boutique (.shop-banner-card
+                 etc.) pour que cet aperçu soit fidèle pixel pour pixel à la page réelle, pas une approximation. -->
+            <div class="shop-banner-card shop-texture-host" id="shopLivePreview" style="margin-bottom:0;">
               <div class="shop-texture-layer"></div>
-              <div class="shop-live-preview-head">
-                <div class="shop-live-preview-logo" id="shopLivePreviewLogo"></div>
-                <div class="shop-live-preview-id">
-                  <div class="shop-live-preview-name" id="shopLivePreviewName">Nom de ta boutique</div>
-                  <div class="shop-live-preview-loc" id="shopLivePreviewLoc" hidden></div>
+              <div class="shop-banner-row">
+                <div class="shop-banner-logo" id="shopLivePreviewLogo"></div>
+                <div class="shop-banner-id">
+                  <div class="shop-banner-title-row">
+                    <h1 id="shopLivePreviewName">Nom de ta boutique</h1>
+                  </div>
+                  <div class="shop-banner-meta">
+                    <div class="shop-loc-tag" id="shopLivePreviewLoc" hidden></div>
+                    <div class="courier-box shop-owner-box">
+                      <div class="courier-box-name" id="shopLivePreviewOwner">—</div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="shop-live-preview-desc" id="shopLivePreviewDesc">La description apparaîtra ici…</div>
+              <div class="shop-description" id="shopLivePreviewDesc">La description apparaîtra ici…</div>
             </div>
             <div class="shop-live-preview-listings">
               <div class="shop-live-preview-listings-title" data-i18n="shopListingsTitle">Objets en vente</div>
@@ -2222,7 +2262,7 @@ const T = {
     shopLocSystemLbl:"Système", shopLocNameLbl:"Lieu (optionnel)", phShopLoc:"ex: Lorville, Area18, Theta Station...",
     shopLogoDropText:"Glisse une image ici, ou clique pour choisir un logo", shopLogoDropHint:"PNG, JPG ou GIF",
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
-    shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille",
+    shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille", shopTextureDiag:"Diagonales", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
     shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
@@ -2366,7 +2406,7 @@ const T = {
     shopLocSystemLbl:"System", shopLocNameLbl:"Location (optional)", phShopLoc:"e.g. Lorville, Area18, Theta Station...",
     shopLogoDropText:"Drop an image here, or click to choose a logo", shopLogoDropHint:"PNG, JPG or GIF",
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
-    shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid",
+    shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid", shopTextureDiag:"Diagonal", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
     shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
@@ -4316,6 +4356,9 @@ const SHOP_TEXTURE_PRESETS = [
   { key:'dots', cls:'tex-dots', nameKey:'shopTextureDots' },
   { key:'scan', cls:'tex-scan', nameKey:'shopTextureScan' },
   { key:'grid', cls:'tex-grid', nameKey:'shopTextureGrid' },
+  { key:'diag', cls:'tex-diag', nameKey:'shopTextureDiag' },
+  { key:'circuit', cls:'tex-circuit', nameKey:'shopTextureCircuit' },
+  { key:'noise', cls:'tex-noise', nameKey:'shopTextureNoise' },
 ];
 const SHOP_TEXTURE_CLASSES = SHOP_TEXTURE_PRESETS.map(t => t.cls);
 const DEFAULT_SHOP_TEXTURE = 'dots';
@@ -4470,10 +4513,9 @@ function updateShopLivePreview(){
   const logoBox = $('shopLivePreviewLogo');
   const logoImgSrc = $('shopLogoPreviewImg') && !$('shopLogoPreviewImg').hidden ? $('shopLogoPreviewImg').src : '';
   if(logoImgSrc){
-    logoBox.innerHTML = `<img src="${logoImgSrc}" alt="">`;
+    logoBox.innerHTML = `<img class="shop-hero-logo-img" src="${logoImgSrc}" alt="">`;
   } else {
-    const initial = (($('shopNameInput') && $('shopNameInput').value.trim()) || '?').trim().charAt(0).toUpperCase();
-    logoBox.textContent = initial || '?';
+    logoBox.innerHTML = roleAnimSvg('seller', 100);
   }
   const locName = $('shopLocName') ? $('shopLocName').value.trim() : '';
   const locSystem = $('shopLocSystem') ? $('shopLocSystem').value : '';
@@ -4484,6 +4526,8 @@ function updateShopLivePreview(){
   } else {
     locTag.hidden = true;
   }
+  const ownerEl = $('shopLivePreviewOwner');
+  if(ownerEl) ownerEl.textContent = d.shopOwnerLbl + (profile ? displayName(profile) : '—');
 }
 // Le dashboard vendeur EST la page boutique (plus de page de gestion séparée) : vu par le propriétaire,
 // openSellerShop() affiche en plus les actions d'édition/gestion (gear d'édition, cartes d'annonces avec
@@ -6144,7 +6188,7 @@ function renderShopStats(box, stats){
       <div class="career-stat"><div class="val">${fmt(stats.totalEarned)}</div><div class="lbl">${d.shopTotalEarned}</div></div>
       <div class="career-stat"><div class="val">${stats.salesCount}</div><div class="lbl">${d.shopSalesCount}</div></div>
       <div class="career-stat"><div class="val">${stats.itemsSold}</div><div class="lbl">${d.shopItemsSold}</div></div>
-      <div class="career-stat"><div class="val" style="font-size:1.1rem;">${stats.mostExpensive ? stats.mostExpensive.name + ' ('+fmt(stats.mostExpensive.price)+')' : '—'}</div><div class="lbl">${d.shopMostExpensive}</div></div>
+      <div class="career-stat"><div class="val val-sm">${stats.mostExpensive ? stats.mostExpensive.name + ' ('+fmt(stats.mostExpensive.price)+')' : '—'}</div><div class="lbl">${d.shopMostExpensive}</div></div>
       ${upvoteStatHtml}
     </div>
   `;

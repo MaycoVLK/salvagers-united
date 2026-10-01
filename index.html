@@ -225,26 +225,38 @@
   .avatar-gear-btn .avatar-fallback{width:100%; height:100%; border-radius:50%; border:2px solid var(--accent);}
   .settings-panel-profile{display:flex; flex-direction:column; gap:4px; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--border);}
   @media (max-width:720px){
-    .app-topbar{grid-template-columns:1fr 1fr; grid-template-areas:"brand actions" "tabs tabs"; row-gap:10px;}
+    .app-topbar{grid-template-columns:1fr auto; grid-template-areas:"brand actions" "tabs tabs"; row-gap:10px; column-gap:8px;}
     .app-topbar .brand-lg{grid-area:brand;}
-    .app-topbar .topbar-actions{grid-area:actions;}
+    .app-topbar .topbar-actions{grid-area:actions; flex-wrap:nowrap;}
     .admin-view-bar{grid-area:tabs; justify-self:stretch; justify-content:flex-start;}
     .admin-view-bar .admin-view-btn{flex:1 1 0; min-width:0; padding:13px 8px;}
     .page-title-lg{font-size:1.35rem; white-space:normal; overflow:visible; text-overflow:clip; word-break:break-word; line-height:1.25;}
     /* Le logo "COURIERS UNITED" était dimensionné pour desktop (icône 180px + texte 2.6rem) : sur mobile,
        cette largeur réservée dépassait la colonne de gauche de la barre du haut et venait recouvrir/être
-       recouverte par le bouton CRÉER. On le réduit ici pour qu'il tienne dans sa colonne. */
+       recouverte par le bouton CRÉER. On le réduit ici pour qu'il tienne dans sa colonne.
+       La colonne "brand" est passée de 1fr (moitié fixe, partagée à égalité avec les actions) à 1fr sur une
+       grille "1fr auto" : les actions (CRÉER / en ligne / messages / avatar) ne réservent que leur largeur
+       réelle, et le logo récupère tout le reste — fini le texte tronqué en "COURI". */
     .app-topbar .brand-lg{min-width:0; max-width:100%; overflow:hidden;}
-    .logo-icon-wrap-header{transform:none; margin-right:0;}
-    .logo-anim-header{width:42px;}
-    .logo-wordmark-header .lw-main{font-size:1.3rem; letter-spacing:.5px;}
-    .logo-wordmark-header .lw-sub{font-size:.68rem; letter-spacing:1.5px; margin-top:1px;}
+    .logo-icon-wrap-header{transform:none; margin-right:0; flex:none;}
+    .logo-anim-header{width:34px;}
+    .logo-wordmark-header{min-width:0; overflow:hidden;}
+    .logo-wordmark-header .lw-main{font-size:1.15rem; letter-spacing:.3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .logo-wordmark-header .lw-sub{font-size:.62rem; letter-spacing:1.2px; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
     .msg-overlay:not([hidden]){display:block;}
   }
   @media (max-width:480px){
     .admin-view-bar{gap:5px;}
     .admin-view-bar .admin-view-btn{padding:13px 4px; font-size:.92rem; letter-spacing:.4px;}
     .page-title-lg{font-size:1.15rem;}
+    .logo-anim-header{width:30px;}
+    .logo-wordmark-header .lw-main{font-size:1rem;}
+    .logo-wordmark-header .lw-sub{font-size:.56rem; letter-spacing:1px;}
+    .topbar-actions{gap:5px;}
+    .topbar-actions .btn-primary, .topbar-actions .online-badge-btn{padding:0 9px; height:36px; font-size:.85rem;}
+    .topbar-actions .btn-primary .icon, .topbar-actions .online-badge-btn .icon{width:13px; height:13px;}
+    .topbar-actions .gear-btn, .topbar-actions .messages-btn, .topbar-actions .avatar-gear-btn{width:34px; height:34px;}
+    .topbar-actions .avatar-gear-btn .avatar-wrap{width:34px; height:34px;}
   }
   .gear-wrap{position:relative;}
   .create-wrap{position:relative;}
@@ -450,6 +462,11 @@
   /* "Derniers objets en vente" côté client : cartes plus petites et nombre de colonnes qui s'adapte
      automatiquement à la largeur d'écran, au lieu d'un nombre de colonnes fixe. */
   #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid, #myListingsList.marketplace-grid, #myListingsListFull.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
+  /* Sur mobile, minmax(210px,1fr) ne laisse jamais la place à 2 colonnes (2x210px > largeur d'écran dispo),
+     donc les cartes s'affichaient en une seule colonne pleine largeur. On force une grille 2x2 sous 640px. */
+  @media (max-width:640px){
+    #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid, #myListingsList.marketplace-grid, #myListingsListFull.marketplace-grid{grid-template-columns:1fr 1fr; gap:8px;}
+  }
   .mkt-toolbar{display:flex; align-items:center; gap:10px; margin:2px 0 16px; flex-wrap:wrap;}
   .mkt-search-input{flex:1; min-width:160px; width:auto;}
   .mkt-filter-wrap{flex:0 0 auto;}
@@ -6217,6 +6234,9 @@ function initNotifSounds(){
 }
 function playNotifSound(category){
   if(!notifSoundEnabled) return;
+  // Pas de son pour les nouvelles annonces marketplace (la pastille rouge suffit) : on garde le son
+  // uniquement pour les nouveaux messages (chat) et les nouvelles livraisons à traiter (coursiers).
+  if(category === 'client_new_listing') return;
   const el = category === 'courier_pending' ? sndOrderEl : sndMsgEl;
   if(!el) return;
   try{

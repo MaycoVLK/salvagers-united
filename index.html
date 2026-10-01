@@ -1377,6 +1377,8 @@
         <h3 data-i18n="achvTitle">Succès</h3>
         <div id="pubAchvGrid"></div>
       </div>
+      <div class="card" id="pubSellerStatsCard" hidden></div>
+      <div class="card" id="pubSellerAchvCard" hidden></div>
       <div class="card" id="pubShopCard" hidden>
         <div class="shop-preview-head">
           <h3 id="pubShopName">Ma boutique</h3>
@@ -6352,6 +6354,8 @@ async function openPublicProfile(id){
   $('pubCareerStatsCard').hidden = true;
   $('pubAchvCard').hidden = true;
   $('pubShopCard').hidden = true;
+  $('pubSellerStatsCard').hidden = true;
+  $('pubSellerAchvCard').hidden = true;
   const achvGrid = $('pubAchvGrid');
   const isCourierLike = (p.is_courier || p.role === 'admin');
   if(isCourierLike){
@@ -6386,6 +6390,15 @@ async function openPublicProfile(id){
     } else {
       previewGrid.innerHTML = `<p class="muted" style="grid-column:1/-1;">${d.shopPageEmpty}</p>`;
     }
+    // La progression/les succès vendeur n'étaient affichés que sur la page boutique (openSellerShop), jamais
+    // sur la fiche profil — d'où l'impression qu'une vente complétée "ne donnait rien" alors que le succès
+    // était en réalité bien débloqué en base. On réutilise ici exactement la même logique que la boutique.
+    const sellerStats = await fetchSellerShopStats(id);
+    renderShopStats($('pubSellerStatsCard'), sellerStats);
+    $('pubSellerStatsCard').hidden = false;
+    const unlockedSellerSet = await fetchUnlockedSellerAchievements(id);
+    renderSellerAchievements(unlockedSellerSet, sellerStats, 'pubSellerAchvCard');
+    if(session && session.user.id === id) checkAndRenderSellerAchievements('pubSellerAchvCard');
   }
   $('pubAdminActions').hidden = !(profile && profile.role === 'admin');
 }

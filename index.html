@@ -264,14 +264,23 @@
   .crate-fx-layer.run .crate-fx-line{animation-name:crateLineMove; animation-timing-function:linear; animation-fill-mode:forwards;}
   .crate-fx-box{position:absolute; left:50%; top:50%; width:17px; height:17px; opacity:0; color:var(--accent); filter:drop-shadow(0 0 3px var(--accent));}
   .crate-fx-box svg{display:block; width:100%; height:100%;}
-  .crate-fx-layer.run .crate-fx-lines{animation:crateLinesFade 1s ease forwards;}
-  .crate-fx-layer.run .crate-fx-box{animation:crateLevitate 1s cubic-bezier(.3,.6,.2,1) forwards;}
+  .crate-fx-layer.run:not(.fx-off) .crate-fx-lines{animation:crateLinesFade 1s ease forwards;}
+  .crate-fx-layer.run:not(.fx-off) .crate-fx-box{animation:crateLevitate 1s cubic-bezier(.3,.6,.2,1) forwards;}
+  .crate-fx-layer.run.fx-off .crate-fx-box{animation:crateCrossLevitate 1s cubic-bezier(.3,.6,.2,1) forwards;}
   @keyframes crateLevitate{
-    0%{ opacity:0; transform:translate(-50%,-50%) translateY(8px) scale(.6); }
-    18%{ opacity:.9; transform:translate(-50%,-50%) translateY(-5px) scale(1); }
-    50%{ opacity:.9; transform:translate(-50%,-50%) translateY(-8px) scale(1); }
-    80%{ opacity:.8; transform:translate(-50%,-50%) translateY(-10px) scale(1); }
-    100%{ opacity:0; transform:translate(-50%,-50%) translateY(-16px) scale(.85); }
+    0%{ opacity:0; transform:translate(-50%,-50%) translate(0,8px) scale(.6); }
+    18%{ opacity:.9; transform:translate(-50%,-50%) translate(-4px,-5px) scale(1); }
+    38%{ opacity:.9; transform:translate(-50%,-50%) translate(4px,-8px) scale(1); }
+    58%{ opacity:.9; transform:translate(-50%,-50%) translate(-4px,-6px) scale(1); }
+    80%{ opacity:.8; transform:translate(-50%,-50%) translate(4px,-10px) scale(1); }
+    100%{ opacity:0; transform:translate(-50%,-50%) translate(0,-16px) scale(.85); }
+  }
+  @keyframes crateCrossLevitate{
+    0%{ opacity:0; transform:translate(-50%,-50%) translateY(8px) scale(.5) rotate(0deg); }
+    20%{ opacity:.9; transform:translate(-50%,-50%) translateY(-6px) scale(1) rotate(8deg); }
+    50%{ opacity:.9; transform:translate(-50%,-50%) translateY(-10px) scale(1) rotate(-8deg); }
+    80%{ opacity:.8; transform:translate(-50%,-50%) translateY(-8px) scale(1) rotate(5deg); }
+    100%{ opacity:0; transform:translate(-50%,-50%) translateY(-18px) scale(.7) rotate(0deg); }
   }
   @keyframes crateLinesFade{
     0%{ opacity:0; } 15%{ opacity:.6; } 78%{ opacity:.4; } 100%{ opacity:0; }
@@ -5837,51 +5846,51 @@ function renderCourierAvailToggle(){
 }
 async function toggleAvailForDelivery(btnEl){
   if(!session || !profile) return;
-  playCrateFx(btnEl);
   const newVal = !profile.available_for_delivery;
+  playCrateFx(btnEl, newVal);
   const { error } = await sb.from('profiles').update({ available_for_delivery: newVal }).eq('id', session.user.id);
   if(error){ alert('Erreur : '+error.message); return; }
   profile.available_for_delivery = newVal;
   renderCourierAvailToggle();
 }
 
-// --- FX "flèche" monochrome + lignes de vitesse (clic sur le toggle disponibilité coursier) ---
+// --- FX "flèche" monochrome + lignes de vitesse (devenir disponible) / "croix" qui lévite (devenir indisponible) ---
 const CRATE_FX_HEIGHT = 34;
 const CRATE_FX_TRIANGLE = `<polygon points="1,1 9,5 1,9" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>`;
-let crateFxBuilt = false;
+const CRATE_FX_CROSS = `<g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1.5" y1="1.5" x2="8.5" y2="8.5"/><line x1="8.5" y1="1.5" x2="1.5" y2="8.5"/></g>`;
 let crateFxTimer = null;
 function buildCrateFxLines(container, widthPx){
   if(!container) return;
   container.innerHTML = '';
   const travel = Math.max(widthPx * 1.3, 60);
-  const count = 10;
+  const count = 18;
   for(let i = 0; i < count; i++){
     const el = document.createElement('div');
     el.className = 'crate-fx-line';
-    el.style.top = Math.round(6 + Math.random() * 82) + '%';
-    el.style.width = Math.round(16 + Math.random() * 26) + '%';
-    el.style.opacity = (0.35 + Math.random() * 0.5).toFixed(2);
+    el.style.top = Math.round(4 + Math.random() * 88) + '%';
+    el.style.width = Math.round(14 + Math.random() * 26) + '%';
+    el.style.opacity = (0.3 + Math.random() * 0.5).toFixed(2);
     el.style.setProperty('--travel', travel + 'px');
-    el.style.animationDuration = (0.55 + Math.random() * 0.35).toFixed(2) + 's';
-    el.style.animationDelay = (Math.random() * 0.12).toFixed(2) + 's';
+    el.style.animationDuration = (0.5 + Math.random() * 0.4).toFixed(2) + 's';
+    el.style.animationDelay = (Math.random() * 0.15).toFixed(2) + 's';
     container.appendChild(el);
   }
 }
-function playCrateFx(btnEl){
+function playCrateFx(btnEl, turningOn){
   const layer = $('crateFxLayer'); if(!layer) return;
-  if(!crateFxBuilt){
-    const g = $('crateFxBoxG');
-    if(g) g.innerHTML = CRATE_FX_TRIANGLE;
-    crateFxBuilt = true;
-  }
+  const g = $('crateFxBoxG');
+  if(g) g.innerHTML = turningOn ? CRATE_FX_TRIANGLE : CRATE_FX_CROSS;
+  const linesBox = $('crateFxLines');
   const rect = btnEl && btnEl.getBoundingClientRect ? btnEl.getBoundingClientRect() : null;
   if(rect){
     layer.style.width = rect.width + 'px';
     layer.style.height = CRATE_FX_HEIGHT + 'px';
     layer.style.left = rect.left + 'px';
     layer.style.top = (rect.top - CRATE_FX_HEIGHT - 6) + 'px';
-    buildCrateFxLines($('crateFxLines'), rect.width);
+    if(turningOn) buildCrateFxLines(linesBox, rect.width);
   }
+  if(!turningOn && linesBox) linesBox.innerHTML = '';
+  layer.classList.toggle('fx-off', !turningOn);
   layer.hidden = false;
   layer.classList.remove('run'); void layer.offsetWidth; layer.classList.add('run');
   clearTimeout(crateFxTimer);

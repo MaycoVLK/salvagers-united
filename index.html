@@ -535,6 +535,8 @@
   .notif-dot.show{display:block;}
   @keyframes notifPulse{0%,100%{transform:scale(1); opacity:1;} 50%{transform:scale(1.35); opacity:.75;}}
   .inquiry-row .inquiry-meta{font-size:.72rem; color:var(--muted); margin-bottom:6px;}
+  .inquiry-row .inquiry-courier-assigned{color:var(--accent);}
+  .inquiry-row .inquiry-courier-assigned strong{color:var(--text);}
   .inquiry-row .inquiry-msg{font-size:.82rem; color:var(--text); background:var(--bg2); border-radius:4px; padding:8px 10px; margin-bottom:8px; white-space:pre-wrap;}
   .inquiry-row .inquiry-actions{display:flex; gap:6px; flex-wrap:wrap;}
   .inquiry-row .inquiry-actions button{width:auto; flex:none; font-size:.72rem; padding:8px 10px;}
@@ -2042,6 +2044,7 @@ const T = {
     inquiryAcceptedNotif:"🎉 Le vendeur a accepté ta demande !", inquiryRejectedNotif:"Le vendeur a refusé ta demande.",
     inquiryFrom:"De la part de : ", inquiryDeliveryVia:"Via : ", pickupDoneNote:"Objet récupéré en main propre.",
     waitingCourierHandoff:"En attente que le vendeur remette l'objet à un coursier.",
+    assignedCourierLbl:"Coursier assigné :",
     buyerRequestDeliveryBtn:"DEMANDER UNE LIVRAISON PAR COURSIER", buyerDeliveryRequestedNote:"Livraison par coursier demandée — en attente de la réponse du vendeur.", sellerDeliveryWantedNote:"🚚 Le client souhaite une livraison par coursier.",
     bootLogin:["COURIERS UNITED — AUTHENTIFICATION","VÉRIFICATION IDENTITÉ DISCORD.......OK","CHARGEMENT DU PROFIL................OK"],
     bootClient:["CHARGEMENT MODULE CLIENT.SYS.........OK","SYNCHRONISATION DES COMMANDES........OK"],
@@ -2177,6 +2180,7 @@ const T = {
     inquiryAcceptedNotif:"🎉 The seller accepted your request!", inquiryRejectedNotif:"The seller rejected your request.",
     inquiryFrom:"From: ", inquiryDeliveryVia:"Via: ", pickupDoneNote:"Item picked up in person.",
     waitingCourierHandoff:"Waiting for the seller to hand the item to a courier.",
+    assignedCourierLbl:"Assigned courier:",
     buyerRequestDeliveryBtn:"REQUEST A COURIER DELIVERY", buyerDeliveryRequestedNote:"Courier delivery requested — waiting on the seller's response.", sellerDeliveryWantedNote:"🚚 The buyer would like a courier delivery.",
     bootLogin:["COURIERS UNITED — AUTHENTICATION","CHECKING DISCORD IDENTITY...........OK","LOADING PROFILE.....................OK"],
     bootClient:["LOADING MODULE CLIENT.SYS............OK","SYNCING ORDERS.......................OK"],
@@ -2643,12 +2647,18 @@ async function renderMsgThreadItems(g){
   const offItems = g.items.filter(it => it.__kind === 'offer_received' || it.__kind === 'offer_sent');
   const listingIds = [...new Set(inqItems.map(r=>r.listing_id).filter(Boolean))];
   const requestIds = [...new Set(offItems.map(r=>r.request_id).filter(Boolean))];
-  const [listings, requests] = await Promise.all([
+  const orderIds = [...new Set(inqItems.map(r=>r.order_id).filter(Boolean))];
+  const [listings, requests, orders] = await Promise.all([
     listingIds.length ? sb.from('marketplace_listings').select('*').in('id', listingIds).then(r=>r.data||[]) : Promise.resolve([]),
-    requestIds.length ? sb.from('resource_requests').select('id,item_name,quantity').in('id', requestIds).then(r=>r.data||[]) : Promise.resolve([])
+    requestIds.length ? sb.from('resource_requests').select('id,item_name,quantity').in('id', requestIds).then(r=>r.data||[]) : Promise.resolve([]),
+    orderIds.length ? sb.from('orders').select('id,status,courier_id').in('id', orderIds).then(r=>r.data||[]) : Promise.resolve([])
   ]);
   const lMap={}; listings.forEach(l=>lMap[l.id]=l);
   const rMap={}; requests.forEach(r=>rMap[r.id]=r);
+  const orderMap={}; orders.forEach(o=>orderMap[o.id]=o);
+  const courierIds = [...new Set(orders.map(o=>o.courier_id).filter(Boolean))];
+  const couriers = courierIds.length ? await sb.from('profiles').select('id,discord_username,rsi_handle').in('id', courierIds).then(r=>r.data||[]) : [];
+  const courierMap={}; couriers.forEach(c=>courierMap[c.id]=c);
   // "Clear" (voir clearMsgConversation) vide RÉELLEMENT l'intérieur de CETTE conversation, sans jamais la
   // faire disparaître de la liste de messagerie : on ne filtre que l'affichage des éléments (on ne les
   // supprime jamais en base). Tout élément créé avant l'instant du clear reste masqué pour de bon, même s'il
@@ -2658,13 +2668,17 @@ async function renderMsgThreadItems(g){
   const sorted = visibleItems.slice().sort((a,b)=> new Date(a.created_at)-new Date(b.created_at));
   const d = T[LANG];
   box.innerHTML = sorted.length ? sorted.map(it => {
-    if(it.__kind === 'inq_received' || it.__kind === 'inq_sent') return inquiryThreadItemHtml(it, it.__kind === 'inq_received', lMap[it.listing_id]);
+    if(it.__kind === 'inq_received' || it.__kind === 'inq_sent') return inquiryThreadItemHtml(it, it.__kind === 'inq_received', lMap[it.listing_id], orderMap[it.order_id], courierMap);
     return offerThreadItemHtml(it, it.__kind === 'offer_received', rMap[it.request_id]);
   }).join('') : `<p class="muted">${d.msgThreadCleared}</p>`;
   animateShipTracks(box);
 }
-function inquiryThreadItemHtml(r, iAmSeller, listing){
+function inquiryThreadItemHtml(r, iAmSeller, listing, order, courierMap){
   const d = T[LANG];
+  const assignedCourier = (order && order.courier_id && courierMap) ? courierMap[order.courier_id] : null;
+  const courierHandoffLine = assignedCourier
+    ? `<div class="inquiry-meta inquiry-courier-assigned">${d.assignedCourierLbl} <strong>${assignedCourier.rsi_handle || assignedCourier.discord_username || '—'}</strong></div>`
+    : `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
   let priceLine = '';
   const isTerminal = ['completed','rejected','cancelled'].includes(r.status);
   if(isTerminal){
@@ -2699,7 +2713,7 @@ function inquiryThreadItemHtml(r, iAmSeller, listing){
       actions = `<div class="inquiry-meta">${d.waitingBuyerResponse}</div>`;
     } else if(r.status === 'accepted'){
       if(r.order_id){
-        actions = `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
+        actions = courierHandoffLine;
       } else {
         actions = `<div class="inquiry-actions">
           <button class="btn-secondary" onclick="markPickedUp('${r.id}')">${d.markPickedUpBtn}</button>
@@ -2726,7 +2740,7 @@ function inquiryThreadItemHtml(r, iAmSeller, listing){
         <button class="btn-logout" onclick="buyerRejectCounter('${r.id}')">${d.rejectCounterBtn}</button>
       </div>`;
     } else if(r.status === 'accepted' && r.order_id){
-      actions = `<div class="inquiry-meta">${d.waitingCourierHandoff}</div>`;
+      actions = courierHandoffLine;
     }
     // Contrairement aux commandes classiques, le coursier n'achète jamais l'objet sur une vente marketplace
     // (il ne fait que la transporter) : l'acheteur peut donc annuler à tout moment tant que la vente n'a pas

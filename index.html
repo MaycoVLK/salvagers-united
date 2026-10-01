@@ -461,11 +461,11 @@
   @media (min-width:960px){ .marketplace-grid{grid-template-columns:1fr 1fr 1fr;} }
   /* "Derniers objets en vente" côté client : cartes plus petites et nombre de colonnes qui s'adapte
      automatiquement à la largeur d'écran, au lieu d'un nombre de colonnes fixe. */
-  #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid, #myListingsList.marketplace-grid, #myListingsListFull.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
+  #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
   /* Sur mobile, minmax(210px,1fr) ne laisse jamais la place à 2 colonnes (2x210px > largeur d'écran dispo),
      donc les cartes s'affichaient en une seule colonne pleine largeur. On force une grille 2x2 sous 640px. */
   @media (max-width:640px){
-    #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid, #myListingsList.marketplace-grid, #myListingsListFull.marketplace-grid{grid-template-columns:1fr 1fr; gap:8px;}
+    #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid{grid-template-columns:1fr 1fr; gap:8px;}
   }
   .mkt-toolbar{display:flex; align-items:center; gap:10px; margin:2px 0 16px; flex-wrap:wrap;}
   .mkt-search-input{flex:1; min-width:160px; width:auto;}
@@ -699,6 +699,8 @@
   .shop-preview-head{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
   .shop-preview-head h3{margin:0;}
   .shop-see-more{width:auto; flex:none; font-size:.72rem; padding:8px 12px; white-space:nowrap;}
+  .shop-section-head-actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .shop-quick-add{width:auto; flex:none; font-size:.72rem; padding:8px 12px; white-space:nowrap;}
   .shop-preview-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:10px;}
   .shop-preview-card{cursor:pointer; border:1px solid var(--border); border-radius:4px; background:var(--bg2); overflow:hidden; transition:border-color .2s, transform .2s;}
   .shop-preview-card:hover{border-color:var(--accent); transform:translateY(-1px);}
@@ -741,6 +743,74 @@
     50%{opacity:1;}
     100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.3); opacity:0;}
   }
+
+  /* --- BANNIÈRE DE BOUTIQUE (page boutique = aussi le dashboard du vendeur, plus de page séparée) ---
+     Logo | nom + localisation + propriétaire | upvote, le tout sur la texture choisie par le vendeur. */
+  .shop-banner-card{position:relative; padding:26px; margin-bottom:22px; border-radius:8px;
+    background:linear-gradient(165deg, var(--panel), var(--bg2)); border:1px solid var(--accent-dim);
+    box-shadow:0 0 0 1px var(--border) inset, 0 20px 46px -22px rgba(0,0,0,.6), 0 0 28px -14px var(--accent-dim);}
+  .shop-banner-card::before,.shop-banner-card::after{content:""; position:absolute; width:14px; height:14px; border:2px solid var(--accent); opacity:.85; z-index:1;}
+  .shop-banner-card::before{top:0; left:0; border-right:none; border-bottom:none;}
+  .shop-banner-card::after{bottom:0; right:0; border-left:none; border-top:none;}
+  .shop-banner-row{display:flex; align-items:center; gap:22px; position:relative; z-index:1;}
+  .shop-banner-logo{width:104px; height:104px; flex:none; border-radius:10px; background:var(--bg2);
+    border:2px solid var(--accent); color:var(--accent); display:flex; align-items:center; justify-content:center;
+    overflow:hidden; padding:14px; box-shadow:0 0 18px var(--accent-dim);}
+  .shop-banner-logo svg{width:100%; height:100%;}
+  .shop-banner-id{flex:1; min-width:0;}
+  .shop-banner-title-row{display:flex; align-items:center; gap:10px;}
+  .shop-banner-title-row h1{margin:0; flex:1; min-width:0; font-size:1.9rem; line-height:1.15; word-break:break-word;}
+  .shop-banner-meta{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:10px;}
+  .shop-banner-meta .shop-loc-tag{margin-top:0;}
+  .shop-banner-meta .shop-owner-box{margin:0;}
+  .shop-banner-row .shop-upvote-btn{flex:none;}
+  .shop-banner-card .shop-description{position:relative; z-index:1; margin:16px 0 0; padding-top:14px; border-top:1px dashed var(--border);}
+  @media (max-width:640px){
+    .shop-banner-card{padding:16px;}
+    .shop-banner-row{flex-direction:column; align-items:stretch; text-align:center; gap:14px;}
+    .shop-banner-logo{width:76px; height:76px; padding:10px; margin:0 auto;}
+    .shop-banner-title-row{justify-content:center;}
+    .shop-banner-title-row h1{flex:none; font-size:1.4rem; text-align:center;}
+    .shop-banner-meta{justify-content:center;}
+    .shop-banner-row .shop-upvote-btn{width:100%; justify-content:center;}
+  }
+
+  /* --- STATS & SUCCÈS SUR LA PAGE BOUTIQUE : traitement "hero", plus marquant que l'affichage compact
+     du profil public (#pubSellerStatsCard/#pubSellerAchvCard, qu'on ne touche pas ici). --- */
+  #shopStatsCard.shop-stats-card{padding:22px 24px;}
+  #shopStatsCard .career-stats-grid{grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px;}
+  @media (max-width:860px){ #shopStatsCard .career-stats-grid{grid-template-columns:1fr 1fr;} }
+  #shopStatsCard .career-stat{background:linear-gradient(165deg, var(--bg2), var(--panel)); border-color:var(--accent-dim);
+    padding:16px 12px; border-radius:6px; transition:border-color .2s, transform .2s;}
+  #shopStatsCard .career-stat:hover{border-color:var(--accent); transform:translateY(-2px);}
+  #shopStatsCard .career-stat .val{font-size:2rem; text-shadow:0 0 14px var(--accent-dim);}
+  #shopStatsCard .career-stat .lbl{margin-top:4px;}
+  #shopAchvCard.shop-progress-card{padding:22px 24px;}
+  #shopAchvCard .rank-track{margin:16px 2px 8px; gap:14px;}
+  #shopAchvCard .rank-track-icon{width:34px; height:34px;}
+  #shopAchvCard .rank-track-bar{height:16px;}
+  #shopAchvCard .rank-track-rail,#shopAchvCard .rank-track-fill{height:3px; top:6.5px;}
+  #shopAchvCard .rank-track-marker{width:13px; height:13px; top:1.5px;}
+  #shopAchvCard .rank-track-label{font-size:.75rem; margin-bottom:12px;}
+  #shopAchvCard .achv-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:12px;}
+  #shopAchvCard .achv-badge{padding:14px 8px; border-radius:8px;}
+  #shopAchvCard .achv-badge svg{width:30px; height:30px;}
+  #shopAchvCard .achv-badge.unlocked{box-shadow:0 0 16px var(--accent-dim);}
+  @media (max-width:480px){
+    #shopStatsCard.shop-stats-card, #shopAchvCard.shop-progress-card{padding:16px;}
+    #shopStatsCard .career-stats-grid{grid-template-columns:1fr 1fr; gap:8px;}
+    #shopAchvCard .achv-grid{grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:8px;}
+  }
+
+  /* --- CARTES D'ANNONCES SUR LA PAGE BOUTIQUE : variante un peu plus premium que les cards génériques
+     de la marketplace (photo carrée, glow accent au survol), scoping par id pour ne rien changer ailleurs. --- */
+  #shopListingsGrid .mkt-card, #shopListingsGridFull .mkt-card{border-radius:8px;
+    background:linear-gradient(175deg, var(--bg2), var(--panel)); transition:border-color .2s, transform .2s, box-shadow .2s;}
+  #shopListingsGrid .mkt-card:hover, #shopListingsGridFull .mkt-card:hover{border-color:var(--accent); transform:translateY(-3px);
+    box-shadow:0 14px 30px -16px rgba(0,0,0,.6), 0 0 0 1px var(--accent-dim);}
+  #shopListingsGrid .mkt-photo-wrap, #shopListingsGridFull .mkt-photo-wrap{aspect-ratio:1/1;}
+  #shopListingsGrid .mkt-item-name, #shopListingsGridFull .mkt-item-name{font-size:1.25rem;}
+  #shopListingsGrid .mkt-price, #shopListingsGridFull .mkt-price{font-size:1.5rem; text-shadow:0 0 10px var(--accent-dim);}
 
   /* --- TABLEAU DE BORD VENDEUR / PAGE BOUTIQUE --- */
   .seller-profile-divider{border-top:1px dashed var(--border); margin:18px 0;}
@@ -1504,60 +1574,6 @@
       </div>
     </section>
 
-    <!-- DASHBOARD VENDEUR -->
-    <section id="view-seller-dash" hidden>
-      <div id="sellerBlocked" class="card" hidden>
-        <p data-i18n="notSeller">Ton compte n'a pas encore le rôle vendeur. Contacte l'administrateur pour être ajouté.</p>
-      </div>
-      <div id="sellerDash" hidden>
-        <div class="card seller-header-card">
-          <div class="seller-header-left">
-            <div class="seller-header-logo" id="sellerDashHeroIcon"></div>
-          </div>
-          <div class="seller-header-right">
-            <div class="shop-hero-text shop-preview-head">
-              <h1 id="sellerDashShopName">—</h1>
-              <button class="gear-btn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique">
-                <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                  <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
-                  <rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/>
-                  <rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/>
-                </g></svg>
-              </button>
-            </div>
-            <div class="shop-description" id="sellerDashDescription" hidden></div>
-            <button type="button" class="btn-secondary" onclick="openSellerShop(session.user.id)">
-              <span data-i18n="viewMyShopBtn">VOIR MA BOUTIQUE</span>
-            </button>
-            <div class="seller-header-stats-row">
-              <div id="sellerDashStatsCard"></div>
-              <div class="seller-profile-divider"></div>
-              <div id="sellerDashAchvCard"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card seller-section-card">
-          <div class="shop-preview-head">
-            <h3 data-i18n="myListingsTitle">MES ANNONCES</h3>
-            <button type="button" class="btn-secondary shop-see-more" id="sellerListingsViewMoreBtn" onclick="openSellerAllListings()" hidden>
-              <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
-            </button>
-          </div>
-          <div id="myListingsList" class="marketplace-grid"></div>
-        </div>
-
-        <div class="card seller-section-card">
-          <div class="shop-preview-head">
-            <h3 data-i18n="myResourceRequestsTitle">OBJETS RECHERCHÉS</h3>
-            <button type="button" class="btn-secondary shop-see-more" id="sellerRequestsViewMoreBtn" onclick="openSellerAllRequests()" hidden>
-              <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
-            </button>
-          </div>
-          <div id="myResourceRequestsList" class="resource-request-grid"></div>
-        </div>
-      </div>
-    </section>
 
     <!-- CRÉATION D'ANNONCE (page dédiée) -->
     <section id="view-seller-create-listing" hidden>
@@ -1615,20 +1631,6 @@
           <span data-i18n="submitResourceRequestBtn">PUBLIER L'ANNONCE</span>
         </button>
       </div>
-    </section>
-
-    <!-- TOUTES MES ANNONCES (page dédiée) -->
-    <section id="view-seller-all-listings" hidden>
-      <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
-      <header><h1 data-i18n="myListingsTitle">Mes annonces</h1></header>
-      <div id="myListingsListFull" class="marketplace-grid"></div>
-    </section>
-
-    <!-- TOUTES MES DEMANDES DE RESSOURCES (page dédiée) -->
-    <section id="view-seller-all-resources" hidden>
-      <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
-      <header><h1 data-i18n="myResourceRequestsTitle">Objets recherchés</h1></header>
-      <div id="myResourceRequestsListFull" class="resource-request-grid"></div>
     </section>
 
     <!-- MODIFICATION DE LA BOUTIQUE (nom, couleur) -->
@@ -1724,58 +1726,75 @@
       </div>
     </section>
 
-    <!-- BOUTIQUE PUBLIQUE D'UN VENDEUR -->
+    <!-- BOUTIQUE D'UN VENDEUR : vue publique pour tout le monde, et dashboard de gestion pour le
+         propriétaire (mêmes données, mêmes réglages visuels — plus de page de gestion séparée en double). -->
     <section id="view-seller-shop" hidden>
       <button class="back" onclick="closeSellerShop()" data-i18n="back">&lt; RETOUR</button>
-      <div class="card seller-header-card shop-texture-host" id="shopHeaderCard">
-        <div class="shop-texture-layer"></div>
-        <div class="seller-header-left">
-          <div class="seller-header-logo" id="shopHeroIcon"></div>
-        </div>
-        <div class="seller-header-right">
-          <div class="shop-hero-text">
-            <h1 id="shopPageTitle">—</h1>
-            <div class="shop-loc-tag" id="shopLocTag" hidden></div>
-            <div class="shop-header-actions">
-              <div class="courier-box shop-owner-box" id="shopOwnerBox" onclick="openPublicProfile(shopViewingSellerId)">
-                <div class="courier-box-name" id="shopOwnerName">—</div>
+      <div id="sellerBlocked" class="card" hidden>
+        <p data-i18n="notSeller">Ton compte n'a pas encore le rôle vendeur. Contacte l'administrateur pour être ajouté.</p>
+      </div>
+      <div id="shopMainContent">
+        <div class="shop-banner-card shop-texture-host" id="shopHeaderCard">
+          <div class="shop-texture-layer"></div>
+          <div class="shop-banner-row">
+            <div class="shop-banner-logo" id="shopHeroIcon"></div>
+            <div class="shop-banner-id">
+              <div class="shop-banner-title-row">
+                <h1 id="shopPageTitle">—</h1>
+                <button type="button" class="gear-btn shop-edit-gear-btn" id="shopEditGearBtn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique" hidden>
+                  <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                    <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
+                    <rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/>
+                    <rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/>
+                  </g></svg>
+                </button>
               </div>
-              <button type="button" class="shop-upvote-btn" id="shopUpvoteBtn" onclick="toggleShopUpvote()">
-                <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                  <rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/>
-                </g></svg>
-                <span class="shop-upvote-label" data-i18n="upvoteBtn">UPVOTE</span>
-                <span class="shop-upvote-count" id="shopUpvoteCount">0</span>
+              <div class="shop-banner-meta">
+                <div class="shop-loc-tag" id="shopLocTag" hidden></div>
+                <div class="courier-box shop-owner-box" id="shopOwnerBox" onclick="openPublicProfile(shopViewingSellerId)">
+                  <div class="courier-box-name" id="shopOwnerName">—</div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="shop-upvote-btn" id="shopUpvoteBtn" onclick="toggleShopUpvote()">
+              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                <rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/>
+              </g></svg>
+              <span class="shop-upvote-label" data-i18n="upvoteBtn">UPVOTE</span>
+              <span class="shop-upvote-count" id="shopUpvoteCount">0</span>
+            </button>
+          </div>
+          <div class="shop-description" id="shopDescription" hidden></div>
+        </div>
+
+        <div class="card shop-progress-card" id="shopAchvCard" hidden></div>
+        <div class="card shop-stats-card" id="shopStatsCard"></div>
+
+        <div class="card seller-section-card">
+          <div class="shop-preview-head">
+            <h3 data-i18n="shopListingsTitle">Objets en vente</h3>
+            <div class="shop-section-head-actions">
+              <button type="button" class="btn-secondary shop-quick-add" id="shopAddListingBtn" onclick="openSellerCreateOption('listing')" hidden>+ <span data-i18n="newListingTitle">Ajouter un objet en vente</span></button>
+              <button type="button" class="btn-secondary shop-see-more" id="shopListingsViewMoreBtn" onclick="openShopAllListings()" hidden>
+                <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
               </button>
             </div>
           </div>
-          <div class="shop-description" id="shopDescription" hidden></div>
-          <div class="seller-header-stats-row">
-            <div id="shopStatsCard"></div>
-            <div class="seller-profile-divider" id="shopProfileDivider" hidden></div>
-            <div id="shopAchvCard" hidden></div>
+          <div id="shopListingsGrid" class="marketplace-grid"></div>
+        </div>
+
+        <div class="card seller-section-card">
+          <div class="shop-preview-head">
+            <h3 data-i18n="myResourceRequestsTitle">Objets recherchés</h3>
+            <div class="shop-section-head-actions">
+              <button type="button" class="btn-secondary shop-quick-add" id="shopAddResourceBtn" onclick="openSellerCreateOption('resource')" hidden>+ <span data-i18n="requestResourcesTitle">Poster un objet recherché</span></button>
+              <button type="button" class="btn-secondary shop-see-more" id="shopResourcesViewMoreBtn" onclick="openShopAllResources()" hidden>
+                <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
+              </button>
+            </div>
           </div>
+          <div id="shopResourceRequestsGrid" class="resource-request-grid"></div>
         </div>
-      </div>
-
-      <div class="card seller-section-card">
-        <div class="shop-preview-head">
-          <h3 data-i18n="shopListingsTitle">Objets en vente</h3>
-          <button type="button" class="btn-secondary shop-see-more" id="shopListingsViewMoreBtn" onclick="openShopAllListings()" hidden>
-            <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
-          </button>
-        </div>
-        <div id="shopListingsGrid" class="marketplace-grid"></div>
-      </div>
-
-      <div class="card seller-section-card">
-        <div class="shop-preview-head">
-          <h3 data-i18n="myResourceRequestsTitle">Objets recherchés</h3>
-          <button type="button" class="btn-secondary shop-see-more" id="shopResourcesViewMoreBtn" onclick="openShopAllResources()" hidden>
-            <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
-          </button>
-        </div>
-        <div id="shopResourceRequestsGrid" class="resource-request-grid"></div>
       </div>
     </section>
 
@@ -2086,7 +2105,7 @@ let profile = null;
 // Un membre peut cumuler plusieurs casquettes (client + coursier + vendeur) : currentView retient
 // l'onglet actuellement affiché parmi celles disponibles pour ce compte. 'client' reste le point de départ par défaut.
 let currentView = 'client'; // 'client' | 'courier' | 'seller' | 'admin'
-const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-dash','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-resource','view-seller-all-listings','view-seller-all-resources','view-shop-all-listings','view-shop-all-resources'];
+const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-resource','view-shop-all-listings','view-shop-all-resources'];
 function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); }
 let clientTab = 'deliveries'; // 'deliveries' | 'marketplace' | 'resources'
 function setClientTab(tab){
@@ -2225,7 +2244,7 @@ const T = {
     myListingsTitle:"Mes annonces", noListings:"Tu n'as encore aucune annonce.", deleteListingBtn:"SUPPRIMER", confirmDeleteListing:"Supprimer cette annonce définitivement ?",
     requestDeliveryBtn:"DEMANDER UNE LIVRAISON", requestDeliveryTitle:"Demander une livraison coursier", buyerHandleLbl:"Pseudo RSI de l'acheteur (optionnel)", phBuyerHandle:"ex: Mayco_SC", deliveryRequested:"LIVRAISON DEMANDÉE !", cancelRequest:"ANNULER", confirmDeliveryBtn:"CONFIRMER LA DEMANDE",
     marketplaceDeliveryBadge:"LIVRAISON MARKETPLACE", marketplaceDeliveryNote:"Livraison Marketplace : l'objet part de chez un VENDEUR pour être livré à un client, contrairement aux commandes classiques (client → coursier).",
-    sellerFrom:"Vendeur : ", buyerTo:"Acheteur : ", shopPageEmpty:"Cette boutique ne propose aucun objet pour le moment.", noShopYet:"Ce vendeur n'a pas encore configuré sa boutique.",
+    sellerFrom:"Vendeur : ", buyerTo:"Acheteur : ", shopPageEmpty:"Cette boutique ne propose aucun objet pour le moment.", noShopYet:"Ce vendeur n'a pas encore configuré sa boutique.", noShopYetOwner:"Tu n'as pas encore configuré ta boutique. Clique sur l'icône d'édition pour commencer.",
     imInterested:"JE SUIS INTÉRESSÉ(E)", inquiryMsgLbl:"Message au vendeur (prix ok, contre-offre, etc.)", phInquiryMsg:"ex: Ok pour le prix, je peux passer ce soir vers 20h.",
     deliveryMethodLbl:"Mode de livraison souhaité", deliveryMethodCourier:"Livraison par un coursier", deliveryMethodPickup:"Je viens le chercher sur place",
     sendInquiryBtn:"ENVOYER LA DEMANDE", inquirySent:"DEMANDE ENVOYÉE !",
@@ -2369,7 +2388,7 @@ const T = {
     myListingsTitle:"My listings", noListings:"You have no listings yet.", deleteListingBtn:"DELETE", confirmDeleteListing:"Permanently delete this listing?",
     requestDeliveryBtn:"REQUEST A DELIVERY", requestDeliveryTitle:"Request a courier delivery", buyerHandleLbl:"Buyer's RSI handle (optional)", phBuyerHandle:"e.g. Mayco_SC", deliveryRequested:"DELIVERY REQUESTED!", cancelRequest:"CANCEL", confirmDeliveryBtn:"CONFIRM REQUEST",
     marketplaceDeliveryBadge:"MARKETPLACE DELIVERY", marketplaceDeliveryNote:"Marketplace delivery: the item ships from a SELLER to a client, unlike classic orders (client → courier).",
-    sellerFrom:"Seller: ", buyerTo:"Buyer: ", shopPageEmpty:"This shop has no items for sale right now.", noShopYet:"This seller hasn't set up their shop yet.",
+    sellerFrom:"Seller: ", buyerTo:"Buyer: ", shopPageEmpty:"This shop has no items for sale right now.", noShopYet:"This seller hasn't set up their shop yet.", noShopYetOwner:"You haven't set up your shop yet. Click the edit icon to get started.",
     imInterested:"I'M INTERESTED", inquiryMsgLbl:"Message to the seller (price ok, counter-offer, etc.)", phInquiryMsg:"e.g. Price works for me, I can drop by around 8pm.",
     deliveryMethodLbl:"Preferred delivery method", deliveryMethodCourier:"Courier delivery", deliveryMethodPickup:"I'll pick it up myself",
     sendInquiryBtn:"SEND REQUEST", inquirySent:"REQUEST SENT!",
@@ -2657,7 +2676,7 @@ function routeApp(){
 
   if(v === 'client'){ $('view-client-dash').hidden = false; setClientTab(clientTab); }
   else if(v === 'courier'){ $('view-courier-dash').hidden = false; loadCourierData(); }
-  else if(v === 'seller'){ $('view-seller-dash').hidden = false; loadSellerDashboard(); }
+  else if(v === 'seller'){ openOwnSellerShop(); }
   else if(v === 'admin'){ $('view-admin-dash').hidden = false; loadAdmin(); }
   refreshNotifBadges();
 }
@@ -4466,23 +4485,22 @@ function updateShopLivePreview(){
     locTag.hidden = true;
   }
 }
-async function loadSellerDashboard(){
+// Le dashboard vendeur EST la page boutique (plus de page de gestion séparée) : vu par le propriétaire,
+// openSellerShop() affiche en plus les actions d'édition/gestion (gear d'édition, cartes d'annonces avec
+// modifier/supprimer, boutons "+ ajouter"). Cette fonction gère juste le cas où le rôle vendeur manque
+// (normalement seuls les admins peuvent atteindre l'onglet VENDEUR sans être vendeur).
+function openOwnSellerShop(){
   if(!session) return;
   if(!profile || !(profile.is_seller || profile.role === 'admin')){
-    $('sellerBlocked').hidden = false; $('sellerDash').hidden = true; return;
+    hideAllViews();
+    $('view-seller-shop').hidden = false;
+    $('sellerBlocked').hidden = false;
+    $('shopMainContent').hidden = true;
+    return;
   }
-  $('sellerBlocked').hidden = true; $('sellerDash').hidden = false;
-  const d = T[LANG];
-  const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle();
-  $('sellerDashHeroIcon').innerHTML = shop?.logo_url ? `<img class="shop-hero-logo-img" src="${shop.logo_url}" alt="">` : roleAnimSvg('seller', 100);
-  $('sellerDashShopName').textContent = (shop && shop.shop_name) || d.shopSettingsTitle;
-  const dashDesc = $('sellerDashDescription');
-  if(dashDesc){ if(shop?.description){ dashDesc.textContent = shop.description; dashDesc.hidden = false; } else { dashDesc.hidden = true; } }
-  await loadMyListings();
-  await loadMyResourceRequests();
-  const stats = await fetchSellerShopStats(session.user.id);
-  renderShopStats($('sellerDashStatsCard'), stats);
-  checkAndRenderSellerAchievements('sellerDashAchvCard');
+  $('sellerBlocked').hidden = true;
+  $('shopMainContent').hidden = false;
+  openSellerShop(session.user.id);
 }
 let pendingListingPhotoFile = null;
 let editingListingId = null;
@@ -4781,19 +4799,16 @@ async function deleteListing(id){
   const { error } = await sb.from('marketplace_listings').update({ is_deleted: true }).eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
   await loadMyListings();
-  const fullBox = $('myListingsListFull');
-  if(fullBox && !$('view-seller-all-listings').hidden){
-    const d = T[LANG];
-    fullBox.innerHTML = myListingsCache.length ? myListingsCache.map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.noListings}</p>`;
-  }
+  refreshShopAllListingsFullIfOpen();
 }
 let myListingsCache = [];
 let myListingsOrderMap = {};
+// Rafraîchit les données ET la grille "Objets en vente" de la page boutique quand c'est la sienne (qui
+// sert à la fois de vitrine publique et de dashboard de gestion — il n'y a plus de page séparée).
 async function loadMyListings(){
-  const box = $('myListingsList'); if(!box) return;
-  const d = T[LANG];
+  if(!session) return;
   const { data, error } = await sb.from('marketplace_listings').select('*').eq('seller_id', session.user.id).eq('is_deleted', false).order('created_at',{ascending:false});
-  if(error){ box.textContent = error.message; return; }
+  if(error) return;
   myListingsCache = data || [];
   myListingsOrderMap = {};
   const listingIds = myListingsCache.map(l=>l.id);
@@ -4801,18 +4816,20 @@ async function loadMyListings(){
     const { data: activeOrders } = await sb.from('orders').select('*').eq('order_type','marketplace').eq('seller_id', session.user.id).in('listing_id', listingIds);
     (activeOrders||[]).filter(o => !['delivered','cancelled'].includes(o.status)).forEach(o => { myListingsOrderMap[o.listing_id] = o; });
   }
-  if(!myListingsCache.length){ box.innerHTML = `<p class="muted">${d.noListings}</p>`; }
-  else box.innerHTML = myListingsCache.slice(0,3).map(l => myListingCardHtml(l)).join('');
-  const moreBtn = $('sellerListingsViewMoreBtn');
-  if(moreBtn) moreBtn.hidden = myListingsCache.length <= 3;
+  if(shopViewingSellerId === session.user.id && !$('view-seller-shop').hidden){
+    const d = T[LANG];
+    const box = $('shopListingsGrid');
+    if(box) box.innerHTML = myListingsCache.length ? myListingsCache.slice(0,4).map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.shopPageEmpty}</p>`;
+    const moreBtn = $('shopListingsViewMoreBtn');
+    if(moreBtn) moreBtn.hidden = myListingsCache.length <= 4;
+  }
 }
-function openSellerAllListings(){
-  hideAllViews();
-  $('sellerCreateWrap').hidden = true;
-  $('view-seller-all-listings').hidden = false;
-  const d = T[LANG];
-  const box = $('myListingsListFull');
-  box.innerHTML = myListingsCache.length ? myListingsCache.map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.noListings}</p>`;
+function refreshShopAllListingsFullIfOpen(){
+  const fullBox = $('shopListingsGridFull');
+  if(fullBox && !$('view-shop-all-listings').hidden){
+    const d = T[LANG];
+    fullBox.innerHTML = myListingsCache.length ? myListingsCache.map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.shopPageEmpty}</p>`;
+  }
 }
 // Carte "annonce" pour la grille de gestion du vendeur (même look que la grille marketplace publique,
 // mais avec les actions de gestion : demander une livraison, supprimer, ou annuler la livraison en cours.
@@ -4850,11 +4867,7 @@ async function sellerCancelDelivery(orderId, currentStatus){
   if(error){ alert('Erreur : '+error.message); return; }
   sweep();
   await loadMyListings();
-  const fullBox = $('myListingsListFull');
-  if(fullBox && !$('view-seller-all-listings').hidden){
-    const d = T[LANG];
-    fullBox.innerHTML = myListingsCache.length ? myListingsCache.map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.noListings}</p>`;
-  }
+  refreshShopAllListingsFullIfOpen();
 }
 
 function toggleInquiryDeliveryForm(id){
@@ -4931,9 +4944,11 @@ async function markPickedUp(id){
   if(!isStockSale && listing) await sb.from('marketplace_listings').update({ is_deleted: true }).eq('id', listing.id);
   pushNotification(inquiry.buyer_id, 'client_marketplace', id);
   sweep(); msgRefreshAfterAction(); loadMyListings();
-  checkAndRenderSellerAchievements('sellerDashAchvCard');
+  if(shopViewingSellerId === session.user.id && !$('view-seller-shop').hidden){
+    checkAndRenderSellerAchievements('shopAchvCard');
+  }
   fetchSellerShopStats(session.user.id).then(stats => {
-    renderShopStats($('sellerDashStatsCard'), stats);
+    if(shopViewingSellerId === session.user.id && !$('view-seller-shop').hidden) renderShopStats($('shopStatsCard'), stats);
     if($('shopStatsProfileCard')) renderShopStats($('shopStatsProfileCard'), stats);
   });
 }
@@ -4999,22 +5014,40 @@ let shopSellerMapCache = {};
 async function openSellerShop(sellerId){
   if(!sellerId) return;
   shopViewingSellerId = sellerId;
+  const isOwner = !!(session && session.user.id === sellerId);
   hideAllViews();
-  $('sellerCreateWrap').hidden = true;
+  $('sellerCreateWrap').hidden = !isOwner;
   $('view-seller-shop').hidden = false;
+  $('sellerBlocked').hidden = true;
+  $('shopMainContent').hidden = false;
   const d = T[LANG];
   const shopEl = $('view-seller-shop');
   $('shopHeroIcon').innerHTML = roleAnimSvg('seller', 100);
   $('shopStatsCard').innerHTML = '';
   $('shopAchvCard').hidden = true;
+  const editBtn = $('shopEditGearBtn'); if(editBtn) editBtn.hidden = !isOwner;
+  const addListingBtn = $('shopAddListingBtn'); if(addListingBtn) addListingBtn.hidden = !isOwner;
+  const addResourceBtn = $('shopAddResourceBtn'); if(addResourceBtn) addResourceBtn.hidden = !isOwner;
   const descEl = $('shopDescription');
   if(descEl) descEl.hidden = true;
+  // Propriétaire : on récupère TOUTES ses annonces/demandes (y compris fermées) pour qu'il puisse les gérer ;
+  // visiteur : seulement ce qui est publiquement à vendre/recherché.
+  const listingsQuery = sb.from('marketplace_listings').select('*').eq('seller_id', sellerId).eq('is_deleted', false).order('created_at',{ascending:false});
+  const resourceQuery = isOwner
+    ? sb.from('resource_requests').select('*').eq('seller_id', sellerId).order('created_at',{ascending:false})
+    : sb.from('resource_requests').select('*').eq('seller_id', sellerId).eq('status','open').order('created_at',{ascending:false});
   const [{ data: shop }, { data: p }, { data: listings }, { data: resourceRequests }] = await Promise.all([
     sb.from('marketplace_shops').select('*').eq('id', sellerId).maybeSingle(),
     sb.from('profiles').select('*').eq('id', sellerId).single(),
-    sb.from('marketplace_listings').select('*').eq('seller_id', sellerId).eq('is_deleted', false).order('created_at',{ascending:false}),
-    sb.from('resource_requests').select('*').eq('seller_id', sellerId).eq('status','open').order('created_at',{ascending:false})
+    listingsQuery,
+    resourceQuery
   ]);
+  let activeOrdersByListing = {};
+  if(isOwner && (listings||[]).length){
+    const { data: activeOrders } = await sb.from('orders').select('*').eq('order_type','marketplace').eq('seller_id', sellerId).in('listing_id', (listings||[]).map(l=>l.id));
+    (activeOrders||[]).filter(o => !['delivered','cancelled'].includes(o.status)).forEach(o => { activeOrdersByListing[o.listing_id] = o; });
+  }
+  myListingsOrderMap = activeOrdersByListing;
   if(shop?.logo_url) $('shopHeroIcon').innerHTML = `<img class="shop-hero-logo-img" src="${shop.logo_url}" alt="">`;
   const shopColorHex = normalizeShopColor(shop && shop.theme_color);
   shopEl.style.setProperty('--accent', shopColorHex);
@@ -5038,28 +5071,29 @@ async function openSellerShop(sellerId){
   const listingsMoreBtn = $('shopListingsViewMoreBtn');
   const resMoreBtn = $('shopResourcesViewMoreBtn');
   if(!shop){
-    grid.innerHTML = `<p class="muted">${d.noShopYet}</p>`;
+    grid.innerHTML = `<p class="muted">${isOwner ? d.noShopYetOwner : d.noShopYet}</p>`;
     resGrid.innerHTML = '';
     if(listingsMoreBtn) listingsMoreBtn.hidden = true;
     if(resMoreBtn) resMoreBtn.hidden = true;
+    loadShopUpvotes(sellerId, isOwner);
     return;
   }
   const stats = await fetchSellerShopStats(sellerId);
   renderShopStats($('shopStatsCard'), stats);
   const unlockedSet = await fetchUnlockedSellerAchievements(sellerId);
   renderSellerAchievements(unlockedSet, stats, 'shopAchvCard');
-  if(session && session.user.id === sellerId) checkAndRenderSellerAchievements('shopAchvCard');
-  const divider = $('shopProfileDivider');
-  if(divider) divider.hidden = $('shopAchvCard').hidden;
+  if(isOwner) checkAndRenderSellerAchievements('shopAchvCard');
 
-  shopListingsCache = listings || [];
+  const listingCardFn = isOwner ? myListingCardHtml : (l => mktCardHtml(l, shopSellerMapCache));
+  if(isOwner) myListingsCache = listings || []; else shopListingsCache = listings || [];
   shopSellerMapCache = { [sellerId]: { ...p, shop_name: (shop && shop.shop_name) || null } };
-  if(!shopListingsCache.length){ grid.innerHTML = `<p class="muted">${d.shopPageEmpty}</p>`; }
-  else grid.innerHTML = shopListingsCache.slice(0,4).map(l => mktCardHtml(l, shopSellerMapCache)).join('');
-  if(listingsMoreBtn) listingsMoreBtn.hidden = shopListingsCache.length <= 4;
+  const listingsForGrid = isOwner ? myListingsCache : shopListingsCache;
+  if(!listingsForGrid.length){ grid.innerHTML = `<p class="muted">${d.shopPageEmpty}</p>`; }
+  else grid.innerHTML = listingsForGrid.slice(0,4).map(listingCardFn).join('');
+  if(listingsMoreBtn) listingsMoreBtn.hidden = listingsForGrid.length <= 4;
 
-  const isOwner = session && session.user.id === sellerId;
   shopResourceRequestsCache = resourceRequests || [];
+  if(isOwner) myResourceRequestsCache = shopResourceRequestsCache;
   const resCardFn = isOwner ? ownResourceRequestCardHtml : visitorResourceRequestCardHtml;
   if(!shopResourceRequestsCache.length){ resGrid.innerHTML = `<p class="muted">${d.noResourceRequests}</p>`; }
   else resGrid.innerHTML = shopResourceRequestsCache.slice(0,3).map(r => resCardFn(r)).join('');
@@ -5140,8 +5174,13 @@ function openShopAllListings(){
   $('sellerCreateWrap').hidden = true;
   $('view-shop-all-listings').hidden = false;
   const d = T[LANG];
+  const isOwner = session && session.user.id === shopViewingSellerId;
   const box = $('shopListingsGridFull');
-  box.innerHTML = shopListingsCache.length ? shopListingsCache.map(l => mktCardHtml(l, shopSellerMapCache)).join('') : `<p class="muted">${d.shopPageEmpty}</p>`;
+  if(isOwner){
+    box.innerHTML = myListingsCache.length ? myListingsCache.map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.shopPageEmpty}</p>`;
+  } else {
+    box.innerHTML = shopListingsCache.length ? shopListingsCache.map(l => mktCardHtml(l, shopSellerMapCache)).join('') : `<p class="muted">${d.shopPageEmpty}</p>`;
+  }
 }
 function openShopAllResources(){
   hideAllViews();
@@ -5257,35 +5296,35 @@ function ownResourceRequestCardHtml(r){
       <button class="btn-logout" style="width:100%; margin-top:10px;" onclick="deleteResourceRequest('${r.id}')">${d.deleteListingBtn}</button>
     </div>`;
 }
+// Comme loadMyListings() : rafraîchit les données, et la grille "Objets recherchés" de la page boutique
+// seulement quand c'est la sienne (page boutique = dashboard de gestion pour le propriétaire).
 async function loadMyResourceRequests(){
-  const box = $('myResourceRequestsList'); if(!box || !session) return;
-  const d = T[LANG];
+  if(!session) return;
   const { data, error } = await sb.from('resource_requests').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
-  if(error){ box.textContent = error.message; return; }
+  if(error) return;
   myResourceRequestsCache = data || [];
-  if(!myResourceRequestsCache.length){ box.innerHTML = `<p class="muted">${d.noResourceRequests}</p>`; }
-  else box.innerHTML = myResourceRequestsCache.slice(0,3).map(r => ownResourceRequestCardHtml(r)).join('');
-  const moreBtn = $('sellerRequestsViewMoreBtn');
-  if(moreBtn) moreBtn.hidden = myResourceRequestsCache.length <= 3;
+  if(shopViewingSellerId === session.user.id && !$('view-seller-shop').hidden){
+    shopResourceRequestsCache = myResourceRequestsCache;
+    const d = T[LANG];
+    const box = $('shopResourceRequestsGrid');
+    if(box) box.innerHTML = myResourceRequestsCache.length ? myResourceRequestsCache.slice(0,3).map(r => ownResourceRequestCardHtml(r)).join('') : `<p class="muted">${d.noResourceRequests}</p>`;
+    const moreBtn = $('shopResourcesViewMoreBtn');
+    if(moreBtn) moreBtn.hidden = myResourceRequestsCache.length <= 3;
+  }
 }
-function openSellerAllRequests(){
-  hideAllViews();
-  $('sellerCreateWrap').hidden = true;
-  $('view-seller-all-resources').hidden = false;
-  const d = T[LANG];
-  const box = $('myResourceRequestsListFull');
-  box.innerHTML = myResourceRequestsCache.length ? myResourceRequestsCache.map(r => ownResourceRequestCardHtml(r)).join('') : `<p class="muted">${d.noResourceRequests}</p>`;
+function refreshShopAllResourcesFullIfOpen(){
+  const fullBox = $('shopResourceRequestsGridFull');
+  if(fullBox && !$('view-shop-all-resources').hidden){
+    const d = T[LANG];
+    fullBox.innerHTML = myResourceRequestsCache.length ? myResourceRequestsCache.map(r => ownResourceRequestCardHtml(r)).join('') : `<p class="muted">${d.noResourceRequests}</p>`;
+  }
 }
 async function deleteResourceRequest(id){
   if(!confirm(T[LANG].confirmDeleteListing)) return;
   const { error } = await sb.from('resource_requests').delete().eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
   await loadMyResourceRequests();
-  const fullBox = $('myResourceRequestsListFull');
-  if(fullBox && !$('view-seller-all-resources').hidden){
-    const d = T[LANG];
-    fullBox.innerHTML = myResourceRequestsCache.length ? myResourceRequestsCache.map(r => ownResourceRequestCardHtml(r)).join('') : `<p class="muted">${d.noResourceRequests}</p>`;
-  }
+  refreshShopAllResourcesFullIfOpen();
 }
 async function loadCourierData(){
   if(!session) return;
@@ -6333,14 +6372,14 @@ function subscribeDataChannels(){
       const v = effectiveView();
       if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'deliveries') loadClientDashboard();
       if(v === 'courier' && !$('view-courier-dash').hidden) loadCourierData();
-      if((v === 'seller' || v === 'admin') && !$('view-seller-dash').hidden){ checkAndRenderSellerAchievements('sellerDashAchvCard'); fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('sellerDashStatsCard'), stats)); }
+      if((v === 'seller' || v === 'admin') && !$('view-seller-shop').hidden && shopViewingSellerId === session.user.id){ checkAndRenderSellerAchievements('shopAchvCard'); fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('shopStatsCard'), stats)); }
     })
     .subscribe();
   if(!marketplaceChannel) marketplaceChannel = sb.channel('marketplace-realtime')
     .on('postgres_changes', { event:'*', schema:'public', table:'marketplace_listings' }, () => {
       const v = effectiveView();
       if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'marketplace') loadMarketplaceFeed();
-      if(v === 'seller' && !$('view-seller-dash').hidden) loadMyListings();
+      if(v === 'seller' && !$('view-seller-shop').hidden && shopViewingSellerId === session.user.id) loadMyListings();
     })
     .subscribe();
   if(!inquiriesChannel) inquiriesChannel = sb.channel('inquiries-realtime')

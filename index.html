@@ -241,8 +241,9 @@
   .messages-panel-title{font-family:'VT323',monospace; font-size:1.1rem; letter-spacing:1px; text-transform:uppercase; color:var(--text); margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border);}
   .msg-conv-list{display:flex; flex-direction:column; gap:4px;}
 
-  .online-badge-btn{width:auto; display:inline-flex; align-items:center; gap:7px; border-radius:20px; padding:0 13px; height:38px; background:var(--bg2); border:1px solid var(--border); color:var(--text); font-family:'VT323',monospace; font-size:1.05rem; letter-spacing:.5px; cursor:pointer; transition:border-color .15s, box-shadow .15s;}
-  .online-badge-btn:hover{border-color:#39ff6a; box-shadow:0 0 10px rgba(57,255,106,.35);}
+  .online-badge-btn{width:auto; display:inline-flex; align-items:center; gap:7px; border-radius:2px; padding:0 14px; height:40px; background:transparent; border:1px solid var(--accent); color:var(--accent); font-family:'VT323',monospace; font-size:1.05rem; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:background .15s, transform .1s;}
+  .online-badge-btn:hover{background:var(--accent-dim);}
+  .online-badge-btn:active{transform:scale(.96);}
   .online-badge-dot{width:8px; height:8px; border-radius:50%; background:#39ff6a; box-shadow:0 0 6px rgba(57,255,106,.9); flex:none; animation:onlineDotPulse 1.8s ease-in-out infinite;}
   @keyframes onlineDotPulse{0%,100%{opacity:1; transform:scale(1);} 50%{opacity:.5; transform:scale(.78);}}
   .online-panel{position:absolute; top:48px; right:0; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:12px; width:290px; max-width:88vw; max-height:70vh; overflow-y:auto; box-shadow:0 10px 26px rgba(0,0,0,.55); z-index:60;}

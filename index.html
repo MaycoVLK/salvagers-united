@@ -611,7 +611,18 @@
   .shop-color-wheel::-webkit-color-swatch{border:none; border-radius:6px;}
   .shop-color-wheel::-moz-color-swatch{border:none; border-radius:6px;}
   .shop-color-hex{flex:1; min-width:0; font-family:'VT323',monospace; font-size:1.15rem; letter-spacing:1px; text-transform:uppercase;}
-  .shop-color-presets{margin-top:2px;}
+  /* Palette nommée de couleurs de boutique : avant, 6 pastilles nues sans nom (peu engageant, "au hasard").
+     On affiche maintenant chaque couleur comme une carte cliquable avec un nom qui colle à l'univers du jeu,
+     plus une case "couleur personnalisée" séparée pour le champ hexa libre. */
+  .shop-color-presets{display:grid; grid-template-columns:repeat(auto-fill,minmax(74px,1fr)); gap:10px; margin:2px 0 14px;}
+  .shop-swatch-item{display:flex; flex-direction:column; align-items:center; gap:5px; background:none; border:1px solid transparent; border-radius:4px; padding:6px 4px; cursor:pointer; transition:border-color .15s, background .15s;}
+  .shop-swatch-item:hover{background:var(--bg2); border-color:var(--border);}
+  .shop-swatch-item.active{border-color:var(--accent); background:var(--accent-dim);}
+  .shop-swatch-item .swatch{width:30px; height:30px; flex:none; pointer-events:none;}
+  .shop-swatch-item .shop-swatch-lbl{font-size:.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:.3px; text-align:center; line-height:1.15; pointer-events:none;}
+  .shop-swatch-item.active .shop-swatch-lbl{color:var(--accent);}
+  .shop-color-custom-box{border:1px dashed var(--border); border-radius:4px; padding:10px 12px; margin-bottom:8px;}
+  .shop-color-custom-lbl{font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;}
 
   /* Aperçu boutique (profil public) */
   .shop-preview-head{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
@@ -1557,13 +1568,16 @@
         <label for="shopNameInput" data-i18n="shopNameLbl">Nom de la marketplace</label>
         <input id="shopNameInput" type="text" data-i18n-ph="phShopName" placeholder="ex: Le Comptoir de Mayco">
         <label data-i18n="shopThemeLbl">Couleur de la boutique</label>
-        <div class="shop-color-picker">
-          <input type="color" id="shopColorWheel" class="shop-color-wheel" value="#ff8c1a" oninput="setShopColor(this.value, true)" aria-label="Color wheel">
-          <input type="text" id="shopColorHex" class="shop-color-hex" maxlength="7" placeholder="#FF8C1A"
-                 autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" inputmode="text"
-                 oninput="onShopColorHexInput(this.value)" onchange="onShopColorHexInput(this.value)" onblur="onShopColorHexBlur(this.value)">
+        <div class="shop-color-presets" id="shopThemePicker"></div>
+        <div class="shop-color-custom-box">
+          <div class="shop-color-custom-lbl" data-i18n="shopCustomColorLbl">Couleur personnalisée</div>
+          <div class="shop-color-picker">
+            <input type="color" id="shopColorWheel" class="shop-color-wheel" value="#ff8c1a" oninput="setShopColor(this.value, true)" aria-label="Color wheel">
+            <input type="text" id="shopColorHex" class="shop-color-hex" maxlength="7" placeholder="#FF8C1A"
+                   autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" inputmode="text"
+                   oninput="onShopColorHexInput(this.value)" onchange="onShopColorHexInput(this.value)" onblur="onShopColorHexBlur(this.value)">
+          </div>
         </div>
-        <div class="theme-row shop-color-presets" id="shopThemePicker"></div>
         <label data-i18n="shopDescLbl">Description de la boutique (optionnel)</label>
         <textarea id="shopDescInput" data-i18n-ph="phShopDesc" placeholder="ex: Spécialiste minerais rares, livraison rapide sur Stanton."></textarea>
         <label data-i18n="shopLogoLbl">Logo de la boutique (optionnel, GIF accepté)</label>
@@ -2055,7 +2069,8 @@ const T = {
     sellerRejectedNote:"Ta précédente candidature vendeur n'a pas été retenue. Tu peux retenter ta chance.",
     sellerApplications:"Candidatures Vendeur", noSellerApplications:"Aucune candidature vendeur en attente.",
     sellerAccepted:"🎉 Ta demande pour devenir vendeur a été acceptée !", sellerRejected:"Ta demande pour devenir vendeur a été refusée.",
-    shopSettingsTitle:"Ma boutique", shopNameLbl:"Nom de la marketplace", phShopName:"ex: Le Comptoir de Mayco", shopThemeLbl:"Couleur de la boutique", shopLogoLbl:"Logo de la boutique (optionnel)", uploadShopLogo:"CHOISIR UN LOGO", saveShopBtn:"ENREGISTRER LA BOUTIQUE", shopSaved:"BOUTIQUE ENREGISTRÉE !",
+    shopSettingsTitle:"Ma boutique", shopNameLbl:"Nom de la marketplace", phShopName:"ex: Le Comptoir de Mayco", shopThemeLbl:"Couleur de la boutique", shopCustomColorLbl:"Couleur personnalisée", shopLogoLbl:"Logo de la boutique (optionnel)", uploadShopLogo:"CHOISIR UN LOGO", saveShopBtn:"ENREGISTRER LA BOUTIQUE", shopSaved:"BOUTIQUE ENREGISTRÉE !",
+    shopColorNames:{solarOrange:"Solar Orange", voidTeal:"Void Teal", plasmaViolet:"Plasma Violet", nyxGreen:"Nyx Green", pyroRed:"Pyro Red", stantonBlue:"Stanton Blue", quantumWhite:"Quantum White", cometMagenta:"Comet Magenta"},
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
     shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
@@ -2193,7 +2208,8 @@ const T = {
     sellerRejectedNote:"Your previous seller application wasn't accepted. You can try again.",
     sellerApplications:"Seller Applications", noSellerApplications:"No pending seller applications.",
     sellerAccepted:"🎉 Your seller application was accepted!", sellerRejected:"Your seller application was rejected.",
-    shopSettingsTitle:"My shop", shopNameLbl:"Marketplace name", phShopName:"e.g. Mayco's Trading Post", shopThemeLbl:"Shop color", shopLogoLbl:"Shop logo (optional)", uploadShopLogo:"CHOOSE A LOGO", saveShopBtn:"SAVE SHOP", shopSaved:"SHOP SAVED!",
+    shopSettingsTitle:"My shop", shopNameLbl:"Marketplace name", phShopName:"e.g. Mayco's Trading Post", shopThemeLbl:"Shop color", shopCustomColorLbl:"Custom color", shopLogoLbl:"Shop logo (optional)", uploadShopLogo:"CHOOSE A LOGO", saveShopBtn:"SAVE SHOP", shopSaved:"SHOP SAVED!",
+    shopColorNames:{solarOrange:"Solar Orange", voidTeal:"Void Teal", plasmaViolet:"Plasma Violet", nyxGreen:"Nyx Green", pyroRed:"Pyro Red", stantonBlue:"Stanton Blue", quantumWhite:"Quantum White", cometMagenta:"Comet Magenta"},
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
     shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
@@ -4122,7 +4138,16 @@ async function buyerRejectCounter(id){
 // --- DASHBOARD VENDEUR ---
 // Couleur de boutique : hexa libre (roue + code), indépendante du thème du site.
 // Les anciennes boutiques stockaient un nom de préréglage ('orange','vert',...) ; on les convertit à la volée.
-const SHOP_COLOR_PRESETS = ['#ff8c1a','#39ff6a','#4fc8ff','#c07bff','#f2f2f2','#ffcf40'];
+const SHOP_COLOR_PRESETS = [
+  { hex:'#ff8c1a', key:'solarOrange' },
+  { hex:'#2fd9c4', key:'voidTeal' },
+  { hex:'#c07bff', key:'plasmaViolet' },
+  { hex:'#39ff6a', key:'nyxGreen' },
+  { hex:'#ff5050', key:'pyroRed' },
+  { hex:'#4fc8ff', key:'stantonBlue' },
+  { hex:'#f2f2f2', key:'quantumWhite' },
+  { hex:'#ff4fc3', key:'cometMagenta' },
+];
 const LEGACY_SHOP_COLOR_MAP = { orange:'#ff8c1a', vert:'#39ff6a', bleu:'#4fc8ff', violet:'#c07bff', blanc:'#f2f2f2', jaune:'#ffcf40' };
 const DEFAULT_SHOP_COLOR = '#ff8c1a';
 function isValidHexColor(v){ return /^#[0-9a-fA-F]{6}$/.test(v||''); }
@@ -4134,15 +4159,21 @@ function normalizeShopColor(v){
 let selectedShopColor = DEFAULT_SHOP_COLOR;
 function initShopThemePicker(){
   const picker = $('shopThemePicker'); if(!picker) return;
-  if(!picker.dataset.built){
-    SHOP_COLOR_PRESETS.forEach(c => {
-      const b = document.createElement('button'); b.className='swatch'; b.dataset.c=c; b.type='button'; b.title=c;
-      b.style.background = c;
-      b.addEventListener('click', () => setShopColor(c, true));
-      picker.appendChild(b);
-    });
-    picker.dataset.built = '1';
-  }
+  const d = T[LANG];
+  // Reconstruit à chaque appel (et pas seulement une fois) pour que les noms de couleur suivent la langue
+  // active si l'utilisateur change FR/EN pendant qu'il est sur cet écran.
+  picker.innerHTML = '';
+  SHOP_COLOR_PRESETS.forEach(c => {
+    const item = document.createElement('button'); item.type='button'; item.className='shop-swatch-item'; item.dataset.c=c.hex;
+    const name = (d.shopColorNames && d.shopColorNames[c.key]) || c.key;
+    item.title = name;
+    const dot = document.createElement('span'); dot.className='swatch'; dot.style.background = c.hex;
+    const lbl = document.createElement('span'); lbl.className='shop-swatch-lbl'; lbl.textContent = name;
+    item.appendChild(dot); item.appendChild(lbl);
+    item.addEventListener('click', () => setShopColor(c.hex, true));
+    picker.appendChild(item);
+  });
+  picker.dataset.built = '1';
   syncShopColorPicker();
 }
 // updateHexField=false quand on tape dans le champ hexa lui-même (pour ne pas s'auto-écraser pendant la frappe)
@@ -4173,7 +4204,7 @@ function onShopColorHexBlur(v){
 function syncShopColorPicker(updateHexField){
   const wheel = $('shopColorWheel'); if(wheel) wheel.value = selectedShopColor;
   const hexInput = $('shopColorHex'); if(hexInput && updateHexField !== false) hexInput.value = selectedShopColor.toUpperCase();
-  document.querySelectorAll('#shopThemePicker .swatch').forEach(s => s.classList.toggle('active', s.dataset.c === selectedShopColor));
+  document.querySelectorAll('#shopThemePicker .shop-swatch-item').forEach(s => s.classList.toggle('active', s.dataset.c === selectedShopColor));
 }
 async function saveShopSettings(){
   if(!session) return;

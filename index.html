@@ -60,6 +60,18 @@
   .career-stat .val{font-family:'VT323',monospace; font-size:1.6rem; color:var(--accent); line-height:1.1;}
   .career-stat .lbl{font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;}
 
+  .shop-leaderboard-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;}
+  @media (max-width:680px){ .shop-leaderboard-grid{grid-template-columns:1fr;} }
+  .shop-lb-slot{display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px; border:1px solid var(--border); border-radius:4px; padding:14px 10px; transition:border-color .15s, box-shadow .15s;}
+  .shop-lb-slot.has-winner{border-color:var(--accent); box-shadow:0 0 14px var(--accent-dim), inset 0 0 0 1px var(--accent-dim);}
+  .shop-lb-slot-logo{width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); box-shadow:0 0 10px var(--accent-dim); background:var(--bg2);}
+  .shop-lb-slot-logo-fallback{width:52px; height:52px; border-radius:50%; border:2px solid var(--border); background:var(--bg2); display:flex; align-items:center; justify-content:center; color:var(--muted); font-family:'VT323',monospace; font-size:1.3rem;}
+  .shop-lb-slot-shopname{font-family:'VT323',monospace; font-size:1.05rem; color:var(--text); line-height:1.15; word-break:break-word;}
+  .shop-lb-slot-lbl{font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
+  .shop-lb-slot-val{font-family:'VT323',monospace; font-size:1.3rem; color:var(--accent); line-height:1.1;}
+  .shop-lb-slot-item{font-size:.72rem; color:var(--muted); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .shop-lb-slot-empty{color:var(--muted); font-size:.8rem; padding:10px 0;}
+
   /* --- CUSTOM DATE/TIME PICKER (deadline) --- */
   .dt-field{position:relative; display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid var(--border); background:var(--bg2); color:var(--text); padding:10px 12px; cursor:pointer; font-family:'VT323',monospace; font-size:1.05rem;}
   .dt-field:hover{border-color:var(--accent);}
@@ -1013,6 +1025,10 @@
         <div id="clientHistoryList" hidden></div>
       </div>
       <div id="clientTabMarketplace" hidden>
+        <div class="card shop-leaderboard-card">
+          <h3 data-i18n="leaderboardTitle" style="margin-top:0;">🏆 Boutiques de la semaine</h3>
+          <div class="shop-leaderboard-grid" id="shopLeaderboardGrid"></div>
+        </div>
         <h3 data-i18n="marketplaceFeedTitle" style="margin-top:0;">Derniers objets en vente</h3>
         <div class="mkt-toolbar">
           <input type="text" id="marketplaceSearchInput" class="mkt-search-input" data-i18n-ph="mktSearchPh" placeholder="Rechercher un objet…" oninput="onMarketplaceSearchInput()">
@@ -1954,6 +1970,7 @@ const T = {
     dtWeekdays:["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"],
     tabDeliveries:"LIVRAISONS", tabMarketplace:"MARKETPLACE",
     marketplaceFeedTitle:"Derniers objets en vente", marketplaceEmpty:"Aucun objet en vente pour le moment.",
+    leaderboardTitle:"🏆 Boutiques de la semaine", lbWeeklySalesLbl:"Ventes cette semaine", lbWeeklyUpvotesLbl:"Upvotes cette semaine", lbMostExpensiveLbl:"Objet le plus cher vendu", lbNoDataYet:"Pas encore de données", lbSalesWord:"ventes", lbUpvotesWord:"upvotes",
     mktSearchPh:"Rechercher un objet…", filterBtn:"FILTRER", sortNewest:"Plus récent", sortOldest:"Plus ancien", sortPriceAsc:"Prix croissant", sortPriceDesc:"Prix décroissant", mktNoResults:"Aucun objet ne correspond à ta recherche.",
     mktByLbl:"Vendu par", visitShopBtn:"VOIR LA MARKETPLACE",
     roleWords:{client:"client", courier:"coursier", admin:"admin", seller:"vendeur"},
@@ -2088,6 +2105,7 @@ const T = {
     dtWeekdays:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
     tabDeliveries:"DELIVERIES", tabMarketplace:"MARKETPLACE",
     marketplaceFeedTitle:"Latest items for sale", marketplaceEmpty:"No items for sale right now.",
+    leaderboardTitle:"🏆 Shops of the week", lbWeeklySalesLbl:"Sales this week", lbWeeklyUpvotesLbl:"Upvotes this week", lbMostExpensiveLbl:"Most expensive item sold", lbNoDataYet:"No data yet", lbSalesWord:"sales", lbUpvotesWord:"upvotes",
     mktSearchPh:"Search for an item…", filterBtn:"FILTER", sortNewest:"Newest first", sortOldest:"Oldest first", sortPriceAsc:"Price: low to high", sortPriceDesc:"Price: high to low", mktNoResults:"No items match your search.",
     mktByLbl:"Sold by", visitShopBtn:"VIEW MARKETPLACE",
     roleWords:{client:"client", courier:"courier", admin:"admin", seller:"seller"},
@@ -3605,6 +3623,7 @@ async function loadMarketplaceFeed(){
   const box = $('marketplaceFeed'); if(!box) return;
   const d = T[LANG];
   box.innerHTML = `<p class="muted">…</p>`;
+  loadShopLeaderboard();
   const { data, error } = await sb.from('marketplace_listings').select('*').order('created_at',{ascending:false}).limit(200);
   if(error){ box.textContent = error.message; return; }
   marketplaceFeedCache = data || [];
@@ -3632,6 +3651,68 @@ async function loadMarketplaceFeed(){
     marketplaceUnreadSet = new Set();
   }
   applyMarketplaceFilters();
+}
+
+// --- LEADERBOARD DES BOUTIQUES (3 stats : ventes cette semaine, upvotes cette semaine, objet le plus cher vendu) ---
+async function loadShopLeaderboard(){
+  const grid = $('shopLeaderboardGrid'); if(!grid) return;
+  const d = T[LANG];
+  grid.innerHTML = `<p class="muted" style="grid-column:1/-1;">…</p>`;
+  const weekAgoIso = new Date(Date.now() - 7*24*60*60*1000).toISOString();
+  const [weeklySalesRes, weeklyUpvotesRes, mostExpensiveRes] = await Promise.all([
+    sb.from('marketplace_inquiries').select('seller_id').eq('status','completed').gte('updated_at', weekAgoIso),
+    sb.from('shop_upvotes').select('seller_id').gte('created_at', weekAgoIso),
+    sb.from('marketplace_inquiries').select('seller_id,snap_item_name,snap_price').eq('status','completed').not('snap_price','is',null).order('snap_price',{ascending:false}).limit(1)
+  ]);
+  const countBySeller = rows => {
+    const map = {};
+    (rows || []).forEach(r => { map[r.seller_id] = (map[r.seller_id] || 0) + 1; });
+    let topId = null, topCount = 0;
+    Object.entries(map).forEach(([id, c]) => { if(c > topCount){ topCount = c; topId = id; } });
+    return { topId, topCount };
+  };
+  const topSales = countBySeller(weeklySalesRes.data);
+  const topUpvotes = countBySeller(weeklyUpvotesRes.data);
+  const topExpensive = (mostExpensiveRes.data && mostExpensiveRes.data[0]) || null;
+
+  const neededIds = [...new Set([topSales.topId, topUpvotes.topId, topExpensive ? topExpensive.seller_id : null].filter(Boolean))];
+  let profById = {}, shopById = {};
+  if(neededIds.length){
+    const [{ data: profs }, { data: shops }] = await Promise.all([
+      sb.from('profiles').select('id,discord_username,rsi_handle').in('id', neededIds),
+      sb.from('marketplace_shops').select('id,shop_name,logo_url').in('id', neededIds)
+    ]);
+    (profs||[]).forEach(p => { profById[p.id] = p; });
+    (shops||[]).forEach(s => { shopById[s.id] = s; });
+  }
+  const slotFor = (sellerId, valueHtml) => {
+    if(!sellerId) return null;
+    const shop = shopById[sellerId];
+    const prof = profById[sellerId];
+    const name = (shop && shop.shop_name) || (prof && (prof.rsi_handle || prof.discord_username)) || '—';
+    const logo = shop && shop.logo_url
+      ? `<img class="shop-lb-slot-logo" src="${shop.logo_url}" alt="">`
+      : `<div class="shop-lb-slot-logo-fallback">${(name[0]||'?').toUpperCase()}</div>`;
+    return { name, logo, valueHtml };
+  };
+
+  const slots = [
+    { lbl: d.lbWeeklySalesLbl, winner: slotFor(topSales.topId, `<div class="shop-lb-slot-val">${topSales.topCount} <span style="font-size:.85rem;">${d.lbSalesWord}</span></div>`) },
+    { lbl: d.lbWeeklyUpvotesLbl, winner: slotFor(topUpvotes.topId, `<div class="shop-lb-slot-val">${topUpvotes.topCount} <span style="font-size:.85rem;">${d.lbUpvotesWord}</span></div>`) },
+    { lbl: d.lbMostExpensiveLbl, winner: topExpensive ? slotFor(topExpensive.seller_id, `<div class="shop-lb-slot-val">${fmt(topExpensive.snap_price||0)}</div><div class="shop-lb-slot-item">${topExpensive.snap_item_name||''}</div>`) : null }
+  ];
+
+  grid.innerHTML = slots.map(slot => {
+    if(!slot.winner){
+      return `<div class="shop-lb-slot"><div class="shop-lb-slot-lbl">${slot.lbl}</div><div class="shop-lb-slot-empty">${d.lbNoDataYet}</div></div>`;
+    }
+    return `<div class="shop-lb-slot has-winner">
+      ${slot.winner.logo}
+      <div class="shop-lb-slot-shopname">${slot.winner.name}</div>
+      <div class="shop-lb-slot-lbl">${slot.lbl}</div>
+      ${slot.winner.valueHtml}
+    </div>`;
+  }).join('');
 }
 // Tri + recherche. Sans recherche : on trie le feed déjà chargé (200 dernières annonces).
 // Avec une recherche : on interroge toute la base (pas seulement les 200 dernières) pour ne rater aucun objet.

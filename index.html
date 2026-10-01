@@ -712,34 +712,69 @@
   .shop-hero-text h1{margin:0 0 8px; font-size:1.4rem;}
   .shop-owner-box{display:inline-flex; width:auto; max-width:none; flex:none;}
   .shop-description{font-size:.85rem; color:var(--muted); line-height:1.5; white-space:pre-wrap; margin:10px 0;}
-  .shop-header-actions{display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; margin:2px 0 10px;}
-  .shop-header-actions .shop-owner-box{margin:0; display:flex; align-items:center;}
-  .shop-header-actions .shop-owner-box .courier-box-name{margin-bottom:0;}
-  .shop-upvote-btn{display:inline-flex; align-items:center; gap:9px; background:linear-gradient(180deg, var(--panel), var(--bg2)); border:1px solid var(--border); border-radius:6px; padding:10px 16px; cursor:pointer; transition:border-color .2s, transform .2s, box-shadow .2s;}
-  .shop-upvote-btn .icon{width:18px; height:18px; color:var(--muted); transition:color .2s, filter .2s;}
-  .shop-upvote-btn:hover{border-color:var(--accent); transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,.4);}
+  /* Bouton upvote : même langage que les autres boutons accentués du site (bordure accent, fond teinté,
+     plein à l'état actif/survol) plutôt que l'ancienne pilule grise façon carte — et sans soulignement
+     sur le libellé. */
+  .shop-upvote-btn{display:inline-flex; align-items:center; gap:9px; background:var(--accent-dim); border:1px solid var(--accent); border-radius:3px; padding:9px 16px; cursor:pointer; transition:background .15s, transform .2s, box-shadow .2s;}
+  .shop-upvote-btn .icon{width:16px; height:16px; color:var(--accent); transition:color .15s;}
+  .shop-upvote-btn:hover{background:var(--accent); transform:translateY(-1px);}
+  .shop-upvote-btn:hover .icon, .shop-upvote-btn:hover .shop-upvote-label, .shop-upvote-btn:hover .shop-upvote-count{color:#03130a;}
   .shop-upvote-btn:active{transform:scale(.94);}
-  .shop-upvote-btn .shop-upvote-label{font-family:'VT323',monospace; font-size:1.05rem; color:var(--accent); text-decoration:underline; line-height:1.2; letter-spacing:.5px;}
-  .shop-upvote-btn .shop-upvote-count{font-family:'VT323',monospace; font-size:1.05rem; color:var(--text); font-weight:700; min-width:14px; text-align:center;}
-  .shop-upvote-btn.upvoted{border-color:var(--accent); background:linear-gradient(180deg, var(--accent-dim), var(--bg2)); box-shadow:0 0 14px var(--accent-dim), inset 0 0 0 1px var(--accent);}
-  .shop-upvote-btn.upvoted .icon{color:var(--accent); filter:drop-shadow(0 0 4px var(--accent));}
-  .shop-upvote-btn.upvoted .shop-upvote-count{color:var(--accent);}
+  .shop-upvote-btn .shop-upvote-label{font-family:'VT323',monospace; font-size:1.05rem; color:var(--accent); text-decoration:none; text-transform:uppercase; line-height:1.2; letter-spacing:1px; transition:color .15s;}
+  .shop-upvote-btn .shop-upvote-count{font-family:'VT323',monospace; font-size:1.05rem; color:var(--accent); font-weight:700; min-width:14px; text-align:center; transition:color .15s;}
+  .shop-upvote-btn.upvoted{background:var(--accent); box-shadow:0 0 14px var(--accent-dim);}
+  .shop-upvote-btn.upvoted .icon, .shop-upvote-btn.upvoted .shop-upvote-label, .shop-upvote-btn.upvoted .shop-upvote-count{color:#03130a;}
   .shop-upvote-btn[hidden]{display:none;}
-  @media (max-width:480px){
-    /* Header de boutique sur mobile : on empile "Run by" et "Upvote" en pleine largeur,
-       en gardant les mêmes proportions/style que la version desktop, juste agrandies pour rester lisibles. */
-    .shop-header-actions{flex-direction:column; align-items:stretch; gap:8px;}
-    .shop-header-actions .shop-owner-box, .shop-header-actions .shop-upvote-btn{width:100%; justify-content:center; padding:12px 14px;}
-    .shop-header-actions .shop-owner-box .courier-box-name{font-size:1.1rem;}
-    .shop-upvote-btn .icon{width:20px; height:20px;}
-    .shop-upvote-btn .shop-upvote-label, .shop-upvote-btn .shop-upvote-count{font-size:1.15rem;}
-  }
-  /* --- FLAMME 8-BIT (upvote) --- */
+  /* --- FLAMME 8-BIT (upvote, texture "aucune") --- */
   .pixel-flame-particle{position:fixed; width:6px; height:6px; pointer-events:none; z-index:9999; image-rendering:pixelated; animation:pixelFlame .65s steps(5) forwards;}
   @keyframes pixelFlame{
     0%{transform:translate(-50%,-50%) scale(1); opacity:1;}
     50%{opacity:1;}
     100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.3); opacity:0;}
+  }
+
+  /* --- ANIMATIONS D'UPVOTE PAR TEXTURE : chaque texture de boutique a sa propre petite animation au clic,
+     pour que le bouton upvote fasse écho au décor choisi par le vendeur plutôt qu'un seul effet générique. --- */
+  .shop-upvote-fx{position:fixed; pointer-events:none; z-index:9999; image-rendering:pixelated;}
+  /* Points : bulles rondes qui éclatent en cercle (écho des points de la texture). */
+  .shop-upvote-fx-dot{width:5px; height:5px; border-radius:50%; animation:pixelPop .6s ease-out forwards;}
+  @keyframes pixelPop{
+    0%{transform:translate(-50%,-50%) scale(.4); opacity:1;}
+    55%{opacity:1;}
+    100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1); opacity:0;}
+  }
+  /* Scanlines : traits fins qui filent à l'horizontale façon balayage CRT. */
+  .shop-upvote-fx-scan{width:16px; height:3px; animation:pixelScanShot .5s ease-out forwards;}
+  @keyframes pixelScanShot{
+    0%{transform:translate(-50%,-50%) scaleX(.3); opacity:1;}
+    100%{transform:translate(calc(-50% + var(--dx)), -50%) scaleX(1); opacity:0;}
+  }
+  /* Grille : petits carrés creux (contour seulement) qui se matérialisent en s'agrandissant. */
+  .shop-upvote-fx-grid{width:8px; height:8px; border:2px solid; background:transparent; animation:pixelGridSnap .55s ease-out forwards;}
+  @keyframes pixelGridSnap{
+    0%{transform:translate(-50%,-50%) scale(.3); opacity:1;}
+    65%{opacity:1;}
+    100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.7); opacity:0;}
+  }
+  /* Diagonales : particules tirées en diagonale, dans l'axe des bandes de la texture. */
+  .shop-upvote-fx-diag{width:6px; height:6px; animation:pixelFlame .55s steps(4) forwards;}
+  /* Circuit : nœuds qui clignotent en s'allumant façon mise sous tension d'un circuit. */
+  .shop-upvote-fx-node{width:6px; height:6px; animation:pixelNodeBlink .7s steps(2) forwards;}
+  @keyframes pixelNodeBlink{
+    0%{transform:translate(-50%,-50%) scale(.2); opacity:0;}
+    15%{opacity:1; transform:translate(-50%,-50%) scale(1.3);}
+    32%{opacity:.25;}
+    48%{opacity:1;}
+    100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1); opacity:0;}
+  }
+  /* Grain : minuscules pixels qui crépitent façon parasites télé avant de se dissiper. */
+  .shop-upvote-fx-noise{width:3px; height:3px; animation:pixelStaticFlicker .45s steps(3) forwards;}
+  @keyframes pixelStaticFlicker{
+    0%{opacity:1; transform:translate(-50%,-50%);}
+    25%{opacity:.2;}
+    50%{opacity:1; transform:translate(calc(-50% + var(--dx)*.4), calc(-50% + var(--dy)*.4));}
+    75%{opacity:.3;}
+    100%{opacity:0; transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)));}
   }
 
   /* --- BANNIÈRE DE BOUTIQUE (page boutique = aussi le dashboard du vendeur, plus de page séparée) ---
@@ -842,8 +877,8 @@
     #shopStatsCard.shop-stats-card, #shopAchvCard.shop-progress-card{padding:12px 14px;}
     /* Grille "bento" : des tuiles de tailles variables qui remplissent toute la carte sans case vide,
        plutôt qu'une grille 4 colonnes régulière qui laisse un trou sur la dernière ligne incomplète.
-       Total gagné (large) + ventes + objets sur la 1ère ligne, objet le plus cher (texte, large) + upvotes
-       sur la 2e : 4 colonnes occupées sur chaque ligne. */
+       Total gagné (large) + ventes + objets sur la 1ère ligne, objet le plus cher (texte) sur toute la
+       largeur de la 2e (plus d'upvotes ici : le compteur est sur le bouton upvote de la bannière). */
     #shopStatsCard .career-stats-grid{grid-template-columns:repeat(4,1fr); gap:6px;}
     #shopStatsCard .career-stat{padding:7px 4px; display:flex; flex-direction:column; justify-content:center;}
     #shopStatsCard .career-stat .val{font-size:.92rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
@@ -851,12 +886,8 @@
     #shopStatsCard .career-stat:nth-child(1){grid-column:span 2;}
     #shopStatsCard .career-stat:nth-child(2){grid-column:span 1;}
     #shopStatsCard .career-stat:nth-child(3){grid-column:span 1;}
-    #shopStatsCard .career-stat.career-stat-expensive{grid-column:span 3; padding:7px 10px;}
+    #shopStatsCard .career-stat.career-stat-expensive{grid-column:1/-1; padding:7px 10px;}
     #shopStatsCard .career-stat.career-stat-expensive .val.val-sm{font-size:.78rem; white-space:normal;}
-    #shopStatsCard .career-stat:nth-child(5){grid-column:span 1;}
-    /* Un seul stat affiché (pas encore de ventes) : qu'il prenne toute la largeur plutôt qu'une case
-       perdue au milieu d'une grille vide. */
-    #shopStatsCard .career-stats-grid > .career-stat:only-child{grid-column:1/-1;}
     #shopAchvCard .rank-track{margin:10px 2px 6px; gap:10px;}
     #shopAchvCard .rank-track-icon{width:24px; height:24px;}
     #shopAchvCard .rank-track-label{font-size:.62rem; margin-bottom:8px;}
@@ -1796,7 +1827,7 @@
     <!-- BOUTIQUE D'UN VENDEUR : vue publique pour tout le monde, et dashboard de gestion pour le
          propriétaire (mêmes données, mêmes réglages visuels — plus de page de gestion séparée en double). -->
     <section id="view-seller-shop" hidden>
-      <button class="back" onclick="closeSellerShop()" data-i18n="back">&lt; RETOUR</button>
+      <button class="back" id="shopBackBtn" onclick="closeSellerShop()" data-i18n="back">&lt; RETOUR</button>
       <div id="sellerBlocked" class="card" hidden>
         <p data-i18n="notSeller">Ton compte n'a pas encore le rôle vendeur. Contacte l'administrateur pour être ajouté.</p>
       </div>
@@ -4569,6 +4600,7 @@ function openOwnSellerShop(){
     $('view-seller-shop').hidden = false;
     $('sellerBlocked').hidden = false;
     $('shopMainContent').hidden = true;
+    const backBtn = $('shopBackBtn'); if(backBtn) backBtn.hidden = true;
     return;
   }
   $('sellerBlocked').hidden = true;
@@ -5098,6 +5130,9 @@ async function openSellerShop(sellerId){
   $('shopHeroIcon').innerHTML = roleAnimSvg('seller', 100);
   $('shopStatsCard').innerHTML = '';
   $('shopAchvCard').hidden = true;
+  // Le bouton RETOUR n'a aucun sens sur sa propre boutique : routeApp() le ramène simplement sur le même
+  // onglet "vendeur", donc sur la même page. On ne le garde que pour visiter la boutique d'un autre joueur.
+  const backBtn = $('shopBackBtn'); if(backBtn) backBtn.hidden = isOwner;
   const editBtn = $('shopEditGearBtn'); if(editBtn) editBtn.hidden = !isOwner;
   const addListingBtn = $('shopAddListingBtn'); if(addListingBtn) addListingBtn.hidden = !isOwner;
   const addResourceBtn = $('shopAddResourceBtn'); if(addResourceBtn) addResourceBtn.hidden = !isOwner;
@@ -5177,13 +5212,15 @@ let shopUpvoted = false;
 async function loadShopUpvotes(sellerId, isOwner){
   const btn = $('shopUpvoteBtn');
   if(!btn) return;
-  btn.hidden = !!isOwner;
+  // Le bouton upvote (avec son compteur) reste maintenant visible pour tout le monde, y compris le
+  // propriétaire : c'est le seul endroit où le nombre d'upvotes est affiché sur la page boutique.
+  btn.hidden = false;
   btn.classList.remove('upvoted');
   shopUpvoted = false;
   const { count } = await sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', sellerId);
   const countEl = $('shopUpvoteCount');
   if(countEl) countEl.textContent = count || 0;
-  if(session && !isOwner){
+  if(session){
     const { data } = await sb.from('shop_upvotes').select('id').eq('seller_id', sellerId).eq('client_id', session.user.id).maybeSingle();
     shopUpvoted = !!data;
     btn.classList.toggle('upvoted', shopUpvoted);
@@ -5193,7 +5230,8 @@ async function toggleShopUpvote(){
   const sellerId = shopViewingSellerId;
   if(!sellerId) return;
   if(!session){ toastShow(T[LANG].upvoteLoginNote); return; }
-  if(session.user.id === sellerId) return;
+  // Un vendeur peut techniquement upvoter sa propre boutique — on laisse faire (pas bien grave, et ça
+  // permet de tester les animations du bouton sur sa propre page).
   const btn = $('shopUpvoteBtn');
   const countEl = $('shopUpvoteCount');
   if(shopUpvoted){
@@ -5204,12 +5242,10 @@ async function toggleShopUpvote(){
     const { error } = await sb.from('shop_upvotes').insert({ seller_id: sellerId, client_id: session.user.id });
     if(error){ alert('Erreur : '+error.message); return; }
     shopUpvoted = true;
-    pixelFlameBurst(btn);
+    shopUpvoteBurst(btn);
   }
   if(btn) btn.classList.toggle('upvoted', shopUpvoted);
   if(countEl) countEl.textContent = Math.max(0, (parseInt(countEl.textContent,10)||0) + (shopUpvoted ? 1 : -1));
-  const statVal = $('shopStatsCard-upvoteVal');
-  if(statVal) statVal.textContent = Math.max(0, (parseInt(statVal.textContent,10)||0) + (shopUpvoted ? 1 : -1));
 }
 function shadeColor(hex, percent){
   hex = (hex||'#ff8c1a').trim().replace('#','');
@@ -5238,6 +5274,71 @@ function pixelFlameBurst(el){
     p.style.setProperty('--dx', dx+'px');
     p.style.setProperty('--dy', dy+'px');
     p.style.animationDelay = (Math.random()*90)+'ms';
+    document.body.appendChild(p);
+    p.addEventListener('animationend', () => p.remove());
+  }
+}
+// Lit la texture actuellement affichée sur la bannière de la boutique ouverte (classe tex-* posée sur
+// le calque de texture réel), pour que l'animation du bouton upvote fasse écho au décor choisi par le
+// vendeur plutôt que d'avoir toujours le même effet.
+function currentShopTextureKey(){
+  const layer = document.querySelector('#shopHeaderCard .shop-texture-layer');
+  if(!layer) return 'none';
+  const found = SHOP_TEXTURE_PRESETS.find(t => layer.classList.contains(t.cls));
+  return found ? found.key : 'none';
+}
+const SHOP_UPVOTE_FX_CONFIG = {
+  dots:    { cls:'shop-upvote-fx-dot',  count:14, spawn:'radial',   distMin:22, distMax:50 },
+  scan:    { cls:'shop-upvote-fx-scan', count:10, spawn:'horizontal', distMin:50, distMax:110 },
+  grid:    { cls:'shop-upvote-fx-grid', count:10, spawn:'radial8',  distMin:24, distMax:46 },
+  diag:    { cls:'shop-upvote-fx-diag', count:12, spawn:'diagonal', distMin:30, distMax:60 },
+  circuit: { cls:'shop-upvote-fx-node', count:8,  spawn:'radial8',  distMin:20, distMax:44 },
+  noise:   { cls:'shop-upvote-fx-noise', count:22, spawn:'random',  distMin:10, distMax:34 },
+};
+// Animation du bouton upvote sur la page boutique : par défaut (pas de texture choisie) on garde la
+// flamme 8-bit existante ; sinon, un effet différent par texture.
+function shopUpvoteBurst(el){
+  if(!el) return;
+  const texKey = currentShopTextureKey();
+  const cfg = SHOP_UPVOTE_FX_CONFIG[texKey];
+  if(!cfg){ pixelFlameBurst(el); return; }
+  const accent = (getComputedStyle(el).getPropertyValue('--accent') || '#ff8c1a').trim();
+  const colors = [accent, shadeColor(accent, 0.55), shadeColor(accent, -0.3)];
+  const rect = el.getBoundingClientRect();
+  const originX = rect.left + rect.width/2;
+  const originY = rect.top + rect.height/2;
+  for(let i=0;i<cfg.count;i++){
+    const p = document.createElement('div');
+    p.className = 'shop-upvote-fx ' + cfg.cls;
+    let dx, dy;
+    if(cfg.spawn === 'radial'){
+      const angle = (Math.PI*2*i/cfg.count) + (Math.random()-0.5)*0.4;
+      const dist = cfg.distMin + Math.random()*(cfg.distMax-cfg.distMin);
+      dx = Math.cos(angle)*dist; dy = Math.sin(angle)*dist;
+    } else if(cfg.spawn === 'radial8'){
+      const angle = (Math.PI*2*(i % 8)/8);
+      const dist = cfg.distMin + Math.random()*(cfg.distMax-cfg.distMin);
+      dx = Math.cos(angle)*dist; dy = Math.sin(angle)*dist;
+    } else if(cfg.spawn === 'horizontal'){
+      const dir = i % 2 === 0 ? 1 : -1;
+      dx = dir * (cfg.distMin + Math.random()*(cfg.distMax-cfg.distMin));
+      dy = (Math.random()-0.5)*14;
+    } else if(cfg.spawn === 'diagonal'){
+      const dir = (i % 4 < 2) ? 1 : -1;
+      const updown = (i % 2 === 0) ? 1 : -1;
+      const dist = (cfg.distMin + Math.random()*(cfg.distMax-cfg.distMin)) / Math.SQRT2;
+      dx = dir*dist; dy = updown*dist;
+    } else {
+      const angle = Math.random()*Math.PI*2;
+      const dist = cfg.distMin + Math.random()*(cfg.distMax-cfg.distMin);
+      dx = Math.cos(angle)*dist; dy = Math.sin(angle)*dist;
+    }
+    p.style.left = originX+'px'; p.style.top = originY+'px';
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    if(texKey === 'grid'){ p.style.borderColor = color; } else { p.style.background = color; }
+    p.style.setProperty('--dx', dx+'px');
+    p.style.setProperty('--dy', dy+'px');
+    p.style.animationDelay = (Math.random()*(texKey==='noise' ? 40 : 80))+'ms';
     document.body.appendChild(p);
     p.addEventListener('animationend', () => p.remove());
   }
@@ -6206,9 +6307,14 @@ async function fetchSellerShopStats(sellerId){
 function renderShopStats(box, stats){
   if(!box) return;
   const d = T[LANG];
+  // Sur la page boutique, le nombre d'upvotes est maintenant affiché directement sur le bouton upvote
+  // de la bannière (visible propriétaire comme visiteur) : on ne le duplique plus ici. Le profil public
+  // (autre box) garde cette tuile telle quelle.
+  const isShopPage = box.id === 'shopStatsCard';
   const upvoteStatHtml = `<div class="career-stat"><div class="val" id="${box.id}-upvoteVal">${stats ? (stats.upvoteCount||0) : 0}</div><div class="lbl">${d.shopUpvotesLbl}</div></div>`;
   if(!stats || !stats.salesCount){
-    box.innerHTML = `<h3 data-i18n="shopStatsTitle">${d.shopStatsTitle}</h3><div class="career-stats-grid">${upvoteStatHtml}</div><p class="muted">${d.shopStatsNoData}</p>`;
+    const emptyGrid = isShopPage ? '' : `<div class="career-stats-grid">${upvoteStatHtml}</div>`;
+    box.innerHTML = `<h3 data-i18n="shopStatsTitle">${d.shopStatsTitle}</h3>${emptyGrid}<p class="muted">${d.shopStatsNoData}</p>`;
     return;
   }
   box.innerHTML = `
@@ -6218,7 +6324,7 @@ function renderShopStats(box, stats){
       <div class="career-stat"><div class="val">${stats.salesCount}</div><div class="lbl">${d.shopSalesCount}</div></div>
       <div class="career-stat"><div class="val">${stats.itemsSold}</div><div class="lbl">${d.shopItemsSold}</div></div>
       <div class="career-stat career-stat-expensive"><div class="val val-sm">${stats.mostExpensive ? stats.mostExpensive.name + ' ('+fmt(stats.mostExpensive.price)+')' : '—'}</div><div class="lbl">${d.shopMostExpensive}</div></div>
-      ${upvoteStatHtml}
+      ${isShopPage ? '' : upvoteStatHtml}
     </div>
   `;
 }

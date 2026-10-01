@@ -6285,11 +6285,38 @@ function renderSellerAchievements(unlockedSet, stats, boxId){
 }
 let shopAchvExpanded = false;
 let shopAchvHasOverflow = false;
+// Sur mobile, les succès défilent horizontalement (overflow-x), donc pas besoin du bouton "voir tout" :
+// on affiche juste tous les badges et on laisse l'utilisateur glisser. Sur desktop, la ligne est coupée
+// (overflow:hidden) : on mesure précisément combien de badges COMPLETS tiennent dans la largeur dispo et
+// on masque le reste, plutôt que de laisser le dernier badge visible coupé à moitié par le clip CSS.
 function updateShopAchvViewAllVisibility(){
   const grid = document.querySelector('#shopAchvCard .achv-grid-collapsible');
   const btn = $('shopAchvViewAllBtn');
   if(!grid || !btn) return;
-  if(!shopAchvExpanded) shopAchvHasOverflow = grid.scrollWidth > grid.clientWidth + 2;
+  const badges = Array.from(grid.querySelectorAll('.achv-badge'));
+  const isMobile = window.matchMedia('(max-width:640px)').matches;
+  if(isMobile){
+    badges.forEach(b => { b.style.display = ''; });
+    shopAchvHasOverflow = false;
+    btn.hidden = true;
+    return;
+  }
+  if(shopAchvExpanded){
+    badges.forEach(b => { b.style.display = ''; });
+    btn.hidden = !shopAchvHasOverflow;
+    return;
+  }
+  badges.forEach(b => { b.style.display = ''; });
+  const containerWidth = grid.clientWidth;
+  const gap = parseFloat(getComputedStyle(grid).columnGap) || 0;
+  let used = 0, fitCount = 0;
+  for(let i=0;i<badges.length;i++){
+    const w = badges[i].offsetWidth;
+    const next = used + (fitCount>0 ? gap : 0) + w;
+    if(next <= containerWidth + 0.5){ used = next; fitCount++; } else break;
+  }
+  shopAchvHasOverflow = fitCount < badges.length;
+  badges.forEach((b,i) => { b.style.display = i < fitCount ? '' : 'none'; });
   btn.hidden = !shopAchvHasOverflow;
 }
 function toggleShopAchvExpanded(){
@@ -6298,6 +6325,7 @@ function toggleShopAchvExpanded(){
   if(card) card.classList.toggle('achv-expanded', shopAchvExpanded);
   const btn = $('shopAchvViewAllBtn');
   if(btn) btn.textContent = shopAchvExpanded ? T[LANG].viewLessAchvBtn : T[LANG].viewAllAchvBtn;
+  updateShopAchvViewAllVisibility();
 }
 let shopAchvResizeTimer = null;
 window.addEventListener('resize', () => {

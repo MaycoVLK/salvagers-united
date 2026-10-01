@@ -733,33 +733,37 @@
     100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.3); opacity:0;}
   }
 
-  /* --- ANIMATIONS D'UPVOTE PAR TEXTURE : chaque texture de boutique a sa propre petite animation au clic,
-     pour que le bouton upvote fasse écho au décor choisi par le vendeur plutôt qu'un seul effet générique. --- */
-  .shop-upvote-fx{position:fixed; pointer-events:none; z-index:9999; image-rendering:pixelated;}
+  /* --- ANIMATIONS D'UPVOTE PAR TEXTURE : chaque texture de boutique a sa propre animation au clic, pour
+     que le bouton upvote fasse écho au décor choisi par le vendeur plutôt qu'un seul effet générique.
+     Liseré sombre + halo sur chaque particule pour qu'elles ressortent même sur le fond plein (accent)
+     du bouton une fois survolé/upvoté — sans ce liseré, une particule de la même teinte que l'accent se
+     fond presque dans le bouton dès son apparition. */
+  .shop-upvote-fx{position:fixed; pointer-events:none; z-index:9999; image-rendering:pixelated;
+    box-shadow:0 0 0 1.5px rgba(2,8,5,.85), 0 1px 3px rgba(0,0,0,.55);}
   /* Points : bulles rondes qui éclatent en cercle (écho des points de la texture). */
-  .shop-upvote-fx-dot{width:5px; height:5px; border-radius:50%; animation:pixelPop .6s ease-out forwards;}
+  .shop-upvote-fx-dot{width:9px; height:9px; border-radius:50%; animation:pixelPop .65s ease-out forwards;}
   @keyframes pixelPop{
     0%{transform:translate(-50%,-50%) scale(.4); opacity:1;}
     55%{opacity:1;}
     100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1); opacity:0;}
   }
-  /* Scanlines : traits fins qui filent à l'horizontale façon balayage CRT. */
-  .shop-upvote-fx-scan{width:16px; height:3px; animation:pixelScanShot .5s ease-out forwards;}
+  /* Scanlines : traits filent à l'horizontale façon balayage CRT. */
+  .shop-upvote-fx-scan{width:26px; height:5px; animation:pixelScanShot .5s ease-out forwards;}
   @keyframes pixelScanShot{
     0%{transform:translate(-50%,-50%) scaleX(.3); opacity:1;}
     100%{transform:translate(calc(-50% + var(--dx)), -50%) scaleX(1); opacity:0;}
   }
-  /* Grille : petits carrés creux (contour seulement) qui se matérialisent en s'agrandissant. */
-  .shop-upvote-fx-grid{width:8px; height:8px; border:2px solid; background:transparent; animation:pixelGridSnap .55s ease-out forwards;}
+  /* Grille : carrés creux (contour seulement) qui se matérialisent en s'agrandissant. */
+  .shop-upvote-fx-grid{width:11px; height:11px; border:3px solid; background:transparent; animation:pixelGridSnap .55s ease-out forwards;}
   @keyframes pixelGridSnap{
     0%{transform:translate(-50%,-50%) scale(.3); opacity:1;}
     65%{opacity:1;}
     100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.7); opacity:0;}
   }
   /* Diagonales : particules tirées en diagonale, dans l'axe des bandes de la texture. */
-  .shop-upvote-fx-diag{width:6px; height:6px; animation:pixelFlame .55s steps(4) forwards;}
+  .shop-upvote-fx-diag{width:9px; height:9px; animation:pixelFlame .55s steps(4) forwards;}
   /* Circuit : nœuds qui clignotent en s'allumant façon mise sous tension d'un circuit. */
-  .shop-upvote-fx-node{width:6px; height:6px; animation:pixelNodeBlink .7s steps(2) forwards;}
+  .shop-upvote-fx-node{width:10px; height:10px; animation:pixelNodeBlink .7s steps(2) forwards;}
   @keyframes pixelNodeBlink{
     0%{transform:translate(-50%,-50%) scale(.2); opacity:0;}
     15%{opacity:1; transform:translate(-50%,-50%) scale(1.3);}
@@ -767,8 +771,8 @@
     48%{opacity:1;}
     100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1); opacity:0;}
   }
-  /* Grain : minuscules pixels qui crépitent façon parasites télé avant de se dissiper. */
-  .shop-upvote-fx-noise{width:3px; height:3px; animation:pixelStaticFlicker .45s steps(3) forwards;}
+  /* Grain : pixels qui crépitent façon parasites télé avant de se dissiper. */
+  .shop-upvote-fx-noise{width:6px; height:6px; animation:pixelStaticFlicker .45s steps(3) forwards;}
   @keyframes pixelStaticFlicker{
     0%{opacity:1; transform:translate(-50%,-50%);}
     25%{opacity:.2;}
@@ -802,7 +806,8 @@
   .shop-banner-meta .shop-owner-box:hover{border-color:var(--accent); transform:none;}
   .shop-banner-meta .shop-owner-box .courier-box-name{font-family:inherit; font-size:.7rem; color:var(--accent);
     text-decoration:none; text-transform:uppercase; letter-spacing:.4px; margin:0; line-height:1.3; white-space:nowrap;}
-  .shop-banner-row .shop-upvote-btn{flex:none;}
+  .shop-banner-actions{display:flex; align-items:center; gap:10px; flex:none;}
+  .shop-banner-actions .shop-upvote-btn{flex:none;}
   /* Fond semi-opaque derrière la description : sans ça, certaines textures (grille/scanlines) rendent
      le texte difficile à lire par-dessus. */
   .shop-banner-card .shop-description{position:relative; z-index:1; margin:16px 0 0; padding:12px 14px;
@@ -814,7 +819,7 @@
     .shop-banner-title-row{justify-content:center;}
     .shop-banner-title-row h1{flex:none; font-size:1.4rem; text-align:center;}
     .shop-banner-meta{justify-content:center;}
-    .shop-banner-row .shop-upvote-btn{width:100%; justify-content:center;}
+    .shop-banner-actions{width:100%; justify-content:center;}
   }
 
   /* --- STATS & SUCCÈS SUR LA PAGE BOUTIQUE : mis en valeur mais compact (#pubSellerStatsCard/#pubSellerAchvCard
@@ -1839,13 +1844,6 @@
             <div class="shop-banner-id">
               <div class="shop-banner-title-row">
                 <h1 id="shopPageTitle">—</h1>
-                <button type="button" class="gear-btn shop-edit-gear-btn" id="shopEditGearBtn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique" hidden>
-                  <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                    <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
-                    <rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/>
-                    <rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/>
-                  </g></svg>
-                </button>
               </div>
               <div class="shop-banner-meta">
                 <div class="shop-loc-tag" id="shopLocTag" hidden></div>
@@ -1854,13 +1852,24 @@
                 </div>
               </div>
             </div>
-            <button type="button" class="shop-upvote-btn" id="shopUpvoteBtn" onclick="toggleShopUpvote()">
-              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                <rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/>
-              </g></svg>
-              <span class="shop-upvote-label" data-i18n="upvoteBtn">UPVOTE</span>
-              <span class="shop-upvote-count" id="shopUpvoteCount">0</span>
-            </button>
+            <!-- Modifier + Upvote regroupés dans le même bloc, pour qu'ils soient alignés sur la même
+                 ligne plutôt que le crayon collé en haut du titre et l'upvote centré plus bas. -->
+            <div class="shop-banner-actions">
+              <button type="button" class="gear-btn shop-edit-gear-btn" id="shopEditGearBtn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique" hidden>
+                <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                  <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
+                  <rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/>
+                  <rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/>
+                </g></svg>
+              </button>
+              <button type="button" class="shop-upvote-btn" id="shopUpvoteBtn" onclick="toggleShopUpvote()">
+                <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                  <rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/>
+                </g></svg>
+                <span class="shop-upvote-label" data-i18n="upvoteBtn">UPVOTE</span>
+                <span class="shop-upvote-count" id="shopUpvoteCount">0</span>
+              </button>
+            </div>
           </div>
           <div class="shop-description" id="shopDescription" hidden></div>
         </div>
@@ -5288,12 +5297,12 @@ function currentShopTextureKey(){
   return found ? found.key : 'none';
 }
 const SHOP_UPVOTE_FX_CONFIG = {
-  dots:    { cls:'shop-upvote-fx-dot',  count:14, spawn:'radial',   distMin:22, distMax:50 },
-  scan:    { cls:'shop-upvote-fx-scan', count:10, spawn:'horizontal', distMin:50, distMax:110 },
-  grid:    { cls:'shop-upvote-fx-grid', count:10, spawn:'radial8',  distMin:24, distMax:46 },
-  diag:    { cls:'shop-upvote-fx-diag', count:12, spawn:'diagonal', distMin:30, distMax:60 },
-  circuit: { cls:'shop-upvote-fx-node', count:8,  spawn:'radial8',  distMin:20, distMax:44 },
-  noise:   { cls:'shop-upvote-fx-noise', count:22, spawn:'random',  distMin:10, distMax:34 },
+  dots:    { cls:'shop-upvote-fx-dot',  count:14, spawn:'radial',   distMin:30, distMax:68 },
+  scan:    { cls:'shop-upvote-fx-scan', count:9,  spawn:'horizontal', distMin:60, distMax:130 },
+  grid:    { cls:'shop-upvote-fx-grid', count:10, spawn:'radial8',  distMin:30, distMax:60 },
+  diag:    { cls:'shop-upvote-fx-diag', count:12, spawn:'diagonal', distMin:38, distMax:76 },
+  circuit: { cls:'shop-upvote-fx-node', count:8,  spawn:'radial8',  distMin:26, distMax:56 },
+  noise:   { cls:'shop-upvote-fx-noise', count:18, spawn:'random',  distMin:14, distMax:44 },
 };
 // Animation du bouton upvote sur la page boutique : par défaut (pas de texture choisie) on garde la
 // flamme 8-bit existante ; sinon, un effet différent par texture.
@@ -5303,7 +5312,7 @@ function shopUpvoteBurst(el){
   const cfg = SHOP_UPVOTE_FX_CONFIG[texKey];
   if(!cfg){ pixelFlameBurst(el); return; }
   const accent = (getComputedStyle(el).getPropertyValue('--accent') || '#ff8c1a').trim();
-  const colors = [accent, shadeColor(accent, 0.55), shadeColor(accent, -0.3)];
+  const colors = [accent, shadeColor(accent, 0.55), shadeColor(accent, 0.9), shadeColor(accent, -0.3)];
   const rect = el.getBoundingClientRect();
   const originX = rect.left + rect.width/2;
   const originY = rect.top + rect.height/2;

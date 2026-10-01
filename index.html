@@ -5799,7 +5799,7 @@ function renderCourierAvailToggle(){
         <strong>${d.availForDeliveryTitle}</strong>
         <p class="muted" style="margin:4px 0 0;">${d.availForDeliveryHint}</p>
       </div>
-      <button class="lang-btn${on ? ' active' : ''}" style="min-width:160px;" onclick="toggleAvailForDelivery()">${on ? d.availForDeliveryOn : d.availForDeliveryOff}</button>
+      <button class="${on ? 'btn-primary' : 'btn-secondary'}" style="min-width:170px;" onclick="toggleAvailForDelivery()">${on ? d.availForDeliveryOn : d.availForDeliveryOff}</button>
     </div>`;
 }
 async function toggleAvailForDelivery(){

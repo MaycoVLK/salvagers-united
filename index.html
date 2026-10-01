@@ -116,6 +116,7 @@
   .profile-header-row{display:flex; gap:16px; flex-wrap:wrap; align-items:stretch; margin-bottom:22px;}
   .profile-header-row .card{margin-bottom:0;}
   .profile-id-card{flex:1 1 220px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:4px;}
+  #pubSendMsgBtn{margin-top:8px;}
   .profile-id-card .avatar-wrap.big{margin:0 0 6px;}
   .profile-hero-id{display:flex; flex-direction:column; gap:2px;}
   .profile-hero-rsi{font-family:'VT323',monospace; font-size:1.6rem; color:var(--text); letter-spacing:.5px; line-height:1.1;}
@@ -330,11 +331,25 @@
   .msg-thread-back:hover{color:var(--accent);}
   .msg-thread-clear{flex:none; background:none; border:1px solid var(--border); color:var(--muted); font-family:'VT323',monospace; font-size:.8rem; letter-spacing:1px; text-transform:uppercase; padding:5px 10px; border-radius:4px; cursor:pointer;}
   .msg-thread-clear:hover{border-color:var(--danger); color:var(--danger);}
-  .msg-thread-items{display:flex; flex-direction:column; gap:10px;}
+  #msgThreadView{display:flex; flex-direction:column; max-height:calc(70vh - 24px);}
+  .msg-thread-items{display:flex; flex-direction:column; gap:10px; overflow-y:auto; flex:1 1 auto; min-height:80px;}
   .msg-kind-label{display:inline-block; font-size:.68rem; text-transform:uppercase; letter-spacing:.5px; color:var(--accent); border:1px solid var(--accent-dim); border-radius:3px; padding:2px 6px; margin-bottom:6px;}
+  .msg-compose{display:flex; gap:6px; margin-top:10px; padding-top:10px; border-top:1px solid var(--border); flex:none;}
+  .msg-compose-input{flex:1; min-width:0; background:var(--bg2); border:1px solid var(--border); border-radius:4px; color:var(--text); padding:8px 10px; font-family:inherit; font-size:.9rem;}
+  .msg-compose-input:focus{outline:none; border-color:var(--accent);}
+  .msg-compose-send{flex:none; width:38px; height:38px; display:flex; align-items:center; justify-content:center; padding:0;}
+  .msg-compose-send .icon{width:16px; height:16px;}
+  .chat-bubble-row{display:flex;}
+  .chat-bubble-row.mine{justify-content:flex-end;}
+  .chat-bubble-row.theirs{justify-content:flex-start;}
+  .chat-bubble{max-width:78%; border-radius:10px; padding:7px 10px; background:var(--bg2); border:1px solid var(--border);}
+  .chat-bubble-row.mine .chat-bubble{background:var(--accent-dim); border-color:var(--accent);}
+  .chat-bubble-text{font-size:.88rem; color:var(--text); white-space:pre-wrap; word-break:break-word;}
+  .chat-bubble-time{font-size:.62rem; color:var(--muted); text-align:right; margin-top:3px;}
   @media (max-width:480px){
     .messages-panel{position:fixed; top:60px; left:8px; right:8px; width:auto; max-width:none;}
     .online-panel{position:fixed; top:60px; left:8px; right:8px; width:auto; max-width:none;}
+    #msgThreadView{max-height:calc(100vh - 140px);}
   }
   .settings-panel{position:absolute; top:48px; right:0; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:14px; min-width:210px; box-shadow:0 10px 26px rgba(0,0,0,.55); z-index:60; display:flex; flex-direction:column; gap:12px;}
   .settings-panel .row-label{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;}
@@ -970,6 +985,12 @@
                 <button type="button" class="msg-thread-clear" onclick="clearMsgConversation()" data-i18n="msgClearBtn">CLEAR</button>
               </div>
               <div id="msgThreadItems" class="msg-thread-items"></div>
+              <form id="msgComposeForm" class="msg-compose" onsubmit="return submitChatMessage(event)">
+                <input type="text" id="msgComposeInput" class="msg-compose-input" data-i18n-ph="msgComposePh" placeholder="Écris un message…" maxlength="1000" autocomplete="off">
+                <button type="submit" class="btn-primary msg-compose-send" aria-label="Envoyer" title="Envoyer">
+                  <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="1" y="7" width="1" height="2"/><rect x="2" y="6" width="1" height="1"/><rect x="2" y="9" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="3" y="10" width="1" height="1"/><rect x="2" y="7" width="11" height="2"/><rect x="11" y="5" width="2" height="1"/><rect x="11" y="10" width="2" height="1"/><rect x="13" y="4" width="1" height="1"/><rect x="13" y="11" width="1" height="1"/></g></svg>
+                </button>
+              </form>
             </div>
           </div>
         </div>
@@ -1333,6 +1354,7 @@
             <div class="profile-hero-rsi" id="pubHeroRsi">—</div>
             <div class="profile-hero-discord" id="pubHeroDiscord">—</div>
           </div>
+          <button type="button" class="btn-primary" id="pubSendMsgBtn" onclick="openMsgThreadWithUser(viewingProfileId)" data-i18n="sendMessageBtn" hidden>ENVOYER UN MESSAGE</button>
         </div>
         <div class="card profile-ship-card" id="pubShipHeroCard" hidden>
           <div class="ship-photo-preview-wrap">
@@ -2031,6 +2053,8 @@ const T = {
     receivedInquiriesTitle:"Propositions reçues", noReceivedInquiries:"Aucune proposition reçue pour le moment.",
     sellerMktHistoryLabel:"Historique des ventes", sellerMktHistoryEmpty:"Aucune vente terminée pour le moment.",
     messagesTitle:"Messagerie", msgNoConversations:"Aucun message pour le moment.",
+    msgNewConversation:"Nouvelle conversation. Écris le premier message !", msgComposePh:"Écris un message…", msgSendBtn:"Envoyer", msgYouPrefix:"Toi : ",
+    sendMessageBtn:"ENVOYER UN MESSAGE",
     msgKindInqReceived:"Offre marketplace reçue", msgKindInqSent:"Demande marketplace envoyée",
     msgKindOfferReceived:"Offre reçue sur ton objet recherché", msgKindOfferSent:"Proposition envoyée pour un objet recherché",
     inquiryStatus:{pending:"En attente", accepted:"Acceptée", rejected:"Refusée", completed:"Terminée", countered:"Contre-offre", cancelled:"Annulée"},
@@ -2167,6 +2191,8 @@ const T = {
     receivedInquiriesTitle:"Received offers", noReceivedInquiries:"No offers received yet.",
     sellerMktHistoryLabel:"Sales history", sellerMktHistoryEmpty:"No completed sales yet.",
     messagesTitle:"Messages", msgNoConversations:"No messages yet.",
+    msgNewConversation:"New conversation. Write the first message!", msgComposePh:"Write a message…", msgSendBtn:"Send", msgYouPrefix:"You: ",
+    sendMessageBtn:"SEND A MESSAGE",
     msgKindInqReceived:"Marketplace offer received", msgKindInqSent:"Marketplace request sent",
     msgKindOfferReceived:"Offer received on your desired item", msgKindOfferSent:"Proposal sent for a desired item",
     inquiryStatus:{pending:"Pending", accepted:"Accepted", rejected:"Rejected", completed:"Completed", countered:"Countered", cancelled:"Cancelled"},
@@ -2278,7 +2304,7 @@ async function markCategoryRead(category){
 }
 function toggleDot(id, show){ const el = $(id); if(el) el.classList.toggle('show', !!show); }
 // --- MESSAGERIE : pastilles par message (mêmes principes que markListingSeen, mais génériques à toute catégorie) ---
-const msgUnreadSets = { client_marketplace:new Set(), seller_marketplace:new Set(), seller_resource_offer:new Set() };
+const msgUnreadSets = { client_marketplace:new Set(), seller_marketplace:new Set(), seller_resource_offer:new Set(), direct_message:new Set() };
 async function loadMsgUnreadSet(category){
   if(!session) return new Set();
   const { data } = await sb.from('notifications').select('ref_id').eq('user_id',session.user.id).eq('category',category).eq('read',false).not('ref_id','is',null);
@@ -2295,7 +2321,7 @@ async function refreshNotifBadges(){
   if(!session || !profile) return;
   const isSeller = profile.is_seller || profile.role==='admin';
   const isAdmin = profile.role==='admin';
-  const [sellerCnt, resOfferCnt, mktCnt, clientResOfferCnt, newListingCnt, ordCnt, courierCnt, resCnt, courierAppCnt, sellerAppCnt] = await Promise.all([
+  const [sellerCnt, resOfferCnt, mktCnt, clientResOfferCnt, newListingCnt, ordCnt, courierCnt, resCnt, courierAppCnt, sellerAppCnt, dmCnt] = await Promise.all([
     isSeller ? getUnreadCount('seller_marketplace') : Promise.resolve(0),
     // Pas de garde-fou "isSeller" ici (contrairement à seller_marketplace ci-dessus) : la pastille par
     // conversation dans la messagerie (loadMsgUnreadSet) ne filtre déjà pas selon ce flag, donc si on le
@@ -2309,7 +2335,8 @@ async function refreshNotifBadges(){
     (profile.is_courier || profile.role==='admin') ? getUnreadCount('courier_pending') : Promise.resolve(0),
     getUnreadCount('client_resources'),
     isAdmin ? getUnreadCount('admin_courier_app') : Promise.resolve(0),
-    isAdmin ? getUnreadCount('admin_seller_app') : Promise.resolve(0)
+    isAdmin ? getUnreadCount('admin_seller_app') : Promise.resolve(0),
+    getUnreadCount('direct_message')
   ]);
   const sellerTotal = sellerCnt + resOfferCnt;
   const clientMsgTotal = mktCnt + clientResOfferCnt;
@@ -2321,7 +2348,7 @@ async function refreshNotifBadges(){
   toggleDot('dotTabDeliveries', ordCnt>0);
   toggleDot('dotTabPending', courierCnt>0);
   toggleDot('dotTabResources', resCnt>0);
-  toggleDot('dotMessagesMain', (clientMsgTotal+sellerTotal)>0);
+  toggleDot('dotMessagesMain', (clientMsgTotal+sellerTotal+dmCnt)>0);
 }
 
 const COLORS = ['orange','vert','bleu','violet','blanc','jaune'];
@@ -2494,6 +2521,46 @@ function openMsgList(){
   loadMsgConversations();
 }
 function closeMsgThread(){ openMsgList(); }
+// Démarre (ou rouvre) un chat libre avec n'importe quel joueur, même sans demande/offre en cours —
+// typiquement depuis le bouton "Envoyer un message" d'une fiche profil. Si une conversation existe déjà
+// (demande, offre, ou messages précédents), on l'ouvre telle quelle ; sinon on crée un groupe vide dans le
+// cache pour que le fil (et son champ de saisie) s'affiche immédiatement, prêt à recevoir le 1er message.
+async function openMsgThreadWithUser(counterpartId){
+  if(!counterpartId || !session) return;
+  if(counterpartId === session.user.id) return;
+  if(!msgConversationsCache[counterpartId]){
+    msgConversationsCache[counterpartId] = { id: counterpartId, items: [], lastAt: new Date().toISOString(), unread:false };
+  }
+  openMessagesPanel();
+  await openMsgThread(counterpartId);
+}
+async function submitChatMessage(ev){
+  ev.preventDefault();
+  const input = $('msgComposeInput');
+  const text = input ? input.value.trim() : '';
+  if(!text || !currentMsgThreadPartnerId) return false;
+  input.value = '';
+  await sendChatMessage(currentMsgThreadPartnerId, text);
+  return false;
+}
+async function sendChatMessage(counterpartId, text){
+  if(!session || !counterpartId || !text) return;
+  const { data, error } = await sb.from('direct_messages')
+    .insert({ sender_id: session.user.id, recipient_id: counterpartId, content: text })
+    .select().single();
+  if(error){ alert('Erreur : '+error.message); return; }
+  pushNotification(counterpartId, 'direct_message', data.id);
+  // Affichage optimiste : on ajoute directement le message au groupe en cache et on ré-affiche le fil,
+  // sans attendre un rechargement complet (loadMsgConversations) qui re-fait plusieurs requêtes réseau.
+  let g = msgConversationsCache[counterpartId];
+  if(!g){ g = { id: counterpartId, items: [], lastAt: data.created_at, unread:false }; msgConversationsCache[counterpartId] = g; }
+  g.items.push({ ...data, __kind:'chat_sent' });
+  g.lastAt = data.created_at;
+  if(currentMsgThreadPartnerId === counterpartId){
+    await renderMsgThreadItems(g);
+    scrollMsgThreadToBottom();
+  }
+}
 // "Clear" une conversation : vide l'AFFICHAGE de son contenu (stocké localement dans ce navigateur, par
 // joueur) sans jamais supprimer les demandes/offres réelles ni faire disparaître la conversation de la
 // liste de messagerie. Les éléments encore en attente d'une réponse restent visibles (voir renderMsgThreadItems).
@@ -2548,21 +2615,41 @@ function msgKindLabel(kind){
   const d = T[LANG];
   return { inq_received:d.msgKindInqReceived, inq_sent:d.msgKindInqSent, offer_received:d.msgKindOfferReceived, offer_sent:d.msgKindOfferSent }[kind] || '';
 }
+// Échappe le texte libre saisi par les joueurs (chat) avant de l'insérer en HTML, pour éviter toute
+// injection via innerHTML — contrairement aux autres champs du site (noms d'items, etc.) qui sont semi-
+// structurés, le chat est un champ 100% libre écrit par n'importe quel joueur envers n'importe quel autre.
+function escapeHtml(s){
+  const div = document.createElement('div');
+  div.textContent = s == null ? '' : String(s);
+  return div.innerHTML;
+}
+function msgConvPreviewHtml(latest, uid){
+  const d = T[LANG];
+  if(!latest) return `<span class="muted">${d.msgNewConversation}</span>`;
+  if(latest.__kind === 'chat_sent' || latest.__kind === 'chat_received'){
+    const prefix = latest.__kind === 'chat_sent' ? d.msgYouPrefix : '';
+    const snippet = escapeHtml((latest.content||'').slice(0,60));
+    return `${prefix}${snippet}`;
+  }
+  return `${msgKindLabel(latest.__kind)} — ${inquiryStatusBadge(latest.status)}`;
+}
 let msgConversationsCache = {};
 let currentMsgThreadPartnerId = null;
 async function loadMsgConversations(){
   const box = $('msgConversationsList'); if(!box || !session) return;
   const d = T[LANG];
   const uid = session.user.id;
-  const [inqRes, offRes, unreadClientMkt, unreadSellerMkt, unreadResOffer, unreadClientResOffer] = await Promise.all([
+  const [inqRes, offRes, dmRes, unreadClientMkt, unreadSellerMkt, unreadResOffer, unreadClientResOffer, unreadDm] = await Promise.all([
     sb.from('marketplace_inquiries').select('*').or(`buyer_id.eq.${uid},seller_id.eq.${uid}`).order('created_at',{ascending:false}),
     sb.from('resource_offers').select('*').or(`client_id.eq.${uid},seller_id.eq.${uid}`).order('created_at',{ascending:false}),
+    sb.from('direct_messages').select('*').or(`sender_id.eq.${uid},recipient_id.eq.${uid}`).order('created_at',{ascending:false}).limit(500),
     loadMsgUnreadSet('client_marketplace'),
     loadMsgUnreadSet('seller_marketplace'),
     loadMsgUnreadSet('seller_resource_offer'),
-    loadMsgUnreadSet('client_resource_offer')
+    loadMsgUnreadSet('client_resource_offer'),
+    loadMsgUnreadSet('direct_message')
   ]);
-  const unreadIds = new Set([...unreadClientMkt, ...unreadSellerMkt, ...unreadResOffer, ...unreadClientResOffer]);
+  const unreadIds = new Set([...unreadClientMkt, ...unreadSellerMkt, ...unreadResOffer, ...unreadClientResOffer, ...unreadDm]);
   const groups = {};
   function addItem(item, kind, counterpartId){
     if(!counterpartId) return;
@@ -2580,6 +2667,17 @@ async function loadMsgConversations(){
     const iAmSeller = r.seller_id === uid; // seller_id = celui qui a posté l'objet recherché (destinataire de l'offre)
     addItem(r, iAmSeller ? 'offer_received' : 'offer_sent', iAmSeller ? r.client_id : r.seller_id);
   });
+  (dmRes.data||[]).forEach(r => {
+    const iAmSender = r.sender_id === uid;
+    addItem(r, iAmSender ? 'chat_sent' : 'chat_received', iAmSender ? r.recipient_id : r.sender_id);
+  });
+  // Un chat libre démarré depuis une fiche profil (sans aucune demande/offre) peut avoir été ouvert dans
+  // msgConversationsCache (groupe vide) par openMsgThreadWithUser avant même le premier message envoyé :
+  // on le préserve ici pour ne pas le faire disparaître tant qu'il n'a pas d'item.
+  Object.keys(msgConversationsCache).forEach(id => {
+    const old = msgConversationsCache[id];
+    if(old && old.items.length === 0 && !groups[id]) groups[id] = old;
+  });
   msgConversationsCache = groups;
   const counterpartIds = Object.keys(groups);
   if(!counterpartIds.length){ box.innerHTML = `<p class="muted">${d.msgNoConversations}</p>`; return; }
@@ -2596,7 +2694,7 @@ async function loadMsgConversations(){
         <div class="msg-conv-avatar">${avatarHtml}</div>
         <div class="msg-conv-info">
           <div class="msg-conv-name">${name}${g.unread ? '<span class="new-order-dot" style="position:relative; top:auto; right:auto; display:inline-block; margin-left:6px;"></span>' : ''}</div>
-          <div class="msg-conv-preview">${msgKindLabel(latest.__kind)} — ${inquiryStatusBadge(latest.status)}</div>
+          <div class="msg-conv-preview">${msgConvPreviewHtml(latest, uid)}</div>
         </div>
       </div>`;
   }).join('');
@@ -2605,8 +2703,8 @@ function scrollMsgThreadToBottom(){
   // Fait défiler la messagerie jusqu'au dernier message du fil ouvert (au lieu de rester en haut).
   // On attend une frame pour être sûr que le nouveau contenu (et ses images) a bien été mis en page.
   requestAnimationFrame(() => {
-    const panel = $('messagesPanel');
-    if(panel) panel.scrollTop = panel.scrollHeight;
+    const items = $('msgThreadItems');
+    if(items) items.scrollTop = items.scrollHeight;
   });
 }
 async function openMsgThread(counterpartId){
@@ -2671,11 +2769,23 @@ async function renderMsgThreadItems(g){
   const visibleItems = g.items.filter(it => !clearedAt || new Date(it.created_at) > new Date(clearedAt));
   const sorted = visibleItems.slice().sort((a,b)=> new Date(a.created_at)-new Date(b.created_at));
   const d = T[LANG];
+  const emptyMsg = g.items.length ? d.msgThreadCleared : d.msgNewConversation;
   box.innerHTML = sorted.length ? sorted.map(it => {
     if(it.__kind === 'inq_received' || it.__kind === 'inq_sent') return inquiryThreadItemHtml(it, it.__kind === 'inq_received', lMap[it.listing_id], orderMap[it.order_id], courierMap);
-    return offerThreadItemHtml(it, it.__kind === 'offer_received', rMap[it.request_id]);
-  }).join('') : `<p class="muted">${d.msgThreadCleared}</p>`;
+    if(it.__kind === 'offer_received' || it.__kind === 'offer_sent') return offerThreadItemHtml(it, it.__kind === 'offer_received', rMap[it.request_id]);
+    return chatBubbleHtml(it, it.__kind === 'chat_sent');
+  }).join('') : `<p class="muted">${emptyMsg}</p>`;
   animateShipTracks(box);
+}
+function chatBubbleHtml(item, isMine){
+  const time = new Date(item.created_at).toLocaleTimeString(LANG==='fr'?'fr-FR':'en-US', { hour:'2-digit', minute:'2-digit' });
+  return `
+    <div class="chat-bubble-row ${isMine?'mine':'theirs'}">
+      <div class="chat-bubble">
+        <div class="chat-bubble-text">${escapeHtml(item.content)}</div>
+        <div class="chat-bubble-time">${time}</div>
+      </div>
+    </div>`;
 }
 function inquiryThreadItemHtml(r, iAmSeller, listing, order, courierMap){
   const d = T[LANG];
@@ -6082,6 +6192,10 @@ function subscribeNotifChannel(){
     .on('postgres_changes', { event:'*', schema:'public', table:'notifications', filter:`user_id=eq.${session.user.id}` }, (payload) => {
       refreshNotifBadges();
       if(payload && payload.eventType === 'INSERT' && payload.new){ playNotifSound(payload.new.category); }
+      if(payload && payload.eventType === 'INSERT' && payload.new && payload.new.category === 'direct_message'){
+        // Message reçu en live : on met à jour la liste des conversations, et le fil en cours s'il est ouvert.
+        msgRefreshAfterAction();
+      }
       if(profile && profile.role === 'admin' && !$('view-admin-dash').hidden){ loadCourierApplications(); loadSellerApplications(); }
     })
     .subscribe();
@@ -6224,6 +6338,8 @@ async function openPublicProfile(id){
   if(p.avatar_url){ img.src = p.avatar_url; img.hidden = false; fb.hidden = true; }
   else{ img.hidden = true; fb.hidden = false; fb.textContent = (name[0]||'?').toUpperCase(); }
   renderHeroNames($('pubHeroRsi'), $('pubHeroDiscord'), p);
+  const sendMsgBtn = $('pubSendMsgBtn');
+  if(sendMsgBtn) sendMsgBtn.hidden = !session || id === session.user.id;
   $('pubCareerStatsCard').hidden = true;
   $('pubAchvCard').hidden = true;
   $('pubShopCard').hidden = true;

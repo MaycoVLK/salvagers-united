@@ -127,6 +127,7 @@
   button:active{transform:scale(.96);}
   button:disabled{opacity:.35; cursor:not-allowed;}
   .icon{width:16px; height:16px; flex:none;}
+  .trophy-icon{width:19px; height:17px; color:var(--accent);}
   .btn-primary{background:var(--accent); color:#03130a;}
   .btn-secondary{}
   .toast{position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); background:var(--accent); color:#03130a; padding:10px 18px; border-radius:2px; font-family:'VT323',monospace; font-size:1.1rem; letter-spacing:1px; opacity:0; pointer-events:none; transition:opacity .25s; z-index:80;}
@@ -1034,7 +1035,14 @@
       </div>
       <div id="clientTabMarketplace" hidden>
         <div class="card shop-leaderboard-card">
-          <h3 data-i18n="leaderboardTitle" style="margin-top:0;">🏆 Boutiques de la semaine</h3>
+          <h3 style="margin-top:0; display:flex; align-items:center; gap:8px;">
+            <svg class="icon trophy-icon" viewBox="0 0 8 7" shape-rendering="crispEdges"><g fill="currentColor">
+              <rect x="1" y="0" width="6" height="1"/><rect x="0" y="1" width="8" height="1"/><rect x="1" y="2" width="6" height="1"/>
+              <rect x="2" y="3" width="4" height="1"/><rect x="3" y="4" width="2" height="1"/><rect x="3" y="5" width="2" height="1"/>
+              <rect x="1" y="6" width="6" height="1"/>
+            </g></svg>
+            <span data-i18n="leaderboardTitle">Boutiques de la semaine</span>
+          </h3>
           <div class="shop-leaderboard-grid" id="shopLeaderboardGrid"></div>
         </div>
         <h3 data-i18n="marketplaceFeedTitle" style="margin-top:0;">Derniers objets en vente</h3>
@@ -1978,7 +1986,7 @@ const T = {
     dtWeekdays:["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"],
     tabDeliveries:"LIVRAISONS", tabMarketplace:"MARKETPLACE",
     marketplaceFeedTitle:"Derniers objets en vente", marketplaceEmpty:"Aucun objet en vente pour le moment.",
-    leaderboardTitle:"🏆 Boutiques de la semaine", lbWeeklySalesLbl:"Ventes cette semaine", lbWeeklyUpvotesLbl:"Upvotes cette semaine", lbMostExpensiveLbl:"Objet le plus cher vendu", lbNoDataYet:"Pas encore de données", lbSalesWord:"ventes", lbUpvotesWord:"upvotes",
+    leaderboardTitle:"Boutiques de la semaine", lbWeeklySalesLbl:"Ventes cette semaine", lbWeeklyUpvotesLbl:"Upvotes cette semaine", lbMostExpensiveLbl:"Objet le plus cher vendu", lbNoDataYet:"Pas encore de données", lbSalesWord:"ventes", lbUpvotesWord:"upvotes",
     mktSearchPh:"Rechercher un objet…", filterBtn:"FILTRER", sortNewest:"Plus récent", sortOldest:"Plus ancien", sortPriceAsc:"Prix croissant", sortPriceDesc:"Prix décroissant", mktNoResults:"Aucun objet ne correspond à ta recherche.",
     mktByLbl:"Vendu par", visitShopBtn:"VOIR LA MARKETPLACE",
     roleWords:{client:"client", courier:"coursier", admin:"admin", seller:"vendeur"},
@@ -2113,7 +2121,7 @@ const T = {
     dtWeekdays:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
     tabDeliveries:"DELIVERIES", tabMarketplace:"MARKETPLACE",
     marketplaceFeedTitle:"Latest items for sale", marketplaceEmpty:"No items for sale right now.",
-    leaderboardTitle:"🏆 Shops of the week", lbWeeklySalesLbl:"Sales this week", lbWeeklyUpvotesLbl:"Upvotes this week", lbMostExpensiveLbl:"Most expensive item sold", lbNoDataYet:"No data yet", lbSalesWord:"sales", lbUpvotesWord:"upvotes",
+    leaderboardTitle:"Shops of the week", lbWeeklySalesLbl:"Sales this week", lbWeeklyUpvotesLbl:"Upvotes this week", lbMostExpensiveLbl:"Most expensive item sold", lbNoDataYet:"No data yet", lbSalesWord:"sales", lbUpvotesWord:"upvotes",
     mktSearchPh:"Search for an item…", filterBtn:"FILTER", sortNewest:"Newest first", sortOldest:"Oldest first", sortPriceAsc:"Price: low to high", sortPriceDesc:"Price: high to low", mktNoResults:"No items match your search.",
     mktByLbl:"Sold by", visitShopBtn:"VIEW MARKETPLACE",
     roleWords:{client:"client", courier:"courier", admin:"admin", seller:"seller"},

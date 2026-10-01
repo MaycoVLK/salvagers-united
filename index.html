@@ -259,19 +259,18 @@
 
   .crate-fx-layer{position:fixed; left:0; top:0; width:72px; height:72px; pointer-events:none; z-index:200; overflow:visible; display:none;}
   .crate-fx-layer.run{display:block;}
-  .crate-fx-lines{position:absolute; inset:-6px; border-radius:50%; overflow:hidden; opacity:0;}
-  .crate-fx-lines::before{content:""; position:absolute; inset:-40% -10%; background-image:repeating-linear-gradient(100deg, transparent 0 8px, var(--accent) 8px 10px, transparent 10px 26px); background-size:200% 100%;}
-  .crate-fx-box{position:absolute; left:50%; top:50%; width:34px; height:34px; margin:-17px 0 0 -17px; opacity:0; filter:drop-shadow(0 0 5px var(--accent)) drop-shadow(0 0 12px var(--accent));}
-  .crate-fx-layer.run .crate-fx-lines{animation:crateLinesFade 1s ease forwards;}
-  .crate-fx-layer.run .crate-fx-lines::before{animation:crateLinesScroll 1s linear forwards;}
+  .crate-fx-lines{position:absolute; inset:0; overflow:hidden; opacity:0; background-image:repeating-linear-gradient(90deg, transparent 0 8px, var(--accent) 8px 10px, transparent 10px 26px); background-size:200% 100%;}
+  .crate-fx-box{position:absolute; left:50%; top:50%; width:42%; aspect-ratio:8/9; opacity:0; filter:drop-shadow(0 0 5px var(--accent)) drop-shadow(0 0 12px var(--accent));}
+  .crate-fx-box svg{display:block; width:100%; height:100%;}
+  .crate-fx-layer.run .crate-fx-lines{animation:crateLinesFade 1s ease forwards, crateLinesScroll 1s linear forwards;}
   .crate-fx-layer.run .crate-fx-box{animation:crateLevitate 1s cubic-bezier(.3,.6,.2,1) forwards;}
   @keyframes crateLevitate{
-    0%{ opacity:0; transform:translateY(14px) scale(.4) rotate(-8deg); }
-    18%{ opacity:1; transform:translateY(-14px) scale(1) rotate(0deg); }
-    40%{ transform:translateY(-20px) scale(1) rotate(3deg); }
-    60%{ transform:translateY(-13px) scale(1) rotate(-3deg); }
-    80%{ opacity:1; transform:translateY(-20px) scale(1) rotate(2deg); }
-    100%{ opacity:0; transform:translateY(-34px) scale(.8) rotate(0deg); }
+    0%{ opacity:0; transform:translate(-50%,-50%) translateY(14px) scale(.4) rotate(-8deg); }
+    18%{ opacity:1; transform:translate(-50%,-50%) translateY(-10px) scale(1) rotate(0deg); }
+    40%{ transform:translate(-50%,-50%) translateY(-15px) scale(1) rotate(3deg); }
+    60%{ transform:translate(-50%,-50%) translateY(-10px) scale(1) rotate(-3deg); }
+    80%{ opacity:1; transform:translate(-50%,-50%) translateY(-15px) scale(1) rotate(2deg); }
+    100%{ opacity:0; transform:translate(-50%,-50%) translateY(-26px) scale(.8) rotate(0deg); }
   }
   @keyframes crateLinesFade{
     0%{ opacity:0; } 15%{ opacity:.85; } 78%{ opacity:.65; } 100%{ opacity:0; }
@@ -980,7 +979,9 @@
 
     <div class="crate-fx-layer" id="crateFxLayer" hidden>
       <div class="crate-fx-lines"></div>
-      <svg class="crate-fx-box" viewBox="0 0 8 8" shape-rendering="crispEdges"><g id="crateFxBoxG"></g></svg>
+      <div class="crate-fx-box">
+        <svg viewBox="0 0 8 9" shape-rendering="crispEdges"><g id="crateFxBoxG"></g></svg>
+      </div>
     </div>
 
     <h1 id="pageTitle" class="page-title-lg">—</h1>
@@ -5843,9 +5844,10 @@ async function toggleAvailForDelivery(btnEl){
   renderCourierAvailToggle();
 }
 
-// --- FX "caisse à la vitesse de la lumière" (clic sur le toggle disponibilité coursier) ---
-const CRATE_FX_GRID = ["22222222","21111112","21211212","21122112","21122112","21211212","21111112","22222222"];
-const CRATE_FX_COLORS = { '1':'#c9893f', '2':'#5c3a1a' };
+// --- FX "vaisseau transportant une caisse" (clic sur le toggle disponibilité coursier) ---
+// Grille 8 (large) x 9 (haut) : rangées 0-3 = vaisseau (dôme + soucoupe + feux), rangée 4 = faisceau tracteur, rangées 5-8 = caisse.
+const CRATE_FX_GRID = ["..4444..", ".444444.", "33333333", ".3.33.3.", "...55...", "22222222", "21111112", "21211212", "22222222"];
+const CRATE_FX_COLORS = { '1':'#c9893f', '2':'#5c3a1a', '3':'#b9c4cc', '4':'#8fd3ff', '5':'#ffd166' };
 let crateFxBuilt = false;
 let crateFxTimer = null;
 function playCrateFx(btnEl){
@@ -5868,8 +5870,11 @@ function playCrateFx(btnEl){
   }
   const rect = btnEl && btnEl.getBoundingClientRect ? btnEl.getBoundingClientRect() : null;
   if(rect){
-    layer.style.left = (rect.left + rect.width / 2 - 36) + 'px';
-    layer.style.top = (rect.top - 60) + 'px';
+    const size = rect.width;
+    layer.style.width = size + 'px';
+    layer.style.height = size + 'px';
+    layer.style.left = rect.left + 'px';
+    layer.style.top = (rect.top - size) + 'px';
   }
   layer.hidden = false;
   layer.classList.remove('run'); void layer.offsetWidth; layer.classList.add('run');

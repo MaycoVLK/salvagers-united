@@ -60,16 +60,24 @@
   .career-stat .val{font-family:'VT323',monospace; font-size:1.6rem; color:var(--accent); line-height:1.1;}
   .career-stat .lbl{font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;}
 
-  .shop-leaderboard-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;}
-  @media (max-width:680px){ .shop-leaderboard-grid{grid-template-columns:1fr;} }
-  .shop-lb-slot{display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px; border:1px solid var(--border); border-radius:4px; padding:14px 10px; transition:border-color .15s, box-shadow .15s;}
-  .shop-lb-slot.has-winner{border-color:var(--accent); box-shadow:0 0 14px var(--accent-dim), inset 0 0 0 1px var(--accent-dim);}
-  .shop-lb-slot-logo{width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); box-shadow:0 0 10px var(--accent-dim); background:var(--bg2);}
+  .shop-leaderboard-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:10px;}
+  .shop-lb-slot{display:flex; flex-direction:column; align-items:center; text-align:center; gap:5px; border:1px solid var(--border); border-radius:4px; padding:10px 6px;}
+  .shop-lb-slot-logo{width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); background:var(--bg2);}
   .shop-lb-slot-logo-fallback{width:52px; height:52px; border-radius:50%; border:2px solid var(--border); background:var(--bg2); display:flex; align-items:center; justify-content:center; color:var(--muted); font-family:'VT323',monospace; font-size:1.3rem;}
   .shop-lb-slot-shopname{font-family:'VT323',monospace; font-size:1.05rem; color:var(--text); line-height:1.15; word-break:break-word;}
   .shop-lb-slot-lbl{font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
   .shop-lb-slot-val{font-family:'VT323',monospace; font-size:1.3rem; color:var(--accent); line-height:1.1;}
   .shop-lb-slot-item{font-size:.72rem; color:var(--muted); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  @media (max-width:480px){
+    .shop-leaderboard-grid{gap:4px;}
+    .shop-lb-slot{padding:8px 3px;}
+    .shop-lb-slot-logo, .shop-lb-slot-logo-fallback{width:38px; height:38px;}
+    .shop-lb-slot-logo-fallback{font-size:1rem;}
+    .shop-lb-slot-shopname{font-size:.82rem;}
+    .shop-lb-slot-lbl{font-size:.58rem;}
+    .shop-lb-slot-val{font-size:1.05rem;}
+    .shop-lb-slot-item{font-size:.62rem;}
+  }
   .shop-lb-slot-empty{color:var(--muted); font-size:.8rem; padding:10px 0;}
 
   /* --- CUSTOM DATE/TIME PICKER (deadline) --- */
@@ -3706,7 +3714,7 @@ async function loadShopLeaderboard(){
     if(!slot.winner){
       return `<div class="shop-lb-slot"><div class="shop-lb-slot-lbl">${slot.lbl}</div><div class="shop-lb-slot-empty">${d.lbNoDataYet}</div></div>`;
     }
-    return `<div class="shop-lb-slot has-winner">
+    return `<div class="shop-lb-slot">
       ${slot.winner.logo}
       <div class="shop-lb-slot-shopname">${slot.winner.name}</div>
       <div class="shop-lb-slot-lbl">${slot.lbl}</div>

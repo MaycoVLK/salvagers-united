@@ -6002,6 +6002,40 @@ function renderSellerAd(){
 // --- NOTIFICATIONS TEMPS RÉEL (candidature coursier) ---
 let profileChannel = null;
 let notifChannel = null;
+// --- DONNÉES TEMPS RÉEL (orders / marketplace_listings / marketplace_inquiries) ---
+// Ces 3 canaux écoutent large (toute la table, sans filtre) car Supabase Realtime ne permet pas de filtre
+// du style "où je suis client OU vendeur OU coursier" en une seule souscription. On limite quand même les
+// dégâts en ne les ouvrant QUE pour les visiteurs connectés (avant, ils tournaient aussi pour les visiteurs
+// non connectés, en permanence, dès le chargement de la page) et en les refermant à la déconnexion.
+let ordersChannel = null, marketplaceChannel = null, inquiriesChannel = null;
+function subscribeDataChannels(){
+  if(!session) return;
+  if(!ordersChannel) ordersChannel = sb.channel('orders-realtime')
+    .on('postgres_changes', { event:'*', schema:'public', table:'orders' }, () => {
+      const v = effectiveView();
+      if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'deliveries') loadClientDashboard();
+      if(v === 'courier' && !$('view-courier-dash').hidden) loadCourierData();
+      if((v === 'seller' || v === 'admin') && !$('view-seller-dash').hidden){ checkAndRenderSellerAchievements('sellerDashAchvCard'); fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('sellerDashStatsCard'), stats)); }
+    })
+    .subscribe();
+  if(!marketplaceChannel) marketplaceChannel = sb.channel('marketplace-realtime')
+    .on('postgres_changes', { event:'*', schema:'public', table:'marketplace_listings' }, () => {
+      const v = effectiveView();
+      if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'marketplace') loadMarketplaceFeed();
+      if(v === 'seller' && !$('view-seller-dash').hidden) loadMyListings();
+    })
+    .subscribe();
+  if(!inquiriesChannel) inquiriesChannel = sb.channel('inquiries-realtime')
+    .on('postgres_changes', { event:'*', schema:'public', table:'marketplace_inquiries' }, () => {
+      msgRefreshAfterAction();
+    })
+    .subscribe();
+}
+function unsubscribeDataChannels(){
+  if(ordersChannel){ sb.removeChannel(ordersChannel); ordersChannel = null; }
+  if(marketplaceChannel){ sb.removeChannel(marketplaceChannel); marketplaceChannel = null; }
+  if(inquiriesChannel){ sb.removeChannel(inquiriesChannel); inquiriesChannel = null; }
+}
 
 // --- PRÉSENCE TEMPS RÉEL (membres en ligne + coursiers disponibles) ---
 let presenceChannel = null;
@@ -6511,6 +6545,7 @@ async function initAuth(){
     subscribeProfileChannel();
     subscribeNotifChannel();
     subscribePresenceChannel();
+    subscribeDataChannels();
     await checkCourierNotification();
     await syncAvatarToProfile();
     updateProfileChip();
@@ -6523,11 +6558,12 @@ async function initAuth(){
     const wasLoggedIn = !!session;
     session = s2;
     await loadProfile();
-    if(event === 'SIGNED_OUT'){ hasBooted = false; unsubscribeProfileChannel(); unsubscribeNotifChannel(); unsubscribePresenceChannel(); routeApp(); return; }
+    if(event === 'SIGNED_OUT'){ hasBooted = false; unsubscribeProfileChannel(); unsubscribeNotifChannel(); unsubscribePresenceChannel(); unsubscribeDataChannels(); routeApp(); return; }
     if(event === 'SIGNED_IN' && !wasLoggedIn){
       subscribeProfileChannel();
       subscribeNotifChannel();
       subscribePresenceChannel();
+      subscribeDataChannels();
       await checkCourierNotification();
       await syncAvatarToProfile();
       updateProfileChip();
@@ -6537,30 +6573,6 @@ async function initAuth(){
     updateProfileChip();
     routeApp();
   });
-
-  sb.channel('orders-realtime')
-    .on('postgres_changes', { event:'*', schema:'public', table:'orders' }, () => {
-      const v = effectiveView();
-      if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'deliveries') loadClientDashboard();
-      if(v === 'courier' && !$('view-courier-dash').hidden) loadCourierData();
-      if((v === 'seller' || v === 'admin') && !$('view-seller-dash').hidden){ checkAndRenderSellerAchievements('sellerDashAchvCard'); fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('sellerDashStatsCard'), stats)); }
-    })
-    .subscribe();
-
-  sb.channel('marketplace-realtime')
-    .on('postgres_changes', { event:'*', schema:'public', table:'marketplace_listings' }, () => {
-      const v = effectiveView();
-      if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'marketplace') loadMarketplaceFeed();
-      if(v === 'seller' && !$('view-seller-dash').hidden) loadMyListings();
-    })
-    .subscribe();
-
-  sb.channel('inquiries-realtime')
-    .on('postgres_changes', { event:'*', schema:'public', table:'marketplace_inquiries' }, () => {
-      msgRefreshAfterAction();
-    })
-    .subscribe();
-
 }
 
 addItem();

@@ -65,6 +65,10 @@
   .shop-lb-slot{display:flex; flex-direction:column; align-items:center; text-align:center; gap:5px; border:1px solid var(--border); border-radius:4px; padding:10px 6px;}
   .shop-lb-slot-logo{width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); background:var(--bg2);}
   .shop-lb-slot-logo-fallback{width:52px; height:52px; border-radius:50%; border:2px solid var(--border); background:var(--bg2); display:flex; align-items:center; justify-content:center; color:var(--muted); font-family:'VT323',monospace; font-size:1.3rem;}
+  .shop-lb-slot-logo-btn{padding:0; border:none; background:none; cursor:pointer; line-height:0; border-radius:50%; transition:transform .15s ease;}
+  .shop-lb-slot-logo-btn:hover{transform:scale(1.08);}
+  .shop-lb-slot-logo-btn:hover .shop-lb-slot-logo{border-color:var(--text);}
+  .shop-lb-slot-logo-btn:hover .shop-lb-slot-logo-fallback{border-color:var(--accent); color:var(--text);}
   .shop-lb-slot-shopname{font-family:'VT323',monospace; font-size:1.05rem; color:var(--text); line-height:1.15; word-break:break-word;}
   .shop-lb-slot-lbl{font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
   .shop-lb-slot-val{font-family:'VT323',monospace; font-size:1.3rem; color:var(--accent); line-height:1.1;}
@@ -3655,7 +3659,7 @@ async function loadMarketplaceFeed(){
   const d = T[LANG];
   box.innerHTML = `<p class="muted">…</p>`;
   loadShopLeaderboard();
-  const { data, error } = await sb.from('marketplace_listings').select('*').order('created_at',{ascending:false}).limit(200);
+  const { data, error } = await sb.from('marketplace_listings').select('*').eq('is_deleted', false).order('created_at',{ascending:false}).limit(200);
   if(error){ box.textContent = error.message; return; }
   marketplaceFeedCache = data || [];
   if(!marketplaceFeedCache.length){ box.innerHTML = `<p class="muted">${d.marketplaceEmpty}</p>`; return; }
@@ -3724,7 +3728,8 @@ async function loadShopLeaderboard(){
     const logo = shop && shop.logo_url
       ? `<img class="shop-lb-slot-logo" src="${shop.logo_url}" alt="">`
       : `<div class="shop-lb-slot-logo-fallback">${(name[0]||'?').toUpperCase()}</div>`;
-    return { name, logo, valueHtml };
+    const logoLink = `<button type="button" class="shop-lb-slot-logo-btn" onclick="openSellerShop('${sellerId}')" aria-label="${name}">${logo}</button>`;
+    return { name, logo: logoLink, valueHtml };
   };
 
   const slots = [
@@ -3760,7 +3765,7 @@ async function applyMarketplaceFilters(){
   let list, sellerMap;
   if(q){
     box.innerHTML = `<p class="muted">…</p>`;
-    const { data, error } = await sb.from('marketplace_listings').select('*').ilike('item_name', `%${q}%`).order('created_at',{ascending:false}).limit(60);
+    const { data, error } = await sb.from('marketplace_listings').select('*').eq('is_deleted', false).ilike('item_name', `%${q}%`).order('created_at',{ascending:false}).limit(60);
     if(error){ box.textContent = error.message; return; }
     list = data || [];
     const sellerIds = [...new Set(list.map(l=>l.seller_id))];
@@ -4345,7 +4350,10 @@ async function createListing(){
 }
 async function deleteListing(id){
   if(!confirm(T[LANG].confirmDeleteListing)) return;
-  const { error } = await sb.from('marketplace_listings').delete().eq('id', id);
+  // Suppression "douce" : on marque l'annonce comme supprimée au lieu de la delete() en base, pour ne jamais
+  // casser la contrainte de clé étrangère orders_listing_id_fkey quand une commande (même passée/terminée)
+  // référence encore cette annonce. L'annonce disparaît de la marketplace mais reste consultable en historique.
+  const { error } = await sb.from('marketplace_listings').update({ is_deleted: true }).eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
   await loadMyListings();
   const fullBox = $('myListingsListFull');
@@ -4359,7 +4367,7 @@ let myListingsOrderMap = {};
 async function loadMyListings(){
   const box = $('myListingsList'); if(!box) return;
   const d = T[LANG];
-  const { data, error } = await sb.from('marketplace_listings').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
+  const { data, error } = await sb.from('marketplace_listings').select('*').eq('seller_id', session.user.id).eq('is_deleted', false).order('created_at',{ascending:false});
   if(error){ box.textContent = error.message; return; }
   myListingsCache = data || [];
   myListingsOrderMap = {};
@@ -4456,7 +4464,7 @@ async function acceptInquiry(id){
       // Stock épuisé : on refuse les autres demandes encore en attente sur cette annonce, puis on la retire.
       await sb.from('marketplace_inquiries').update({ status:'rejected', updated_at: new Date().toISOString() })
         .eq('listing_id', listing.id).neq('id', id).in('status', ['pending','countered']);
-      await sb.from('marketplace_listings').delete().eq('id', listing.id);
+      await sb.from('marketplace_listings').update({ is_deleted: true }).eq('id', listing.id);
     }
   }
   const { data, error } = await sb.from('marketplace_inquiries').update(updates).eq('id', id).select('buyer_id').single();
@@ -4495,7 +4503,7 @@ async function markPickedUp(id){
   const { data: updated, error } = await sb.from('marketplace_inquiries').update(updatePayload).eq('id', id).select().maybeSingle();
   if(error){ alert('Erreur : '+error.message); return; }
   if(!updated){ alert('Erreur : la mise à jour a été bloquée (droits insuffisants sur la base). La vente n\'a PAS été validée, réessaie ou contacte l\'admin.'); return; }
-  if(!isStockSale && listing) await sb.from('marketplace_listings').delete().eq('id', listing.id);
+  if(!isStockSale && listing) await sb.from('marketplace_listings').update({ is_deleted: true }).eq('id', listing.id);
   pushNotification(inquiry.buyer_id, 'client_marketplace', id);
   sweep(); msgRefreshAfterAction(); loadMyListings();
   checkAndRenderSellerAchievements('sellerDashAchvCard');
@@ -4579,7 +4587,7 @@ async function openSellerShop(sellerId){
   const [{ data: shop }, { data: p }, { data: listings }, { data: resourceRequests }] = await Promise.all([
     sb.from('marketplace_shops').select('*').eq('id', sellerId).maybeSingle(),
     sb.from('profiles').select('*').eq('id', sellerId).single(),
-    sb.from('marketplace_listings').select('*').eq('seller_id', sellerId).order('created_at',{ascending:false}),
+    sb.from('marketplace_listings').select('*').eq('seller_id', sellerId).eq('is_deleted', false).order('created_at',{ascending:false}),
     sb.from('resource_requests').select('*').eq('seller_id', sellerId).eq('status','open').order('created_at',{ascending:false})
   ]);
   if(shop?.logo_url) $('shopHeroIcon').innerHTML = `<img class="shop-hero-logo-img" src="${shop.logo_url}" alt="">`;
@@ -5059,7 +5067,7 @@ async function advanceOrder(id, next){
     await sb.from('marketplace_inquiries').update({ status:'completed', updated_at: new Date().toISOString() }).eq('order_id', id);
     // Vente au stock : le stock a déjà été décrémenté (ou l'annonce déjà retirée) au moment de l'acceptation, on n'y retouche pas ici.
     const isStockSale = inq && inq.requested_qty != null;
-    if(!isStockSale && row.listing_id) await sb.from('marketplace_listings').delete().eq('id', row.listing_id);
+    if(!isStockSale && row.listing_id) await sb.from('marketplace_listings').update({ is_deleted: true }).eq('id', row.listing_id);
   }
   sweep(); loadCourierData();
 }
@@ -6246,7 +6254,7 @@ async function openPublicProfile(id){
   if(shop && (p.is_seller || p.role === 'admin')){
     $('pubShopName').textContent = shop.shop_name || d.shopSettingsTitle;
     $('pubShopCard').hidden = false;
-    const { data: previewListings } = await sb.from('marketplace_listings').select('*').eq('seller_id', id).order('created_at',{ascending:false}).limit(3);
+    const { data: previewListings } = await sb.from('marketplace_listings').select('*').eq('seller_id', id).eq('is_deleted', false).order('created_at',{ascending:false}).limit(3);
     const previewGrid = $('pubShopPreviewGrid');
     if(previewListings && previewListings.length){
       previewGrid.innerHTML = previewListings.map(l => shopPreviewCardHtml(l)).join('');

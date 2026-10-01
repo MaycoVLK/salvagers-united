@@ -14,13 +14,14 @@
   :root{
     --bg:#050606; --bg2:#0a0d0c; --panel:#0d1210; --border:#22302a;
     --accent:#ff8c1a; --accent-dim:#ff8c1a55; --text:#d9f5e6; --muted:#6f8a7d; --danger:#ff4d4d; --danger-dim:#ff4d4d33;
+    --logo-hue:0deg;
     box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
   }
-  html[data-color="vert"]{ --accent:#39ff6a; --accent-dim:#39ff6a55; --text:#d6ffe0; }
-  html[data-color="bleu"]{ --accent:#4fc8ff; --accent-dim:#4fc8ff55; --text:#dcf3ff; }
-  html[data-color="violet"]{ --accent:#c07bff; --accent-dim:#c07bff55; --text:#eee0ff; }
+  html[data-color="vert"]{ --accent:#39ff6a; --accent-dim:#39ff6a55; --text:#d6ffe0; --logo-hue:105deg; }
+  html[data-color="bleu"]{ --accent:#4fc8ff; --accent-dim:#4fc8ff55; --text:#dcf3ff; --logo-hue:169deg; }
+  html[data-color="violet"]{ --accent:#c07bff; --accent-dim:#c07bff55; --text:#eee0ff; --logo-hue:241deg; }
   html[data-color="blanc"]{ --accent:#f2f2f2; --accent-dim:#f2f2f255; --text:#f5f5f5; }
-  html[data-color="jaune"]{ --accent:#ffcf40; --accent-dim:#ffcf4055; --text:#fff6d9; }
+  html[data-color="jaune"]{ --accent:#ffcf40; --accent-dim:#ffcf4055; --text:#fff6d9; --logo-hue:15deg; }
   html{scroll-padding-top:env(safe-area-inset-top,0px);}
   *{box-sizing:border-box;}
   body{
@@ -169,10 +170,8 @@
 
   /* --- LOGIN --- */
   .login-wrap{min-height:72vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:18px;}
-  .logo-anim-hero{display:block; margin:0 auto; width:180px; aspect-ratio:1260/750; height:auto; filter:drop-shadow(0 0 10px var(--accent-dim));}
-  html[data-color="vert"] .logo-anim-hero, html[data-color="vert"] .logo-anim-sm{filter:hue-rotate(105deg) drop-shadow(0 0 10px var(--accent-dim));}
-  html[data-color="bleu"] .logo-anim-hero, html[data-color="bleu"] .logo-anim-sm{filter:hue-rotate(169deg) drop-shadow(0 0 10px var(--accent-dim));}
-  html[data-color="violet"] .logo-anim-hero, html[data-color="violet"] .logo-anim-sm{filter:hue-rotate(241deg) drop-shadow(0 0 10px var(--accent-dim));}
+  .logo-anim-hero{display:block; margin:0 auto; width:180px; aspect-ratio:1260/750; height:auto; filter:hue-rotate(var(--logo-hue)) drop-shadow(0 0 10px var(--accent-dim));}
+  .logo-anim-sm{filter:hue-rotate(var(--logo-hue)) drop-shadow(0 0 10px var(--accent-dim));}
   html[data-color="blanc"] .logo-anim-hero, html[data-color="blanc"] .logo-anim-sm{filter:brightness(0) invert(1) drop-shadow(0 0 10px var(--accent-dim));}
   .logo-hero-wrap{display:flex; flex-direction:column; align-items:center; gap:4px;}
   .logo-icon-wrap{position:relative; display:inline-block;}
@@ -198,9 +197,11 @@
   .app-topbar .brand{display:flex; align-items:center; gap:10px; min-width:0;}
   .brand-lg{background:none; border:none; padding:0; margin:0; cursor:pointer; flex:none; text-align:left; border-radius:4px; justify-content:flex-start; justify-self:start;}
   .brand-lg:hover{background:none;}
-  .brand-lg:hover .logo-anim-header{filter:brightness(1.25) drop-shadow(0 0 10px var(--accent-dim));}
+  .brand-lg:hover .logo-anim-header{filter:hue-rotate(var(--logo-hue)) brightness(1.25) drop-shadow(0 0 10px var(--accent-dim));}
   .logo-icon-wrap-header{position:relative; display:inline-block; transform:scale(.58); transform-origin:left center; margin-right:-72px; vertical-align:middle;}
-  .logo-anim-header{width:180px; aspect-ratio:1260/750; height:auto; filter:drop-shadow(0 0 8px var(--accent-dim));}
+  .logo-anim-header{width:180px; aspect-ratio:1260/750; height:auto; filter:hue-rotate(var(--logo-hue)) drop-shadow(0 0 8px var(--accent-dim));}
+  html[data-color="blanc"] .logo-anim-header{filter:brightness(0) invert(1) drop-shadow(0 0 8px var(--accent-dim));}
+  html[data-color="blanc"] .brand-lg:hover .logo-anim-header{filter:brightness(0) invert(1) drop-shadow(0 0 10px var(--accent-dim));}
   .logo-wordmark-header{display:inline-flex; flex-direction:column; vertical-align:middle; line-height:1; font-family:'VT323',monospace; text-align:left;}
   .logo-wordmark-header .lw-main{font-size:2.6rem; color:var(--accent); letter-spacing:2px;}
   .logo-wordmark-header .lw-sub{font-size:1.1rem; color:var(--muted); letter-spacing:4px; margin-top:2px;}

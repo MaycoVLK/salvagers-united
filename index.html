@@ -284,7 +284,7 @@
   .online-dot-sm{width:7px; height:7px; border-radius:50%; background:#39ff6a; box-shadow:0 0 5px rgba(57,255,106,.8); flex:none;}
   .online-member-name-link{cursor:pointer;}
   .online-member-name-link:hover{color:var(--accent); text-decoration:underline;}
-  .online-admin-badge{display:inline-flex; align-items:center; color:var(--accent); flex:none; margin-left:2px;}
+  .online-admin-badge{display:inline-block; flex:none; margin-left:2px; font-size:.62rem; text-transform:uppercase; letter-spacing:.5px; color:var(--accent); border:1px solid var(--accent-dim); border-radius:3px; padding:1px 5px;}
   .online-empty{color:var(--muted); font-size:.85rem; padding:4px 8px;}
 
   .crate-fx-layer{position:fixed; left:0; top:0; width:34px; height:34px; pointer-events:none; z-index:200; overflow:visible; display:none;}
@@ -6054,7 +6054,7 @@ function onlineMemberRowHtml(p, highlight){
     ? `<span class="online-member-name-link" onclick="event.stopPropagation(); openPublicProfile('${p.id}'); $('onlinePanel').hidden = true;">${name}</span>`
     : `<span>${name}</span>`;
   const adminBadge = p && p.role === 'admin'
-    ? `<span class="online-admin-badge" title="Admin"><svg viewBox="0 0 8 8" width="12" height="12" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="0" width="4" height="1"/><rect x="1" y="1" width="6" height="3"/><rect x="2" y="4" width="4" height="2"/><rect x="3" y="6" width="2" height="2"/></g></svg></span>`
+    ? `<span class="online-admin-badge">ADMIN</span>`
     : '';
   return `<div class="online-member-row${highlight ? ' is-courier-avail' : ''}"><span class="online-dot-sm"></span>${nameHtml}${adminBadge}</div>`;
 }

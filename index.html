@@ -485,7 +485,11 @@
   .mkt-qty{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
   .mkt-info .courier-box{flex:none; max-width:none; width:100%; margin-top:auto;}
   .mkt-info .courier-box .courier-box-name{text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .mkt-interest-btn{width:100%; font-size:.76rem;}
+  /* Avant : bouton "secondaire" (fond transparent, texte fin) peu visible et peu attractif, et une cible
+     tactile trop petite sur mobile (padding réduit à 8px/6px sous 480px). On le passe en bouton plein
+     (même traitement que CRÉER / les CTA primaires du site) avec une hauteur minimale confortable au doigt. */
+  .mkt-interest-btn{width:100%; font-size:.85rem; min-height:46px; letter-spacing:.5px; box-shadow:0 0 14px var(--accent-dim);}
+  .mkt-interest-btn .icon{width:14px; height:14px;}
   .mkt-tags-overlay{position:absolute; top:8px; left:8px; right:8px; z-index:2; display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start; gap:5px; pointer-events:none;}
   .mkt-tag{font-size:.68rem; text-transform:uppercase; letter-spacing:.4px; padding:3px 8px; border-radius:3px; border:1px solid var(--border); background:rgba(6,6,8,.82); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px); color:var(--text); font-family:'VT323',monospace; line-height:1.3; box-shadow:0 1px 4px rgba(0,0,0,.5);}
   .mkt-tag.tag-crafted{color:var(--accent); border-color:var(--accent);}
@@ -518,7 +522,8 @@
     .mkt-qty{font-size:.62rem;}
     .mkt-info .courier-box{padding:7px 8px;}
     .mkt-info .courier-box .courier-box-name{font-size:.78rem; margin-bottom:0;}
-    .mkt-interest-btn{font-size:.68rem; padding:8px 6px;}
+    .mkt-interest-btn{font-size:.72rem; padding:10px 6px; min-height:42px; gap:5px;}
+    .mkt-interest-btn .icon{width:12px; height:12px;}
   }
   .mkt-inquiry-form{display:flex; flex-direction:column; gap:6px; margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);}
   .mkt-inquiry-form textarea{width:100%; min-height:60px; padding:8px 10px; border-radius:2px; border:1px solid var(--border); background:var(--bg2); color:var(--text); font-family:inherit; font-size:.85rem; resize:vertical;}
@@ -3696,7 +3701,13 @@ function mktCardHtml(listing, sellerMap, unreadSet){
   const seller = sellerMap[listing.seller_id];
   const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
   const canBuy = session && session.user.id !== listing.seller_id;
-  const interestBlock = canBuy ? `<button type="button" class="btn-secondary mkt-interest-btn" data-listing-id="${listing.id}" data-item-name="${listing.item_name}" data-price="${listing.price}" data-is-stock="${listing.is_stock ? '1' : '0'}" data-stock="${listing.quantity}" onclick="pixelSwoosh(this); openOfferModal(this)">${d.imInterested}</button>` : '';
+  const interestBlock = canBuy ? `<button type="button" class="btn-primary mkt-interest-btn" data-listing-id="${listing.id}" data-item-name="${listing.item_name}" data-price="${listing.price}" data-is-stock="${listing.is_stock ? '1' : '0'}" data-stock="${listing.quantity}" onclick="pixelSwoosh(this); openOfferModal(this)">
+    <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+      <rect x="1" y="2" width="14" height="2"/><rect x="1" y="9" width="14" height="2"/><rect x="1" y="2" width="2" height="9"/><rect x="13" y="2" width="2" height="9"/>
+      <rect x="4" y="5" width="2" height="2"/><rect x="7" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/>
+    </g></svg>
+    ${d.imInterested}
+  </button>` : '';
   const isNew = !!(unreadSet && unreadSet.has(listing.id));
   const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
   const hoverAttr = isNew ? ` onmouseenter="markListingSeen('${listing.id}', this)"` : '';

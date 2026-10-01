@@ -624,6 +624,53 @@
   .shop-color-custom-box{border:1px dashed var(--border); border-radius:4px; padding:10px 12px; margin-bottom:8px;}
   .shop-color-custom-lbl{font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;}
 
+  /* --- REFONTE ÉCRAN "MA BOUTIQUE" : sections nommées + aperçu en direct (au lieu d'un unique long
+     formulaire sans retour visuel, façon forum des années 2000). Toutes les sections restent visibles en
+     même temps (pas d'étapes façon wizard) pour qu'un vendeur puisse corriger un seul champ rapidement. --- */
+  .shop-edit-layout{display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;}
+  .shop-edit-form{flex:1 1 380px; min-width:0; display:flex; flex-direction:column;}
+  .shop-edit-section{margin-bottom:18px;}
+  .shop-section-title{margin:0 0 14px; padding-bottom:8px; border-bottom:1px solid var(--border); font-size:1.3rem; color:var(--accent);}
+  .shop-edit-preview-wrap{flex:0 1 300px; min-width:260px; position:sticky; top:16px;}
+  .shop-preview-label{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; text-align:center;}
+  @media (max-width:880px){
+    .shop-edit-layout{flex-direction:column;}
+    .shop-edit-preview-wrap{order:-1; position:static; width:100%; max-width:340px; margin:0 auto 4px;}
+  }
+
+  /* Zone de dépôt du logo : avant, un simple bouton texte "CHOOSE A LOGO" peu engageant. */
+  .shop-logo-dropzone{border:2px dashed var(--border); border-radius:6px; padding:18px 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; text-align:center; transition:border-color .15s, background .15s; min-height:120px;}
+  .shop-logo-dropzone:hover{border-color:var(--accent);}
+  .shop-logo-dropzone.dragover{border-color:var(--accent); background:var(--accent-dim);}
+  .shop-logo-drop-icon{width:30px; height:30px; color:var(--muted);}
+  .shop-logo-dropzone:hover .shop-logo-drop-icon{color:var(--accent);}
+  .shop-logo-drop-text{font-size:.82rem; color:var(--text); max-width:260px;}
+  .shop-logo-drop-hint{font-size:.66rem; letter-spacing:.5px; text-transform:uppercase;}
+  .shop-logo-dropzone .shop-logo-preview-img{width:72px; height:72px; object-fit:cover; border-radius:50%; border:2px solid var(--accent);}
+  #shopLogoDropEmpty{display:flex; flex-direction:column; align-items:center; gap:8px;}
+
+  /* Texture de fond dérivée de la couleur de boutique : grille de points très discrète façon HUD de
+     vaisseau, pour que deux boutiques de même couleur n'aient jamais l'air parfaitement identiques.
+     Div réelle (pas un ::before/::after) pour ne pas entrer en conflit avec les coins pixel de .card. */
+  .shop-texture-host{position:relative; isolation:isolate; overflow:hidden;}
+  .shop-texture-layer{position:absolute; inset:0; z-index:-1; pointer-events:none;
+    background-image:radial-gradient(color-mix(in srgb, var(--accent) 16%, transparent) 1.5px, transparent 1.5px);
+    background-size:13px 13px;}
+
+  .shop-live-preview{display:flex; flex-direction:column; gap:10px; padding:16px;}
+  .shop-live-preview-head{display:flex; align-items:center; gap:12px;}
+  .shop-live-preview-logo{width:52px; height:52px; border-radius:50%; flex:none; border:2px solid var(--accent); background:var(--bg2); display:flex; align-items:center; justify-content:center; overflow:hidden; font-family:'VT323',monospace; font-size:1.3rem; color:var(--accent);}
+  .shop-live-preview-logo img{width:100%; height:100%; object-fit:cover;}
+  .shop-live-preview-id{min-width:0; flex:1;}
+  .shop-live-preview-name{font-family:'VT323',monospace; font-size:1.3rem; color:var(--text); line-height:1.15; word-break:break-word;}
+  .shop-live-preview-loc{display:inline-flex; align-items:center; gap:4px; font-size:.68rem; color:var(--accent); text-transform:uppercase; letter-spacing:.4px; margin-top:3px;}
+  .shop-live-preview-loc .icon{width:10px; height:10px; flex:none;}
+  .shop-live-preview-desc{font-size:.78rem; color:var(--muted); line-height:1.4; max-height:4.2em; overflow:hidden;}
+
+  /* Tag localisation réutilisé sur la vraie page boutique, à côté du nom. */
+  .shop-loc-tag{display:inline-flex; align-items:center; gap:5px; font-size:.7rem; color:var(--accent); text-transform:uppercase; letter-spacing:.4px; border:1px solid var(--accent-dim); border-radius:3px; padding:3px 8px; margin-top:4px;}
+  .shop-loc-tag .icon{width:11px; height:11px; flex:none;}
+
   /* Aperçu boutique (profil public) */
   .shop-preview-head{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
   .shop-preview-head h3{margin:0;}
@@ -1564,50 +1611,96 @@
     <section id="view-seller-shop-edit" hidden>
       <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
       <header><h1 data-i18n="shopSettingsTitle">Ma boutique</h1></header>
-      <div class="card">
-        <label for="shopNameInput" data-i18n="shopNameLbl">Nom de la marketplace</label>
-        <input id="shopNameInput" type="text" data-i18n-ph="phShopName" placeholder="ex: Le Comptoir de Mayco">
-        <label data-i18n="shopThemeLbl">Couleur de la boutique</label>
-        <div class="shop-color-presets" id="shopThemePicker"></div>
-        <div class="shop-color-custom-box">
-          <div class="shop-color-custom-lbl" data-i18n="shopCustomColorLbl">Couleur personnalisée</div>
-          <div class="shop-color-picker">
-            <input type="color" id="shopColorWheel" class="shop-color-wheel" value="#ff8c1a" oninput="setShopColor(this.value, true)" aria-label="Color wheel">
-            <input type="text" id="shopColorHex" class="shop-color-hex" maxlength="7" placeholder="#FF8C1A"
-                   autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" inputmode="text"
-                   oninput="onShopColorHexInput(this.value)" onchange="onShopColorHexInput(this.value)" onblur="onShopColorHexBlur(this.value)">
+      <div class="shop-edit-layout">
+        <div class="shop-edit-form">
+          <div class="card shop-edit-section">
+            <h3 class="shop-section-title" data-i18n="shopSectionIdentity">Identité</h3>
+            <label for="shopNameInput" data-i18n="shopNameLbl">Nom de la marketplace</label>
+            <input id="shopNameInput" type="text" data-i18n-ph="phShopName" placeholder="ex: Le Comptoir de Mayco" oninput="updateShopLivePreview()">
+            <label data-i18n="shopDescLbl">Description de la boutique (optionnel)</label>
+            <textarea id="shopDescInput" data-i18n-ph="phShopDesc" placeholder="ex: Spécialiste minerais rares, livraison rapide sur Stanton." oninput="updateShopLivePreview()"></textarea>
           </div>
-        </div>
-        <label data-i18n="shopDescLbl">Description de la boutique (optionnel)</label>
-        <textarea id="shopDescInput" data-i18n-ph="phShopDesc" placeholder="ex: Spécialiste minerais rares, livraison rapide sur Stanton."></textarea>
-        <label data-i18n="shopLogoLbl">Logo de la boutique (optionnel, GIF accepté)</label>
-        <div class="shop-logo-picker-row">
-          <img id="shopLogoPreviewImg" class="shop-logo-preview-img" hidden alt="">
-          <input type="file" id="shopLogoInput" accept="image/*,.gif" hidden onchange="onShopLogoSelected(this)">
-          <button type="button" class="btn-secondary" style="flex:1;" onclick="$('shopLogoInput').click()" id="shopLogoBtn">
-            <span data-i18n="uploadShopLogo">CHOISIR UN LOGO</span>
+
+          <div class="card shop-edit-section">
+            <h3 class="shop-section-title" data-i18n="shopSectionAppearance">Apparence</h3>
+            <label data-i18n="shopThemeLbl">Couleur de la boutique</label>
+            <div class="shop-color-presets" id="shopThemePicker"></div>
+            <div class="shop-color-custom-box">
+              <div class="shop-color-custom-lbl" data-i18n="shopCustomColorLbl">Couleur personnalisée</div>
+              <div class="shop-color-picker">
+                <input type="color" id="shopColorWheel" class="shop-color-wheel" value="#ff8c1a" oninput="setShopColor(this.value, true)" aria-label="Color wheel">
+                <input type="text" id="shopColorHex" class="shop-color-hex" maxlength="7" placeholder="#FF8C1A"
+                       autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" inputmode="text"
+                       oninput="onShopColorHexInput(this.value)" onchange="onShopColorHexInput(this.value)" onblur="onShopColorHexBlur(this.value)">
+              </div>
+            </div>
+            <label data-i18n="shopLogoLbl">Logo de la boutique (optionnel, GIF accepté)</label>
+            <input type="file" id="shopLogoInput" accept="image/*,.gif" hidden onchange="onShopLogoSelected(this)">
+            <div class="shop-logo-dropzone" id="shopLogoDropzone" onclick="$('shopLogoInput').click()"
+                 ondragover="onShopLogoDragOver(event)" ondragleave="onShopLogoDragLeave(event)" ondrop="onShopLogoDrop(event)">
+              <img id="shopLogoPreviewImg" class="shop-logo-preview-img" hidden alt="">
+              <div id="shopLogoDropEmpty">
+                <svg class="shop-logo-drop-icon icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                  <rect x="7" y="2" width="2" height="7"/><rect x="5" y="4" width="2" height="2"/><rect x="9" y="4" width="2" height="2"/>
+                  <rect x="2" y="12" width="12" height="2"/>
+                </g></svg>
+                <div class="shop-logo-drop-text" data-i18n="shopLogoDropText">Glisse une image ici, ou clique pour choisir un logo</div>
+                <div class="shop-logo-drop-hint muted" data-i18n="shopLogoDropHint">PNG, JPG ou GIF</div>
+              </div>
+            </div>
+            <div id="shopLogoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
+          </div>
+
+          <div class="card shop-edit-section">
+            <h3 class="shop-section-title" data-i18n="shopSectionLocation">Localisation</h3>
+            <label for="shopLocSystem" data-i18n="shopLocSystemLbl">Système</label>
+            <select id="shopLocSystem" onchange="updateShopLivePreview()">
+              <option value="Stanton">Stanton</option><option value="Nyx">Nyx</option><option value="Pyro">Pyro</option>
+            </select>
+            <label for="shopLocName" data-i18n="shopLocNameLbl">Lieu (optionnel)</label>
+            <div class="default-loc-row">
+              <input id="shopLocName" type="text" autocomplete="off" data-i18n-ph="phShopLoc" placeholder="ex: Lorville, Area18, Theta Station..." style="flex:1;" oninput="onLieuInput(this); updateShopLivePreview()" onblur="onLieuBlur(this)">
+              <div class="suggest-box" hidden></div>
+            </div>
+          </div>
+
+          <button class="btn-secondary" style="width:100%;" onclick="saveShopSettings()">
+            <span data-i18n="saveShopBtn">ENREGISTRER LA BOUTIQUE</span>
+          </button>
+          <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="openSellerShop(session.user.id)">
+            <span data-i18n="viewMyShopBtn">VOIR MA BOUTIQUE</span>
           </button>
         </div>
-        <div id="shopLogoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
-        <button class="btn-secondary" style="width:100%; margin-top:14px;" onclick="saveShopSettings()">
-          <span data-i18n="saveShopBtn">ENREGISTRER LA BOUTIQUE</span>
-        </button>
-        <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="openSellerShop(session.user.id)">
-          <span data-i18n="viewMyShopBtn">VOIR MA BOUTIQUE</span>
-        </button>
+
+        <div class="shop-edit-preview-wrap">
+          <div class="shop-preview-label" data-i18n="shopPreviewTitle">Aperçu en direct</div>
+          <div class="card shop-live-preview shop-texture-host" id="shopLivePreview">
+            <div class="shop-texture-layer"></div>
+            <div class="shop-live-preview-head">
+              <div class="shop-live-preview-logo" id="shopLivePreviewLogo"></div>
+              <div class="shop-live-preview-id">
+                <div class="shop-live-preview-name" id="shopLivePreviewName">Nom de ta boutique</div>
+                <div class="shop-live-preview-loc" id="shopLivePreviewLoc" hidden></div>
+              </div>
+            </div>
+            <div class="shop-live-preview-desc" id="shopLivePreviewDesc">La description apparaîtra ici…</div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- BOUTIQUE PUBLIQUE D'UN VENDEUR -->
     <section id="view-seller-shop" hidden>
       <button class="back" onclick="closeSellerShop()" data-i18n="back">&lt; RETOUR</button>
-      <div class="card seller-header-card">
+      <div class="card seller-header-card shop-texture-host" id="shopHeaderCard">
+        <div class="shop-texture-layer"></div>
         <div class="seller-header-left">
           <div class="seller-header-logo" id="shopHeroIcon"></div>
         </div>
         <div class="seller-header-right">
           <div class="shop-hero-text">
             <h1 id="shopPageTitle">—</h1>
+            <div class="shop-loc-tag" id="shopLocTag" hidden></div>
             <div class="shop-header-actions">
               <div class="courier-box shop-owner-box" id="shopOwnerBox" onclick="openPublicProfile(shopViewingSellerId)">
                 <div class="courier-box-name" id="shopOwnerName">—</div>
@@ -2069,8 +2162,12 @@ const T = {
     sellerRejectedNote:"Ta précédente candidature vendeur n'a pas été retenue. Tu peux retenter ta chance.",
     sellerApplications:"Candidatures Vendeur", noSellerApplications:"Aucune candidature vendeur en attente.",
     sellerAccepted:"🎉 Ta demande pour devenir vendeur a été acceptée !", sellerRejected:"Ta demande pour devenir vendeur a été refusée.",
-    shopSettingsTitle:"Ma boutique", shopNameLbl:"Nom de la marketplace", phShopName:"ex: Le Comptoir de Mayco", shopThemeLbl:"Couleur de la boutique", shopCustomColorLbl:"Couleur personnalisée", shopLogoLbl:"Logo de la boutique (optionnel)", uploadShopLogo:"CHOISIR UN LOGO", saveShopBtn:"ENREGISTRER LA BOUTIQUE", shopSaved:"BOUTIQUE ENREGISTRÉE !",
+    shopSettingsTitle:"Ma boutique", shopNameLbl:"Nom de la marketplace", phShopName:"ex: Le Comptoir de Mayco", shopThemeLbl:"Couleur de la boutique", shopCustomColorLbl:"Couleur personnalisée", shopLogoLbl:"Logo de la boutique (optionnel, GIF accepté)", uploadShopLogo:"CHOISIR UN LOGO", saveShopBtn:"ENREGISTRER LA BOUTIQUE", shopSaved:"BOUTIQUE ENREGISTRÉE !",
     shopColorNames:{solarOrange:"Solar Orange", voidTeal:"Void Teal", plasmaViolet:"Plasma Violet", nyxGreen:"Nyx Green", pyroRed:"Pyro Red", stantonBlue:"Stanton Blue", quantumWhite:"Quantum White", cometMagenta:"Comet Magenta"},
+    shopSectionIdentity:"Identité", shopSectionAppearance:"Apparence", shopSectionLocation:"Localisation",
+    shopLocSystemLbl:"Système", shopLocNameLbl:"Lieu (optionnel)", phShopLoc:"ex: Lorville, Area18, Theta Station...",
+    shopLogoDropText:"Glisse une image ici, ou clique pour choisir un logo", shopLogoDropHint:"PNG, JPG ou GIF",
+    shopPreviewTitle:"Aperçu en direct", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
     shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
@@ -2208,8 +2305,12 @@ const T = {
     sellerRejectedNote:"Your previous seller application wasn't accepted. You can try again.",
     sellerApplications:"Seller Applications", noSellerApplications:"No pending seller applications.",
     sellerAccepted:"🎉 Your seller application was accepted!", sellerRejected:"Your seller application was rejected.",
-    shopSettingsTitle:"My shop", shopNameLbl:"Marketplace name", phShopName:"e.g. Mayco's Trading Post", shopThemeLbl:"Shop color", shopCustomColorLbl:"Custom color", shopLogoLbl:"Shop logo (optional)", uploadShopLogo:"CHOOSE A LOGO", saveShopBtn:"SAVE SHOP", shopSaved:"SHOP SAVED!",
+    shopSettingsTitle:"My shop", shopNameLbl:"Marketplace name", phShopName:"e.g. Mayco's Trading Post", shopThemeLbl:"Shop color", shopCustomColorLbl:"Custom color", shopLogoLbl:"Shop logo (optional, GIF accepted)", uploadShopLogo:"CHOOSE A LOGO", saveShopBtn:"SAVE SHOP", shopSaved:"SHOP SAVED!",
     shopColorNames:{solarOrange:"Solar Orange", voidTeal:"Void Teal", plasmaViolet:"Plasma Violet", nyxGreen:"Nyx Green", pyroRed:"Pyro Red", stantonBlue:"Stanton Blue", quantumWhite:"Quantum White", cometMagenta:"Comet Magenta"},
+    shopSectionIdentity:"Identity", shopSectionAppearance:"Appearance", shopSectionLocation:"Location",
+    shopLocSystemLbl:"System", shopLocNameLbl:"Location (optional)", phShopLoc:"e.g. Lorville, Area18, Theta Station...",
+    shopLogoDropText:"Drop an image here, or click to choose a logo", shopLogoDropHint:"PNG, JPG or GIF",
+    shopPreviewTitle:"Live preview", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
     shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
@@ -4150,6 +4251,10 @@ const SHOP_COLOR_PRESETS = [
 ];
 const LEGACY_SHOP_COLOR_MAP = { orange:'#ff8c1a', vert:'#39ff6a', bleu:'#4fc8ff', violet:'#c07bff', blanc:'#f2f2f2', jaune:'#ffcf40' };
 const DEFAULT_SHOP_COLOR = '#ff8c1a';
+// Petite icône "pin" pixel-art (pas d'emoji) réutilisée pour le tag de localisation de boutique.
+const SHOP_LOC_PIN_ICON = `<svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+  <rect x="6" y="2" width="4" height="2"/><rect x="4" y="4" width="8" height="5"/><rect x="6" y="9" width="4" height="2"/><rect x="7" y="11" width="2" height="3"/>
+</g></svg>`;
 function isValidHexColor(v){ return /^#[0-9a-fA-F]{6}$/.test(v||''); }
 function normalizeShopColor(v){
   if(!v) return DEFAULT_SHOP_COLOR;
@@ -4181,6 +4286,7 @@ function setShopColor(hex, updateHexField){
   if(!isValidHexColor(hex)) return;
   selectedShopColor = hex.toLowerCase();
   syncShopColorPicker(updateHexField);
+  updateShopLivePreview();
 }
 // Nettoie une saisie hexa tolérante : espaces/retours à la ligne (copier-coller), sans #, ou raccourci 3 chiffres (ex: "7ed" -> "77eedd").
 function cleanHexInput(v){
@@ -4211,7 +4317,9 @@ async function saveShopSettings(){
   const d = T[LANG];
   const shop_name = $('shopNameInput').value.trim();
   const description = $('shopDescInput').value.trim();
-  const payload = { id: session.user.id, shop_name, theme_color: selectedShopColor, description: description || null };
+  const location_system = $('shopLocSystem') ? $('shopLocSystem').value : null;
+  const location_name = $('shopLocName') ? $('shopLocName').value.trim() : '';
+  const payload = { id: session.user.id, shop_name, theme_color: selectedShopColor, description: description || null, location_system, location_name: location_name || null };
   if(pendingShopLogoFile){
     const ext = (pendingShopLogoFile.name.split('.').pop() || 'jpg').toLowerCase();
     const path = `${session.user.id}/logo.${ext}`;
@@ -4240,7 +4348,39 @@ async function openSellerShopEdit(){
   $('shopLogoPreviewName').textContent = '';
   const logoPreview = $('shopLogoPreviewImg');
   if(shop?.logo_url){ logoPreview.src = shop.logo_url; logoPreview.hidden = false; } else { logoPreview.hidden = true; logoPreview.removeAttribute('src'); }
+  syncShopLogoDropzoneUI();
+  if($('shopLocSystem')) $('shopLocSystem').value = shop?.location_system || 'Stanton';
+  if($('shopLocName')) $('shopLocName').value = shop?.location_name || '';
   initShopThemePicker();
+  updateShopLivePreview();
+}
+// Aperçu en direct de la boutique (nom, couleur, logo, localisation, description) pendant la saisie.
+function updateShopLivePreview(){
+  const preview = $('shopLivePreview'); if(!preview) return;
+  const d = T[LANG];
+  preview.style.setProperty('--accent', selectedShopColor);
+  preview.style.setProperty('--accent-dim', selectedShopColor + '55');
+  const name = ($('shopNameInput') ? $('shopNameInput').value.trim() : '') || d.shopPreviewNoName;
+  $('shopLivePreviewName').textContent = name;
+  const desc = ($('shopDescInput') ? $('shopDescInput').value.trim() : '') || d.shopPreviewNoDesc;
+  $('shopLivePreviewDesc').textContent = desc;
+  const logoBox = $('shopLivePreviewLogo');
+  const logoImgSrc = $('shopLogoPreviewImg') && !$('shopLogoPreviewImg').hidden ? $('shopLogoPreviewImg').src : '';
+  if(logoImgSrc){
+    logoBox.innerHTML = `<img src="${logoImgSrc}" alt="">`;
+  } else {
+    const initial = (($('shopNameInput') && $('shopNameInput').value.trim()) || '?').trim().charAt(0).toUpperCase();
+    logoBox.textContent = initial || '?';
+  }
+  const locName = $('shopLocName') ? $('shopLocName').value.trim() : '';
+  const locSystem = $('shopLocSystem') ? $('shopLocSystem').value : '';
+  const locTag = $('shopLivePreviewLoc');
+  if(locSystem){
+    locTag.innerHTML = SHOP_LOC_PIN_ICON + (locName ? `${locName} · ${locSystem}` : locSystem);
+    locTag.hidden = false;
+  } else {
+    locTag.hidden = true;
+  }
 }
 async function loadSellerDashboard(){
   if(!session) return;
@@ -4366,6 +4506,10 @@ let pendingShopLogoFile = null;
 function onShopLogoSelected(inputEl){
   const file = (inputEl.files && inputEl.files[0]) || null;
   inputEl.value = '';
+  handleShopLogoFile(file);
+}
+// Logique commune bouton "parcourir" + glisser-déposer sur la zone de dépôt du logo.
+function handleShopLogoFile(file){
   if(!file) return;
   // Les GIF ne passent pas par le recadrage (le canvas casserait l'animation) : on les upload tels quels.
   if(file.type === 'image/gif' || /\.gif$/i.test(file.name)){
@@ -4373,9 +4517,25 @@ function onShopLogoSelected(inputEl){
     $('shopLogoPreviewName').textContent = T[LANG].photoReady;
     const preview = $('shopLogoPreviewImg');
     if(preview){ preview.src = URL.createObjectURL(file); preview.hidden = false; }
+    syncShopLogoDropzoneUI();
+    updateShopLivePreview();
     return;
   }
   openCropModal(file, 'shopLogo');
+}
+// Affiche l'aperçu (photo) ou le message "glisse une image ici" selon qu'un logo est déjà choisi.
+function syncShopLogoDropzoneUI(){
+  const preview = $('shopLogoPreviewImg'); const empty = $('shopLogoDropEmpty');
+  if(!preview || !empty) return;
+  empty.hidden = !preview.hidden;
+}
+function onShopLogoDragOver(ev){ ev.preventDefault(); ev.currentTarget.classList.add('dragover'); }
+function onShopLogoDragLeave(ev){ ev.currentTarget.classList.remove('dragover'); }
+function onShopLogoDrop(ev){
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('dragover');
+  const file = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
+  if(file) handleShopLogoFile(file);
 }
 
 // --- RECADRAGE PHOTO (annonce marketplace : 4/3, logo boutique : carré 1/1) ---
@@ -4469,6 +4629,8 @@ function confirmCrop(){
       $('shopLogoPreviewName').textContent = T[LANG].photoReady;
       const preview = $('shopLogoPreviewImg');
       if(preview){ preview.src = URL.createObjectURL(pendingShopLogoFile); preview.hidden = false; }
+      syncShopLogoDropzoneUI();
+      updateShopLivePreview();
     } else {
       pendingListingPhotoFile = new File([blob], cropState.file.name, { type: mime });
       $('listingPhotoPreviewName').textContent = T[LANG].photoReady;
@@ -4774,6 +4936,15 @@ async function openSellerShop(sellerId){
   shopEl.style.setProperty('--accent', shopColorHex);
   shopEl.style.setProperty('--accent-dim', shopColorHex + '55');
   $('shopPageTitle').textContent = (shop && shop.shop_name) || (p ? displayName(p) : '—');
+  const locTag = $('shopLocTag');
+  if(locTag){
+    if(shop && shop.location_system){
+      locTag.innerHTML = SHOP_LOC_PIN_ICON + (shop.location_name ? `${shop.location_name} · ${shop.location_system}` : shop.location_system);
+      locTag.hidden = false;
+    } else {
+      locTag.hidden = true;
+    }
+  }
   $('shopOwnerName').textContent = d.shopOwnerLbl + (p ? displayName(p) : '—');
   if(descEl && shop?.description){ descEl.textContent = shop.description; descEl.hidden = false; }
   const grid = $('shopListingsGrid');

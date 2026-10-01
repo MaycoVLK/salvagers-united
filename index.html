@@ -5731,7 +5731,11 @@ async function fetchSellerShopStats(sellerId){
   if(!sellerId) return null;
   const [ordersRes, inquiriesRes, upvotesRes, listingsRes, acceptedOffersRes] = await Promise.all([
     sb.from('orders').select('items,gross_price,status').eq('seller_id', sellerId).eq('order_type','marketplace').eq('status','delivered'),
-    sb.from('marketplace_inquiries').select('snap_item_name,snap_price,snap_qty,status,delivery_method').eq('seller_id', sellerId).eq('status','completed').eq('delivery_method','pickup'),
+    // On se base sur order_id IS NULL (et non sur la colonne delivery_method, qui peut être absente/périmée
+    // sur d'anciennes lignes et faisait passer des ventes "remise en main propre" bien réelles à la trappe)
+    // pour ne compter ici que les ventes SANS coursier : celles avec coursier sont déjà comptées via la
+    // requête 'orders' juste au-dessus, on éviterait sinon de les compter en double.
+    sb.from('marketplace_inquiries').select('snap_item_name,snap_price,snap_qty,status,order_id').eq('seller_id', sellerId).eq('status','completed').is('order_id', null),
     sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', sellerId),
     sb.from('marketplace_listings').select('tags,photo_url').eq('seller_id', sellerId),
     sb.from('resource_offers').select('id', { count:'exact', head:true }).eq('seller_id', sellerId).eq('status','accepted')

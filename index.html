@@ -251,6 +251,18 @@
     .logo-wordmark-header .lw-main{font-size:1.15rem; letter-spacing:.3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
     .logo-wordmark-header .lw-sub{font-size:.62rem; letter-spacing:1.2px; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
     .msg-overlay:not([hidden]){display:block;}
+    /* Panneau messagerie en plein écran sur mobile/tablette. Avant : le panneau gardait sa hauteur
+       "dropdown" desktop (max-height:70vh + overflow-y:auto sur le panneau entier), alors que
+       #msgThreadView pouvait grandir bien au-delà (jusqu'à calc(100vh - 140px)) sans être lui-même
+       scrollable — résultat, la zone de saisie tout en bas du fil se retrouvait hors du cadre visible
+       du panneau, inaccessible (c'est le bug "la messagerie est coupée" remonté par un utilisateur).
+       On force maintenant le panneau en plein écran (haut ET bas fixés, plus de max-height), avec
+       #msgListView / #msgThreadView en colonnes flex qui occupent tout l'espace sous le titre : seule
+       la liste des messages (.msg-thread-items) défile, le champ de saisie reste toujours visible en bas. */
+    .messages-panel{position:fixed; top:60px; left:8px; right:8px; bottom:12px; width:auto; max-width:none; max-height:none; display:flex; flex-direction:column;}
+    #msgListView{flex:1 1 auto; min-height:0; overflow-y:auto;}
+    #msgThreadView{flex:1 1 auto; min-height:0; max-height:none;}
+    .msg-thread-items{min-height:0;}
   }
   @media (max-width:480px){
     .admin-view-bar{gap:5px;}
@@ -372,9 +384,7 @@
   .chat-bubble-text{font-size:.88rem; color:var(--text); white-space:pre-wrap; word-break:break-word;}
   .chat-bubble-time{font-size:.62rem; color:var(--muted); text-align:right; margin-top:3px;}
   @media (max-width:480px){
-    .messages-panel{position:fixed; top:60px; left:8px; right:8px; width:auto; max-width:none;}
     .online-panel{position:fixed; top:60px; left:8px; right:8px; width:auto; max-width:none;}
-    #msgThreadView{max-height:calc(100vh - 140px);}
   }
   .settings-panel{position:absolute; top:48px; right:0; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:14px; min-width:210px; box-shadow:0 10px 26px rgba(0,0,0,.55); z-index:60; display:flex; flex-direction:column; gap:12px;}
   .settings-panel .row-label{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;}

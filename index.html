@@ -839,8 +839,13 @@
   .shop-banner-row{display:flex; align-items:center; gap:22px; position:relative; z-index:1;}
   .shop-banner-logo{width:104px; height:104px; flex:none; border-radius:10px; background:var(--bg2);
     border:2px solid var(--accent); color:var(--accent); display:flex; align-items:center; justify-content:center;
-    overflow:hidden; padding:14px; box-shadow:0 0 18px var(--accent-dim);}
+    overflow:hidden; padding:14px; box-shadow:0 0 18px var(--accent-dim); position:relative;}
   .shop-banner-logo svg{width:100%; height:100%;}
+  /* Le padding ci-dessus sert à cadrer joliment l'icône SVG par défaut, mais pour un vrai logo uploadé par
+     le vendeur on veut qu'il remplisse tout l'espace jusqu'à toucher la bordure néon : on le sort donc du
+     flux avec un positionnement absolu calé sur la boîte de padding, ce qui annule visuellement le padding
+     pour cette image précise sans y toucher pour l'icône SVG. */
+  .shop-banner-logo .shop-hero-logo-img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit;}
   .shop-banner-id{flex:1; min-width:0;}
   .shop-banner-title-row{display:flex; align-items:center; gap:10px;}
   .shop-banner-title-row h1{margin:0; flex:1; min-width:0; font-size:1.9rem; line-height:1.15; word-break:break-word;}
@@ -3068,7 +3073,7 @@ async function msgRefreshAfterAction(){
     await loadMsgConversations();
     if(threadOpen){
       const g = msgConversationsCache[partnerId];
-      if(g) await renderMsgThreadItems(g);
+      if(g){ await renderMsgThreadItems(g); scrollMsgThreadToBottom(); }
       else openMsgList(); // la conversation n'a plus aucun élément (ex: offre annulée) : on revient à la liste
     }
   }

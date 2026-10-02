@@ -6820,19 +6820,33 @@ function renderSellerAd(){
 let profileChannel = null;
 let notifChannel = null;
 // --- DONNÉES TEMPS RÉEL (orders / marketplace_listings / marketplace_inquiries) ---
-// Ces 3 canaux écoutent large (toute la table, sans filtre) car Supabase Realtime ne permet pas de filtre
-// du style "où je suis client OU vendeur OU coursier" en une seule souscription. On limite quand même les
-// dégâts en ne les ouvrant QUE pour les visiteurs connectés (avant, ils tournaient aussi pour les visiteurs
-// non connectés, en permanence, dès le chargement de la page) et en les refermant à la déconnexion.
-let ordersChannel = null, marketplaceChannel = null, inquiriesChannel = null;
+// Le canal "orders" complet (toute la table, non filtré) n'est ouvert QUE pour les coursiers/admin : ce sont
+// les seuls qui ont besoin de voir apparaître/disparaître en direct les commandes en attente de n'importe
+// quel client. Les clients et vendeurs reçoivent à la place des canaux filtrés côté Postgres (client_id /
+// seller_id = mon id) : ça évite qu'un simple client ou vendeur reçoive (et fasse gonfler les logs/egress
+// Realtime pour rien) chaque commande créée par tout le monde sur le site alors que ça ne le concerne pas.
+// marketplace-realtime reste large : un client qui parcourt la marketplace doit voir toutes les annonces de
+// tous les vendeurs, donc rien à filtrer par utilisateur là-dessus.
+let ordersChannel = null, ordersClientChannel = null, ordersSellerChannel = null, marketplaceChannel = null, inquiriesChannel = null;
 function subscribeDataChannels(){
-  if(!session) return;
-  if(!ordersChannel) ordersChannel = sb.channel('orders-realtime')
+  if(!session || !profile) return;
+  const isCourierOrAdmin = profile.is_courier || profile.role === 'admin';
+  const isSellerOrAdmin = profile.is_seller || profile.role === 'admin';
+  if(isCourierOrAdmin && !ordersChannel) ordersChannel = sb.channel('orders-realtime')
     .on('postgres_changes', { event:'*', schema:'public', table:'orders' }, () => {
       const v = effectiveView();
-      if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'deliveries') loadClientDashboard();
       if(v === 'courier' && !$('view-courier-dash').hidden) loadCourierData();
-      if((v === 'seller' || v === 'admin') && !$('view-seller-shop').hidden && shopViewingSellerId === session.user.id){ checkAndRenderSellerAchievements('shopAchvCard'); fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('shopStatsCard'), stats)); }
+      if(v === 'admin' && !$('view-seller-shop').hidden && shopViewingSellerId === session.user.id){ checkAndRenderSellerAchievements('shopAchvCard'); fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('shopStatsCard'), stats)); }
+    })
+    .subscribe();
+  if(!ordersClientChannel) ordersClientChannel = sb.channel('orders-client-'+session.user.id)
+    .on('postgres_changes', { event:'*', schema:'public', table:'orders', filter:`client_id=eq.${session.user.id}` }, () => {
+      if(effectiveView() === 'client' && !$('view-client-dash').hidden && clientTab === 'deliveries') loadClientDashboard();
+    })
+    .subscribe();
+  if(isSellerOrAdmin && !ordersSellerChannel) ordersSellerChannel = sb.channel('orders-seller-'+session.user.id)
+    .on('postgres_changes', { event:'*', schema:'public', table:'orders', filter:`seller_id=eq.${session.user.id}` }, () => {
+      if(effectiveView() === 'seller' && !$('view-seller-shop').hidden && shopViewingSellerId === session.user.id){ checkAndRenderSellerAchievements('shopAchvCard'); fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('shopStatsCard'), stats)); }
     })
     .subscribe();
   if(!marketplaceChannel) marketplaceChannel = sb.channel('marketplace-realtime')
@@ -6850,6 +6864,8 @@ function subscribeDataChannels(){
 }
 function unsubscribeDataChannels(){
   if(ordersChannel){ sb.removeChannel(ordersChannel); ordersChannel = null; }
+  if(ordersClientChannel){ sb.removeChannel(ordersClientChannel); ordersClientChannel = null; }
+  if(ordersSellerChannel){ sb.removeChannel(ordersSellerChannel); ordersSellerChannel = null; }
   if(marketplaceChannel){ sb.removeChannel(marketplaceChannel); marketplaceChannel = null; }
   if(inquiriesChannel){ sb.removeChannel(inquiriesChannel); inquiriesChannel = null; }
 }
@@ -7080,7 +7096,15 @@ function subscribeProfileChannel(){
   if(profileChannel || !session) return;
   profileChannel = sb.channel('profile-self-'+session.user.id)
     .on('postgres_changes', { event:'UPDATE', schema:'public', table:'profiles', filter:`id=eq.${session.user.id}` }, (payload) => {
+      const wasCourierOrAdmin = profile && (profile.is_courier || profile.role === 'admin');
+      const wasSellerOrAdmin = profile && (profile.is_seller || profile.role === 'admin');
       profile = payload.new;
+      // Si le rôle vient de changer (ex: candidature coursier/vendeur acceptée), on réabonne les canaux
+      // "orders" scopés par rôle (voir subscribeDataChannels) pour que le nouveau coursier/vendeur reçoive
+      // désormais le flux qui le concerne, sans attendre un rechargement complet de la page.
+      const isCourierOrAdmin = profile.is_courier || profile.role === 'admin';
+      const isSellerOrAdmin = profile.is_seller || profile.role === 'admin';
+      if(isCourierOrAdmin !== wasCourierOrAdmin || isSellerOrAdmin !== wasSellerOrAdmin){ unsubscribeDataChannels(); subscribeDataChannels(); }
       checkCourierNotification();
       updateProfileChip();
       if(!$('view-profile').hidden) renderProfileView();

@@ -2795,6 +2795,7 @@ document.addEventListener('click', (e) => {
 function openSellerCreateOption(kind){
   $('sellerCreateMenu').hidden = true;
   hideAllViews();
+  $('createOrderBtn').hidden = true;
   $('sellerCreateWrap').hidden = true;
   if(kind === 'listing'){
     const d = T[LANG];
@@ -4721,6 +4722,7 @@ async function saveShopSettings(){
 async function openSellerShopEdit(){
   if(!session) return;
   hideAllViews();
+  $('createOrderBtn').hidden = true;
   $('sellerCreateWrap').hidden = true;
   $('view-seller-shop-edit').hidden = false;
   const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle();
@@ -4870,6 +4872,7 @@ function openEditListing(id){
   const d = T[LANG];
   editingListingId = id;
   hideAllViews();
+  $('createOrderBtn').hidden = true;
   $('sellerCreateWrap').hidden = true;
   $('view-seller-create-listing').hidden = false;
   $('listingItem').value = l.item_name;
@@ -5305,6 +5308,10 @@ async function openSellerShop(sellerId){
   shopViewingSellerId = sellerId;
   const isOwner = !!(session && session.user.id === sellerId);
   hideAllViews();
+  // hideAllViews() ne touche pas aux boutons CRÉER de la topbar (ce ne sont pas des "vues") : sans ça, le
+  // bouton CRÉER du client (visible sur l'onglet client) restait affiché en plus de celui du vendeur quand
+  // on ouvrait sa propre boutique depuis le leaderboard/une carte marketplace sans repasser par routeApp().
+  $('createOrderBtn').hidden = true;
   $('sellerCreateWrap').hidden = !isOwner;
   $('view-seller-shop').hidden = false;
   $('sellerBlocked').hidden = true;
@@ -5529,6 +5536,7 @@ function shopUpvoteBurst(el){
 }
 function openShopAllListings(){
   hideAllViews();
+  $('createOrderBtn').hidden = true;
   $('sellerCreateWrap').hidden = true;
   $('view-shop-all-listings').hidden = false;
   const d = T[LANG];
@@ -5542,6 +5550,7 @@ function openShopAllListings(){
 }
 function openShopAllResources(){
   hideAllViews();
+  $('createOrderBtn').hidden = true;
   $('sellerCreateWrap').hidden = true;
   $('view-shop-all-resources').hidden = false;
   const d = T[LANG];

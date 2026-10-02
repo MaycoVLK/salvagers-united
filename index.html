@@ -251,18 +251,6 @@
     .logo-wordmark-header .lw-main{font-size:1.15rem; letter-spacing:.3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
     .logo-wordmark-header .lw-sub{font-size:.62rem; letter-spacing:1.2px; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
     .msg-overlay:not([hidden]){display:block;}
-    /* Panneau messagerie en plein écran sur mobile/tablette. Avant : le panneau gardait sa hauteur
-       "dropdown" desktop (max-height:70vh + overflow-y:auto sur le panneau entier), alors que
-       #msgThreadView pouvait grandir bien au-delà (jusqu'à calc(100vh - 140px)) sans être lui-même
-       scrollable — résultat, la zone de saisie tout en bas du fil se retrouvait hors du cadre visible
-       du panneau, inaccessible (c'est le bug "la messagerie est coupée" remonté par un utilisateur).
-       On force maintenant le panneau en plein écran (haut ET bas fixés, plus de max-height), avec
-       #msgListView / #msgThreadView en colonnes flex qui occupent tout l'espace sous le titre : seule
-       la liste des messages (.msg-thread-items) défile, le champ de saisie reste toujours visible en bas. */
-    .messages-panel{position:fixed; top:60px; left:8px; right:8px; bottom:12px; width:auto; max-width:none; max-height:none; display:flex; flex-direction:column;}
-    #msgListView{flex:1 1 auto; min-height:0; overflow-y:auto;}
-    #msgThreadView{flex:1 1 auto; min-height:0; max-height:none;}
-    .msg-thread-items{min-height:0;}
   }
   @media (max-width:480px){
     .admin-view-bar{gap:5px;}
@@ -385,6 +373,25 @@
   .chat-bubble-time{font-size:.62rem; color:var(--muted); text-align:right; margin-top:3px;}
   @media (max-width:480px){
     .online-panel{position:fixed; top:60px; left:8px; right:8px; width:auto; max-width:none;}
+  }
+  /* --- MESSAGERIE MOBILE : page dédiée plein écran (à la place du popup desktop, en dessous de 720px) ---
+     Le popup desktop (.messages-panel) coupait le champ de saisie sur mobile dès que le fil était un peu
+     long : sa hauteur restait limitée (max-height:70vh, tout le panneau scrollable d'un bloc) alors que
+     le fil pouvait grandir bien au-delà, sans zone de défilement propre. Plutôt que de bricoler le popup
+     pour mobile, on bascule carrément sur une vraie page dédiée façon app de messagerie : liste des
+     conversations plein écran, puis le fil ouvert avec uniquement les bulles qui défilent et le champ de
+     saisie toujours fixé en bas. Le popup (#messagesPanel) reste inchangé et continue d'être utilisé tel
+     quel sur PC (voir onMessagesBtnClick() en JS, qui choisit l'un ou l'autre selon la largeur d'écran). */
+  #view-messages-mobile{display:flex; flex-direction:column; min-height:0;}
+  @media (max-width:720px){
+    body.msg-mobile-open .app-topbar{display:none;}
+    body.msg-mobile-open #view-messages-mobile{position:fixed; inset:0; z-index:70; background:var(--bg); padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column;}
+    #msgListViewMobile{display:flex; flex-direction:column; flex:1 1 auto; min-height:0;}
+    #msgListViewMobile[hidden]{display:none;}
+    #msgConversationsListMobile{flex:1 1 auto; min-height:0; overflow-y:auto; margin-top:4px;}
+    #msgThreadViewMobile{display:flex; flex-direction:column; flex:1 1 auto; min-height:0;}
+    #msgThreadViewMobile[hidden]{display:none;}
+    #msgThreadViewMobile .msg-thread-items{flex:1 1 auto; min-height:0;}
   }
   .settings-panel{position:absolute; top:48px; right:0; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:14px; min-width:210px; box-shadow:0 10px 26px rgba(0,0,0,.55); z-index:60; display:flex; flex-direction:column; gap:12px;}
   .settings-panel .row-label{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;}
@@ -1261,7 +1268,7 @@
           </div>
         </div>
         <div class="gear-wrap">
-          <button class="gear-btn messages-btn" id="messagesBtn" onclick="toggleMessagesPanel()" aria-label="Messages" title="Messages">
+          <button class="gear-btn messages-btn" id="messagesBtn" onclick="onMessagesBtnClick()" aria-label="Messages" title="Messages">
             <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
               <rect x="1" y="2" width="14" height="2"/>
               <rect x="1" y="9" width="14" height="2"/>
@@ -1947,6 +1954,30 @@
       <header><h1 data-i18n="myResourceRequestsTitle">Objets recherchés</h1></header>
       <div id="shopResourceRequestsGridFull" class="resource-request-grid"></div>
     </section>
+
+    <!-- MESSAGERIE MOBILE : page dédiée plein écran (remplace le popup sur mobile, voir onMessagesBtnClick()) -->
+    <section id="view-messages-mobile" hidden>
+      <div id="msgListViewMobile">
+        <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
+        <header><h1 data-i18n="messagesTitle">Messagerie</h1></header>
+        <div id="msgConversationsListMobile" class="msg-conv-list"></div>
+      </div>
+      <div id="msgThreadViewMobile" hidden>
+        <div class="msg-thread-header">
+          <button type="button" class="msg-thread-back" onclick="closeMsgThread()">
+            <span aria-hidden="true">&lt;</span> <span id="msgThreadPartnerNameMobile">—</span>
+          </button>
+          <button type="button" class="msg-thread-clear" onclick="clearMsgConversation()" data-i18n="msgClearBtn">EFFACER</button>
+        </div>
+        <div id="msgThreadItemsMobile" class="msg-thread-items"></div>
+        <form id="msgComposeFormMobile" class="msg-compose" onsubmit="return submitChatMessage(event)">
+          <input type="text" id="msgComposeInputMobile" class="msg-compose-input" data-i18n-ph="msgComposePh" placeholder="Écris un message…" maxlength="1000" autocomplete="off">
+          <button type="submit" class="btn-primary msg-compose-send" aria-label="Envoyer" title="Envoyer">
+            <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="1" y="7" width="1" height="2"/><rect x="2" y="6" width="1" height="1"/><rect x="2" y="9" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="3" y="10" width="1" height="1"/><rect x="2" y="7" width="11" height="2"/><rect x="11" y="5" width="2" height="1"/><rect x="11" y="10" width="2" height="1"/><rect x="13" y="4" width="1" height="1"/><rect x="13" y="11" width="1" height="1"/></g></svg>
+          </button>
+        </form>
+      </div>
+    </section>
   </div>
 
   <footer data-i18n="footer">COURIERS UNITED // RISQUES INCLUS DANS LA COMMISSION // PAIEMENT À LA REMISE</footer>
@@ -2241,8 +2272,11 @@ let profile = null;
 // Un membre peut cumuler plusieurs casquettes (client + coursier + vendeur) : currentView retient
 // l'onglet actuellement affiché parmi celles disponibles pour ce compte. 'client' reste le point de départ par défaut.
 let currentView = 'client'; // 'client' | 'courier' | 'seller' | 'admin'
-const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-resource','view-shop-all-listings','view-shop-all-resources'];
-function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); }
+const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-resource','view-shop-all-listings','view-shop-all-resources','view-messages-mobile'];
+// Quitte aussi le mode "page messagerie mobile plein écran" (voir openMobileMessages()) à chaque
+// changement de vue, quel que soit le chemin emprunté pour naviguer ailleurs : on ne veut pas que la
+// barre du haut reste masquée si on quitte la messagerie autrement qu'avec son propre bouton RETOUR.
+function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); document.body.classList.remove('msg-mobile-open'); }
 let clientTab = 'deliveries'; // 'deliveries' | 'marketplace' | 'resources'
 function setClientTab(tab){
   clientTab = tab;
@@ -2827,8 +2861,20 @@ function goHome(){
   routeApp();
 }
 
-// --- MESSAGERIE UNIFIÉE (popup, une conversation par personne) ---
+// --- MESSAGERIE UNIFIÉE : popup sur PC, page dédiée plein écran sur mobile ---
+// Les deux UI partagent les mêmes fonctions de rendu (openMsgList, openMsgThread, renderMsgThreadItems,
+// submitChatMessage...), qui ciblent leurs éléments via msgEl('xxx') plutôt que $('xxx') en dur : msgScope
+// vaut '' pour le popup desktop (éléments msgListView, msgThreadItems, etc.) et 'Mobile' pour la page
+// dédiée (msgListViewMobile, msgThreadItemsMobile, etc.), et est mis à jour par openMessagesPanel() /
+// openMobileMessages() selon lequel des deux vient d'être ouvert.
+let msgScope = '';
+function msgEl(base){ return $(base + msgScope); }
+function isMobileMsgUI(){ return window.matchMedia('(max-width:720px)').matches; }
+function onMessagesBtnClick(){
+  if(isMobileMsgUI()) openMobileMessages(); else toggleMessagesPanel();
+}
 function openMessagesPanel(){
+  msgScope = '';
   const panel = $('messagesPanel');
   $('settingsPanel').hidden = true;
   $('sellerCreateMenu') && ($('sellerCreateMenu').hidden = true);
@@ -2855,9 +2901,22 @@ document.addEventListener('click', (e) => {
   if(!panel || panel.hidden) return;
   if(!panel.contains(e.target) && !e.target.closest('.messages-btn')) closeMessagesPanel();
 });
+// Page dédiée plein écran (mobile) : remplace le popup, façon vraie app de messagerie. Masque la barre du
+// haut (via la classe msg-mobile-open sur <body>, voir CSS) tant qu'on est dedans ; hideAllViews() retire
+// systématiquement cette classe, donc le bouton RETOUR (comme n'importe quelle autre navigation) la fait
+// toujours réapparaître proprement.
+function openMobileMessages(){
+  msgScope = 'Mobile';
+  $('settingsPanel').hidden = true;
+  $('sellerCreateMenu') && ($('sellerCreateMenu').hidden = true);
+  hideAllViews();
+  document.body.classList.add('msg-mobile-open');
+  $('view-messages-mobile').hidden = false;
+  openMsgList();
+}
 function openMsgList(){
-  $('msgListView').hidden = false;
-  $('msgThreadView').hidden = true;
+  msgEl('msgListView').hidden = false;
+  msgEl('msgThreadView').hidden = true;
   currentMsgThreadPartnerId = null;
   loadMsgConversations();
 }
@@ -2872,12 +2931,12 @@ async function openMsgThreadWithUser(counterpartId){
   if(!msgConversationsCache[counterpartId]){
     msgConversationsCache[counterpartId] = { id: counterpartId, items: [], lastAt: new Date().toISOString(), unread:false };
   }
-  openMessagesPanel();
+  if(isMobileMsgUI()) openMobileMessages(); else openMessagesPanel();
   await openMsgThread(counterpartId);
 }
 async function submitChatMessage(ev){
   ev.preventDefault();
-  const input = $('msgComposeInput');
+  const input = msgEl('msgComposeInput');
   const text = input ? input.value.trim() : '';
   if(!text || !currentMsgThreadPartnerId) return false;
   input.value = '';
@@ -2936,8 +2995,9 @@ function confirmClearMsgConversation(){
 // Rafraîchit la liste des conversations et, si un fil est ouvert, le fil en cours (appelé après toute action
 // qui change l'état d'une demande/offre : accepter, refuser, contre-offre, annuler, marquer récupéré...).
 async function msgRefreshAfterAction(){
-  if($('messagesPanel') && !$('messagesPanel').hidden){
-    const threadOpen = !$('msgThreadView').hidden && currentMsgThreadPartnerId;
+  const msgUiOpen = ($('messagesPanel') && !$('messagesPanel').hidden) || ($('view-messages-mobile') && !$('view-messages-mobile').hidden);
+  if(msgUiOpen){
+    const threadOpen = !msgEl('msgThreadView').hidden && currentMsgThreadPartnerId;
     const partnerId = currentMsgThreadPartnerId;
     // Recharge les conversations depuis la base (msgConversationsCache était sinon obsolète : rouvrir
     // le fil avec l'ancien cache ne montrait pas le changement tant qu'on ne refermait/rouvrait pas
@@ -2977,7 +3037,7 @@ function msgConvPreviewHtml(latest, uid){
 let msgConversationsCache = {};
 let currentMsgThreadPartnerId = null;
 async function loadMsgConversations(){
-  const box = $('msgConversationsList'); if(!box || !session) return;
+  const box = msgEl('msgConversationsList'); if(!box || !session) return;
   const d = T[LANG];
   const uid = session.user.id;
   const [inqRes, offRes, dmRes, unreadClientMkt, unreadSellerMkt, unreadResOffer, unreadClientResOffer, unreadDm] = await Promise.all([
@@ -3044,7 +3104,7 @@ function scrollMsgThreadToBottom(){
   // Fait défiler la messagerie jusqu'au dernier message du fil ouvert (au lieu de rester en haut).
   // On attend une frame pour être sûr que le nouveau contenu (et ses images) a bien été mis en page.
   requestAnimationFrame(() => {
-    const items = $('msgThreadItems');
+    const items = msgEl('msgThreadItems');
     if(items) items.scrollTop = items.scrollHeight;
   });
 }
@@ -3052,10 +3112,10 @@ async function openMsgThread(counterpartId){
   const g = msgConversationsCache[counterpartId];
   if(!g) return;
   currentMsgThreadPartnerId = counterpartId;
-  $('msgListView').hidden = true;
-  $('msgThreadView').hidden = false;
+  msgEl('msgListView').hidden = true;
+  msgEl('msgThreadView').hidden = false;
   const { data: p } = await sb.from('profiles').select('id,discord_username,rsi_handle').eq('id', counterpartId).maybeSingle();
-  $('msgThreadPartnerName').textContent = p ? displayName(p) : '—';
+  msgEl('msgThreadPartnerName').textContent = p ? displayName(p) : '—';
   await renderMsgThreadItems(g);
   scrollMsgThreadToBottom();
   // Marque comme lus tous les messages non lus de ce fil. On interroge directement la base pour
@@ -3084,7 +3144,7 @@ async function openMsgThread(counterpartId){
   refreshNotifBadges();
 }
 async function renderMsgThreadItems(g){
-  const box = $('msgThreadItems'); if(!box || !session) return;
+  const box = msgEl('msgThreadItems'); if(!box || !session) return;
   const uid = session.user.id;
   const inqItems = g.items.filter(it => it.__kind === 'inq_received' || it.__kind === 'inq_sent');
   const offItems = g.items.filter(it => it.__kind === 'offer_received' || it.__kind === 'offer_sent');

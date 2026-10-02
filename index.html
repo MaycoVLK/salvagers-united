@@ -61,29 +61,32 @@
   .career-stat .val{font-family:'VT323',monospace; font-size:1.6rem; color:var(--accent); line-height:1.1;}
   .career-stat .lbl{font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;}
 
-  .shop-leaderboard-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:10px;}
-  .shop-lb-slot{display:flex; flex-direction:column; align-items:center; text-align:center; gap:5px; border:1px solid var(--border); border-radius:4px; padding:10px 6px;}
+  .shop-leaderboard-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;}
+  .shop-lb-slot{display:flex; flex-direction:column; align-items:center; text-align:center; gap:7px; border:1px solid var(--border); border-radius:4px; padding:16px 10px;}
   /* Même gabarit que le logo de la bannière boutique (coins arrondis, pas un rond) ; chaque slot porte
      --accent/--accent-dim en inline-style avec la couleur de la boutique gagnante, donc le logo (et le
-     glow au survol) prend automatiquement la couleur propre à chaque boutique du podium. */
-  .shop-lb-slot-logo{width:52px; height:52px; border-radius:10px; object-fit:cover; border:2px solid var(--accent); background:var(--bg2); box-shadow:0 0 10px var(--accent-dim);}
-  .shop-lb-slot-logo-fallback{width:52px; height:52px; border-radius:10px; border:2px solid var(--accent); background:var(--bg2); display:flex; align-items:center; justify-content:center; color:var(--accent); font-family:'VT323',monospace; font-size:1.3rem; box-shadow:0 0 10px var(--accent-dim);}
-  .shop-lb-slot-logo-btn{padding:0; border:none; background:none; cursor:pointer; line-height:0; border-radius:10px; transition:transform .15s ease;}
+     glow au survol) prend automatiquement la couleur propre à chaque boutique du podium. Tailles agrandies
+     sur ordinateur (desktop jugé trop petit) ; la media query mobile ci-dessous reprend les anciennes
+     tailles telles quelles, puisque sur mobile l'affichage était déjà jugé satisfaisant. */
+  .shop-lb-slot-logo{width:72px; height:72px; border-radius:12px; object-fit:cover; border:2px solid var(--accent); background:var(--bg2); box-shadow:0 0 10px var(--accent-dim);}
+  .shop-lb-slot-logo-fallback{width:72px; height:72px; border-radius:12px; border:2px solid var(--accent); background:var(--bg2); display:flex; align-items:center; justify-content:center; color:var(--accent); font-family:'VT323',monospace; font-size:1.8rem; box-shadow:0 0 10px var(--accent-dim);}
+  .shop-lb-slot-logo-btn{padding:0; border:none; background:none; cursor:pointer; line-height:0; border-radius:12px; transition:transform .15s ease;}
   .shop-lb-slot-logo-btn:hover{transform:scale(1.08);}
   .shop-lb-slot-logo-btn:hover .shop-lb-slot-logo,.shop-lb-slot-logo-btn:hover .shop-lb-slot-logo-fallback{border-color:var(--text);}
   /* Hauteur fixe (en em, donc proportionnelle à chaque taille de police) sur le nom et le libellé, pour
      que les 3 colonnes du podium restent alignées ligne par ligne même quand un nom de boutique ou un
      libellé passe sur 2 lignes dans une colonne et pas dans les autres — sinon value/label se décalaient
      verticalement d'une colonne à l'autre, surtout visible sur mobile où la grille est resserrée. */
-  .shop-lb-slot-shopname{font-family:'VT323',monospace; font-size:1.05rem; color:var(--text); line-height:1.15; word-break:break-word;
+  .shop-lb-slot-shopname{font-family:'VT323',monospace; font-size:1.3rem; color:var(--text); line-height:1.15; word-break:break-word;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.3em;}
-  .shop-lb-slot-lbl{font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; line-height:1.25; min-height:2.5em;}
-  .shop-lb-slot-val{font-family:'VT323',monospace; font-size:1.3rem; color:var(--accent); line-height:1.1;}
-  .shop-lb-slot-item{font-size:.72rem; color:var(--muted); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .shop-lb-slot-lbl{font-size:.85rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; line-height:1.25; min-height:2.5em;}
+  .shop-lb-slot-val{font-family:'VT323',monospace; font-size:1.7rem; color:var(--accent); line-height:1.1;}
+  .shop-lb-slot-item{font-size:.85rem; color:var(--muted); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   @media (max-width:480px){
     .shop-leaderboard-grid{gap:4px;}
-    .shop-lb-slot{padding:8px 3px;}
+    .shop-lb-slot{padding:8px 3px; gap:5px;}
     .shop-lb-slot-logo, .shop-lb-slot-logo-fallback{width:38px; height:38px; border-radius:7px;}
+    .shop-lb-slot-logo-btn{border-radius:7px;}
     .shop-lb-slot-logo-fallback{font-size:1rem;}
     .shop-lb-slot-shopname{font-size:.82rem;}
     .shop-lb-slot-lbl{font-size:.58rem;}

@@ -383,12 +383,35 @@
      saisie toujours fixé en bas. Le popup (#messagesPanel) reste inchangé et continue d'être utilisé tel
      quel sur PC (voir onMessagesBtnClick() en JS, qui choisit l'un ou l'autre selon la largeur d'écran). */
   #view-messages-mobile{display:flex; flex-direction:column; min-height:0;}
+  /* Gros bouton flèche "retour" en haut à gauche, utilisé à la fois pour quitter la page messagerie
+     (vers l'appli) et pour revenir de la conversation ouverte à la liste — cible tactile large (46px, vs
+     le petit texte "< RETOUR"/"< Nom" trop fin à viser au pouce), mais garde la DA du site (bouton rond
+     bordé accent, même traitement que .gear-btn/.online-badge-btn, icône pixel crispEdges). */
+  .msg-mobile-back-btn{width:46px; height:46px; min-width:46px; flex:none; padding:0; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; border:1px solid var(--accent); background:var(--accent-dim); color:var(--accent); cursor:pointer; transition:background .15s, transform .1s;}
+  .msg-mobile-back-btn:hover{background:var(--accent); color:#03130a;}
+  .msg-mobile-back-btn:active{transform:scale(.9);}
+  .msg-mobile-back-btn .icon{width:20px; height:20px;}
+  .msg-mobile-header{display:flex; align-items:center; gap:12px; padding-bottom:14px; margin-bottom:12px; border-bottom:1px solid var(--border); flex:none;}
+  .msg-mobile-header h1{font-size:1.25rem; text-transform:uppercase; margin:0; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .msg-mobile-header .msg-thread-clear{flex:none;}
+  /* Petites animations "pixel steps" à l'ouverture/fermeture, dans le même esprit que .msg-panel-anim /
+     .msg-overlay-anim utilisées pour le popup desktop (transform + opacity découpés en paliers, pas de
+     easing lisse). Déclenchées uniquement côté JS pour la page mobile (openMobileMessages/closeMobileMessages
+     et openMsgThread/closeMsgThread quand msgScope === 'Mobile') : le popup PC n'est jamais concerné. */
+  @keyframes msgMobilePageIn{0%{opacity:0; transform:translateY(16px);} 100%{opacity:1; transform:translateY(0);}}
+  @keyframes msgMobilePageOut{0%{opacity:1; transform:translateY(0);} 100%{opacity:0; transform:translateY(16px);}}
+  @keyframes msgMobileThreadIn{0%{opacity:0; transform:translateX(26px);} 100%{opacity:1; transform:translateX(0);}}
+  @keyframes msgMobileThreadOut{0%{opacity:1; transform:translateX(0);} 100%{opacity:0; transform:translateX(26px);}}
+  #view-messages-mobile.msg-mobile-anim-in{animation:msgMobilePageIn .22s steps(6) both;}
+  #view-messages-mobile.msg-mobile-anim-out{animation:msgMobilePageOut .18s steps(5) both;}
+  #msgThreadViewMobile.msg-mobile-thread-anim-in{animation:msgMobileThreadIn .2s steps(6) both;}
+  #msgThreadViewMobile.msg-mobile-thread-anim-out{animation:msgMobileThreadOut .16s steps(5) both;}
   @media (max-width:720px){
     body.msg-mobile-open .app-topbar{display:none;}
     body.msg-mobile-open #view-messages-mobile{position:fixed; inset:0; z-index:70; background:var(--bg); padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column;}
     #msgListViewMobile{display:flex; flex-direction:column; flex:1 1 auto; min-height:0;}
     #msgListViewMobile[hidden]{display:none;}
-    #msgConversationsListMobile{flex:1 1 auto; min-height:0; overflow-y:auto; margin-top:4px;}
+    #msgConversationsListMobile{flex:1 1 auto; min-height:0; overflow-y:auto;}
     #msgThreadViewMobile{display:flex; flex-direction:column; flex:1 1 auto; min-height:0;}
     #msgThreadViewMobile[hidden]{display:none;}
     #msgThreadViewMobile .msg-thread-items{flex:1 1 auto; min-height:0;}
@@ -1958,15 +1981,26 @@
     <!-- MESSAGERIE MOBILE : page dédiée plein écran (remplace le popup sur mobile, voir onMessagesBtnClick()) -->
     <section id="view-messages-mobile" hidden>
       <div id="msgListViewMobile">
-        <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
-        <header><h1 data-i18n="messagesTitle">Messagerie</h1></header>
+        <div class="msg-mobile-header">
+          <button type="button" class="msg-mobile-back-btn" onclick="closeMobileMessages()" aria-label="Retour" title="Retour">
+            <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+              <rect x="2" y="7" width="2" height="2"/><rect x="4" y="5" width="2" height="2"/><rect x="4" y="9" width="2" height="2"/>
+              <rect x="6" y="3" width="2" height="2"/><rect x="6" y="11" width="2" height="2"/><rect x="6" y="7" width="8" height="2"/>
+            </g></svg>
+          </button>
+          <h1 data-i18n="messagesTitle">Messagerie</h1>
+        </div>
         <div id="msgConversationsListMobile" class="msg-conv-list"></div>
       </div>
       <div id="msgThreadViewMobile" hidden>
-        <div class="msg-thread-header">
-          <button type="button" class="msg-thread-back" onclick="closeMsgThread()">
-            <span aria-hidden="true">&lt;</span> <span id="msgThreadPartnerNameMobile">—</span>
+        <div class="msg-mobile-header">
+          <button type="button" class="msg-mobile-back-btn" onclick="closeMsgThread()" aria-label="Retour à la liste" title="Retour à la liste">
+            <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+              <rect x="2" y="7" width="2" height="2"/><rect x="4" y="5" width="2" height="2"/><rect x="4" y="9" width="2" height="2"/>
+              <rect x="6" y="3" width="2" height="2"/><rect x="6" y="11" width="2" height="2"/><rect x="6" y="7" width="8" height="2"/>
+            </g></svg>
           </button>
+          <h1 id="msgThreadPartnerNameMobile">—</h1>
           <button type="button" class="msg-thread-clear" onclick="clearMsgConversation()" data-i18n="msgClearBtn">EFFACER</button>
         </div>
         <div id="msgThreadItemsMobile" class="msg-thread-items"></div>
@@ -2911,8 +2945,24 @@ function openMobileMessages(){
   $('sellerCreateMenu') && ($('sellerCreateMenu').hidden = true);
   hideAllViews();
   document.body.classList.add('msg-mobile-open');
-  $('view-messages-mobile').hidden = false;
+  const page = $('view-messages-mobile');
+  page.hidden = false;
+  // Petite entrée "pixel steps" (voir CSS) à chaque ouverture ; on repart toujours d'un état propre (sans
+  // classe de sortie résiduelle d'une fermeture précédente) pour que l'anim se rejoue à l'identique.
+  page.classList.remove('msg-mobile-anim-out', 'msg-mobile-anim-in');
+  void page.offsetWidth;
+  page.classList.add('msg-mobile-anim-in');
   openMsgList();
+}
+// Quitte la page messagerie mobile vers le reste de l'appli : on laisse d'abord l'anim de sortie se jouer
+// (même esprit "pixel steps" que l'entrée), puis seulement ensuite on route réellement ailleurs — sinon
+// hideAllViews() masquerait la page instantanément et l'anim ne se verrait jamais.
+function closeMobileMessages(){
+  const page = $('view-messages-mobile');
+  page.classList.remove('msg-mobile-anim-in');
+  void page.offsetWidth;
+  page.classList.add('msg-mobile-anim-out');
+  setTimeout(routeApp, 170);
 }
 function openMsgList(){
   msgEl('msgListView').hidden = false;
@@ -2920,7 +2970,18 @@ function openMsgList(){
   currentMsgThreadPartnerId = null;
   loadMsgConversations();
 }
-function closeMsgThread(){ openMsgList(); }
+// Retour de la conversation ouverte à la liste. Sur mobile, le fil glisse hors écran avant de laisser
+// place à la liste (openMsgList) ; le popup desktop (msgScope === '') garde son comportement instantané.
+function closeMsgThread(){
+  if(msgScope === 'Mobile'){
+    const thread = $('msgThreadViewMobile');
+    thread.classList.remove('msg-mobile-thread-anim-in');
+    thread.classList.add('msg-mobile-thread-anim-out');
+    setTimeout(() => { openMsgList(); thread.classList.remove('msg-mobile-thread-anim-out'); }, 150);
+  } else {
+    openMsgList();
+  }
+}
 // Démarre (ou rouvre) un chat libre avec n'importe quel joueur, même sans demande/offre en cours —
 // typiquement depuis le bouton "Envoyer un message" d'une fiche profil. Si une conversation existe déjà
 // (demande, offre, ou messages précédents), on l'ouvre telle quelle ; sinon on crée un groupe vide dans le
@@ -3114,6 +3175,13 @@ async function openMsgThread(counterpartId){
   currentMsgThreadPartnerId = counterpartId;
   msgEl('msgListView').hidden = true;
   msgEl('msgThreadView').hidden = false;
+  if(msgScope === 'Mobile'){
+    // Le fil glisse depuis la droite, même esprit "pixel steps" que le reste de la messagerie mobile.
+    const thread = $('msgThreadViewMobile');
+    thread.classList.remove('msg-mobile-thread-anim-out', 'msg-mobile-thread-anim-in');
+    void thread.offsetWidth;
+    thread.classList.add('msg-mobile-thread-anim-in');
+  }
   const { data: p } = await sb.from('profiles').select('id,discord_username,rsi_handle').eq('id', counterpartId).maybeSingle();
   msgEl('msgThreadPartnerName').textContent = p ? displayName(p) : '—';
   await renderMsgThreadItems(g);

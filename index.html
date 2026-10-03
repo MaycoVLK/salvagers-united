@@ -869,10 +869,12 @@
   .shop-banner-card::before,.shop-banner-card::after{content:""; position:absolute; width:14px; height:14px; border:2px solid var(--accent); opacity:.85; z-index:1;}
   .shop-banner-card::before{top:0; left:0; border-right:none; border-bottom:none;}
   .shop-banner-card::after{bottom:0; right:0; border-left:none; border-top:none;}
-  /* Nouvelle disposition (v2) : grosse photo à gauche, nom/localisation/propriétaire calés en haut à
-     droite, description en pleine largeur en dessous (via .shop-description, déjà un sibling de la row). */
-  .shop-banner-row{display:flex; align-items:flex-start; gap:24px; position:relative; z-index:1;}
-  .shop-banner-logo{width:168px; height:168px; flex:none; border-radius:10px; background:var(--bg2);
+  /* Disposition (v3) : grosse photo à gauche qui s'étire sur toute la hauteur de l'encadré (align-items:
+     stretch, par défaut en flexbox) ; à droite, nom/localisation/propriétaire en haut-gauche de la colonne
+     avec les actions (modifier + upvote) poussées tout à droite sur la même ligne, puis la description
+     juste en dessous, SOUS la colonne de texte uniquement (pas sous la photo). */
+  .shop-banner-row{display:flex; gap:22px; position:relative; z-index:1;}
+  .shop-banner-logo{width:200px; min-height:150px; flex:none; border-radius:10px; background:var(--bg2);
     border:2px solid var(--accent); color:var(--accent); display:flex; align-items:center; justify-content:center;
     overflow:hidden; padding:20px; box-shadow:0 0 18px var(--accent-dim); position:relative;}
   .shop-banner-logo svg{width:100%; height:100%;}
@@ -881,34 +883,46 @@
      flux avec un positionnement absolu calé sur la boîte de padding, ce qui annule visuellement le padding
      pour cette image précise sans y toucher pour l'icône SVG. */
   .shop-banner-logo .shop-hero-logo-img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit;}
-  .shop-banner-id{flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-end; text-align:right; padding-top:4px;}
-  .shop-banner-title-row{display:flex; align-items:center; gap:10px; justify-content:flex-end; width:100%;}
-  .shop-banner-title-row h1{margin:0; flex:1; min-width:0; font-size:1.9rem; line-height:1.15; word-break:break-word; text-align:right;}
+  .shop-banner-id{flex:1; min-width:0; display:flex; flex-direction:column; justify-content:flex-start;}
+  .shop-banner-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+  .shop-banner-text{display:flex; flex-direction:column; min-width:0;}
+  .shop-banner-title-row{display:flex; align-items:center; gap:10px;}
+  .shop-banner-title-row h1{margin:0; min-width:0; font-size:1.9rem; line-height:1.15; word-break:break-word;}
   /* Localisation + propriétaire resserrés juste sous le nom, pour que ça se lise comme un sous-titre
      plutôt que de flotter dans la bannière. Les deux pastilles partagent maintenant le même gabarit. */
-  .shop-banner-meta{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:5px; justify-content:flex-end;}
+  .shop-banner-meta{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:5px;}
   .shop-banner-meta .shop-loc-tag{margin-top:0;}
   .shop-banner-meta .shop-owner-box{margin:0; display:inline-flex; align-items:center; width:auto; max-width:none; flex:none;
     background:none; border:1px solid var(--accent-dim); border-radius:3px; padding:3px 8px; cursor:pointer; transition:border-color .2s;}
   .shop-banner-meta .shop-owner-box:hover{border-color:var(--accent); transform:none;}
   .shop-banner-meta .shop-owner-box .courier-box-name{font-family:inherit; font-size:.7rem; color:var(--accent);
     text-decoration:none; text-transform:uppercase; letter-spacing:.4px; margin:0; line-height:1.3; white-space:nowrap;}
-  .shop-banner-actions{display:flex; align-items:center; gap:10px; flex:none; margin-top:10px;}
-  .shop-banner-actions .shop-upvote-btn{flex:none;}
+  /* Modifier + upvote collés ensemble, tout à droite de la bannière (poussés par justify-content:space-between
+     du parent .shop-banner-top) — upvote agrandi pour avoir plus de présence à cet endroit. */
+  .shop-banner-actions{display:flex; align-items:center; gap:10px; flex:none; margin-left:auto;}
+  .shop-banner-actions .gear-btn{width:46px; height:46px;}
+  .shop-banner-actions .gear-btn .icon{width:18px; height:18px;}
+  .shop-banner-actions .shop-upvote-btn{flex:none; padding:13px 22px; gap:11px;}
+  .shop-banner-actions .shop-upvote-btn .icon{width:20px; height:20px;}
+  .shop-banner-actions .shop-upvote-btn .shop-upvote-label, .shop-banner-actions .shop-upvote-btn .shop-upvote-count{font-size:1.3rem;}
   /* Fond entièrement opaque derrière la description (plus de motif de texture visible dedans, quelle que
      soit la texture choisie) mais teinté dans les tons de la couleur de la boutique plutôt qu'un gris
-     neutre qui jurait parfois avec certaines couleurs d'accent. */
-  .shop-banner-card .shop-description{position:relative; z-index:1; margin:16px 0 0; padding:12px 14px;
+     neutre qui jurait parfois avec certaines couleurs d'accent. Appartient désormais à la colonne de texte
+     (.shop-banner-id), pas à toute la largeur de la carte : elle ne passe plus sous la photo. */
+  .shop-banner-card .shop-description{position:relative; z-index:1; margin:14px 0 0; padding:12px 14px;
     background:color-mix(in srgb, var(--bg2) 88%, var(--accent) 12%); border:1px solid var(--accent-dim); border-radius:6px;}
   @media (max-width:640px){
     .shop-banner-card{padding:16px;}
     .shop-banner-row{flex-direction:column; align-items:center; text-align:center; gap:14px;}
-    .shop-banner-logo{width:128px; height:128px; padding:16px; margin:0 auto;}
-    .shop-banner-id{align-items:center; text-align:center; padding-top:0;}
+    .shop-banner-logo{width:100%; max-width:220px; height:160px; min-height:0; padding:16px; margin:0 auto;}
+    .shop-banner-id{align-items:center; width:100%;}
+    .shop-banner-top{flex-direction:column; align-items:center; width:100%;}
+    .shop-banner-text{align-items:center;}
     .shop-banner-title-row{justify-content:center;}
     .shop-banner-title-row h1{flex:none; font-size:1.4rem; text-align:center;}
     .shop-banner-meta{justify-content:center;}
-    .shop-banner-actions{width:100%; justify-content:center; margin-top:4px;}
+    .shop-banner-actions{width:100%; justify-content:center; margin:6px 0 0;}
+    .shop-banner-actions .shop-upvote-btn{flex:1 1 auto; justify-content:center;}
   }
 
   /* --- STATS & SUCCÈS SUR LA PAGE BOUTIQUE : mis en valeur mais compact (#pubSellerStatsCard/#pubSellerAchvCard
@@ -1975,18 +1989,22 @@
               <div class="shop-banner-row">
                 <div class="shop-banner-logo" id="shopLivePreviewLogo"></div>
                 <div class="shop-banner-id">
-                  <div class="shop-banner-title-row">
-                    <h1 id="shopLivePreviewName">Nom de ta boutique</h1>
-                  </div>
-                  <div class="shop-banner-meta">
-                    <div class="shop-loc-tag" id="shopLivePreviewLoc" hidden></div>
-                    <div class="courier-box shop-owner-box">
-                      <div class="courier-box-name" id="shopLivePreviewOwner">—</div>
+                  <div class="shop-banner-top">
+                    <div class="shop-banner-text">
+                      <div class="shop-banner-title-row">
+                        <h1 id="shopLivePreviewName">Nom de ta boutique</h1>
+                      </div>
+                      <div class="shop-banner-meta">
+                        <div class="shop-loc-tag" id="shopLivePreviewLoc" hidden></div>
+                        <div class="courier-box shop-owner-box">
+                          <div class="courier-box-name" id="shopLivePreviewOwner">—</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
+                  <div class="shop-description" id="shopLivePreviewDesc">La description apparaîtra ici…</div>
                 </div>
               </div>
-              <div class="shop-description" id="shopLivePreviewDesc">La description apparaîtra ici…</div>
             </div>
             <div class="shop-live-preview-listings">
               <div class="shop-live-preview-listings-title" data-i18n="shopListingsTitle">Objets en vente</div>
@@ -2013,36 +2031,39 @@
           <div class="shop-banner-row">
             <div class="shop-banner-logo" id="shopHeroIcon"></div>
             <div class="shop-banner-id">
-              <div class="shop-banner-title-row">
-                <h1 id="shopPageTitle">—</h1>
-              </div>
-              <div class="shop-banner-meta">
-                <div class="shop-loc-tag" id="shopLocTag" hidden></div>
-                <div class="courier-box shop-owner-box" id="shopOwnerBox" onclick="openPublicProfile(shopViewingSellerId)">
-                  <div class="courier-box-name" id="shopOwnerName">—</div>
+              <div class="shop-banner-top">
+                <div class="shop-banner-text">
+                  <div class="shop-banner-title-row">
+                    <h1 id="shopPageTitle">—</h1>
+                  </div>
+                  <div class="shop-banner-meta">
+                    <div class="shop-loc-tag" id="shopLocTag" hidden></div>
+                    <div class="courier-box shop-owner-box" id="shopOwnerBox" onclick="openPublicProfile(shopViewingSellerId)">
+                      <div class="courier-box-name" id="shopOwnerName">—</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Modifier + Upvote regroupés dans le même bloc, collés tout à droite de la bannière. -->
+                <div class="shop-banner-actions">
+                  <button type="button" class="gear-btn shop-edit-gear-btn" id="shopEditGearBtn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique" hidden>
+                    <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                      <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
+                      <rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/>
+                      <rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/>
+                    </g></svg>
+                  </button>
+                  <button type="button" class="shop-upvote-btn" id="shopUpvoteBtn" onclick="toggleShopUpvote()">
+                    <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                      <rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/>
+                    </g></svg>
+                    <span class="shop-upvote-label" data-i18n="upvoteBtn">UPVOTE</span>
+                    <span class="shop-upvote-count" id="shopUpvoteCount">0</span>
+                  </button>
                 </div>
               </div>
-            </div>
-            <!-- Modifier + Upvote regroupés dans le même bloc, pour qu'ils soient alignés sur la même
-                 ligne plutôt que le crayon collé en haut du titre et l'upvote centré plus bas. -->
-            <div class="shop-banner-actions">
-              <button type="button" class="gear-btn shop-edit-gear-btn" id="shopEditGearBtn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique" hidden>
-                <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                  <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
-                  <rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/>
-                  <rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/>
-                </g></svg>
-              </button>
-              <button type="button" class="shop-upvote-btn" id="shopUpvoteBtn" onclick="toggleShopUpvote()">
-                <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-                  <rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/>
-                </g></svg>
-                <span class="shop-upvote-label" data-i18n="upvoteBtn">UPVOTE</span>
-                <span class="shop-upvote-count" id="shopUpvoteCount">0</span>
-              </button>
+              <div class="shop-description" id="shopDescription" hidden></div>
             </div>
           </div>
-          <div class="shop-description" id="shopDescription" hidden></div>
         </div>
 
         <div class="shop-stats-achv-row">

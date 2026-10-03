@@ -520,6 +520,8 @@
     #shopBlueprintsGrid.marketplace-grid, #blueprintsFeed.marketplace-grid{grid-template-columns:1fr 1fr; gap:8px;}
   }
   /* --- BLUEPRINTS (catalogue de craft des vendeurs) --- */
+  .bp-description{font-size:.78rem; color:var(--text); line-height:1.35; margin:2px 0 4px;
+    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
   .bp-materials{font-size:.75rem; color:var(--muted); line-height:1.3; margin:2px 0 4px;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
   .bp-price-rows{display:flex; flex-direction:column; gap:3px;}
@@ -721,24 +723,35 @@
      pour ne pas entrer en conflit avec les coins pixel de .card. */
   .shop-texture-host{position:relative; isolation:isolate; overflow:hidden;}
   .shop-texture-layer{position:absolute; inset:0; z-index:-1; pointer-events:none;}
-  .shop-texture-layer.tex-dots{background-image:radial-gradient(color-mix(in srgb, var(--accent) 18%, transparent) 1.5px, transparent 1.5px); background-size:13px 13px;}
-  .shop-texture-layer.tex-scan{background-image:repeating-linear-gradient(0deg, color-mix(in srgb, var(--accent) 14%, transparent) 0px, color-mix(in srgb, var(--accent) 14%, transparent) 1px, transparent 1px, transparent 4px);}
-  .shop-texture-layer.tex-grid{background-image:linear-gradient(color-mix(in srgb, var(--accent) 16%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--accent) 16%, transparent) 1px, transparent 1px); background-size:16px 16px;}
-  .shop-texture-layer.tex-diag{background-image:repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 16%, transparent) 0px, color-mix(in srgb, var(--accent) 16%, transparent) 2px, transparent 2px, transparent 11px);}
+  .shop-texture-layer.tex-dots{background-image:radial-gradient(color-mix(in srgb, var(--accent) 28%, transparent) 1.5px, transparent 1.5px); background-size:13px 13px;}
+  .shop-texture-layer.tex-scan{background-image:repeating-linear-gradient(0deg, color-mix(in srgb, var(--accent) 22%, transparent) 0px, color-mix(in srgb, var(--accent) 22%, transparent) 1px, transparent 1px, transparent 4px);}
+  .shop-texture-layer.tex-grid{background-image:linear-gradient(color-mix(in srgb, var(--accent) 26%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--accent) 26%, transparent) 1px, transparent 1px); background-size:16px 16px;}
+  .shop-texture-layer.tex-diag{background-image:repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 26%, transparent) 0px, color-mix(in srgb, var(--accent) 26%, transparent) 2px, transparent 2px, transparent 11px);}
   .shop-texture-layer.tex-circuit{background-image:
-      linear-gradient(color-mix(in srgb, var(--accent) 13%, transparent) 1px, transparent 1px),
-      linear-gradient(90deg, color-mix(in srgb, var(--accent) 13%, transparent) 1px, transparent 1px),
-      radial-gradient(color-mix(in srgb, var(--accent) 32%, transparent) 1.5px, transparent 1.5px);
+      linear-gradient(color-mix(in srgb, var(--accent) 21%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--accent) 21%, transparent) 1px, transparent 1px),
+      radial-gradient(color-mix(in srgb, var(--accent) 42%, transparent) 1.5px, transparent 1.5px);
     background-size:22px 22px, 22px 22px, 22px 22px;}
-  .shop-texture-layer.tex-noise{background-image:radial-gradient(color-mix(in srgb, var(--accent) 13%, transparent) 1px, transparent 1px), radial-gradient(color-mix(in srgb, var(--accent) 9%, transparent) 1px, transparent 1px); background-size:7px 7px, 17px 17px; background-position:0 0, 4px 6px;}
+  .shop-texture-layer.tex-noise{background-image:radial-gradient(color-mix(in srgb, var(--accent) 21%, transparent) 1px, transparent 1px), radial-gradient(color-mix(in srgb, var(--accent) 15%, transparent) 1px, transparent 1px); background-size:7px 7px, 17px 17px; background-position:0 0, 4px 6px;}
   .shop-texture-layer.tex-none{background-image:none;}
+  /* Crâne de pirate spatial, pixel art minimaliste, dessiné en masque SVG (forme opaque = alpha) puis
+     "repeint" avec background-color pour qu'il suive la couleur d'accent de la boutique comme les autres. */
+  .shop-texture-layer.tex-skull{
+    --skull-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cg fill='%23fff'%3E%3Crect x='2' y='0' width='4' height='1'/%3E%3Crect x='1' y='1' width='6' height='1'/%3E%3Crect x='0' y='2' width='2' height='1'/%3E%3Crect x='3' y='2' width='2' height='1'/%3E%3Crect x='6' y='2' width='2' height='1'/%3E%3Crect x='0' y='3' width='8' height='1'/%3E%3Crect x='1' y='4' width='6' height='1'/%3E%3Crect x='1' y='5' width='1' height='1'/%3E%3Crect x='3' y='5' width='2' height='1'/%3E%3Crect x='6' y='5' width='1' height='1'/%3E%3C/g%3E%3C/svg%3E");
+    -webkit-mask-image:var(--skull-svg); mask-image:var(--skull-svg);
+    -webkit-mask-size:22px 22px; mask-size:22px 22px; -webkit-mask-repeat:repeat; mask-repeat:repeat;
+    background-color:color-mix(in srgb, var(--accent) 30%, transparent); background-image:none;}
+  /* Ondes circulaires concentriques, pur CSS (repeating-radial-gradient). */
+  .shop-texture-layer.tex-waves{background-image:repeating-radial-gradient(circle at 50% 50%,
+      color-mix(in srgb, var(--accent) 24%, transparent) 0px, color-mix(in srgb, var(--accent) 24%, transparent) 1.5px,
+      transparent 1.5px, transparent 10px); background-size:48px 48px;}
 
   /* Pastilles de sélection de texture : chacune montre un échantillon miniature du motif réel. */
   .shop-texture-presets{display:flex; gap:10px; flex-wrap:wrap; margin-top:2px;}
   .shop-texture-item{display:flex; flex-direction:column; align-items:center; gap:5px; background:none; border:1px solid var(--border); border-radius:4px; padding:6px; cursor:pointer; transition:border-color .15s, background .15s;}
   .shop-texture-item:hover{border-color:var(--accent);}
   .shop-texture-item.active{border-color:var(--accent); background:var(--accent-dim);}
-  .shop-texture-swatch{width:46px; height:32px; border-radius:2px; background:var(--bg2); position:relative; isolation:isolate; overflow:hidden; border:1px solid var(--border);}
+  .shop-texture-swatch{width:68px; height:48px; border-radius:2px; background:var(--bg2); position:relative; isolation:isolate; overflow:hidden; border:1px solid var(--border);}
   .shop-texture-swatch .shop-texture-layer{position:absolute;}
   .shop-texture-item .shop-texture-lbl{font-size:.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:.3px;}
   .shop-texture-item.active .shop-texture-lbl{color:var(--accent);}
@@ -856,29 +869,31 @@
   .shop-banner-card::before,.shop-banner-card::after{content:""; position:absolute; width:14px; height:14px; border:2px solid var(--accent); opacity:.85; z-index:1;}
   .shop-banner-card::before{top:0; left:0; border-right:none; border-bottom:none;}
   .shop-banner-card::after{bottom:0; right:0; border-left:none; border-top:none;}
-  .shop-banner-row{display:flex; align-items:center; gap:22px; position:relative; z-index:1;}
-  .shop-banner-logo{width:104px; height:104px; flex:none; border-radius:10px; background:var(--bg2);
+  /* Nouvelle disposition (v2) : grosse photo à gauche, nom/localisation/propriétaire calés en haut à
+     droite, description en pleine largeur en dessous (via .shop-description, déjà un sibling de la row). */
+  .shop-banner-row{display:flex; align-items:flex-start; gap:24px; position:relative; z-index:1;}
+  .shop-banner-logo{width:168px; height:168px; flex:none; border-radius:10px; background:var(--bg2);
     border:2px solid var(--accent); color:var(--accent); display:flex; align-items:center; justify-content:center;
-    overflow:hidden; padding:14px; box-shadow:0 0 18px var(--accent-dim); position:relative;}
+    overflow:hidden; padding:20px; box-shadow:0 0 18px var(--accent-dim); position:relative;}
   .shop-banner-logo svg{width:100%; height:100%;}
   /* Le padding ci-dessus sert à cadrer joliment l'icône SVG par défaut, mais pour un vrai logo uploadé par
      le vendeur on veut qu'il remplisse tout l'espace jusqu'à toucher la bordure néon : on le sort donc du
      flux avec un positionnement absolu calé sur la boîte de padding, ce qui annule visuellement le padding
      pour cette image précise sans y toucher pour l'icône SVG. */
   .shop-banner-logo .shop-hero-logo-img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit;}
-  .shop-banner-id{flex:1; min-width:0;}
-  .shop-banner-title-row{display:flex; align-items:center; gap:10px;}
-  .shop-banner-title-row h1{margin:0; flex:1; min-width:0; font-size:1.9rem; line-height:1.15; word-break:break-word;}
+  .shop-banner-id{flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-end; text-align:right; padding-top:4px;}
+  .shop-banner-title-row{display:flex; align-items:center; gap:10px; justify-content:flex-end; width:100%;}
+  .shop-banner-title-row h1{margin:0; flex:1; min-width:0; font-size:1.9rem; line-height:1.15; word-break:break-word; text-align:right;}
   /* Localisation + propriétaire resserrés juste sous le nom, pour que ça se lise comme un sous-titre
      plutôt que de flotter dans la bannière. Les deux pastilles partagent maintenant le même gabarit. */
-  .shop-banner-meta{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:5px;}
+  .shop-banner-meta{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:5px; justify-content:flex-end;}
   .shop-banner-meta .shop-loc-tag{margin-top:0;}
   .shop-banner-meta .shop-owner-box{margin:0; display:inline-flex; align-items:center; width:auto; max-width:none; flex:none;
     background:none; border:1px solid var(--accent-dim); border-radius:3px; padding:3px 8px; cursor:pointer; transition:border-color .2s;}
   .shop-banner-meta .shop-owner-box:hover{border-color:var(--accent); transform:none;}
   .shop-banner-meta .shop-owner-box .courier-box-name{font-family:inherit; font-size:.7rem; color:var(--accent);
     text-decoration:none; text-transform:uppercase; letter-spacing:.4px; margin:0; line-height:1.3; white-space:nowrap;}
-  .shop-banner-actions{display:flex; align-items:center; gap:10px; flex:none;}
+  .shop-banner-actions{display:flex; align-items:center; gap:10px; flex:none; margin-top:10px;}
   .shop-banner-actions .shop-upvote-btn{flex:none;}
   /* Fond entièrement opaque derrière la description (plus de motif de texture visible dedans, quelle que
      soit la texture choisie) mais teinté dans les tons de la couleur de la boutique plutôt qu'un gris
@@ -887,12 +902,13 @@
     background:color-mix(in srgb, var(--bg2) 88%, var(--accent) 12%); border:1px solid var(--accent-dim); border-radius:6px;}
   @media (max-width:640px){
     .shop-banner-card{padding:16px;}
-    .shop-banner-row{flex-direction:column; align-items:stretch; text-align:center; gap:14px;}
-    .shop-banner-logo{width:76px; height:76px; padding:10px; margin:0 auto;}
+    .shop-banner-row{flex-direction:column; align-items:center; text-align:center; gap:14px;}
+    .shop-banner-logo{width:128px; height:128px; padding:16px; margin:0 auto;}
+    .shop-banner-id{align-items:center; text-align:center; padding-top:0;}
     .shop-banner-title-row{justify-content:center;}
     .shop-banner-title-row h1{flex:none; font-size:1.4rem; text-align:center;}
     .shop-banner-meta{justify-content:center;}
-    .shop-banner-actions{width:100%; justify-content:center;}
+    .shop-banner-actions{width:100%; justify-content:center; margin-top:4px;}
   }
 
   /* --- STATS & SUCCÈS SUR LA PAGE BOUTIQUE : mis en valeur mais compact (#pubSellerStatsCard/#pubSellerAchvCard
@@ -1462,10 +1478,16 @@
       <div id="clientTabBlueprints" hidden>
         <h3 data-i18n="blueprintsCatalogTitle" style="margin-top:0;">Catalogue de blueprints</h3>
         <p class="muted" style="margin-top:-8px;" data-i18n="blueprintsCatalogSub">Des objets craftés sur commande par les vendeurs qui possèdent le blueprint correspondant.</p>
+        <div class="mkt-toolbar">
+          <input type="text" id="blueprintsSearchInput" class="mkt-search-input" data-i18n-ph="mktSearchPh" placeholder="Rechercher un objet…" oninput="onBlueprintsSearchInput()">
+        </div>
         <div id="blueprintsFeed" class="marketplace-grid"></div>
       </div>
       <div id="clientTabResources" hidden>
         <h3 data-i18n="requestedResourcesTitle" style="margin-top:0;">Ressources demandées par les vendeurs</h3>
+        <div class="mkt-toolbar">
+          <input type="text" id="resourceRequestsSearchInput" class="mkt-search-input" data-i18n-ph="mktSearchPh" placeholder="Rechercher un objet…" oninput="onResourceRequestsSearchInput()">
+        </div>
         <div id="resourceRequestsFeed"></div>
       </div>
     </section>
@@ -1825,6 +1847,8 @@
           <div class="card">
             <label for="blueprintItem" data-i18n="bpItemLbl">Objet craftable</label>
             <input id="blueprintItem" type="text" data-i18n-ph="phBpItem" placeholder="ex: Casque d'armure lourde" oninput="updateBlueprintLivePreview()">
+            <label for="blueprintDescription" data-i18n="bpDescriptionLbl">Description (optionnel)</label>
+            <textarea id="blueprintDescription" data-i18n-ph="phBpDescription" placeholder="ex: Finition mate, craft sur mesure selon tes specs..." oninput="updateBlueprintLivePreview()"></textarea>
             <label for="blueprintMaterials" data-i18n="bpMaterialsLbl">Ressources nécessaires</label>
             <textarea id="blueprintMaterials" data-i18n-ph="phBpMaterials" placeholder="ex: 50 Laranite, 20 Titanium, 1h de craft" oninput="updateBlueprintLivePreview()"></textarea>
             <label for="blueprintPriceTurnkey" data-i18n="bpPriceTurnkeyLbl">Prix clé en main (aUEC)</label>
@@ -2529,19 +2553,19 @@ const T = {
     shopLocSystemLbl:"Système", shopLocNameLbl:"Lieu (optionnel)", phShopLoc:"ex: Lorville, Area18, Theta Station...",
     shopLogoDropText:"Glisse une image ici, ou clique pour choisir un logo", shopLogoDropHint:"PNG, JPG ou GIF",
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
-    shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille", shopTextureDiag:"Diagonales", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain",
+    shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille", shopTextureDiag:"Diagonales", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain", shopTextureSkull:"Crâne spatial", shopTextureWaves:"Ondes",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
     shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
     sellerAchvTitle:"Succès vendeur", viewAllAchvBtn:"VOIR TOUT", viewLessAchvBtn:"RÉDUIRE",
-    sellerAchvLabels:{first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command"},
-    sellerAchvDesc:{first_sale:"Conclus ta première vente.", first_courier_sale:"Fais livrer une vente par un coursier.", five_sales:"Conclus 5 ventes.", pockets_full:"Mets en ligne 15 annonces ou plus.", good_fences:"Valide une vente de plus de 2 000 000 aUEC en une seule fois.", crafter_confirmed:"Mets en vente un item crafté de qualité 800 ou plus.", not_stolen:"Valide la vente d'une bombe Colossus.", couldnt_be_bothered:"Mets en ligne une annonce sans photo.", your_wish:"Valide la proposition d'un client sur un de tes desired items."},
+    sellerAchvLabels:{first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo"},
+    sellerAchvDesc:{first_sale:"Conclus ta première vente.", first_courier_sale:"Fais livrer une vente par un coursier.", five_sales:"Conclus 5 ventes.", pockets_full:"Mets en ligne 15 annonces ou plus.", good_fences:"Valide une vente de plus de 2 000 000 aUEC en une seule fois.", crafter_confirmed:"Mets en vente un item crafté de qualité 800 ou plus.", not_stolen:"Valide la vente d'une bombe Colossus.", couldnt_be_bothered:"Mets en ligne une annonce sans photo.", your_wish:"Valide la proposition d'un client sur un de tes desired items.", crafterrrrr:"Ajoute 5 blueprints sur ta page de boutique.", made_with_love:"Ajoute 10 blueprints sur ta page de boutique.", better_than_wikelo:"Vends un item crafté de qualité 800 ou plus."},
     sellerRankLabels:{novice:"Novice", trader:"Négociant", merchant:"Marchand", tycoon:"Magnat"}, rankSales:"ventes",
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
     newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
     livePreviewTitle:"Aperçu pour les clients", livePreviewBadge:"Aperçu", livePreviewEmptyHint:"Remplis le formulaire pour voir l'aperçu…",
     tabBlueprints:"BLUEPRINTS", blueprintsCatalogTitle:"Catalogue de blueprints", blueprintsCatalogSub:"Des objets craftés sur commande par les vendeurs qui possèdent le blueprint correspondant.", blueprintsEmpty:"Aucun blueprint publié pour le moment.",
-    newBlueprintTitle:"Ajouter un blueprint", editBlueprintTitle:"Modifier le blueprint", bpItemLbl:"Objet craftable", phBpItem:"ex: Casque d'armure lourde", bpMaterialsLbl:"Ressources nécessaires", phBpMaterials:"ex: 50 Laranite, 20 Titanium, 1h de craft", bpPriceTurnkeyLbl:"Prix clé en main (aUEC)", bpPriceClientMatsLbl:"Prix si tu fournis les ressources (aUEC)", bpPriceHint:"Renseigne au moins un des deux prix. Laisse l'autre vide si tu ne proposes pas cette option.", bpPhotoLbl:"Photo (optionnel)", addBlueprintBtn:"AJOUTER AU CATALOGUE", saveBlueprintBtn:"ENREGISTRER LES MODIFICATIONS", blueprintSaved:"BLUEPRINT AJOUTÉ !", blueprintUpdated:"BLUEPRINT MIS À JOUR !", confirmDeleteBlueprint:"Supprimer ce blueprint du catalogue ?",
+    newBlueprintTitle:"Ajouter un blueprint", editBlueprintTitle:"Modifier le blueprint", bpItemLbl:"Objet craftable", phBpItem:"ex: Casque d'armure lourde", bpDescriptionLbl:"Description (optionnel)", phBpDescription:"ex: Finition mate, craft sur mesure selon tes specs...", bpMaterialsLbl:"Ressources nécessaires", phBpMaterials:"ex: 50 Laranite, 20 Titanium, 1h de craft", bpPriceTurnkeyLbl:"Prix clé en main (aUEC)", bpPriceClientMatsLbl:"Prix si tu fournis les ressources (aUEC)", bpPriceHint:"Renseigne au moins un des deux prix. Laisse l'autre vide si tu ne proposes pas cette option.", bpPhotoLbl:"Photo (optionnel)", addBlueprintBtn:"AJOUTER AU CATALOGUE", saveBlueprintBtn:"ENREGISTRER LES MODIFICATIONS", blueprintSaved:"BLUEPRINT AJOUTÉ !", blueprintUpdated:"BLUEPRINT MIS À JOUR !", confirmDeleteBlueprint:"Supprimer ce blueprint du catalogue ?",
     shopBlueprintsTitle:"Blueprints disponibles au craft", noBlueprintsOwn:"Tu n'as encore ajouté aucun blueprint.",
     bpTurnkeyLbl:"clé en main", bpClientMatsLbl:"avec tes ressources", bpContactTurnkeyBtn:"COMMANDER CLÉ EN MAIN", bpContactMatsBtn:"COMMANDER (MES RESSOURCES)", bpContactBtn:"CONTACTER LE CRAFTER",
     bpContactPrefillTurnkey:"Salut ! Je suis intéressé par ton blueprint \"{item}\", en clé en main.", bpContactPrefillMats:"Salut ! Je suis intéressé par ton blueprint \"{item}\", je peux fournir les ressources.",
@@ -2679,22 +2703,22 @@ const T = {
     shopLocSystemLbl:"System", shopLocNameLbl:"Location (optional)", phShopLoc:"e.g. Lorville, Area18, Theta Station...",
     shopLogoDropText:"Drop an image here, or click to choose a logo", shopLogoDropHint:"PNG, JPG or GIF",
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
-    shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid", shopTextureDiag:"Diagonal", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain",
+    shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid", shopTextureDiag:"Diagonal", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain", shopTextureSkull:"Space skull", shopTextureWaves:"Waves",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
     shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
     sellerAchvTitle:"Seller achievements", viewAllAchvBtn:"VIEW ALL", viewLessAchvBtn:"COLLAPSE",
-    sellerAchvLabels:{first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command"},
-    sellerAchvDesc:{first_sale:"Close your first sale.", first_courier_sale:"Have a sale delivered by a courier.", five_sales:"Close 5 sales.", pockets_full:"List 15 or more items for sale.", good_fences:"Close a single sale worth more than 2,000,000 aUEC.", crafter_confirmed:"List a crafted item with quality 800 or higher.", not_stolen:"Complete the sale of a Colossus bomb.", couldnt_be_bothered:"List an item with no photo.", your_wish:"Accept a client's offer on one of your desired items."},
+    sellerAchvLabels:{first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo"},
+    sellerAchvDesc:{first_sale:"Close your first sale.", first_courier_sale:"Have a sale delivered by a courier.", five_sales:"Close 5 sales.", pockets_full:"List 15 or more items for sale.", good_fences:"Close a single sale worth more than 2,000,000 aUEC.", crafter_confirmed:"List a crafted item with quality 800 or higher.", not_stolen:"Complete the sale of a Colossus bomb.", couldnt_be_bothered:"List an item with no photo.", your_wish:"Accept a client's offer on one of your desired items.", crafterrrrr:"Add 5 blueprints to your shop page.", made_with_love:"Add 10 blueprints to your shop page.", better_than_wikelo:"Sell a crafted item with quality 800 or higher."},
     sellerRankLabels:{novice:"Novice", trader:"Trader", merchant:"Merchant", tycoon:"Tycoon"}, rankSales:"sales",
     rankToNextSales:"{n} more sale(s) to reach {rank}",
     newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
     livePreviewTitle:"Preview for clients", livePreviewBadge:"Preview", livePreviewEmptyHint:"Fill in the form to see the preview…",
     tabBlueprints:"BLUEPRINTS", blueprintsCatalogTitle:"Blueprints catalog", blueprintsCatalogSub:"Items crafted to order by sellers who own the matching blueprint.", blueprintsEmpty:"No blueprints published yet.",
-    newBlueprintTitle:"Add a blueprint", editBlueprintTitle:"Edit blueprint", bpItemLbl:"Craftable item", phBpItem:"e.g. Heavy armor helmet", bpMaterialsLbl:"Required materials", phBpMaterials:"e.g. 50 Laranite, 20 Titanium, 1h craft time", bpPriceTurnkeyLbl:"Turnkey price (aUEC)", bpPriceClientMatsLbl:"Price if you supply the materials (aUEC)", bpPriceHint:"Fill in at least one of the two prices. Leave the other blank if you don't offer that option.", bpPhotoLbl:"Photo (optional)", addBlueprintBtn:"ADD TO CATALOG", saveBlueprintBtn:"SAVE CHANGES", blueprintSaved:"BLUEPRINT ADDED!", blueprintUpdated:"BLUEPRINT UPDATED!", confirmDeleteBlueprint:"Remove this blueprint from the catalog?",
+    newBlueprintTitle:"Add a blueprint", editBlueprintTitle:"Edit blueprint", bpItemLbl:"Craftable item", phBpItem:"e.g. Heavy armor helmet", bpDescriptionLbl:"Description (optional)", phBpDescription:"e.g. Matte finish, custom craft to your specs...", bpMaterialsLbl:"Required materials", phBpMaterials:"e.g. 50 Laranite, 20 Titanium, 1h craft time", bpPriceTurnkeyLbl:"Ready-made price (aUEC)", bpPriceClientMatsLbl:"Price if you supply the materials (aUEC)", bpPriceHint:"Fill in at least one of the two prices. Leave the other blank if you don't offer that option.", bpPhotoLbl:"Photo (optional)", addBlueprintBtn:"ADD TO CATALOG", saveBlueprintBtn:"SAVE CHANGES", blueprintSaved:"BLUEPRINT ADDED!", blueprintUpdated:"BLUEPRINT UPDATED!", confirmDeleteBlueprint:"Remove this blueprint from the catalog?",
     shopBlueprintsTitle:"Blueprints available to craft", noBlueprintsOwn:"You haven't added any blueprint yet.",
-    bpTurnkeyLbl:"turnkey", bpClientMatsLbl:"with your materials", bpContactTurnkeyBtn:"ORDER TURNKEY", bpContactMatsBtn:"ORDER (MY MATERIALS)", bpContactBtn:"CONTACT CRAFTER",
-    bpContactPrefillTurnkey:"Hey! I'm interested in your \"{item}\" blueprint, turnkey.", bpContactPrefillMats:"Hey! I'm interested in your \"{item}\" blueprint, I can supply the materials.",
+    bpTurnkeyLbl:"ready-made", bpClientMatsLbl:"with your materials", bpContactTurnkeyBtn:"ORDER READY-MADE", bpContactMatsBtn:"ORDER (MY MATERIALS)", bpContactBtn:"CONTACT CRAFTER",
+    bpContactPrefillTurnkey:"Hey! I'm interested in your \"{item}\" blueprint, ready-made.", bpContactPrefillMats:"Hey! I'm interested in your \"{item}\" blueprint, I can supply the materials.",
     listingStockModeLbl:"Sell by unit (manage a stock)", listingStockModeHint:"The price is counted per unit and the buyer picks how many they want. Stock goes down automatically with each sale.", listingPriceUnitLbl:"Unit price (aUEC)", listingStockLbl:"Stock available", perUnitSuffix:" / unit", stockLbl:"Stock:", yourQtyLbl:"Quantity wanted:", stockAvailableLbl:"Available:", stockTooLowAlert:"Error: there isn't enough stock left for that quantity.", invalidQtyAlert:"Error: invalid quantity.", qtyRequestedLbl:"Quantity:", listingModeSingleTab:"SINGLE SALE", listingModeStockTab:"SELL BY QUANTITY",
     listingTagsLbl:"Tags (optional)", tagCrafted:"CRAFTED", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", tagNegotiable:"NEGOTIABLE", editListingBtn:"EDIT",
     requestResourcesTitle:"Post a desired item", requestResourcesBtn:"DESIRED ITEM", resourceNameLbl:"Item wanted", phResourceName:"e.g. Raw Laranite, heavy armor helmet...", resourceQtyLbl:"Quantity wanted", resourcePriceLbl:"Price offered (aUEC, optional)", resourceNoteLbl:"Note (optional)", phResourceNote:"e.g. Delivery to Nyx, quantity negotiable...", submitResourceRequestBtn:"POST AD", resourceRequestSaved:"AD POSTED!", resourcePriceNone:"Price to negotiate",
@@ -4414,24 +4438,40 @@ async function loadMarketplaceFeed(){
 }
 
 // --- CATALOGUE DE BLUEPRINTS (onglet client) : tous les blueprints publiés, toutes boutiques confondues ---
+let blueprintsFeedCache = [];
+let blueprintsSellerMapCache = {};
 async function loadBlueprintsFeed(){
   const box = $('blueprintsFeed'); if(!box) return;
   const d = T[LANG];
   box.innerHTML = `<p class="muted">…</p>`;
   const { data, error } = await sb.from('blueprints').select('*').eq('is_deleted', false).order('created_at',{ascending:false}).limit(200);
   if(error){ box.textContent = error.message; return; }
-  const blueprints = data || [];
-  if(!blueprints.length){ box.innerHTML = `<p class="muted">${d.blueprintsEmpty}</p>`; return; }
-  const sellerIds = [...new Set(blueprints.map(bp=>bp.seller_id))];
+  blueprintsFeedCache = data || [];
+  if(!blueprintsFeedCache.length){ box.innerHTML = `<p class="muted">${d.blueprintsEmpty}</p>`; return; }
+  const sellerIds = [...new Set(blueprintsFeedCache.map(bp=>bp.seller_id))];
   const [{ data: sellers }, { data: shops }] = await Promise.all([
     sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds),
     sb.from('marketplace_shops').select('id,shop_name').in('id', sellerIds)
   ]);
   const shopNameMap = {}; (shops||[]).forEach(s=>shopNameMap[s.id]=s.shop_name);
-  const sellerMap = {}; (sellers||[]).forEach(s=>sellerMap[s.id]={ ...s, shop_name: shopNameMap[s.id] || null });
+  blueprintsSellerMapCache = {}; (sellers||[]).forEach(s=>blueprintsSellerMapCache[s.id]={ ...s, shop_name: shopNameMap[s.id] || null });
+  applyBlueprintsFilter();
+}
+let blueprintsSearchDebounceTimer = null;
+function onBlueprintsSearchInput(){
+  clearTimeout(blueprintsSearchDebounceTimer);
+  blueprintsSearchDebounceTimer = setTimeout(applyBlueprintsFilter, 200);
+}
+function applyBlueprintsFilter(){
+  const box = $('blueprintsFeed'); if(!box) return;
+  const d = T[LANG];
+  const searchInput = $('blueprintsSearchInput');
+  const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+  const list = q ? blueprintsFeedCache.filter(bp => (bp.item_name||'').toLowerCase().includes(q)) : blueprintsFeedCache;
+  if(!list.length){ box.innerHTML = `<p class="muted">${q ? d.mktNoResults : d.blueprintsEmpty}</p>`; return; }
   // false : même dans le catalogue, les boutons "modifier/supprimer" n'ont de sens que sur la propre page
   // boutique du vendeur (comme pour les annonces marketplace) — ici on reste en vue "client".
-  box.innerHTML = blueprints.map(bp => blueprintCardHtml(bp, sellerMap, false)).join('');
+  box.innerHTML = list.map(bp => blueprintCardHtml(bp, blueprintsSellerMapCache, false)).join('');
 }
 
 // --- LEADERBOARD DES BOUTIQUES (3 stats : ventes cette semaine, upvotes cette semaine, objet le plus cher vendu) ---
@@ -4555,6 +4595,34 @@ function setMarketplaceSort(mode){
   applyMarketplaceFilters();
 }
 // --- FEED "RESSOURCES DEMANDÉES" (coté client) : ce que les vendeurs cherchent à acheter ---
+let resourceRequestsFeedCache = [];
+let resourceRequestsSellerMapCache = {};
+let resourceRequestsShopMapCache = {};
+let resourceRequestsUnreadSetCache = new Set();
+function resourceRequestCardHtml(r){
+  const d = T[LANG];
+  const seller = resourceRequestsSellerMapCache[r.seller_id];
+  const shop = resourceRequestsShopMapCache[r.seller_id];
+  const sellerName = (shop && shop.shop_name) || (seller && (seller.rsi_handle || seller.discord_username)) || '—';
+  const isNew = resourceRequestsUnreadSetCache.has(r.id);
+  const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
+  const hoverAttr = isNew ? ` onmouseenter="markResourceRequestSeen('${r.id}', this)"` : '';
+  const canPropose = session && session.user.id !== r.seller_id;
+  const proposeBtn = canPropose ? `<button type="button" class="mkt-interest-btn" onclick="openResourceOfferModal(this)" data-request-id="${r.id}" data-item-name="${r.item_name}" data-qty="${r.quantity}" data-seller-id="${r.seller_id}">${RESOURCE_PROPOSE_ICON}${d.proposeResourceBtn}</button>` : '';
+  return `
+    <div class="mkt-card resource-request-card"${hoverAttr}>
+      ${newDot}
+      <div class="mkt-info">
+        <div class="mkt-item-name">${r.item_name}</div>
+        ${resourceRequestPriceRowHtml(r)}
+        <div class="courier-box" onclick="openSellerShop('${r.seller_id}')" title="${d.viewShopBtn}">
+          <div class="courier-box-name">${d.resourceRequestedBy}${sellerName}</div>
+        </div>
+        ${r.note ? `<div class="resource-request-note">${r.note}</div>` : ''}
+        ${proposeBtn}
+      </div>
+    </div>`;
+}
 async function loadResourceRequestsFeed(){
   const box = $('resourceRequestsFeed'); if(!box) return;
   const d = T[LANG];
@@ -4562,6 +4630,7 @@ async function loadResourceRequestsFeed(){
   const { data, error } = await sb.from('resource_requests').select('*').eq('status','open').order('created_at',{ascending:false}).limit(50);
   if(error){ box.textContent = error.message; return; }
   const rows = data || [];
+  resourceRequestsFeedCache = rows;
   const currentIds = new Set(rows.map(r=>r.id));
   if(session){
     // Nettoie les notifications "ressource demandée" orphelines (requête close/supprimée depuis) pour
@@ -4580,33 +4649,25 @@ async function loadResourceRequestsFeed(){
     sb.from('marketplace_shops').select('id,shop_name').in('id', sellerIds),
     session ? sb.from('notifications').select('ref_id').eq('user_id',session.user.id).eq('category','client_resources').eq('read',false).then(r=>r.data||[]) : []
   ]);
-  const sMap = {}; (sellers||[]).forEach(s=>sMap[s.id]=s);
-  const shopMap = {}; (shops||[]).forEach(s=>shopMap[s.id]=s);
-  const unreadSet = new Set(unreadRows.map(n=>n.ref_id));
+  resourceRequestsSellerMapCache = {}; (sellers||[]).forEach(s=>resourceRequestsSellerMapCache[s.id]=s);
+  resourceRequestsShopMapCache = {}; (shops||[]).forEach(s=>resourceRequestsShopMapCache[s.id]=s);
+  resourceRequestsUnreadSetCache = new Set(unreadRows.map(n=>n.ref_id));
   box.className = 'resource-request-grid';
-  box.innerHTML = rows.map(r => {
-    const seller = sMap[r.seller_id];
-    const shop = shopMap[r.seller_id];
-    const sellerName = (shop && shop.shop_name) || (seller && (seller.rsi_handle || seller.discord_username)) || '—';
-    const isNew = unreadSet.has(r.id);
-    const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
-    const hoverAttr = isNew ? ` onmouseenter="markResourceRequestSeen('${r.id}', this)"` : '';
-    const canPropose = session && session.user.id !== r.seller_id;
-    const proposeBtn = canPropose ? `<button type="button" class="mkt-interest-btn" onclick="openResourceOfferModal(this)" data-request-id="${r.id}" data-item-name="${r.item_name}" data-qty="${r.quantity}" data-seller-id="${r.seller_id}">${RESOURCE_PROPOSE_ICON}${d.proposeResourceBtn}</button>` : '';
-    return `
-      <div class="mkt-card resource-request-card"${hoverAttr}>
-        ${newDot}
-        <div class="mkt-info">
-          <div class="mkt-item-name">${r.item_name}</div>
-          ${resourceRequestPriceRowHtml(r)}
-          <div class="courier-box" onclick="openSellerShop('${r.seller_id}')" title="${d.viewShopBtn}">
-            <div class="courier-box-name">${d.resourceRequestedBy}${sellerName}</div>
-          </div>
-          ${r.note ? `<div class="resource-request-note">${r.note}</div>` : ''}
-          ${proposeBtn}
-        </div>
-      </div>`;
-  }).join('');
+  applyResourceRequestsFilter();
+}
+let resourceRequestsSearchDebounceTimer = null;
+function onResourceRequestsSearchInput(){
+  clearTimeout(resourceRequestsSearchDebounceTimer);
+  resourceRequestsSearchDebounceTimer = setTimeout(applyResourceRequestsFilter, 200);
+}
+function applyResourceRequestsFilter(){
+  const box = $('resourceRequestsFeed'); if(!box) return;
+  const d = T[LANG];
+  const searchInput = $('resourceRequestsSearchInput');
+  const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+  const list = q ? resourceRequestsFeedCache.filter(r => (r.item_name||'').toLowerCase().includes(q)) : resourceRequestsFeedCache;
+  if(!list.length){ box.innerHTML = `<p class="muted">${q ? d.mktNoResults : d.noOpenResourceRequests}</p>`; return; }
+  box.innerHTML = list.map(resourceRequestCardHtml).join('');
 }
 async function markResourceRequestSeen(reqId, cardEl){
   const dot = cardEl.querySelector('.new-order-dot');
@@ -4751,6 +4812,8 @@ const SHOP_TEXTURE_PRESETS = [
   { key:'diag', cls:'tex-diag', nameKey:'shopTextureDiag' },
   { key:'circuit', cls:'tex-circuit', nameKey:'shopTextureCircuit' },
   { key:'noise', cls:'tex-noise', nameKey:'shopTextureNoise' },
+  { key:'skull', cls:'tex-skull', nameKey:'shopTextureSkull' },
+  { key:'waves', cls:'tex-waves', nameKey:'shopTextureWaves' },
 ];
 const SHOP_TEXTURE_CLASSES = SHOP_TEXTURE_PRESETS.map(t => t.cls);
 const DEFAULT_SHOP_TEXTURE = 'dots';
@@ -5326,6 +5389,7 @@ function blueprintCardHtml(bp, sellerMap, isOwner){
       <div class="mkt-photo-wrap">${photo}</div>
       <div class="mkt-info">
         <div class="mkt-item-name">${bp.item_name}</div>
+        ${bp.description ? `<div class="bp-description">${escapeHtml(bp.description)}</div>` : ''}
         <div class="bp-materials">${escapeHtml(bp.materials||'')}</div>
         ${blueprintPriceRowsHtml(bp)}
         ${seller ? `<div class="courier-box" onclick="openSellerShop('${bp.seller_id}')"><div class="courier-box-name">${d.mktByLbl} ${seller.shop_name || displayName(seller)}</div></div>` : ''}
@@ -5344,6 +5408,7 @@ function updateBlueprintLivePreview(){
   const fakeBp = {
     id:'preview', seller_id: session.user.id,
     item_name: itemName,
+    description: $('blueprintDescription').value.trim(),
     materials: $('blueprintMaterials').value.trim(),
     price_turnkey: parseFloat($('blueprintPriceTurnkey').value) || 0,
     price_client_mats: parseFloat($('blueprintPriceClientMats').value) || 0,
@@ -5356,7 +5421,7 @@ let pendingBlueprintPhotoFile = null;
 let editingBlueprintId = null;
 let myBlueprintsCache = [];
 function resetBlueprintForm(){
-  $('blueprintItem').value=''; $('blueprintMaterials').value=''; $('blueprintPriceTurnkey').value=''; $('blueprintPriceClientMats').value='';
+  $('blueprintItem').value=''; $('blueprintDescription').value=''; $('blueprintMaterials').value=''; $('blueprintPriceTurnkey').value=''; $('blueprintPriceClientMats').value='';
   $('blueprintPhotoInput').value=''; $('blueprintPhotoPreviewName').textContent='';
   pendingBlueprintPhotoFile = null;
 }
@@ -5370,6 +5435,7 @@ function openEditBlueprint(id){
   $('sellerCreateWrap').hidden = true;
   $('view-seller-create-blueprint').hidden = false;
   $('blueprintItem').value = bp.item_name;
+  $('blueprintDescription').value = bp.description || '';
   $('blueprintMaterials').value = bp.materials || '';
   $('blueprintPriceTurnkey').value = bp.price_turnkey || '';
   $('blueprintPriceClientMats').value = bp.price_client_mats || '';
@@ -5387,6 +5453,7 @@ async function createBlueprint(){
   if(!session) return;
   const d = T[LANG];
   const item_name = $('blueprintItem').value.trim();
+  const description = $('blueprintDescription').value.trim();
   const materials = $('blueprintMaterials').value.trim();
   const price_turnkey = parseFloat($('blueprintPriceTurnkey').value) || 0;
   const price_client_mats = parseFloat($('blueprintPriceClientMats').value) || 0;
@@ -5394,7 +5461,7 @@ async function createBlueprint(){
     alert('Erreur : renseigne un objet, les ressources nécessaires et au moins un prix.');
     return;
   }
-  const payload = { item_name, materials, price_turnkey: price_turnkey || null, price_client_mats: price_client_mats || null };
+  const payload = { item_name, description: description || null, materials, price_turnkey: price_turnkey || null, price_client_mats: price_client_mats || null };
   if(editingBlueprintId){
     const id = editingBlueprintId;
     const { error } = await sb.from('blueprints').update(payload).eq('id', id);
@@ -6837,21 +6904,23 @@ function sellerRankShowcaseHtml(salesCount){
 // --- STATISTIQUES & SUCCÈS DE BOUTIQUE (vendeur) ---
 async function fetchSellerShopStats(sellerId){
   if(!sellerId) return null;
-  const [ordersRes, inquiriesRes, upvotesRes, listingsRes, acceptedOffersRes] = await Promise.all([
-    sb.from('orders').select('items,gross_price,status').eq('seller_id', sellerId).eq('order_type','marketplace').eq('status','delivered'),
+  const [ordersRes, inquiriesRes, upvotesRes, listingsRes, acceptedOffersRes, blueprintsRes] = await Promise.all([
+    sb.from('orders').select('items,gross_price,status,listing_id').eq('seller_id', sellerId).eq('order_type','marketplace').eq('status','delivered'),
     // On se base sur order_id IS NULL (et non sur la colonne delivery_method, qui peut être absente/périmée
     // sur d'anciennes lignes et faisait passer des ventes "remise en main propre" bien réelles à la trappe)
     // pour ne compter ici que les ventes SANS coursier : celles avec coursier sont déjà comptées via la
     // requête 'orders' juste au-dessus, on éviterait sinon de les compter en double.
-    sb.from('marketplace_inquiries').select('snap_item_name,snap_price,snap_qty,status,order_id').eq('seller_id', sellerId).eq('status','completed').is('order_id', null),
+    sb.from('marketplace_inquiries').select('snap_item_name,snap_price,snap_qty,status,order_id,listing_id').eq('seller_id', sellerId).eq('status','completed').is('order_id', null),
     sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', sellerId),
     sb.from('marketplace_listings').select('tags,photo_url').eq('seller_id', sellerId),
-    sb.from('resource_offers').select('id', { count:'exact', head:true }).eq('seller_id', sellerId).eq('status','accepted')
+    sb.from('resource_offers').select('id', { count:'exact', head:true }).eq('seller_id', sellerId).eq('status','accepted'),
+    sb.from('blueprints').select('id', { count:'exact', head:true }).eq('seller_id', sellerId).eq('is_deleted', false)
   ]);
   const orderRows = ordersRes.data || [];
   const inquiryRows = inquiriesRes.data || [];
   const upvoteCount = upvotesRes.count || 0;
   const listingRows = listingsRes.data || [];
+  const blueprintsCount = blueprintsRes.count || 0;
   let itemsSold = 0, totalEarned = 0, mostExpensive = null, hasBigSale = false, hasSoldColossusBomb = false;
   orderRows.forEach(o => {
     const grossPrice = Number(o.gross_price) || 0;
@@ -6878,7 +6947,16 @@ async function fetchSellerShopStats(sellerId){
   const hasHighQualityCrafted = listingRows.some(l => (l.tags||[]).includes('crafted') && ((l.tags||[]).includes('800') || (l.tags||[]).includes('900')));
   const hasListingNoPhoto = listingRows.some(l => !l.photo_url);
   const hasAcceptedDesiredItemOffer = (acceptedOffersRes.count || 0) > 0;
-  return { salesCount, courierSalesCount: orderRows.length, itemsSold, totalEarned, mostExpensive, upvoteCount, listingsCount, hasBigSale, hasHighQualityCrafted, hasSoldColossusBomb, hasListingNoPhoto, hasAcceptedDesiredItemOffer };
+  // "Better than Wikelo" : contrairement à crafter_confirmed (qui regarde les annonces ACTUELLES du
+  // vendeur), ici on ne regarde que les articles réellement VENDUS (commandes livrées + demandes
+  // complétées), en remontant jusqu'à l'annonce d'origine via listing_id pour vérifier ses tags qualité.
+  const soldListingIds = [...new Set([...orderRows, ...inquiryRows].map(r => r.listing_id).filter(Boolean))];
+  let hasSoldHighQualityCrafted = false;
+  if(soldListingIds.length){
+    const { data: soldListings } = await sb.from('marketplace_listings').select('id,tags').in('id', soldListingIds);
+    hasSoldHighQualityCrafted = (soldListings||[]).some(l => (l.tags||[]).includes('crafted') && ((l.tags||[]).includes('800') || (l.tags||[]).includes('900')));
+  }
+  return { salesCount, courierSalesCount: orderRows.length, itemsSold, totalEarned, mostExpensive, upvoteCount, listingsCount, hasBigSale, hasHighQualityCrafted, hasSoldColossusBomb, hasListingNoPhoto, hasAcceptedDesiredItemOffer, blueprintsCount, hasSoldHighQualityCrafted };
 }
 function renderShopStats(box, stats){
   if(!box) return;
@@ -6931,7 +7009,10 @@ const SELLER_ACHV_ICONS = {
   crafter_confirmed: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="9" y="2" width="5" height="4"/><rect x="7" y="6" width="3" height="2"/><rect x="5" y="8" width="2" height="2"/><rect x="3" y="10" width="2" height="2"/><rect x="1" y="12" width="2" height="2"/></g></svg>`,
   not_stolen: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="10" y="1" width="2" height="2"/><rect x="9" y="3" width="2" height="2"/><rect x="5" y="5" width="6" height="2"/><rect x="4" y="7" width="8" height="4"/><rect x="5" y="11" width="6" height="2"/></g></svg>`,
   couldnt_be_bothered: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="5" width="10" height="7"/><rect x="6" y="3" width="4" height="2"/><rect x="6" y="7" width="4" height="3" fill="var(--panel)"/><rect x="2" y="13" width="2" height="2"/><rect x="4" y="11" width="2" height="2"/><rect x="6" y="9" width="2" height="2"/><rect x="8" y="7" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/><rect x="12" y="3" width="2" height="2"/></g></svg>`,
-  your_wish: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="9" width="8" height="2"/><rect x="3" y="11" width="6" height="2"/><rect x="9" y="8" width="3" height="1"/><rect x="12" y="6" width="2" height="2"/><rect x="1" y="7" width="2" height="1"/><rect x="6" y="3" width="2" height="2"/></g></svg>`
+  your_wish: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="9" width="8" height="2"/><rect x="3" y="11" width="6" height="2"/><rect x="9" y="8" width="3" height="1"/><rect x="12" y="6" width="2" height="2"/><rect x="1" y="7" width="2" height="1"/><rect x="6" y="3" width="2" height="2"/></g></svg>`,
+  crafterrrrr: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="2" width="10" height="2"/><rect x="4" y="4" width="2" height="7"/><rect x="7" y="4" width="2" height="9"/><rect x="10" y="4" width="2" height="5"/><rect x="2" y="13" width="12" height="2"/></g></svg>`,
+  made_with_love: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="3" width="4" height="4"/><rect x="9" y="3" width="4" height="4"/><rect x="2" y="7" width="12" height="2"/><rect x="4" y="9" width="8" height="2"/><rect x="6" y="11" width="4" height="2"/></g></svg>`,
+  better_than_wikelo: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="6" y="1" width="4" height="2"/><rect x="4" y="3" width="8" height="3"/><rect x="3" y="6" width="10" height="5"/><rect x="5" y="11" width="6" height="2"/><rect x="7" y="13" width="2" height="2"/></g></svg>`
 };
 const SELLER_ACHIEVEMENTS = [
   { key:'first_sale', check: s => s.salesCount >= 1 },
@@ -6942,7 +7023,10 @@ const SELLER_ACHIEVEMENTS = [
   { key:'crafter_confirmed', check: s => s.hasHighQualityCrafted },
   { key:'not_stolen', check: s => s.hasSoldColossusBomb },
   { key:'couldnt_be_bothered', check: s => s.hasListingNoPhoto },
-  { key:'your_wish', check: s => s.hasAcceptedDesiredItemOffer }
+  { key:'your_wish', check: s => s.hasAcceptedDesiredItemOffer },
+  { key:'crafterrrrr', check: s => s.blueprintsCount >= 5 },
+  { key:'made_with_love', check: s => s.blueprintsCount >= 10 },
+  { key:'better_than_wikelo', check: s => s.hasSoldHighQualityCrafted }
 ];
 function isColossusBomb(name){
   const n = (name||'').toLowerCase();

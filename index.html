@@ -511,12 +511,29 @@
   @media (min-width:960px){ .marketplace-grid{grid-template-columns:1fr 1fr 1fr;} }
   /* "Derniers objets en vente" côté client : cartes plus petites et nombre de colonnes qui s'adapte
      automatiquement à la largeur d'écran, au lieu d'un nombre de colonnes fixe. */
-  #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
+  #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid,
+  #shopBlueprintsGrid.marketplace-grid, #blueprintsFeed.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
   /* Sur mobile, minmax(210px,1fr) ne laisse jamais la place à 2 colonnes (2x210px > largeur d'écran dispo),
      donc les cartes s'affichaient en une seule colonne pleine largeur. On force une grille 2x2 sous 640px. */
   @media (max-width:640px){
-    #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid{grid-template-columns:1fr 1fr; gap:8px;}
+    #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid,
+    #shopBlueprintsGrid.marketplace-grid, #blueprintsFeed.marketplace-grid{grid-template-columns:1fr 1fr; gap:8px;}
   }
+  /* --- BLUEPRINTS (catalogue de craft des vendeurs) --- */
+  .bp-materials{font-size:.75rem; color:var(--muted); line-height:1.3; margin:2px 0 4px;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .bp-price-rows{display:flex; flex-direction:column; gap:3px;}
+  .bp-price-rows .mkt-price-row{margin:0;}
+  .bp-contact-row{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;}
+  .bp-contact-row button{flex:1 1 auto; font-size:.68rem; padding:7px 6px; line-height:1.2;}
+  /* --- APERÇU EN DIRECT (création/modif d'annonce marketplace ou de blueprint) : même gabarit que l'aperçu
+     de la page boutique (shop-live-preview-frame), mais avec la VRAIE carte telle qu'elle apparaîtra dans
+     la marketplace/le catalogue, construite avec les mêmes fonctions de rendu que le flux réel. */
+  .mkt-live-preview-wrap{position:relative; max-width:260px; margin:0 auto;}
+  .mkt-live-preview-badge{position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--accent); color:#03130a;
+    font-family:'VT323',monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.6px; padding:2px 10px; border-radius:3px; z-index:2; white-space:nowrap;}
+  .mkt-live-preview-empty{color:var(--muted); font-size:.82rem; text-align:center; padding:26px 10px;}
+  .mkt-live-preview-wrap .mkt-card{pointer-events:none;}
   .mkt-toolbar{display:flex; align-items:center; gap:10px; margin:2px 0 16px; flex-wrap:wrap;}
   .mkt-search-input{flex:1; min-width:160px; width:auto;}
   .mkt-filter-wrap{flex:0 0 auto;}
@@ -1273,6 +1290,13 @@
               </g></svg>
               <span data-i18n="newListingTitle">Ajouter un objet en vente</span>
             </button>
+            <button type="button" onclick="openSellerCreateOption('blueprint')">
+              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                <rect x="2" y="2" width="12" height="2"/><rect x="2" y="2" width="2" height="12"/><rect x="12" y="2" width="2" height="12"/><rect x="2" y="12" width="12" height="2"/>
+                <rect x="5" y="5" width="2" height="2"/><rect x="9" y="5" width="2" height="2"/><rect x="5" y="9" width="2" height="2"/><rect x="9" y="9" width="2" height="2"/>
+              </g></svg>
+              <span data-i18n="newBlueprintTitle">Ajouter un blueprint</span>
+            </button>
             <button type="button" onclick="openSellerCreateOption('resource')">
               <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
                 <rect x="2" y="7" width="12" height="2"/><rect x="6" y="3" width="2" height="2"/><rect x="8" y="3" width="2" height="2"/>
@@ -1392,6 +1416,7 @@
         <button class="tab-btn active" id="tabBtnDeliveries" onclick="setClientTab('deliveries')"><span data-i18n="tabDeliveries">LIVRAISONS</span><span class="notif-dot" id="dotTabDeliveries"></span></button>
         <button class="tab-btn" id="tabBtnMarketplace" onclick="setClientTab('marketplace')"><span data-i18n="tabMarketplace">MARKETPLACE</span><span class="notif-dot" id="dotTabMarketplace"></span></button>
         <button class="tab-btn" id="tabBtnResources" onclick="setClientTab('resources')"><span data-i18n="tabResources">DESIRED ITEMS</span><span class="notif-dot" id="dotTabResources"></span></button>
+        <button class="tab-btn" id="tabBtnBlueprints" onclick="setClientTab('blueprints')"><span data-i18n="tabBlueprints">BLUEPRINTS</span><span class="notif-dot" id="dotTabBlueprints"></span></button>
       </div>
       <div id="clientTabDeliveries">
         <div class="card courier-ad" id="courierAdCard" hidden></div>
@@ -1433,6 +1458,11 @@
           </div>
         </div>
         <div id="marketplaceFeed" class="marketplace-grid"></div>
+      </div>
+      <div id="clientTabBlueprints" hidden>
+        <h3 data-i18n="blueprintsCatalogTitle" style="margin-top:0;">Catalogue de blueprints</h3>
+        <p class="muted" style="margin-top:-8px;" data-i18n="blueprintsCatalogSub">Des objets craftés sur commande par les vendeurs qui possèdent le blueprint correspondant.</p>
+        <div id="blueprintsFeed" class="marketplace-grid"></div>
       </div>
       <div id="clientTabResources" hidden>
         <h3 data-i18n="requestedResourcesTitle" style="margin-top:0;">Ressources demandées par les vendeurs</h3>
@@ -1738,38 +1768,90 @@
     <section id="view-seller-create-listing" hidden>
       <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
       <header><h1 id="listingFormTitle" data-i18n="newListingTitle">Ajouter un objet en vente</h1></header>
-      <div class="card">
-        <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
-        <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute">
-        <input type="checkbox" id="listingStockMode" hidden>
-        <div class="tabs listing-mode-tabs">
-          <button type="button" class="tab-btn active" id="listingModeTabSingle" onclick="setListingMode(false, this)"><span data-i18n="listingModeSingleTab">VENTE UNIQUE</span></button>
-          <button type="button" class="tab-btn" id="listingModeTabStock" onclick="setListingMode(true, this)"><span data-i18n="listingModeStockTab">VENTE PAR QUANTITÉ</span></button>
+      <div class="shop-edit-layout">
+        <div class="shop-edit-form">
+          <div class="card">
+            <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
+            <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute" oninput="updateListingLivePreview()">
+            <input type="checkbox" id="listingStockMode" hidden>
+            <div class="tabs listing-mode-tabs">
+              <button type="button" class="tab-btn active" id="listingModeTabSingle" onclick="setListingMode(false, this)"><span data-i18n="listingModeSingleTab">VENTE UNIQUE</span></button>
+              <button type="button" class="tab-btn" id="listingModeTabStock" onclick="setListingMode(true, this)"><span data-i18n="listingModeStockTab">VENTE PAR QUANTITÉ</span></button>
+            </div>
+            <div id="listingModeFields">
+              <div class="muted" id="listingStockModeHint" style="font-size:.75rem; margin:8px 0 10px;" data-i18n="listingStockModeHint" hidden>Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.</div>
+              <label for="listingPrice" id="listingPriceLblEl" data-i18n="listingPriceLbl">Prix de vente (aUEC)</label>
+              <input id="listingPrice" type="number" min="0" step="1" oninput="updateListingLivePreview()">
+              <label for="listingQty" id="listingQtyLblEl" data-i18n="listingQtyLbl">Quantité</label>
+              <input id="listingQty" type="number" min="1" step="1" value="1" oninput="updateListingLivePreview()">
+            </div>
+            <label data-i18n="listingTagsLbl">Tags (optionnel)</label>
+            <div class="listing-tags-toggle">
+              <button type="button" class="tag-toggle-btn" id="tagBtn-crafted" onclick="toggleListingTag('crafted')" data-i18n="tagCrafted">CRAFTÉ</button>
+              <button type="button" class="tag-toggle-btn" id="tagBtn-700" onclick="toggleListingTag('700')" data-i18n="tagQ700">700+</button>
+              <button type="button" class="tag-toggle-btn" id="tagBtn-800" onclick="toggleListingTag('800')" data-i18n="tagQ800">800+</button>
+              <button type="button" class="tag-toggle-btn" id="tagBtn-900" onclick="toggleListingTag('900')" data-i18n="tagQ900">900+</button>
+              <button type="button" class="tag-toggle-btn" id="tagBtn-negotiable" onclick="toggleListingTag('negotiable')" data-i18n="tagNegotiable">NÉGOCIABLE</button>
+            </div>
+            <label data-i18n="listingPhotoLbl">Photo (optionnel)</label>
+            <input type="file" id="listingPhotoInput" accept="image/*" hidden onchange="onListingPhotoSelected(this)">
+            <button type="button" class="btn-secondary" style="width:100%; margin-top:4px;" onclick="$('listingPhotoInput').click()" id="listingPhotoBtn">
+              <span data-i18n="uploadListingPhoto">CHOISIR UNE PHOTO</span>
+            </button>
+            <div id="listingPhotoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
+            <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createListing()">
+              <span id="listingSubmitLabel" data-i18n="addListingBtn">METTRE EN VENTE</span>
+            </button>
+          </div>
         </div>
-        <div id="listingModeFields">
-          <div class="muted" id="listingStockModeHint" style="font-size:.75rem; margin:8px 0 10px;" data-i18n="listingStockModeHint" hidden>Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.</div>
-          <label for="listingPrice" id="listingPriceLblEl" data-i18n="listingPriceLbl">Prix de vente (aUEC)</label>
-          <input id="listingPrice" type="number" min="0" step="1">
-          <label for="listingQty" id="listingQtyLblEl" data-i18n="listingQtyLbl">Quantité</label>
-          <input id="listingQty" type="number" min="1" step="1" value="1">
+        <div class="shop-edit-preview-wrap">
+          <div class="shop-live-preview-frame">
+            <div class="shop-live-preview-listings-title" data-i18n="livePreviewTitle">Aperçu pour les clients</div>
+            <div class="mkt-live-preview-wrap">
+              <div class="mkt-live-preview-badge" data-i18n="livePreviewBadge">Aperçu</div>
+              <div id="listingLivePreview"></div>
+            </div>
+          </div>
         </div>
-        <label data-i18n="listingTagsLbl">Tags (optionnel)</label>
-        <div class="listing-tags-toggle">
-          <button type="button" class="tag-toggle-btn" id="tagBtn-crafted" onclick="toggleListingTag('crafted')" data-i18n="tagCrafted">CRAFTÉ</button>
-          <button type="button" class="tag-toggle-btn" id="tagBtn-700" onclick="toggleListingTag('700')" data-i18n="tagQ700">700+</button>
-          <button type="button" class="tag-toggle-btn" id="tagBtn-800" onclick="toggleListingTag('800')" data-i18n="tagQ800">800+</button>
-          <button type="button" class="tag-toggle-btn" id="tagBtn-900" onclick="toggleListingTag('900')" data-i18n="tagQ900">900+</button>
-          <button type="button" class="tag-toggle-btn" id="tagBtn-negotiable" onclick="toggleListingTag('negotiable')" data-i18n="tagNegotiable">NÉGOCIABLE</button>
+      </div>
+    </section>
+
+    <!-- CRÉATION DE BLUEPRINT (catalogue de craft du vendeur) -->
+    <section id="view-seller-create-blueprint" hidden>
+      <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
+      <header><h1 id="blueprintFormTitle" data-i18n="newBlueprintTitle">Ajouter un blueprint</h1></header>
+      <div class="shop-edit-layout">
+        <div class="shop-edit-form">
+          <div class="card">
+            <label for="blueprintItem" data-i18n="bpItemLbl">Objet craftable</label>
+            <input id="blueprintItem" type="text" data-i18n-ph="phBpItem" placeholder="ex: Casque d'armure lourde" oninput="updateBlueprintLivePreview()">
+            <label for="blueprintMaterials" data-i18n="bpMaterialsLbl">Ressources nécessaires</label>
+            <textarea id="blueprintMaterials" data-i18n-ph="phBpMaterials" placeholder="ex: 50 Laranite, 20 Titanium, 1h de craft" oninput="updateBlueprintLivePreview()"></textarea>
+            <label for="blueprintPriceTurnkey" data-i18n="bpPriceTurnkeyLbl">Prix clé en main (aUEC)</label>
+            <input id="blueprintPriceTurnkey" type="number" min="0" step="1" oninput="updateBlueprintLivePreview()">
+            <label for="blueprintPriceClientMats" data-i18n="bpPriceClientMatsLbl">Prix si tu fournis les ressources (aUEC)</label>
+            <input id="blueprintPriceClientMats" type="number" min="0" step="1" oninput="updateBlueprintLivePreview()">
+            <div class="muted" style="font-size:.72rem; margin:4px 0 10px;" data-i18n="bpPriceHint">Renseigne au moins un des deux prix. Laisse l'autre vide si tu ne proposes pas cette option.</div>
+            <label data-i18n="bpPhotoLbl">Photo (optionnel)</label>
+            <input type="file" id="blueprintPhotoInput" accept="image/*" hidden onchange="onBlueprintPhotoSelected(this)">
+            <button type="button" class="btn-secondary" style="width:100%; margin-top:4px;" onclick="$('blueprintPhotoInput').click()" id="blueprintPhotoBtn">
+              <span data-i18n="uploadListingPhoto">CHOISIR UNE PHOTO</span>
+            </button>
+            <div id="blueprintPhotoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
+            <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createBlueprint()">
+              <span id="blueprintSubmitLabel" data-i18n="addBlueprintBtn">AJOUTER AU CATALOGUE</span>
+            </button>
+          </div>
         </div>
-        <label data-i18n="listingPhotoLbl">Photo (optionnel)</label>
-        <input type="file" id="listingPhotoInput" accept="image/*" hidden onchange="onListingPhotoSelected(this)">
-        <button type="button" class="btn-secondary" style="width:100%; margin-top:4px;" onclick="$('listingPhotoInput').click()" id="listingPhotoBtn">
-          <span data-i18n="uploadListingPhoto">CHOISIR UNE PHOTO</span>
-        </button>
-        <div id="listingPhotoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
-        <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createListing()">
-          <span id="listingSubmitLabel" data-i18n="addListingBtn">METTRE EN VENTE</span>
-        </button>
+        <div class="shop-edit-preview-wrap">
+          <div class="shop-live-preview-frame">
+            <div class="shop-live-preview-listings-title" data-i18n="livePreviewTitle">Aperçu pour les clients</div>
+            <div class="mkt-live-preview-wrap">
+              <div class="mkt-live-preview-badge" data-i18n="livePreviewBadge">Aperçu</div>
+              <div id="blueprintLivePreview"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1955,6 +2037,16 @@
             </div>
           </div>
           <div id="shopListingsGrid" class="marketplace-grid"></div>
+        </div>
+
+        <div class="card seller-section-card" id="shopBlueprintsSection" hidden>
+          <div class="shop-preview-head">
+            <h3 data-i18n="shopBlueprintsTitle">Blueprints disponibles au craft</h3>
+            <div class="shop-section-head-actions">
+              <button type="button" class="btn-secondary shop-quick-add" id="shopAddBlueprintBtn" onclick="openSellerCreateOption('blueprint')" hidden>+ <span data-i18n="newBlueprintTitle">Ajouter un blueprint</span></button>
+            </div>
+          </div>
+          <div id="shopBlueprintsGrid" class="marketplace-grid"></div>
         </div>
 
         <div class="card seller-section-card">
@@ -2314,22 +2406,25 @@ let profile = null;
 // Un membre peut cumuler plusieurs casquettes (client + coursier + vendeur) : currentView retient
 // l'onglet actuellement affiché parmi celles disponibles pour ce compte. 'client' reste le point de départ par défaut.
 let currentView = 'client'; // 'client' | 'courier' | 'seller' | 'admin'
-const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-resource','view-shop-all-listings','view-shop-all-resources','view-messages-mobile'];
+const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-blueprint','view-seller-create-resource','view-shop-all-listings','view-shop-all-resources','view-messages-mobile'];
 // Quitte aussi le mode "page messagerie mobile plein écran" (voir openMobileMessages()) à chaque
 // changement de vue, quel que soit le chemin emprunté pour naviguer ailleurs : on ne veut pas que la
 // barre du haut reste masquée si on quitte la messagerie autrement qu'avec son propre bouton RETOUR.
 function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); document.body.classList.remove('msg-mobile-open'); }
-let clientTab = 'deliveries'; // 'deliveries' | 'marketplace' | 'resources'
+let clientTab = 'deliveries'; // 'deliveries' | 'marketplace' | 'resources' | 'blueprints'
 function setClientTab(tab){
   clientTab = tab;
   $('tabBtnDeliveries').classList.toggle('active', tab === 'deliveries');
   $('tabBtnMarketplace').classList.toggle('active', tab === 'marketplace');
   $('tabBtnResources').classList.toggle('active', tab === 'resources');
+  $('tabBtnBlueprints').classList.toggle('active', tab === 'blueprints');
   $('clientTabDeliveries').hidden = tab !== 'deliveries';
   $('clientTabMarketplace').hidden = tab !== 'marketplace';
   $('clientTabResources').hidden = tab !== 'resources';
+  $('clientTabBlueprints').hidden = tab !== 'blueprints';
   if(tab === 'deliveries'){ loadClientDashboard(); markCategoryRead('client_orders'); }
   else if(tab === 'marketplace'){ loadMarketplaceFeed(); }
+  else if(tab === 'blueprints'){ loadBlueprintsFeed(); }
   else { loadResourceRequestsFeed(); }
 }
 let hasBooted = false;
@@ -2444,6 +2539,12 @@ const T = {
     sellerRankLabels:{novice:"Novice", trader:"Négociant", merchant:"Marchand", tycoon:"Magnat"}, rankSales:"ventes",
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
     newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
+    livePreviewTitle:"Aperçu pour les clients", livePreviewBadge:"Aperçu", livePreviewEmptyHint:"Remplis le formulaire pour voir l'aperçu…",
+    tabBlueprints:"BLUEPRINTS", blueprintsCatalogTitle:"Catalogue de blueprints", blueprintsCatalogSub:"Des objets craftés sur commande par les vendeurs qui possèdent le blueprint correspondant.", blueprintsEmpty:"Aucun blueprint publié pour le moment.",
+    newBlueprintTitle:"Ajouter un blueprint", editBlueprintTitle:"Modifier le blueprint", bpItemLbl:"Objet craftable", phBpItem:"ex: Casque d'armure lourde", bpMaterialsLbl:"Ressources nécessaires", phBpMaterials:"ex: 50 Laranite, 20 Titanium, 1h de craft", bpPriceTurnkeyLbl:"Prix clé en main (aUEC)", bpPriceClientMatsLbl:"Prix si tu fournis les ressources (aUEC)", bpPriceHint:"Renseigne au moins un des deux prix. Laisse l'autre vide si tu ne proposes pas cette option.", bpPhotoLbl:"Photo (optionnel)", addBlueprintBtn:"AJOUTER AU CATALOGUE", saveBlueprintBtn:"ENREGISTRER LES MODIFICATIONS", blueprintSaved:"BLUEPRINT AJOUTÉ !", blueprintUpdated:"BLUEPRINT MIS À JOUR !", confirmDeleteBlueprint:"Supprimer ce blueprint du catalogue ?",
+    shopBlueprintsTitle:"Blueprints disponibles au craft", noBlueprintsOwn:"Tu n'as encore ajouté aucun blueprint.",
+    bpTurnkeyLbl:"clé en main", bpClientMatsLbl:"avec tes ressources", bpContactTurnkeyBtn:"COMMANDER CLÉ EN MAIN", bpContactMatsBtn:"COMMANDER (MES RESSOURCES)", bpContactBtn:"CONTACTER LE CRAFTER",
+    bpContactPrefillTurnkey:"Salut ! Je suis intéressé par ton blueprint \"{item}\", en clé en main.", bpContactPrefillMats:"Salut ! Je suis intéressé par ton blueprint \"{item}\", je peux fournir les ressources.",
     listingStockModeLbl:"Vendre par unité (gérer un stock)", listingStockModeHint:"Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.", listingPriceUnitLbl:"Prix unitaire (aUEC)", listingStockLbl:"Stock disponible", perUnitSuffix:" / unité", stockLbl:"Stock :", yourQtyLbl:"Quantité souhaitée :", stockAvailableLbl:"Disponible :", stockTooLowAlert:"Erreur : il n'y a plus assez de stock disponible pour cette quantité.", invalidQtyAlert:"Erreur : quantité invalide.", qtyRequestedLbl:"Quantité :", listingModeSingleTab:"VENTE UNIQUE", listingModeStockTab:"VENTE PAR QUANTITÉ",
     listingTagsLbl:"Tags (optionnel)", tagCrafted:"CRAFTÉ", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", tagNegotiable:"NÉGOCIABLE", editListingBtn:"MODIFIER",
     requestResourcesTitle:"Poster un objet recherché", requestResourcesBtn:"OBJET RECHERCHÉ", resourceNameLbl:"Objet recherché", phResourceName:"ex: Laranite brute, casque d'armure lourde...", resourceQtyLbl:"Quantité souhaitée", resourcePriceLbl:"Prix proposé (aUEC, optionnel)", resourceNoteLbl:"Note (optionnel)", phResourceNote:"ex: Livraison sur Nyx, quantité négociable...", submitResourceRequestBtn:"PUBLIER L'ANNONCE", resourceRequestSaved:"ANNONCE PUBLIÉE !", resourcePriceNone:"Prix à négocier",
@@ -2588,6 +2689,12 @@ const T = {
     sellerRankLabels:{novice:"Novice", trader:"Trader", merchant:"Merchant", tycoon:"Tycoon"}, rankSales:"sales",
     rankToNextSales:"{n} more sale(s) to reach {rank}",
     newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
+    livePreviewTitle:"Preview for clients", livePreviewBadge:"Preview", livePreviewEmptyHint:"Fill in the form to see the preview…",
+    tabBlueprints:"BLUEPRINTS", blueprintsCatalogTitle:"Blueprints catalog", blueprintsCatalogSub:"Items crafted to order by sellers who own the matching blueprint.", blueprintsEmpty:"No blueprints published yet.",
+    newBlueprintTitle:"Add a blueprint", editBlueprintTitle:"Edit blueprint", bpItemLbl:"Craftable item", phBpItem:"e.g. Heavy armor helmet", bpMaterialsLbl:"Required materials", phBpMaterials:"e.g. 50 Laranite, 20 Titanium, 1h craft time", bpPriceTurnkeyLbl:"Turnkey price (aUEC)", bpPriceClientMatsLbl:"Price if you supply the materials (aUEC)", bpPriceHint:"Fill in at least one of the two prices. Leave the other blank if you don't offer that option.", bpPhotoLbl:"Photo (optional)", addBlueprintBtn:"ADD TO CATALOG", saveBlueprintBtn:"SAVE CHANGES", blueprintSaved:"BLUEPRINT ADDED!", blueprintUpdated:"BLUEPRINT UPDATED!", confirmDeleteBlueprint:"Remove this blueprint from the catalog?",
+    shopBlueprintsTitle:"Blueprints available to craft", noBlueprintsOwn:"You haven't added any blueprint yet.",
+    bpTurnkeyLbl:"turnkey", bpClientMatsLbl:"with your materials", bpContactTurnkeyBtn:"ORDER TURNKEY", bpContactMatsBtn:"ORDER (MY MATERIALS)", bpContactBtn:"CONTACT CRAFTER",
+    bpContactPrefillTurnkey:"Hey! I'm interested in your \"{item}\" blueprint, turnkey.", bpContactPrefillMats:"Hey! I'm interested in your \"{item}\" blueprint, I can supply the materials.",
     listingStockModeLbl:"Sell by unit (manage a stock)", listingStockModeHint:"The price is counted per unit and the buyer picks how many they want. Stock goes down automatically with each sale.", listingPriceUnitLbl:"Unit price (aUEC)", listingStockLbl:"Stock available", perUnitSuffix:" / unit", stockLbl:"Stock:", yourQtyLbl:"Quantity wanted:", stockAvailableLbl:"Available:", stockTooLowAlert:"Error: there isn't enough stock left for that quantity.", invalidQtyAlert:"Error: invalid quantity.", qtyRequestedLbl:"Quantity:", listingModeSingleTab:"SINGLE SALE", listingModeStockTab:"SELL BY QUANTITY",
     listingTagsLbl:"Tags (optional)", tagCrafted:"CRAFTED", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", tagNegotiable:"NEGOTIABLE", editListingBtn:"EDIT",
     requestResourcesTitle:"Post a desired item", requestResourcesBtn:"DESIRED ITEM", resourceNameLbl:"Item wanted", phResourceName:"e.g. Raw Laranite, heavy armor helmet...", resourceQtyLbl:"Quantity wanted", resourcePriceLbl:"Price offered (aUEC, optional)", resourceNoteLbl:"Note (optional)", phResourceNote:"e.g. Delivery to Nyx, quantity negotiable...", submitResourceRequestBtn:"POST AD", resourceRequestSaved:"AD POSTED!", resourcePriceNone:"Price to negotiate",
@@ -2814,6 +2921,19 @@ function openSellerCreateOption(kind){
     const btnEl = $('listingSubmitLabel');
     if(btnEl){ btnEl.dataset.i18n = 'addListingBtn'; btnEl.textContent = d.addListingBtn; }
     $('view-seller-create-listing').hidden = false;
+    ensurePreviewShopName();
+    updateListingLivePreview();
+  } else if(kind === 'blueprint'){
+    const d = T[LANG];
+    editingBlueprintId = null;
+    resetBlueprintForm();
+    const titleEl = $('blueprintFormTitle');
+    if(titleEl){ titleEl.dataset.i18n = 'newBlueprintTitle'; titleEl.textContent = d.newBlueprintTitle; }
+    const btnEl = $('blueprintSubmitLabel');
+    if(btnEl){ btnEl.dataset.i18n = 'addBlueprintBtn'; btnEl.textContent = d.addBlueprintBtn; }
+    $('view-seller-create-blueprint').hidden = false;
+    ensurePreviewShopName();
+    updateBlueprintLivePreview();
   } else {
     $('view-seller-create-resource').hidden = false;
   }
@@ -4293,6 +4413,27 @@ async function loadMarketplaceFeed(){
   applyMarketplaceFilters();
 }
 
+// --- CATALOGUE DE BLUEPRINTS (onglet client) : tous les blueprints publiés, toutes boutiques confondues ---
+async function loadBlueprintsFeed(){
+  const box = $('blueprintsFeed'); if(!box) return;
+  const d = T[LANG];
+  box.innerHTML = `<p class="muted">…</p>`;
+  const { data, error } = await sb.from('blueprints').select('*').eq('is_deleted', false).order('created_at',{ascending:false}).limit(200);
+  if(error){ box.textContent = error.message; return; }
+  const blueprints = data || [];
+  if(!blueprints.length){ box.innerHTML = `<p class="muted">${d.blueprintsEmpty}</p>`; return; }
+  const sellerIds = [...new Set(blueprints.map(bp=>bp.seller_id))];
+  const [{ data: sellers }, { data: shops }] = await Promise.all([
+    sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds),
+    sb.from('marketplace_shops').select('id,shop_name').in('id', sellerIds)
+  ]);
+  const shopNameMap = {}; (shops||[]).forEach(s=>shopNameMap[s.id]=s.shop_name);
+  const sellerMap = {}; (sellers||[]).forEach(s=>sellerMap[s.id]={ ...s, shop_name: shopNameMap[s.id] || null });
+  // false : même dans le catalogue, les boutons "modifier/supprimer" n'ont de sens que sur la propre page
+  // boutique du vendeur (comme pour les annonces marketplace) — ici on reste en vue "client".
+  box.innerHTML = blueprints.map(bp => blueprintCardHtml(bp, sellerMap, false)).join('');
+}
+
 // --- LEADERBOARD DES BOUTIQUES (3 stats : ventes cette semaine, upvotes cette semaine, objet le plus cher vendu) ---
 async function loadShopLeaderboard(){
   const grid = $('shopLeaderboardGrid'); if(!grid) return;
@@ -4815,6 +4956,7 @@ function toggleListingTag(tag){
     if(turningOn){ listingTagsState[key] = true; listingTagsState.crafted = true; }
   }
   renderListingTagButtons();
+  updateListingLivePreview();
 }
 function renderListingTagButtons(){
   const cB = $('tagBtn-crafted'); if(cB) cB.classList.toggle('active', listingTagsState.crafted);
@@ -4867,6 +5009,7 @@ function setListingMode(isStock, btnEl){
   pixelSwoosh(btnEl || (isStock ? $('listingModeTabStock') : $('listingModeTabSingle')));
   const fields = $('listingModeFields');
   if(fields){ fields.classList.remove('mode-swoosh'); void fields.offsetWidth; fields.classList.add('mode-swoosh'); }
+  updateListingLivePreview();
 }
 function resetListingForm(){
   $('listingItem').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
@@ -4895,12 +5038,20 @@ function openEditListing(id){
   if(titleEl){ titleEl.dataset.i18n = 'editListingTitle'; titleEl.textContent = d.editListingTitle; }
   const btnEl = $('listingSubmitLabel');
   if(btnEl){ btnEl.dataset.i18n = 'saveListingBtn'; btnEl.textContent = d.saveListingBtn; }
+  ensurePreviewShopName();
+  updateListingLivePreview();
 }
 function onListingPhotoSelected(inputEl){
   const file = (inputEl.files && inputEl.files[0]) || null;
   inputEl.value = '';
   if(!file) return;
   openCropModal(file, 'listing');
+}
+function onBlueprintPhotoSelected(inputEl){
+  const file = (inputEl.files && inputEl.files[0]) || null;
+  inputEl.value = '';
+  if(!file) return;
+  openCropModal(file, 'blueprint');
 }
 let pendingShopLogoFile = null;
 function onShopLogoSelected(inputEl){
@@ -5031,9 +5182,14 @@ function confirmCrop(){
       if(preview){ preview.src = URL.createObjectURL(pendingShopLogoFile); preview.hidden = false; }
       syncShopLogoDropzoneUI();
       updateShopLivePreview();
+    } else if(cropState.kind === 'blueprint'){
+      pendingBlueprintPhotoFile = new File([blob], cropState.file.name, { type: mime });
+      $('blueprintPhotoPreviewName').textContent = T[LANG].photoReady;
+      updateBlueprintLivePreview();
     } else {
       pendingListingPhotoFile = new File([blob], cropState.file.name, { type: mime });
       $('listingPhotoPreviewName').textContent = T[LANG].photoReady;
+      updateListingLivePreview();
     }
     closeCropModal();
   }, mime, 0.9);
@@ -5098,6 +5254,205 @@ async function deleteListing(id){
   if(error){ alert('Erreur : '+error.message); return; }
   await loadMyListings();
   refreshShopAllListingsFullIfOpen();
+}
+
+// --- APERÇU EN DIRECT (annonce marketplace / blueprint) ---------------------------------------------------
+// Le nom de boutique n'est pas dans `profile` (il vit dans marketplace_shops) : on le récupère une fois par
+// session et on le met en cache, pour que l'aperçu affiche "Vendu par <nom de la boutique>" exactement comme
+// la vraie carte, au lieu du pseudo Discord du vendeur.
+let previewShopName = null;
+async function ensurePreviewShopName(){
+  if(previewShopName !== null || !session) return;
+  const { data } = await sb.from('marketplace_shops').select('shop_name').eq('id', session.user.id).maybeSingle();
+  previewShopName = (data && data.shop_name) || '';
+  updateListingLivePreview();
+  updateBlueprintLivePreview();
+}
+function previewSellerMap(){
+  return { [session.user.id]: { ...profile, shop_name: previewShopName || null } };
+}
+// Désactive tous les éléments cliquables de la carte d'aperçu (bouton "intéressé", lien vers la boutique...) :
+// ce n'est pas une vraie annonce, un clic dessus planterait ou ouvrirait une page qui n'a pas de sens ici.
+function disablePreviewCardInteractions(box){
+  box.querySelectorAll('[onclick]').forEach(el => el.removeAttribute('onclick'));
+}
+function updateListingLivePreview(){
+  const box = $('listingLivePreview'); if(!box || !session) return;
+  const itemName = $('listingItem').value.trim();
+  if(!itemName){ box.innerHTML = `<div class="mkt-live-preview-empty" data-i18n="livePreviewEmptyHint">Remplis le formulaire pour voir l'aperçu…</div>`; return; }
+  let photoUrl = null;
+  if(pendingListingPhotoFile) photoUrl = URL.createObjectURL(pendingListingPhotoFile);
+  else if(editingListingId){ const l = myListingsCache.find(x=>x.id===editingListingId); if(l) photoUrl = l.photo_url; }
+  const fakeListing = {
+    id:'preview', seller_id: session.user.id,
+    item_name: itemName,
+    price: parseFloat($('listingPrice').value) || 0,
+    quantity: parseInt($('listingQty').value,10) || 1,
+    is_stock: $('listingStockMode').checked,
+    tags: listingTagsArray(),
+    photo_url: photoUrl
+  };
+  box.innerHTML = mktCardHtml(fakeListing, previewSellerMap(), null);
+  disablePreviewCardInteractions(box);
+}
+// --- BLUEPRINTS (catalogue de craft des vendeurs) ----------------------------------------------------------
+function blueprintPriceRowsHtml(bp){
+  const d = T[LANG];
+  let html = '<div class="bp-price-rows">';
+  if(bp.price_turnkey) html += `<div class="mkt-price-row"><span class="mkt-price">${fmt(bp.price_turnkey)}</span><span class="mkt-qty">${d.bpTurnkeyLbl}</span></div>`;
+  if(bp.price_client_mats) html += `<div class="mkt-price-row"><span class="mkt-price">${fmt(bp.price_client_mats)}</span><span class="mkt-qty">${d.bpClientMatsLbl}</span></div>`;
+  html += '</div>';
+  return html;
+}
+function blueprintCardHtml(bp, sellerMap, isOwner){
+  const d = T[LANG];
+  const seller = sellerMap ? sellerMap[bp.seller_id] : null;
+  const photo = bp.photo_url ? `<img src="${bp.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  const canOrder = !isOwner && session && session.user.id !== bp.seller_id;
+  let contactBlock = '';
+  if(canOrder){
+    contactBlock = '<div class="bp-contact-row">';
+    if(bp.price_turnkey) contactBlock += `<button type="button" class="btn-secondary" onclick="contactCrafterForBlueprint('${bp.seller_id}','${encodeURIComponent(bp.item_name)}','turnkey')">${d.bpContactTurnkeyBtn}</button>`;
+    if(bp.price_client_mats) contactBlock += `<button type="button" class="btn-secondary" onclick="contactCrafterForBlueprint('${bp.seller_id}','${encodeURIComponent(bp.item_name)}','mats')">${d.bpContactMatsBtn}</button>`;
+    contactBlock += '</div>';
+  }
+  const ownerActions = isOwner ? `
+    <div class="my-listing-actions">
+      <button type="button" class="btn-secondary" onclick="openEditBlueprint('${bp.id}')" data-i18n="editListingBtn">MODIFIER</button>
+      <button type="button" class="btn-secondary" onclick="deleteBlueprint('${bp.id}')" data-i18n="deleteListingBtn">SUPPRIMER</button>
+    </div>` : '';
+  return `
+    <div class="mkt-card blueprint-card">
+      <div class="mkt-photo-wrap">${photo}</div>
+      <div class="mkt-info">
+        <div class="mkt-item-name">${bp.item_name}</div>
+        <div class="bp-materials">${escapeHtml(bp.materials||'')}</div>
+        ${blueprintPriceRowsHtml(bp)}
+        ${seller ? `<div class="courier-box" onclick="openSellerShop('${bp.seller_id}')"><div class="courier-box-name">${d.mktByLbl} ${seller.shop_name || displayName(seller)}</div></div>` : ''}
+        ${contactBlock}
+        ${ownerActions}
+      </div>
+    </div>`;
+}
+function updateBlueprintLivePreview(){
+  const box = $('blueprintLivePreview'); if(!box || !session) return;
+  const itemName = $('blueprintItem').value.trim();
+  if(!itemName){ box.innerHTML = `<div class="mkt-live-preview-empty" data-i18n="livePreviewEmptyHint">Remplis le formulaire pour voir l'aperçu…</div>`; return; }
+  let photoUrl = null;
+  if(pendingBlueprintPhotoFile) photoUrl = URL.createObjectURL(pendingBlueprintPhotoFile);
+  else if(editingBlueprintId){ const bp = myBlueprintsCache.find(x=>x.id===editingBlueprintId); if(bp) photoUrl = bp.photo_url; }
+  const fakeBp = {
+    id:'preview', seller_id: session.user.id,
+    item_name: itemName,
+    materials: $('blueprintMaterials').value.trim(),
+    price_turnkey: parseFloat($('blueprintPriceTurnkey').value) || 0,
+    price_client_mats: parseFloat($('blueprintPriceClientMats').value) || 0,
+    photo_url: photoUrl
+  };
+  box.innerHTML = blueprintCardHtml(fakeBp, previewSellerMap(), false);
+  disablePreviewCardInteractions(box);
+}
+let pendingBlueprintPhotoFile = null;
+let editingBlueprintId = null;
+let myBlueprintsCache = [];
+function resetBlueprintForm(){
+  $('blueprintItem').value=''; $('blueprintMaterials').value=''; $('blueprintPriceTurnkey').value=''; $('blueprintPriceClientMats').value='';
+  $('blueprintPhotoInput').value=''; $('blueprintPhotoPreviewName').textContent='';
+  pendingBlueprintPhotoFile = null;
+}
+function openEditBlueprint(id){
+  const bp = myBlueprintsCache.find(x => x.id === id);
+  if(!bp) return;
+  const d = T[LANG];
+  editingBlueprintId = id;
+  hideAllViews();
+  $('createOrderBtn').hidden = true;
+  $('sellerCreateWrap').hidden = true;
+  $('view-seller-create-blueprint').hidden = false;
+  $('blueprintItem').value = bp.item_name;
+  $('blueprintMaterials').value = bp.materials || '';
+  $('blueprintPriceTurnkey').value = bp.price_turnkey || '';
+  $('blueprintPriceClientMats').value = bp.price_client_mats || '';
+  pendingBlueprintPhotoFile = null;
+  $('blueprintPhotoInput').value = '';
+  $('blueprintPhotoPreviewName').textContent = bp.photo_url ? d.listingPhotoKeepNote : '';
+  const titleEl = $('blueprintFormTitle');
+  if(titleEl){ titleEl.dataset.i18n = 'editBlueprintTitle'; titleEl.textContent = d.editBlueprintTitle; }
+  const btnEl = $('blueprintSubmitLabel');
+  if(btnEl){ btnEl.dataset.i18n = 'saveBlueprintBtn'; btnEl.textContent = d.saveBlueprintBtn; }
+  ensurePreviewShopName();
+  updateBlueprintLivePreview();
+}
+async function createBlueprint(){
+  if(!session) return;
+  const d = T[LANG];
+  const item_name = $('blueprintItem').value.trim();
+  const materials = $('blueprintMaterials').value.trim();
+  const price_turnkey = parseFloat($('blueprintPriceTurnkey').value) || 0;
+  const price_client_mats = parseFloat($('blueprintPriceClientMats').value) || 0;
+  if(!item_name || !materials || (price_turnkey <= 0 && price_client_mats <= 0)){
+    alert('Erreur : renseigne un objet, les ressources nécessaires et au moins un prix.');
+    return;
+  }
+  const payload = { item_name, materials, price_turnkey: price_turnkey || null, price_client_mats: price_client_mats || null };
+  if(editingBlueprintId){
+    const id = editingBlueprintId;
+    const { error } = await sb.from('blueprints').update(payload).eq('id', id);
+    if(error){ alert('Erreur : '+error.message); return; }
+    if(pendingBlueprintPhotoFile){
+      const ext = (pendingBlueprintPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
+      // Le dossier de 1er niveau doit rester l'id du vendeur (pas "blueprints/...") pour matcher la policy
+      // RLS du bucket "marketplace-photos", qui vérifie (storage.foldername(name))[1] = auth.uid().
+      const path = `${session.user.id}/blueprints/${id}.${ext}`;
+      const { error: upErr } = await sb.storage.from('marketplace-photos').upload(path, pendingBlueprintPhotoFile, { upsert:true, cacheControl:'3600' });
+      if(!upErr){
+        const { data: urlData } = sb.storage.from('marketplace-photos').getPublicUrl(path);
+        await sb.from('blueprints').update({ photo_url: urlData.publicUrl + '?t=' + Date.now() }).eq('id', id);
+      }
+    }
+    editingBlueprintId = null;
+    resetBlueprintForm();
+    toastShow(d.blueprintUpdated);
+    routeApp();
+    return;
+  }
+  const { data, error } = await sb.from('blueprints').insert({ seller_id: session.user.id, ...payload }).select().single();
+  if(error){ alert('Erreur : '+error.message); return; }
+  if(pendingBlueprintPhotoFile){
+    const ext = (pendingBlueprintPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `${session.user.id}/blueprints/${data.id}.${ext}`;
+    const { error: upErr } = await sb.storage.from('marketplace-photos').upload(path, pendingBlueprintPhotoFile, { upsert:true, cacheControl:'3600' });
+    if(!upErr){
+      const { data: urlData } = sb.storage.from('marketplace-photos').getPublicUrl(path);
+      await sb.from('blueprints').update({ photo_url: urlData.publicUrl + '?t=' + Date.now() }).eq('id', data.id);
+    }
+  }
+  resetBlueprintForm();
+  toastShow(d.blueprintSaved);
+  routeApp();
+}
+async function deleteBlueprint(id){
+  if(!confirm(T[LANG].confirmDeleteBlueprint)) return;
+  const { error } = await sb.from('blueprints').update({ is_deleted: true }).eq('id', id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  // Même logique que deleteListing : on recharge la page boutique courante (déjà sur la sienne puisque seul
+  // le propriétaire voit ce bouton), ce qui rafraîchit la grille "Blueprints" avec les données à jour.
+  if(session) openSellerShop(session.user.id);
+}
+// Contacter un crafter pour commander un blueprint : ouvre (ou crée) le fil de messagerie avec lui et
+// pré-remplit le message, plutôt que de passer par un vrai circuit de commande/acceptation pour cette
+// première version de la fonctionnalité.
+async function contactCrafterForBlueprint(sellerId, encodedItemName, mode){
+  if(!session) return;
+  const d = T[LANG];
+  const itemName = decodeURIComponent(encodedItemName);
+  await openMsgThreadWithUser(sellerId);
+  const input = msgEl('msgComposeInput');
+  if(input){
+    const template = mode === 'turnkey' ? d.bpContactPrefillTurnkey : d.bpContactPrefillMats;
+    input.value = template.replace('{item}', itemName);
+    input.focus();
+  }
 }
 let myListingsCache = [];
 let myListingsOrderMap = {};
@@ -5335,6 +5690,7 @@ async function openSellerShop(sellerId){
   const editBtn = $('shopEditGearBtn'); if(editBtn) editBtn.hidden = !isOwner;
   const addListingBtn = $('shopAddListingBtn'); if(addListingBtn) addListingBtn.hidden = !isOwner;
   const addResourceBtn = $('shopAddResourceBtn'); if(addResourceBtn) addResourceBtn.hidden = !isOwner;
+  const addBlueprintBtn = $('shopAddBlueprintBtn'); if(addBlueprintBtn) addBlueprintBtn.hidden = !isOwner;
   const descEl = $('shopDescription');
   if(descEl) descEl.hidden = true;
   // Propriétaire : on récupère TOUTES ses annonces/demandes (y compris fermées) pour qu'il puisse les gérer ;
@@ -5343,11 +5699,13 @@ async function openSellerShop(sellerId){
   const resourceQuery = isOwner
     ? sb.from('resource_requests').select('*').eq('seller_id', sellerId).order('created_at',{ascending:false})
     : sb.from('resource_requests').select('*').eq('seller_id', sellerId).eq('status','open').order('created_at',{ascending:false});
-  const [{ data: shop }, { data: p }, { data: listings }, { data: resourceRequests }] = await Promise.all([
+  const blueprintQuery = sb.from('blueprints').select('*').eq('seller_id', sellerId).eq('is_deleted', false).order('created_at',{ascending:false});
+  const [{ data: shop }, { data: p }, { data: listings }, { data: resourceRequests }, { data: blueprints }] = await Promise.all([
     sb.from('marketplace_shops').select('*').eq('id', sellerId).maybeSingle(),
     sb.from('profiles').select('*').eq('id', sellerId).single(),
     listingsQuery,
-    resourceQuery
+    resourceQuery,
+    blueprintQuery
   ]);
   let activeOrdersByListing = {};
   if(isOwner && (listings||[]).length){
@@ -5377,11 +5735,13 @@ async function openSellerShop(sellerId){
   const resGrid = $('shopResourceRequestsGrid');
   const listingsMoreBtn = $('shopListingsViewMoreBtn');
   const resMoreBtn = $('shopResourcesViewMoreBtn');
+  const bpSection = $('shopBlueprintsSection');
   if(!shop){
     grid.innerHTML = `<p class="muted">${isOwner ? d.noShopYetOwner : d.noShopYet}</p>`;
     resGrid.innerHTML = '';
     if(listingsMoreBtn) listingsMoreBtn.hidden = true;
     if(resMoreBtn) resMoreBtn.hidden = true;
+    if(bpSection) bpSection.hidden = true;
     loadShopUpvotes(sellerId, isOwner);
     return;
   }
@@ -5405,6 +5765,19 @@ async function openSellerShop(sellerId){
   if(!shopResourceRequestsCache.length){ resGrid.innerHTML = `<p class="muted">${d.noResourceRequests}</p>`; }
   else resGrid.innerHTML = shopResourceRequestsCache.slice(0,3).map(r => resCardFn(r)).join('');
   if(resMoreBtn) resMoreBtn.hidden = shopResourceRequestsCache.length <= 3;
+
+  // Section "Blueprints disponibles au craft" : visible dès que le vendeur en a publié au moins un, ou
+  // tout le temps pour le propriétaire (pour qu'il voie le bouton "+ Ajouter" même quand c'est encore vide).
+  const bpGrid = $('shopBlueprintsGrid');
+  myBlueprintsCache = isOwner ? (blueprints || []) : myBlueprintsCache;
+  const bpList = blueprints || [];
+  if(bpSection) bpSection.hidden = !isOwner && bpList.length === 0;
+  if(bpGrid){
+    bpGrid.innerHTML = bpList.length
+      ? bpList.map(bp => blueprintCardHtml(bp, shopSellerMapCache, isOwner)).join('')
+      : `<p class="muted">${d.noBlueprintsOwn}</p>`;
+  }
+
   loadShopUpvotes(sellerId, isOwner);
 }
 let shopUpvoted = false;

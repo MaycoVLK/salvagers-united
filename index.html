@@ -734,13 +734,16 @@
     background-size:22px 22px, 22px 22px, 22px 22px;}
   .shop-texture-layer.tex-noise{background-image:radial-gradient(color-mix(in srgb, var(--accent) 21%, transparent) 1px, transparent 1px), radial-gradient(color-mix(in srgb, var(--accent) 15%, transparent) 1px, transparent 1px); background-size:7px 7px, 17px 17px; background-position:0 0, 4px 6px;}
   .shop-texture-layer.tex-none{background-image:none;}
-  /* Crâne de pirate spatial, pixel art minimaliste, dessiné en masque SVG (forme opaque = alpha) puis
-     "repeint" avec background-color pour qu'il suive la couleur d'accent de la boutique comme les autres. */
+  /* Crâne de pirate spatial, pixel art minimaliste (silhouette ronde, orbites carrées, sans dents — design
+     propre à ce site, pas une reprise d'un crâne existant), dessiné en masque SVG (forme opaque = alpha)
+     puis "repeint" avec background-color pour qu'il suive la couleur d'accent de la boutique comme les
+     autres textures. Le viewBox est volontairement plus grand que la silhouette (marge de 2 unités tout
+     autour) et le mask-size généreux pour que les crânes du motif restent bien espacés les uns des autres. */
   .shop-texture-layer.tex-skull{
-    --skull-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cg fill='%23fff'%3E%3Crect x='2' y='0' width='4' height='1'/%3E%3Crect x='1' y='1' width='6' height='1'/%3E%3Crect x='0' y='2' width='2' height='1'/%3E%3Crect x='3' y='2' width='2' height='1'/%3E%3Crect x='6' y='2' width='2' height='1'/%3E%3Crect x='0' y='3' width='8' height='1'/%3E%3Crect x='1' y='4' width='6' height='1'/%3E%3Crect x='1' y='5' width='1' height='1'/%3E%3Crect x='3' y='5' width='2' height='1'/%3E%3Crect x='6' y='5' width='1' height='1'/%3E%3C/g%3E%3C/svg%3E");
+    --skull-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' shape-rendering='crispEdges'%3E%3Cg fill='%23fff'%3E%3Crect x='5' y='2' width='4' height='1'/%3E%3Crect x='4' y='3' width='6' height='1'/%3E%3Crect x='3' y='4' width='8' height='1'/%3E%3Crect x='2' y='5' width='10' height='1'/%3E%3Crect x='3' y='6' width='3' height='1'/%3E%3Crect x='8' y='6' width='3' height='1'/%3E%3Crect x='3' y='7' width='3' height='1'/%3E%3Crect x='8' y='7' width='3' height='1'/%3E%3Crect x='2' y='8' width='10' height='1'/%3E%3Crect x='3' y='9' width='8' height='1'/%3E%3Crect x='4' y='10' width='6' height='1'/%3E%3Crect x='5' y='11' width='4' height='1'/%3E%3C/g%3E%3C/svg%3E");
     -webkit-mask-image:var(--skull-svg); mask-image:var(--skull-svg);
-    -webkit-mask-size:22px 22px; mask-size:22px 22px; -webkit-mask-repeat:repeat; mask-repeat:repeat;
-    background-color:color-mix(in srgb, var(--accent) 30%, transparent); background-image:none;}
+    -webkit-mask-size:46px 46px; mask-size:46px 46px; -webkit-mask-repeat:repeat; mask-repeat:repeat;
+    background-color:color-mix(in srgb, var(--accent) 34%, transparent); background-image:none;}
   /* Ondes circulaires concentriques, pur CSS (repeating-radial-gradient). */
   .shop-texture-layer.tex-waves{background-image:repeating-radial-gradient(circle at 50% 50%,
       color-mix(in srgb, var(--accent) 24%, transparent) 0px, color-mix(in srgb, var(--accent) 24%, transparent) 1.5px,
@@ -874,7 +877,11 @@
      avec les actions (modifier + upvote) poussées tout à droite sur la même ligne, puis la description
      juste en dessous, SOUS la colonne de texte uniquement (pas sous la photo). */
   .shop-banner-row{display:flex; gap:22px; position:relative; z-index:1;}
-  .shop-banner-logo{width:200px; min-height:150px; flex:none; border-radius:10px; background:var(--bg2);
+  /* Photo toujours carrée (width=height fixes, jamais étirée par le flex parent) : avant, elle s'étirait
+     pour matcher la hauteur de la colonne de texte, ce qui la déformait en rectangle selon la longueur de
+     la description. On fixe maintenant un carré et on borne la description (voir .shop-description
+     line-clamp + maxlength=200 côté formulaire) pour que la colonne de texte reste proche de cette hauteur. */
+  .shop-banner-logo{width:200px; height:200px; flex:none; align-self:flex-start; border-radius:10px; background:var(--bg2);
     border:2px solid var(--accent); color:var(--accent); display:flex; align-items:center; justify-content:center;
     overflow:hidden; padding:20px; box-shadow:0 0 18px var(--accent-dim); position:relative;}
   .shop-banner-logo svg{width:100%; height:100%;}
@@ -910,11 +917,12 @@
      neutre qui jurait parfois avec certaines couleurs d'accent. Appartient désormais à la colonne de texte
      (.shop-banner-id), pas à toute la largeur de la carte : elle ne passe plus sous la photo. */
   .shop-banner-card .shop-description{position:relative; z-index:1; margin:14px 0 0; padding:12px 14px;
-    background:color-mix(in srgb, var(--bg2) 88%, var(--accent) 12%); border:1px solid var(--accent-dim); border-radius:6px;}
+    background:color-mix(in srgb, var(--bg2) 88%, var(--accent) 12%); border:1px solid var(--accent-dim); border-radius:6px;
+    display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;}
   @media (max-width:640px){
     .shop-banner-card{padding:16px;}
     .shop-banner-row{flex-direction:column; align-items:center; text-align:center; gap:14px;}
-    .shop-banner-logo{width:100%; max-width:220px; height:160px; min-height:0; padding:16px; margin:0 auto;}
+    .shop-banner-logo{width:100%; max-width:220px; height:auto; aspect-ratio:1/1; align-self:center; padding:16px; margin:0 auto;}
     .shop-banner-id{align-items:center; width:100%;}
     .shop-banner-top{flex-direction:column; align-items:center; width:100%;}
     .shop-banner-text{align-items:center;}
@@ -1923,7 +1931,8 @@
             <label for="shopNameInput" data-i18n="shopNameLbl">Nom de la marketplace</label>
             <input id="shopNameInput" type="text" data-i18n-ph="phShopName" placeholder="ex: Le Comptoir de Mayco" oninput="updateShopLivePreview()">
             <label data-i18n="shopDescLbl">Description de la boutique (optionnel)</label>
-            <textarea id="shopDescInput" data-i18n-ph="phShopDesc" placeholder="ex: Spécialiste minerais rares, livraison rapide sur Stanton." oninput="updateShopLivePreview()"></textarea>
+            <textarea id="shopDescInput" maxlength="200" data-i18n-ph="phShopDesc" placeholder="ex: Spécialiste minerais rares, livraison rapide sur Stanton." oninput="updateShopLivePreview()"></textarea>
+            <div class="muted" style="font-size:.72rem; margin:4px 0 10px;" data-i18n="shopDescMaxHint">200 caractères max, pour garder un bel alignement avec ta photo de boutique.</div>
           </div>
 
           <div class="card shop-edit-section">
@@ -2597,7 +2606,7 @@ const T = {
     tabResources:"DESIRED ITEMS", requestedResourcesTitle:"Objets recherchés par les vendeurs", noOpenResourceRequests:"Aucune annonce en cours.", resourceRequestedBy:"Demandé par ",
     proposeResourceBtn:"PROPOSER DE FOURNIR", resourceOfferMsgLbl:"Message au vendeur", phResourceOfferMsg:"ex: J'en ai 50 unités disponibles, je peux livrer sur Stanton.", resourceOfferPriceLbl:"Ton prix (aUEC, optionnel)", submitResourceOfferBtn:"ENVOYER LA PROPOSITION", resourceOfferSent:"PROPOSITION ENVOYÉE !",
     myResourceOffersTitle:"Mes propositions", noResourceOffers:"Tu n'as envoyé aucune proposition pour le moment.", resourceOfferLabel:"Objet recherché :",
-    shopDescLbl:"Description de la boutique (optionnel)", phShopDesc:"ex: Spécialiste minerais rares, livraison rapide sur Stanton.",
+    shopDescLbl:"Description de la boutique (optionnel)", phShopDesc:"ex: Spécialiste minerais rares, livraison rapide sur Stanton.", shopDescMaxHint:"200 caractères max, pour garder un bel alignement avec ta photo de boutique.",
     cropModalTitle:"Recadrer la photo", cropZoomLbl:"Zoom", cropDragHint:"Fais glisser l'image pour la repositionner.", cropConfirmBtn:"VALIDER LE RECADRAGE", photoReady:"Photo prête ✓",
     myListingsTitle:"Mes annonces", noListings:"Tu n'as encore aucune annonce.", deleteListingBtn:"SUPPRIMER", confirmDeleteListing:"Supprimer cette annonce définitivement ?",
     requestDeliveryBtn:"DEMANDER UNE LIVRAISON", requestDeliveryTitle:"Demander une livraison coursier", buyerHandleLbl:"Pseudo RSI de l'acheteur (optionnel)", phBuyerHandle:"ex: Mayco_SC", deliveryRequested:"LIVRAISON DEMANDÉE !", cancelRequest:"ANNULER", confirmDeliveryBtn:"CONFIRMER LA DEMANDE",
@@ -2747,7 +2756,7 @@ const T = {
     tabResources:"DESIRED ITEMS", requestedResourcesTitle:"Items sellers are looking for", noOpenResourceRequests:"No open desired item ads right now.", resourceRequestedBy:"Requested by ",
     proposeResourceBtn:"PROPOSE TO SUPPLY", resourceOfferMsgLbl:"Message to the seller", phResourceOfferMsg:"e.g. I have 50 units available, I can deliver to Stanton.", resourceOfferPriceLbl:"Your price (aUEC, optional)", submitResourceOfferBtn:"SEND PROPOSAL", resourceOfferSent:"PROPOSAL SENT!",
     myResourceOffersTitle:"My proposals", noResourceOffers:"You haven't sent any proposal yet.", resourceOfferLabel:"Desired item:",
-    shopDescLbl:"Shop description (optional)", phShopDesc:"e.g. Rare ore specialist, fast delivery on Stanton.",
+    shopDescLbl:"Shop description (optional)", phShopDesc:"e.g. Rare ore specialist, fast delivery on Stanton.", shopDescMaxHint:"200 characters max, to keep a clean alignment with your shop photo.",
     cropModalTitle:"Crop the photo", cropZoomLbl:"Zoom", cropDragHint:"Drag the image to reposition it.", cropConfirmBtn:"CONFIRM CROP", photoReady:"Photo ready ✓",
     myListingsTitle:"My listings", noListings:"You have no listings yet.", deleteListingBtn:"DELETE", confirmDeleteListing:"Permanently delete this listing?",
     requestDeliveryBtn:"REQUEST A DELIVERY", requestDeliveryTitle:"Request a courier delivery", buyerHandleLbl:"Buyer's RSI handle (optional)", phBuyerHandle:"e.g. Mayco_SC", deliveryRequested:"DELIVERY REQUESTED!", cancelRequest:"CANCEL", confirmDeliveryBtn:"CONFIRM REQUEST",

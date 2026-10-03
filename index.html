@@ -5279,7 +5279,7 @@ function disablePreviewCardInteractions(box){
 function updateListingLivePreview(){
   const box = $('listingLivePreview'); if(!box || !session) return;
   const itemName = $('listingItem').value.trim();
-  if(!itemName){ box.innerHTML = `<div class="mkt-live-preview-empty" data-i18n="livePreviewEmptyHint">Remplis le formulaire pour voir l'aperçu…</div>`; return; }
+  if(!itemName){ box.innerHTML = `<div class="mkt-live-preview-empty">${T[LANG].livePreviewEmptyHint}</div>`; return; }
   let photoUrl = null;
   if(pendingListingPhotoFile) photoUrl = URL.createObjectURL(pendingListingPhotoFile);
   else if(editingListingId){ const l = myListingsCache.find(x=>x.id===editingListingId); if(l) photoUrl = l.photo_url; }
@@ -5337,7 +5337,7 @@ function blueprintCardHtml(bp, sellerMap, isOwner){
 function updateBlueprintLivePreview(){
   const box = $('blueprintLivePreview'); if(!box || !session) return;
   const itemName = $('blueprintItem').value.trim();
-  if(!itemName){ box.innerHTML = `<div class="mkt-live-preview-empty" data-i18n="livePreviewEmptyHint">Remplis le formulaire pour voir l'aperçu…</div>`; return; }
+  if(!itemName){ box.innerHTML = `<div class="mkt-live-preview-empty">${T[LANG].livePreviewEmptyHint}</div>`; return; }
   let photoUrl = null;
   if(pendingBlueprintPhotoFile) photoUrl = URL.createObjectURL(pendingBlueprintPhotoFile);
   else if(editingBlueprintId){ const bp = myBlueprintsCache.find(x=>x.id===editingBlueprintId); if(bp) photoUrl = bp.photo_url; }

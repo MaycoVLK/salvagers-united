@@ -652,6 +652,45 @@
   .modal-card::-webkit-scrollbar{display:none;}
   .modal-close{position:absolute; top:10px; right:10px; width:30px; height:30px; padding:0; background:none; border:1px solid var(--border); border-radius:4px; color:var(--muted); font-size:1.3rem; line-height:1; cursor:pointer;}
   .modal-close:hover{color:var(--accent); border-color:var(--accent);}
+
+  /* --- ÉCRAN DE CHARGEMENT "BIOS" (voir runBootSequence) : joué au moment d'envoyer une annonce marketplace,
+     un blueprint, un desired item ou une commande. Même famille visuelle que .modal-overlay (fond assombri,
+     teinte accent) mais un panneau façon terminal/BIOS : log qui défile ligne par ligne, barre de progression
+     qui se remplit sur ~2s avec un compteur % synchronisé, puis message de confirmation final. */
+  .boot-overlay{position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:300; display:flex; align-items:center; justify-content:center; padding:16px;}
+  .boot-overlay[hidden]{display:none;}
+  .boot-panel{width:100%; max-width:460px; background:linear-gradient(165deg, var(--panel), var(--bg2)); border:1px solid var(--accent); border-radius:6px;
+    padding:20px 22px; position:relative; box-shadow:0 0 0 1px var(--border) inset, 0 0 40px -10px var(--accent-dim), 0 24px 50px -20px rgba(0,0,0,.7);
+    font-family:'VT323',monospace; animation:modalPixelIn .22s steps(6) both;}
+  .boot-panel::before,.boot-panel::after{content:""; position:absolute; width:14px; height:14px; border:2px solid var(--accent); opacity:.85;}
+  .boot-panel::before{top:-1px; left:-1px; border-right:none; border-bottom:none;}
+  .boot-panel::after{bottom:-1px; right:-1px; border-left:none; border-top:none;}
+  /* Léger voile de scanlines horizontales par-dessus tout le panneau, pour l'effet écran cathodique/BIOS. */
+  .boot-panel{background-image:repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0px, rgba(0,0,0,.16) 1px, transparent 1px, transparent 3px), linear-gradient(165deg, var(--panel), var(--bg2));}
+  .boot-panel-head{display:flex; align-items:center; gap:9px; font-size:1.15rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent); margin-bottom:14px; text-shadow:0 0 8px var(--accent-dim);}
+  .boot-dot{width:9px; height:9px; border-radius:50%; background:var(--accent); flex:none; box-shadow:0 0 8px var(--accent); animation:bootDotPulse 1s steps(2) infinite;}
+  @keyframes bootDotPulse{0%,49%{opacity:1;}50%,100%{opacity:.25;}}
+  .boot-log{min-height:108px; max-height:132px; overflow:hidden; font-size:.92rem; line-height:1.55; color:var(--muted); margin-bottom:14px;}
+  .boot-log-line{opacity:0; animation:bootLineIn .18s steps(4) forwards;}
+  .boot-log-line::before{content:"> "; color:var(--accent);}
+  .boot-log-line.done::after{content:" OK"; color:var(--accent); margin-left:4px;}
+  @keyframes bootLineIn{0%{opacity:0; transform:translateX(-4px);} 100%{opacity:1; transform:translateX(0);}}
+  .boot-progress-row{display:flex; align-items:center; gap:12px;}
+  .boot-progress-track{flex:1; height:22px; border:2px solid var(--accent); border-radius:2px; background:var(--bg2); position:relative; overflow:hidden; box-shadow:0 0 10px -2px var(--accent-dim) inset;}
+  .boot-progress-fill{height:100%; width:0%; background:repeating-linear-gradient(90deg, var(--accent) 0px, var(--accent) 7px, color-mix(in srgb, var(--accent) 65%, transparent) 7px, color-mix(in srgb, var(--accent) 65%, transparent) 10px);
+    box-shadow:0 0 14px var(--accent); position:relative;}
+  .boot-progress-pct{font-size:1.2rem; color:var(--accent); min-width:44px; text-align:right; text-shadow:0 0 6px var(--accent-dim);}
+  .boot-confirm{display:flex; align-items:center; gap:12px; margin-top:16px; padding-top:14px; border-top:1px solid var(--accent-dim);}
+  .boot-confirm-icon{width:30px; height:30px; flex:none; border-radius:50%; border:2px solid var(--accent); display:flex; align-items:center; justify-content:center; color:var(--accent); box-shadow:0 0 12px var(--accent-dim);}
+  .boot-confirm-icon svg{width:16px; height:16px;}
+  .boot-confirm-text{font-size:1.15rem; color:var(--accent); letter-spacing:.5px; text-shadow:0 0 8px var(--accent-dim);}
+  .boot-confirm.boot-confirm-error{border-top-color:#ff4d4f;}
+  .boot-confirm.boot-confirm-error .boot-confirm-icon{border-color:#ff4d4f; color:#ff4d4f; box-shadow:0 0 12px rgba(255,77,79,.5);}
+  .boot-confirm.boot-confirm-error .boot-confirm-text{color:#ff4d4f; text-shadow:0 0 8px rgba(255,77,79,.5);}
+  @media (max-width:480px){
+    .boot-panel{padding:16px 18px;}
+    .boot-log{min-height:96px; font-size:.85rem;}
+  }
   .modal-card h3{margin-top:0; padding-right:34px;}
   .modal-card label{display:block; margin:14px 0 6px; font-size:.8rem; color:var(--muted);}
   .modal-card textarea{width:100%; min-height:60px; padding:8px 10px; border-radius:2px; border:1px solid var(--border); background:var(--bg2); color:var(--text); font-family:inherit; font-size:.85rem; resize:none;}
@@ -2251,6 +2290,29 @@
 </div>
 <div class="toast" id="toast"></div>
 
+<!-- ÉCRAN DE CHARGEMENT "BIOS" (annonce marketplace/blueprint/desired item/commande) : joué au moment de
+     l'envoi, dans la DA pixel/terminal du site, avec un log qui défile et une barre de progression avant
+     le message de confirmation final (voir runBootSequence / bootOverlayStart / bootOverlayFinish). -->
+<div class="boot-overlay" id="bootOverlay" hidden aria-live="polite">
+  <div class="boot-panel">
+    <div class="boot-panel-head">
+      <span class="boot-dot"></span>
+      <span id="bootTitle">—</span>
+    </div>
+    <div class="boot-log" id="bootLogLines"></div>
+    <div class="boot-progress-row">
+      <div class="boot-progress-track">
+        <div class="boot-progress-fill" id="bootProgressFill"></div>
+      </div>
+      <div class="boot-progress-pct"><span id="bootProgressPct">0</span>%</div>
+    </div>
+    <div class="boot-confirm" id="bootConfirm" hidden>
+      <div class="boot-confirm-icon" id="bootConfirmIcon"></div>
+      <div class="boot-confirm-text" id="bootConfirmText"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 // Fix Safari/iOS : après le retour de la redirection OAuth Discord, Safari restaure parfois
 // la page depuis son cache mémoire (bfcache) au lieu de charger la page fraîchement redirigée
@@ -2586,6 +2648,11 @@ const T = {
     progressionReset:"Progression réinitialisée.",
     confirmResetMember:"Réinitialiser toute la progression de {name} ? Statistiques, rangs, succès débloqués et historique des livraisons/ventes seront effacés définitivement.",
     toastSent:"COMMANDE ENVOYÉE !", toastUpdated:"MIS À JOUR !",
+    bootTitle:"Traitement en cours", bootError:"ERREUR",
+    bootLinesListing:["Connexion au relais marché...", "Validation de l'annonce...", "Envoi des données au serveur...", "Publication du listing..."],
+    bootLinesBlueprint:["Connexion au catalogue de craft...", "Validation du blueprint...", "Envoi des données...", "Publication du blueprint..."],
+    bootLinesResource:["Connexion au réseau d'approvisionnement...", "Validation de la demande...", "Envoi de l'annonce...", "Publication de l'objet recherché..."],
+    bootLinesOrder:["Connexion au réseau de livraison...", "Calcul de l'itinéraire...", "Envoi de la commande...", "Notification des coursiers disponibles..."],
     navProfile:"PROFIL", profileTitle:"Profil", defaultLocTitle:"Lieu de livraison par défaut", saveDefaultLoc2:"ENREGISTRER",
     becomeCourierBtn:"DEMANDER À DEVENIR COURSIER", courierPending:"Ta candidature est en attente de validation par l'administrateur.",
     courierRejectedNote:"Ta précédente candidature n'a pas été retenue. Tu peux retenter ta chance.",
@@ -2737,6 +2804,11 @@ const T = {
     progressionReset:"Progression reset.",
     confirmResetMember:"Reset all progression for {name}? Stats, ranks, unlocked achievements and delivery/sales history will be permanently erased.",
     toastSent:"ORDER SENT!", toastUpdated:"UPDATED!",
+    bootTitle:"Processing request", bootError:"ERROR",
+    bootLinesListing:["Connecting to market relay...", "Validating listing...", "Sending data to server...", "Publishing listing..."],
+    bootLinesBlueprint:["Connecting to crafting catalog...", "Validating blueprint...", "Sending data...", "Publishing blueprint..."],
+    bootLinesResource:["Connecting to supply network...", "Validating request...", "Sending listing...", "Publishing desired item..."],
+    bootLinesOrder:["Connecting to delivery network...", "Calculating route...", "Sending order...", "Notifying available couriers..."],
     navProfile:"PROFILE", profileTitle:"Profile", defaultLocTitle:"Default delivery location", saveDefaultLoc2:"SAVE",
     becomeCourierBtn:"REQUEST TO BECOME A COURIER", courierPending:"Your application is pending admin review.",
     courierRejectedNote:"Your previous application wasn't accepted. You can try again.",
@@ -4187,13 +4259,14 @@ $('sendBtn').addEventListener('click', async ()=>{
     status: 'pending'
   };
   $('sendBtn').disabled = true;
+  bootOverlayStart(T[LANG].bootLinesOrder);
   const { data: newOrder, error } = await sb.from('orders').insert(payload).select().single();
   $('sendBtn').disabled = false;
-  if(error){ alert('Erreur : ' + error.message); return; }
+  if(error){ await bootOverlayFinish(T[LANG].bootError+': '+error.message, true); return; }
   notifyAllCouriers(newOrder && newOrder.id);
   sweep();
   pixelBurst($('sendBtn'));
-  const t=$('toast'); t.textContent=T[LANG].toastSent; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800);
+  await bootOverlayFinish(T[LANG].toastSent);
   $('items').innerHTML=''; itemCount=0; addItem(); calc(); resetDeadlinePicker();
   routeApp();
 });
@@ -5380,10 +5453,11 @@ async function createListing(){
   const is_stock = $('listingStockMode').checked;
   if(!item_name || price <= 0){ alert('Erreur : renseigne un objet et un prix valide.'); return; }
   const tags = listingTagsArray();
+  bootOverlayStart(d.bootLinesListing);
   if(editingListingId){
     const id = editingListingId;
     const { error } = await sb.from('marketplace_listings').update({ item_name, price, quantity, tags, is_stock }).eq('id', id);
-    if(error){ alert('Erreur : '+error.message); return; }
+    if(error){ await bootOverlayFinish(d.bootError+': '+error.message, true); return; }
     if(pendingListingPhotoFile){
       const ext = (pendingListingPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
       const path = `${session.user.id}/${id}.${ext}`;
@@ -5395,12 +5469,12 @@ async function createListing(){
     }
     editingListingId = null;
     resetListingForm();
-    toastShow(d.listingUpdated);
+    await bootOverlayFinish(d.listingUpdated);
     routeApp();
     return;
   }
   const { data, error } = await sb.from('marketplace_listings').insert({ seller_id: session.user.id, item_name, price, quantity, tags, is_stock }).select().single();
-  if(error){ alert('Erreur : '+error.message); return; }
+  if(error){ await bootOverlayFinish(d.bootError+': '+error.message, true); return; }
   if(pendingListingPhotoFile){
     const ext = (pendingListingPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
     const path = `${session.user.id}/${data.id}.${ext}`;
@@ -5412,7 +5486,7 @@ async function createListing(){
   }
   notifyAllUsersOfNewListing(data.id, session.user.id);
   resetListingForm();
-  toastShow(d.listingSaved);
+  await bootOverlayFinish(d.listingSaved);
   routeApp();
 }
 async function deleteListing(id){
@@ -5575,10 +5649,11 @@ async function createBlueprint(){
     return;
   }
   const payload = { item_name, description: description || null, materials, price_turnkey: price_turnkey || null, price_client_mats: price_client_mats || null };
+  bootOverlayStart(d.bootLinesBlueprint);
   if(editingBlueprintId){
     const id = editingBlueprintId;
     const { error } = await sb.from('blueprints').update(payload).eq('id', id);
-    if(error){ alert('Erreur : '+error.message); return; }
+    if(error){ await bootOverlayFinish(d.bootError+': '+error.message, true); return; }
     if(pendingBlueprintPhotoFile){
       const ext = (pendingBlueprintPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
       // Le dossier de 1er niveau doit rester l'id du vendeur (pas "blueprints/...") pour matcher la policy
@@ -5592,12 +5667,12 @@ async function createBlueprint(){
     }
     editingBlueprintId = null;
     resetBlueprintForm();
-    toastShow(d.blueprintUpdated);
+    await bootOverlayFinish(d.blueprintUpdated);
     routeApp();
     return;
   }
   const { data, error } = await sb.from('blueprints').insert({ seller_id: session.user.id, ...payload }).select().single();
-  if(error){ alert('Erreur : '+error.message); return; }
+  if(error){ await bootOverlayFinish(d.bootError+': '+error.message, true); return; }
   if(pendingBlueprintPhotoFile){
     const ext = (pendingBlueprintPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
     const path = `${session.user.id}/blueprints/${data.id}.${ext}`;
@@ -5608,7 +5683,7 @@ async function createBlueprint(){
     }
   }
   resetBlueprintForm();
-  toastShow(d.blueprintSaved);
+  await bootOverlayFinish(d.blueprintSaved);
   routeApp();
 }
 async function deleteBlueprint(id){
@@ -6264,11 +6339,12 @@ async function createResourceRequest(){
   const price = priceRaw ? (parseFloat(priceRaw) || null) : null;
   const note = $('resourceNote').value.trim();
   if(!item_name){ alert('Erreur : renseigne une ressource recherchée.'); return; }
+  bootOverlayStart(d.bootLinesResource);
   const { data, error } = await sb.from('resource_requests').insert({ seller_id: session.user.id, item_name, quantity, price, note: note || null, status: 'open' }).select().single();
-  if(error){ alert('Erreur : '+error.message); return; }
+  if(error){ await bootOverlayFinish(d.bootError+': '+error.message, true); return; }
   $('resourceName').value=''; $('resourceQty').value='1'; $('resourcePrice').value=''; $('resourceNote').value='';
-  toastShow(d.resourceRequestSaved);
   if(data) notifyAllUsersOfResourceRequest(data.id, session.user.id);
+  await bootOverlayFinish(d.resourceRequestSaved);
   routeApp();
 }
 let myResourceRequestsCache = [];
@@ -6703,6 +6779,85 @@ function toastShow(msg, danger){
   t.classList.toggle('danger', !!danger);
   t.classList.add('show');
   setTimeout(() => { t.classList.remove('show'); t.classList.remove('danger'); }, 2600);
+}
+
+// --- ÉCRAN DE CHARGEMENT "BIOS" (annonce marketplace/blueprint/desired item/commande) -----------------------
+// bootOverlayStart() ouvre l'écran et lance le log + la barre de progression ; bootOverlayFinish() est
+// appelée une fois qu'on connaît le résultat réel de l'envoi (succès ou erreur) — elle complète la barre à
+// 100%, affiche le message de confirmation adapté à l'action, PUIS referme. La durée totale visible est
+// toujours d'au moins BOOT_MIN_DURATION ms (2s par défaut), même si l'envoi réel a été quasi instantané :
+// bootOverlayFinish attend le temps restant avant de conclure, pour garder un effet de chargement cohérent
+// plutôt qu'un flash. Si l'envoi réel est anormalement lent, l'écran reste affiché jusqu'à son retour (pas
+// de timeout artificiel qui masquerait un vrai problème réseau).
+const BOOT_MIN_DURATION = 2000;
+let bootStartedAt = 0;
+let bootPercentRAF = null;
+const BOOT_ICON_OK = `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="12" y="2" width="2" height="2"/><rect x="10" y="4" width="2" height="2"/><rect x="8" y="6" width="2" height="2"/><rect x="6" y="8" width="2" height="2"/><rect x="4" y="10" width="2" height="2"/><rect x="2" y="8" width="2" height="2"/></g></svg>`;
+const BOOT_ICON_ERR = `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/><rect x="7" y="7" width="2" height="2"/><rect x="9" y="9" width="2" height="2"/><rect x="11" y="11" width="2" height="2"/><rect x="11" y="3" width="2" height="2"/><rect x="9" y="5" width="2" height="2"/><rect x="5" y="9" width="2" height="2"/><rect x="3" y="11" width="2" height="2"/></g></svg>`;
+function animateBootPercent(target, duration){
+  cancelAnimationFrame(bootPercentRAF);
+  const el = $('bootProgressPct');
+  const start = parseFloat(el.textContent) || 0;
+  const t0 = performance.now();
+  function step(t){
+    const p = Math.min(1, (t - t0) / duration);
+    el.textContent = Math.round(start + (target - start) * p);
+    if(p < 1) bootPercentRAF = requestAnimationFrame(step);
+  }
+  bootPercentRAF = requestAnimationFrame(step);
+}
+function bootOverlayStart(lines){
+  const d = T[LANG];
+  bootStartedAt = performance.now();
+  $('bootTitle').textContent = d.bootTitle;
+  const overlay = $('bootOverlay');
+  overlay.hidden = false;
+  const confirmBox = $('bootConfirm');
+  confirmBox.hidden = true;
+  confirmBox.classList.remove('boot-confirm-error');
+  const logBox = $('bootLogLines');
+  logBox.innerHTML = '';
+  const fill = $('bootProgressFill');
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+  $('bootProgressPct').textContent = '0';
+  void fill.offsetWidth; // force reflow avant d'activer la transition
+  const fillDuration = BOOT_MIN_DURATION - 150;
+  fill.style.transition = `width ${fillDuration}ms linear`;
+  requestAnimationFrame(() => { fill.style.width = '92%'; });
+  animateBootPercent(92, fillDuration);
+  const spacing = Math.max(260, Math.floor((BOOT_MIN_DURATION - 300) / Math.max(1, lines.length)));
+  (lines||[]).forEach((line, i) => {
+    setTimeout(() => {
+      if(overlay.hidden) return;
+      const row = document.createElement('div');
+      row.className = 'boot-log-line';
+      row.textContent = line;
+      logBox.appendChild(row);
+      // Marque la ligne précédente comme "OK" dès que la suivante apparaît, pour l'effet BIOS classique.
+      const prev = row.previousElementSibling;
+      if(prev) prev.classList.add('done');
+    }, 150 + i * spacing);
+  });
+}
+async function bootOverlayFinish(confirmText, isError){
+  const elapsed = performance.now() - bootStartedAt;
+  const remaining = Math.max(0, BOOT_MIN_DURATION - elapsed);
+  if(remaining > 0) await new Promise(r => setTimeout(r, remaining));
+  const lastLine = $('bootLogLines').lastElementChild;
+  if(lastLine && !isError) lastLine.classList.add('done');
+  const fill = $('bootProgressFill');
+  fill.style.transition = 'width 180ms ease-out';
+  fill.style.width = '100%';
+  animateBootPercent(100, 180);
+  await new Promise(r => setTimeout(r, 230));
+  const confirmBox = $('bootConfirm');
+  confirmBox.hidden = false;
+  confirmBox.classList.toggle('boot-confirm-error', !!isError);
+  $('bootConfirmIcon').innerHTML = isError ? BOOT_ICON_ERR : BOOT_ICON_OK;
+  $('bootConfirmText').textContent = confirmText;
+  await new Promise(r => setTimeout(r, 750));
+  $('bootOverlay').hidden = true;
 }
 
 // --- PROFIL / AVATAR / RÔLE ---

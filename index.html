@@ -6501,7 +6501,11 @@ async function renderMyDeliveries(orders){
   justAcceptedOrderId = null;
   // Pré-calcule l'itinéraire d'achat de TOUTES les commandes acceptées (pas seulement celle affichée en grand),
   // en tâche de fond, pour qu'un changement de commande principale soit instantané.
-  orders.filter(o => o.order_type !== 'marketplace' && o.status === 'accepted' && !purchaseRouteCache[o.id]).forEach(async o => {
+  // Élargi à accepted/purchased/in_transit (pas seulement "accepted") : certaines commandes changent de statut
+  // avant que ce calcul en tâche de fond ait eu le temps de tourner une première fois, ce qui laissait
+  // route_systems vide pour toujours une fois la commande livrée (et donc les achievements liés à un
+  // système jamais débloqués). Plusieurs passages possibles tant que la commande est encore active.
+  orders.filter(o => o.order_type !== 'marketplace' && ['accepted','purchased','in_transit'].includes(o.status) && !purchaseRouteCache[o.id]).forEach(async o => {
     try{
       const route = await buildPurchaseRoute(o);
       purchaseRouteCache[o.id] = { order: o, route };

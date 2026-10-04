@@ -775,28 +775,30 @@
   }
 
   /* --- PAGE DÉTAIL D'ANNONCE (marketplace / blueprint) : grande photo + infos, dans l'esprit d'une fiche
-     produit moderne (façon petites annonces 2026), adapté à la DA pixel/terminal du site — photo en
-     bandeau pleine largeur en haut, puis en dessous le titre à gauche et le bouton d'action aligné à
-     droite sur la même ligne, puis le reste des infos (prix, description, matériaux, vendeur, pub
-     livraison) empilé en pleine largeur. Sur mobile, le bouton d'action repasse sous le titre, pleine
-     largeur — la carte cliquée depuis le feed ouvre cette page. --- */
-  .listing-detail-layout{display:flex; flex-direction:column; gap:16px; max-width:900px;}
-  /* Encadré "boutique" autour de la photo : texture + couleur d'accent du vendeur (appliquées en JS via
+     produit moderne (façon petites annonces 2026), adapté à la DA pixel/terminal du site — un seul encadré
+     "boutique" (texture + couleur du vendeur) avec la photo collée à gauche (même ratio que les cards des
+     feeds, 4/3, object-fit:cover comme partout ailleurs sur le site) et à droite le titre + le bouton
+     d'action + le prix ; le reste (description, matériaux, vendeur, pub livraison) suit en dessous, en
+     pleine largeur. Toute la page est centrée (comme le reste du site) plutôt que collée à gauche. Sur
+     mobile, la photo repasse en pleine largeur au-dessus du reste. --- */
+  .listing-detail-layout{display:flex; flex-direction:column; gap:16px; max-width:900px; margin:0 auto;}
+  /* Encadré "boutique" : texture + couleur d'accent du vendeur (appliquées en JS via
      applyListingDetailShopTexture()), mêmes variables --accent/--accent-dim que la bannière de sa boutique. */
-  .listing-detail-photo-frame{width:100%; padding:14px; border:1px solid var(--border); border-radius:10px; box-shadow:0 0 0 1px var(--border) inset, 0 0 24px rgba(0,0,0,.45);}
-  .listing-detail-photo-wrap{width:100%; height:360px; background:var(--panel); border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;}
-  .listing-detail-photo-wrap img{max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain;}
-  .listing-detail-photo-wrap .mkt-photo-placeholder{width:18%; height:18%; color:var(--muted);}
+  .listing-detail-photo-frame{width:100%; display:flex; gap:20px; align-items:flex-start; padding:16px; border:1px solid var(--border); border-radius:10px; box-shadow:0 0 0 1px var(--border) inset, 0 0 24px rgba(0,0,0,.45);}
+  .listing-detail-photo-wrap{flex:0 0 320px; width:320px; aspect-ratio:4/3; background:var(--panel); border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;}
+  .listing-detail-photo-wrap img{width:100%; height:100%; object-fit:cover;}
+  .listing-detail-photo-wrap .mkt-photo-placeholder{width:30%; height:30%; color:var(--muted);}
   .listing-detail-tags{position:absolute; top:10px; left:10px; display:flex; flex-wrap:wrap; gap:4px;}
-  .listing-detail-header-row{display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;}
-  .listing-detail-titlewrap{flex:1 1 320px; min-width:240px;}
+  .listing-detail-frame-right{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:12px;}
+  .listing-detail-header-row{display:flex; align-items:flex-start; justify-content:space-between; gap:20px; flex-wrap:wrap;}
+  .listing-detail-titlewrap{flex:1 1 220px; min-width:180px;}
   .listing-detail-action{flex:0 0 auto;}
   .listing-detail-action .mkt-interest-btn{min-height:52px; font-size:.9rem; padding:0 28px; margin:0;}
   .listing-detail-info{display:flex; flex-direction:column; gap:4px;}
   .listing-detail-info .card{margin-bottom:12px; padding:16px 18px;}
   .listing-detail-eyebrow{font-size:.7rem; color:var(--accent); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:2px;}
   .listing-detail-title{font-size:1.7rem; color:var(--text); line-height:1.2; margin:0;}
-  .listing-detail-price-card{display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; padding:14px 18px;}
+  .listing-detail-frame-right .listing-detail-price-card{display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; padding:14px 18px; margin:0;}
   .listing-detail-price-card .mkt-price-row{width:100%; margin:0;}
   .listing-detail-price-card .mkt-price{font-size:1.9rem; text-shadow:0 0 14px var(--accent-dim);}
   .listing-detail-price-card .mkt-qty{font-size:.9rem;}
@@ -809,8 +811,8 @@
   .listing-detail-info .courier-box{width:100%; max-width:none; flex:none; margin-bottom:12px;}
   .listing-detail-info .courier-ad{margin-bottom:12px;}
   @media (max-width:760px){
-    .listing-detail-photo-frame{padding:10px;}
-    .listing-detail-photo-wrap{height:240px;}
+    .listing-detail-photo-frame{flex-direction:column; padding:10px;}
+    .listing-detail-photo-wrap{width:100%; flex-basis:auto;}
     .listing-detail-header-row{flex-direction:column; align-items:stretch; gap:12px;}
     .listing-detail-action{width:100%;}
     .listing-detail-action .mkt-interest-btn{width:100%;}
@@ -2334,25 +2336,27 @@
     <section id="view-listing-detail" hidden>
       <button class="back" onclick="closeListingDetail()" data-i18n="back">&lt; RETOUR</button>
       <div class="listing-detail-layout">
-        <!-- Encadré pleine largeur aux couleurs/texture de la boutique du vendeur (mêmes réglages que sa
-             page boutique, voir applyListingDetailShopTexture()) : la photo garde son format d'origine à
-             l'intérieur (object-fit:contain), pas de recadrage/zoom qui dégraderait la qualité. -->
+        <!-- Encadré aux couleurs/texture de la boutique du vendeur (mêmes réglages que sa page boutique,
+             voir applyListingDetailShopTexture()) : photo collée à gauche, même ratio que les cards des
+             feeds (4/3, object-fit:cover) ; à droite le titre, le bouton d'action et le prix. -->
         <div class="listing-detail-photo-frame shop-texture-host" id="listingDetailPhotoFrame">
           <div class="shop-texture-layer"></div>
           <div class="listing-detail-photo-wrap">
             <div id="listingDetailTags" class="listing-detail-tags"></div>
             <div id="listingDetailPhoto"></div>
           </div>
-        </div>
-        <div class="listing-detail-header-row">
-          <div class="listing-detail-titlewrap">
-            <div class="listing-detail-eyebrow" id="listingDetailEyebrow"></div>
-            <h1 class="listing-detail-title" id="listingDetailTitle"></h1>
+          <div class="listing-detail-frame-right">
+            <div class="listing-detail-header-row">
+              <div class="listing-detail-titlewrap">
+                <div class="listing-detail-eyebrow" id="listingDetailEyebrow"></div>
+                <h1 class="listing-detail-title" id="listingDetailTitle"></h1>
+              </div>
+              <div class="listing-detail-action" id="listingDetailActionWrap"></div>
+            </div>
+            <div class="card listing-detail-price-card" id="listingDetailPriceRow"></div>
           </div>
-          <div class="listing-detail-action" id="listingDetailActionWrap"></div>
         </div>
         <div class="listing-detail-info">
-          <div class="card listing-detail-price-card" id="listingDetailPriceRow"></div>
           <div class="card" id="listingDetailMaterialsWrap" hidden>
             <div class="listing-detail-section-lbl" data-i18n="bpMaterialsLbl">Ressources nécessaires</div>
             <div class="listing-detail-materials" id="listingDetailMaterials"></div>

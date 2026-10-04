@@ -4017,11 +4017,20 @@ function placeKeyFor(row){
 function placeLabelFor(row){
   return row.city_name || row.outpost_name || row.space_station_name || row.moon_name || row.planet_name || row.orbit_name || row.star_system_name || '?';
 }
-// Construit un itinéraire d'achat optimisé : regroupe un maximum d'objets par lieu (algorithme glouton de couverture maximale),
-// puis ordonne les étapes par système, et termine toujours par le lieu de livraison.
+// Construit un itinéraire d'achat optimisé pour un coursier, en minimisant les trajets : on privilégie
+// toujours un achat au plus près du lieu de livraison plutôt que le prix le plus bas tout seul.
+// Priorité stricte, objet par objet : 1) même station/ville/avant-poste que la livraison (zéro trajet en
+// plus), 2) même système que la livraison (pas de saut inter-système), 3) ailleurs, seulement si l'objet
+// n'est disponible nulle part dans le système de livraison. Au sein d'un même niveau de priorité, on garde
+// l'algorithme glouton de couverture maximale (regrouper un max d'objets par lieu, le moins cher en cas
+// d'égalité). L'itinéraire final part des détours inter-système (s'il y en a), termine par les achats du
+// système de livraison, puis le lieu de livraison lui-même — pour ne plus jamais quitter ce système une
+// fois qu'on y est arrivé.
 async function buildPurchaseRoute(order){
   await loadUexCatalog();
   const items = order.items || [];
+  const destSystem = String(order.destination_system||'').trim().toLowerCase();
+  const destPlace = String(order.exact_location||'').trim().toLowerCase();
   const pool = []; // { name, qty, candidates: [rows] }
   const unresolved = [];
   for(const it of items){
@@ -4031,41 +4040,68 @@ async function buildPurchaseRoute(order){
     if(!rows.length){ unresolved.push(it.name); continue; }
     pool.push({ name: it.name, qty: it.qty, candidates: rows });
   }
-  const remaining = new Set(pool.map((_,idx) => idx));
-  const stops = [];
-  while(remaining.size){
-    // Pour chaque lieu candidat encore possible, compte combien d'objets restants il peut couvrir.
-    const coverage = new Map(); // placeKey -> { count, price, label, systemName, items: [{idx,row}] }
-    remaining.forEach(idx => {
-      const p = pool[idx];
-      const seenKeys = new Set();
-      p.candidates.forEach(row => {
-        const key = placeKeyFor(row);
-        if(seenKeys.has(key)) return; // ne compter qu'une fois par objet et par lieu (garder le moins cher déjà trié)
-        seenKeys.add(key);
-        if(!coverage.has(key)) coverage.set(key, { count:0, price:0, label: placeLabelFor(row), systemName: row.star_system_name || '', items: [] });
-        const c = coverage.get(key);
-        c.count += 1;
-        c.price += row.price_buy;
-        c.items.push({ idx, row });
-      });
-    });
-    if(!coverage.size) break;
-    // Choisit le lieu qui couvre le plus d'objets restants ; en cas d'égalité, le moins cher au total.
-    let bestKey = null, best = null;
-    coverage.forEach((c, key) => {
-      if(!best || c.count > best.count || (c.count === best.count && c.price < best.price)){ best = c; bestKey = key; }
-    });
-    best.items.forEach(({idx}) => remaining.delete(idx));
-    stops.push({
-      place: best.label,
-      system: best.systemName,
-      items: best.items.map(({idx, row}) => ({ name: pool[idx].name, qty: pool[idx].qty, price: row.price_buy, terminal: row.terminal_name || '' }))
-    });
+  // Niveau de proximité d'une ligne de prix UEX par rapport au lieu de livraison : 0 = exactement la même
+  // station/ville/avant-poste, 1 = même système (autre lieu), 2 = autre système.
+  function proximityTier(row){
+    const label = placeLabelFor(row).trim().toLowerCase();
+    const sys = String(row.star_system_name||'').trim().toLowerCase();
+    if(destPlace && label === destPlace) return 0;
+    if(destSystem && sys === destSystem) return 1;
+    return 2;
   }
-  // Regroupe les étapes consécutives appartenant au même système (ordre logique simple, sans distances réelles).
+  // Glouton de couverture maximale (inchangé dans son principe), mais restreint aux lignes qui passent
+  // filterFn — ce qui permet d'épuiser d'abord les options "proches de la livraison" avant d'envisager
+  // un saut inter-système.
+  function greedyCover(indices, filterFn){
+    const remaining = new Set(indices);
+    const stops = [];
+    while(remaining.size){
+      const coverage = new Map(); // placeKey -> { count, price, label, systemName, items: [{idx,row}] }
+      remaining.forEach(idx => {
+        const p = pool[idx];
+        const seenKeys = new Set();
+        p.candidates.forEach(row => {
+          if(filterFn && !filterFn(row)) return;
+          const key = placeKeyFor(row);
+          if(seenKeys.has(key)) return; // ne compter qu'une fois par objet et par lieu (garder le moins cher déjà trié)
+          seenKeys.add(key);
+          if(!coverage.has(key)) coverage.set(key, { count:0, price:0, label: placeLabelFor(row), systemName: row.star_system_name || '', items: [] });
+          const c = coverage.get(key);
+          c.count += 1;
+          c.price += row.price_buy;
+          c.items.push({ idx, row });
+        });
+      });
+      if(!coverage.size) break;
+      // Choisit le lieu qui couvre le plus d'objets restants ; en cas d'égalité, le moins cher au total.
+      let bestKey = null, best = null;
+      coverage.forEach((c, key) => {
+        if(!best || c.count > best.count || (c.count === best.count && c.price < best.price)){ best = c; bestKey = key; }
+      });
+      best.items.forEach(({idx}) => remaining.delete(idx));
+      stops.push({
+        place: best.label,
+        system: best.systemName,
+        items: best.items.map(({idx, row}) => ({ name: pool[idx].name, qty: pool[idx].qty, price: row.price_buy, terminal: row.terminal_name || '' }))
+      });
+    }
+    return { stops, remaining };
+  }
+  let remainingIdx = new Set(pool.map((_,idx) => idx));
+  // Phase 1 : tout ce qui s'achète exactement au lieu de livraison (niveau 0) — aucun trajet en plus.
+  const phase1 = destPlace ? greedyCover(remainingIdx, row => proximityTier(row) === 0) : { stops: [], remaining: remainingIdx };
+  remainingIdx = phase1.remaining;
+  // Phase 2 : le reste, mais seulement si trouvable quelque part dans le système de livraison (niveau ≤1).
+  const phase2 = destSystem ? greedyCover(remainingIdx, row => proximityTier(row) <= 1) : { stops: [], remaining: remainingIdx };
+  remainingIdx = phase2.remaining;
+  // Phase 3 : ce qui reste, où que ce soit — seulement si vraiment introuvable dans le système de livraison.
+  const phase3 = greedyCover(remainingIdx, null);
+  // Ordre final : détours inter-système d'abord, puis le système de livraison, puis le lieu de livraison —
+  // pour ne plus jamais ressortir du système de livraison une fois qu'on y est entré.
+  const ordered = [...phase3.stops, ...phase2.stops, ...phase1.stops];
+  // Regroupe les étapes consécutives appartenant au même système (au cas où l'ordre ci-dessus en laisse d'adjacentes).
   const bySystem = [];
-  stops.forEach(s => {
+  ordered.forEach(s => {
     const last = bySystem[bySystem.length-1];
     if(last && last.length && last[0].system === s.system) last.push(s);
     else bySystem.push([s]);

@@ -775,35 +775,39 @@
   }
 
   /* --- PAGE DÉTAIL D'ANNONCE (marketplace / blueprint) : grande photo + infos, dans l'esprit d'une fiche
-     produit façon petites annonces (leboncoin & co), adapté à la DA pixel/terminal du site. Deux colonnes
-     sur grand écran, empilé (photo d'abord) sur mobile — la carte cliquée depuis le feed ouvre cette page. --- */
-  .listing-detail-layout{display:flex; gap:22px; align-items:flex-start; flex-wrap:wrap; max-width:1000px;}
-  .listing-detail-photo-wrap{flex:1 1 380px; min-width:280px; max-width:460px; aspect-ratio:4/3; background:var(--panel); border:1px solid var(--border); border-radius:6px; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;}
+     produit moderne (façon petites annonces 2026), adapté à la DA pixel/terminal du site — photo encadrée
+     avec glow discret, prix mis en évidence dans sa propre carte, sections regroupées en cards (même
+     composant que le reste du site) plutôt qu'un simple empilement de texte. Deux colonnes sur grand écran,
+     empilé (photo d'abord) sur mobile — la carte cliquée depuis le feed ouvre cette page. --- */
+  .listing-detail-layout{display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap; max-width:1040px;}
+  .listing-detail-photo-wrap{flex:1 1 380px; min-width:280px; max-width:460px; aspect-ratio:4/3; background:var(--panel); border:1px solid var(--border); border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; box-shadow:0 0 0 1px var(--border) inset, 0 0 24px rgba(0,0,0,.45);}
   .listing-detail-photo-wrap img{width:100%; height:100%; object-fit:cover;}
   .listing-detail-photo-wrap .mkt-photo-placeholder{width:30%; height:30%; color:var(--muted);}
   .listing-detail-tags{position:absolute; top:10px; left:10px; display:flex; flex-wrap:wrap; gap:4px;}
-  .listing-detail-info{flex:1 1 360px; min-width:280px; display:flex; flex-direction:column; gap:10px;}
-  .listing-detail-title{font-size:1.6rem; color:var(--text); line-height:1.2; margin:0;}
-  .listing-detail-info .mkt-price-row{font-size:1.05rem;}
-  .listing-detail-info .mkt-price{font-size:1.5rem;}
-  .listing-detail-section-lbl{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:4px 0 2px;}
+  .listing-detail-info{flex:1 1 360px; min-width:280px; display:flex; flex-direction:column; gap:4px;}
+  .listing-detail-info .card{margin-bottom:12px; padding:16px 18px;}
+  .listing-detail-eyebrow{font-size:.7rem; color:var(--accent); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:2px;}
+  .listing-detail-title{font-size:1.7rem; color:var(--text); line-height:1.2; margin:0 0 10px;}
+  .listing-detail-price-card{display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; padding:14px 18px;}
+  .listing-detail-price-card .mkt-price-row{width:100%; margin:0;}
+  .listing-detail-price-card .mkt-price{font-size:1.9rem; text-shadow:0 0 14px var(--accent-dim);}
+  .listing-detail-price-card .mkt-qty{font-size:.9rem;}
+  .listing-detail-price-card .bp-price-rows{width:100%;}
+  .listing-detail-price-card .bp-price-rows .mkt-price{font-size:1.4rem; text-shadow:0 0 14px var(--accent-dim);}
+  .listing-detail-section-lbl{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:0 0 6px;}
   .listing-detail-description{font-size:.88rem; color:var(--text); line-height:1.5; white-space:pre-wrap; word-break:break-word;}
   .listing-detail-description.muted{font-style:italic;}
   .listing-detail-materials{font-size:.85rem; color:var(--text); line-height:1.45; white-space:pre-wrap; word-break:break-word;}
-  .listing-detail-info .courier-box{width:100%; max-width:none; flex:none;}
-  .listing-detail-info .mkt-interest-btn{min-height:50px; font-size:.9rem;}
-  /* Encart pub "livraison par coursier" (marketplace uniquement) : prix dynamique recalculé selon le prix
-     de l'annonce, même barème que les commandes classiques (computeCommission), pour rester cohérent. */
-  .courier-delivery-ad{border:1px dashed var(--accent); border-radius:6px; padding:12px 14px; background:var(--accent-dim); display:flex; flex-direction:column; gap:6px;}
-  .courier-delivery-ad-title{font-family:'VT323',monospace; font-size:1.05rem; color:var(--accent); display:flex; align-items:center; gap:7px;}
-  .courier-delivery-ad-title .icon{width:16px; height:16px; flex:none;}
-  .courier-delivery-ad-text{font-size:.78rem; color:var(--text); line-height:1.4;}
-  .courier-delivery-ad-price{font-family:'VT323',monospace; font-size:1.2rem; color:var(--accent);}
-  .courier-delivery-ad-price span{font-size:.7rem; color:var(--muted); font-family:inherit; margin-left:4px;}
+  .listing-detail-info .courier-box{width:100%; max-width:none; flex:none; margin-bottom:12px;}
+  .listing-detail-info .mkt-interest-btn{min-height:52px; font-size:.9rem; margin-bottom:12px;}
+  /* Pubs "devenir coursier/vendeur" reprises telles quelles (.courier-ad) : discrètes, pas de nouveau
+     style criard dédié à cette page — voir renderCourierAd()/renderSellerAd(). */
+  .listing-detail-info .courier-ad{margin-bottom:12px;}
   @media (max-width:760px){
-    .listing-detail-layout{flex-direction:column; gap:14px;}
+    .listing-detail-layout{flex-direction:column; gap:16px;}
     .listing-detail-photo-wrap{max-width:none; width:100%;}
-    .listing-detail-title{font-size:1.3rem;}
+    .listing-detail-title{font-size:1.35rem;}
+    .listing-detail-price-card .mkt-price{font-size:1.5rem;}
   }
 
   /* Zone de dépôt du logo : avant, un simple bouton texte "CHOOSE A LOGO" peu engageant. */
@@ -2319,27 +2323,24 @@
           <div id="listingDetailPhoto"></div>
         </div>
         <div class="listing-detail-info">
+          <div class="listing-detail-eyebrow" id="listingDetailEyebrow"></div>
           <h1 class="listing-detail-title" id="listingDetailTitle"></h1>
-          <div id="listingDetailPriceRow"></div>
-          <div id="listingDetailMaterialsWrap" hidden>
+          <div class="card listing-detail-price-card" id="listingDetailPriceRow"></div>
+          <div class="card" id="listingDetailMaterialsWrap" hidden>
             <div class="listing-detail-section-lbl" data-i18n="bpMaterialsLbl">Ressources nécessaires</div>
             <div class="listing-detail-materials" id="listingDetailMaterials"></div>
           </div>
-          <div>
+          <div class="card">
             <div class="listing-detail-section-lbl" data-i18n="detailDescriptionLbl">Description</div>
             <div class="listing-detail-description" id="listingDetailDescription"></div>
           </div>
           <div id="listingDetailSellerBox"></div>
           <div id="listingDetailActionWrap"></div>
-          <div id="listingDetailCourierAd" class="courier-delivery-ad" hidden>
-            <div class="courier-delivery-ad-title">
-              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="5" width="12" height="2"/><rect x="3" y="7" width="10" height="6"/><rect x="7" y="7" width="2" height="6"/></g></svg>
-              <span data-i18n="courierAdTitle">Besoin d'un coursier ?</span>
-            </div>
-            <div class="courier-delivery-ad-text" data-i18n="courierAdText">Fais-toi livrer cet objet où tu veux dans Stanton, Nyx ou Pyro par un de nos coursiers.</div>
-            <div class="courier-delivery-ad-price"><span id="courierAdPriceVal">—</span><span data-i18n="courierAdPriceNote"> estimé selon le prix de l'objet</span></div>
-            <button type="button" class="btn-secondary" style="width:100%;" onclick="openCreateOrder()" data-i18n="courierAdCta">PASSER UNE COMMANDE</button>
-          </div>
+          <!-- Pubs "devenir coursier/vendeur" : exactement les mêmes encarts (discrets) que sur le dashboard
+               client, remplies par les mêmes fonctions renderCourierAd()/renderSellerAd() — pas un nouvel
+               encart "criard" dédié à cette page. -->
+          <div class="card courier-ad" id="listingDetailCourierAd" hidden></div>
+          <div class="card courier-ad" id="listingDetailSellerAd" hidden></div>
         </div>
       </div>
     </section>
@@ -2835,7 +2836,7 @@ const T = {
     sellerRankLabels:{novice:"Novice", trader:"Négociant", merchant:"Marchand", tycoon:"Magnat"}, rankSales:"ventes",
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
     newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingDescriptionLbl:"Description détaillée (optionnel)", phListingDescription:"ex: État, provenance, détails utiles à l'acheteur...", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
-    detailDescriptionLbl:"Description", detailNoDescription:"Aucune description fournie pour cette annonce.", courierAdTitle:"Besoin d'un coursier ?", courierAdText:"Fais-toi livrer cet objet où tu veux dans Stanton, Nyx ou Pyro par un de nos coursiers.", courierAdPriceNote:" estimé selon le prix de l'objet", courierAdCta:"PASSER UNE COMMANDE",
+    detailDescriptionLbl:"Description", detailNoDescription:"Aucune description fournie pour cette annonce.", detailEyebrowMarketplace:"ANNONCE MARKETPLACE", detailEyebrowBlueprint:"BLUEPRINT",
     livePreviewTitle:"Aperçu pour les clients", livePreviewBadge:"Aperçu", livePreviewEmptyHint:"Remplis le formulaire pour voir l'aperçu…",
     tabBlueprints:"BLUEPRINTS", blueprintsCatalogTitle:"Catalogue de blueprints", blueprintsCatalogSub:"Des objets craftés sur commande par les vendeurs qui possèdent le blueprint correspondant.", blueprintsEmpty:"Aucun blueprint publié pour le moment.",
     newBlueprintTitle:"Ajouter un blueprint", editBlueprintTitle:"Modifier le blueprint", bpItemLbl:"Objet craftable", phBpItem:"ex: Casque d'armure lourde", bpDescriptionLbl:"Description (optionnel)", phBpDescription:"ex: Finition mate, craft sur mesure selon tes specs...", bpMaterialsLbl:"Ressources nécessaires", phBpMaterials:"ex: 50 Laranite, 20 Titanium, 1h de craft", bpPriceTurnkeyLbl:"Prix clé en main (aUEC)", bpPriceClientMatsLbl:"Prix si tu fournis les ressources (aUEC)", bpPriceHint:"Renseigne au moins un des deux prix. Laisse l'autre vide si tu ne proposes pas cette option.", bpPhotoLbl:"Photo (optionnel)", addBlueprintBtn:"AJOUTER AU CATALOGUE", saveBlueprintBtn:"ENREGISTRER LES MODIFICATIONS", blueprintSaved:"BLUEPRINT AJOUTÉ !", blueprintUpdated:"BLUEPRINT MIS À JOUR !", confirmDeleteBlueprint:"Supprimer ce blueprint du catalogue ?",
@@ -2993,7 +2994,7 @@ const T = {
     sellerRankLabels:{novice:"Novice", trader:"Trader", merchant:"Merchant", tycoon:"Tycoon"}, rankSales:"sales",
     rankToNextSales:"{n} more sale(s) to reach {rank}",
     newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingDescriptionLbl:"Detailed description (optional)", phListingDescription:"e.g. Condition, origin, useful details for the buyer...", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
-    detailDescriptionLbl:"Description", detailNoDescription:"No description provided for this listing.", courierAdTitle:"Need a courier?", courierAdText:"Get this item delivered anywhere in Stanton, Nyx or Pyro by one of our couriers.", courierAdPriceNote:" estimated based on the item's price", courierAdCta:"PLACE AN ORDER",
+    detailDescriptionLbl:"Description", detailNoDescription:"No description provided for this listing.", detailEyebrowMarketplace:"MARKETPLACE LISTING", detailEyebrowBlueprint:"BLUEPRINT",
     livePreviewTitle:"Preview for clients", livePreviewBadge:"Preview", livePreviewEmptyHint:"Fill in the form to see the preview…",
     tabBlueprints:"BLUEPRINTS", blueprintsCatalogTitle:"Blueprints catalog", blueprintsCatalogSub:"Items crafted to order by sellers who own the matching blueprint.", blueprintsEmpty:"No blueprints published yet.",
     newBlueprintTitle:"Add a blueprint", editBlueprintTitle:"Edit blueprint", bpItemLbl:"Craftable item", phBpItem:"e.g. Heavy armor helmet", bpDescriptionLbl:"Description (optional)", phBpDescription:"e.g. Matte finish, custom craft to your specs...", bpMaterialsLbl:"Required materials", phBpMaterials:"e.g. 50 Laranite, 20 Titanium, 1h craft time", bpPriceTurnkeyLbl:"Ready-made price (aUEC)", bpPriceClientMatsLbl:"Price if you supply the materials (aUEC)", bpPriceHint:"Fill in at least one of the two prices. Leave the other blank if you don't offer that option.", bpPhotoLbl:"Photo (optional)", addBlueprintBtn:"ADD TO CATALOG", saveBlueprintBtn:"SAVE CHANGES", blueprintSaved:"BLUEPRINT ADDED!", blueprintUpdated:"BLUEPRINT UPDATED!", confirmDeleteBlueprint:"Remove this blueprint from the catalog?",
@@ -5801,6 +5802,12 @@ function openListingDetail(id){
   else renderListingDetailView(entry);
 }
 function closeListingDetail(){ routeApp(); }
+// Affiche les deux pubs "devenir coursier/vendeur" (discrètes, communes à tout le site) en bas de la page
+// détail — mêmes fonctions que celles utilisées sur le dashboard client, juste ciblées sur ces encarts-ci.
+function renderListingDetailAds(){
+  renderCourierAd('listingDetailCourierAd');
+  renderSellerAd('listingDetailSellerAd');
+}
 function renderListingDetailView(entry){
   const d = T[LANG];
   const l = entry.data;
@@ -5808,6 +5815,7 @@ function renderListingDetailView(entry){
   $('createOrderBtn').hidden = true;
   $('sellerCreateWrap').hidden = true;
   $('view-listing-detail').hidden = false;
+  $('listingDetailEyebrow').textContent = d.detailEyebrowMarketplace;
   $('listingDetailPhoto').innerHTML = l.photo_url ? `<img src="${l.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
   $('listingDetailTags').innerHTML = listingTagsHtml(l.tags);
   $('listingDetailTitle').textContent = l.item_name;
@@ -5818,25 +5826,17 @@ function renderListingDetailView(entry){
   else { descEl.textContent = d.detailNoDescription; descEl.classList.add('muted'); }
   $('listingDetailSellerBox').innerHTML = sellerBoxHtml(l.seller_id, entry.seller);
   $('listingDetailActionWrap').innerHTML = mktInterestBtnHtml(l, false);
-  // Encart pub "livraison par coursier" : prix dynamique recalculé selon le prix de CETTE annonce, avec le
-  // même barème que les commandes classiques (computeCommission) — cohérent avec ce qu'un client paierait
-  // réellement en passant commande pour se faire livrer cet objet.
-  const adBox = $('listingDetailCourierAd');
-  if(adBox){
-    adBox.hidden = false;
-    const estimate = computeCommission(parseFloat(l.price) || 0);
-    $('courierAdPriceVal').textContent = fmt(estimate);
-  }
+  renderListingDetailAds();
   window.scrollTo(0,0);
 }
 function renderBlueprintDetailView(entry){
   const d = T[LANG];
   const bp = entry.data;
-  const isOwner = !!entry.isOwner;
   hideAllViews();
   $('createOrderBtn').hidden = true;
   $('sellerCreateWrap').hidden = true;
   $('view-listing-detail').hidden = false;
+  $('listingDetailEyebrow').textContent = d.detailEyebrowBlueprint;
   $('listingDetailPhoto').innerHTML = bp.photo_url ? `<img src="${bp.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
   $('listingDetailTags').innerHTML = '';
   $('listingDetailTitle').textContent = bp.item_name;
@@ -5848,12 +5848,13 @@ function renderBlueprintDetailView(entry){
   if(bp.description){ descEl.textContent = bp.description; descEl.classList.remove('muted'); }
   else { descEl.textContent = d.detailNoDescription; descEl.classList.add('muted'); }
   $('listingDetailSellerBox').innerHTML = sellerBoxHtml(bp.seller_id, entry.seller);
-  const canOrder = !isOwner && session && session.user.id !== bp.seller_id;
+  // On ignore le drapeau isOwner mis en cache par la carte qui a rempli l'index (il reflète la vue d'où
+  // venait le dernier rendu de CE blueprint, pas forcément la session actuelle) : on recalcule directement
+  // depuis la session, comme le fait déjà mktInterestBtnHtml côté marketplace — c'est ce qui manquait pour
+  // que le bouton "JE SUIS INTÉRESSÉ(E)" apparaisse de façon fiable sur cette page.
+  const canOrder = !!(session && session.user.id !== bp.seller_id);
   $('listingDetailActionWrap').innerHTML = blueprintContactBtnHtml(bp, canOrder, false);
-  // Pas d'encart livraison coursier pour les blueprints : l'objet n'existe pas tant qu'il n'est pas crafté,
-  // la livraison se négocie directement avec le vendeur une fois le craft terminé.
-  const adBox = $('listingDetailCourierAd');
-  if(adBox) adBox.hidden = true;
+  renderListingDetailAds();
   window.scrollTo(0,0);
 }
 
@@ -7841,8 +7842,8 @@ async function requestCourier(){
   sweep();
 }
 // --- PUB "DEVENIR COURSIER" (bannière sur le dashboard client) ---
-function renderCourierAd(){
-  const box = $('courierAdCard'); if(!box || !profile) return;
+function renderCourierAd(boxId){
+  const box = $(boxId || 'courierAdCard'); if(!box || !profile) return;
   if(profile.role === 'admin' || profile.is_courier){ box.hidden = true; return; }
   const d = T[LANG];
   box.hidden = false;
@@ -7867,8 +7868,8 @@ function renderCourierAd(){
   }
 }
 // --- PUB "OUVRIR UNE BOUTIQUE" (bannière sur le dashboard client, miroir de la pub coursier) ---
-function renderSellerAd(){
-  const box = $('sellerAdCard'); if(!box || !profile) return;
+function renderSellerAd(boxId){
+  const box = $(boxId || 'sellerAdCard'); if(!box || !profile) return;
   if(profile.role === 'admin' || profile.is_seller){ box.hidden = true; return; }
   const d = T[LANG];
   box.hidden = false;

@@ -2666,7 +2666,8 @@ const T = {
     bootLinesListing:["Connexion au relais marché...", "Validation de l'annonce...", "Envoi des données au serveur...", "Publication du listing..."],
     bootLinesBlueprint:["Connexion au catalogue de craft...", "Validation du blueprint...", "Envoi des données...", "Publication du blueprint..."],
     bootLinesResource:["Connexion au réseau d'approvisionnement...", "Validation de la demande...", "Envoi de l'annonce...", "Publication de l'objet recherché..."],
-    bootLinesOrder:["Connexion au réseau de livraison...", "Calcul de l'itinéraire...", "Envoi de la commande...", "Notification des coursiers disponibles..."],
+    bootLinesOrder:["Connexion au réseau de livraison...", "Vérification de la disponibilité en boutique...", "Calcul de l'itinéraire...", "Envoi de la commande...", "Notification des coursiers disponibles..."],
+    orderUnbuyableError:"Commande impossible : introuvable en boutique en jeu, donc non livrable —",
     navProfile:"PROFIL", profileTitle:"Profil", defaultLocTitle:"Lieu de livraison par défaut", saveDefaultLoc2:"ENREGISTRER",
     becomeCourierBtn:"DEMANDER À DEVENIR COURSIER", courierPending:"Ta candidature est en attente de validation par l'administrateur.",
     courierRejectedNote:"Ta précédente candidature n'a pas été retenue. Tu peux retenter ta chance.",
@@ -2822,7 +2823,8 @@ const T = {
     bootLinesListing:["Connecting to market relay...", "Validating listing...", "Sending data to server...", "Publishing listing..."],
     bootLinesBlueprint:["Connecting to crafting catalog...", "Validating blueprint...", "Sending data...", "Publishing blueprint..."],
     bootLinesResource:["Connecting to supply network...", "Validating request...", "Sending listing...", "Publishing desired item..."],
-    bootLinesOrder:["Connecting to delivery network...", "Calculating route...", "Sending order...", "Notifying available couriers..."],
+    bootLinesOrder:["Connecting to delivery network...", "Checking shop availability...", "Calculating route...", "Sending order...", "Notifying available couriers..."],
+    orderUnbuyableError:"Order blocked: not found in any in-game shop, so it can't be delivered —",
     navProfile:"PROFILE", profileTitle:"Profile", defaultLocTitle:"Default delivery location", saveDefaultLoc2:"SAVE",
     becomeCourierBtn:"REQUEST TO BECOME A COURIER", courierPending:"Your application is pending admin review.",
     courierRejectedNote:"Your previous application wasn't accepted. You can try again.",
@@ -3926,6 +3928,31 @@ function findUexItem(name){
   const n = name.trim().toLowerCase();
   return uexItems.find(i => i.name.toLowerCase() === n) || null;
 }
+// --- Vérification "achetable en boutique" avant d'autoriser une commande client ---
+// Une commodité est achetable si elle est dans uexCommodities (déjà filtré is_buyable && price_buy>0).
+// Un item (équipement, etc.) est achetable seulement s'il a au moins un lieu de vente avec price_buy>0.
+async function isItemPurchasable(name){
+  const n = (name||'').trim().toLowerCase();
+  if(!n) return false;
+  if(uexCommodities.some(c => c.name.toLowerCase() === n)) return true;
+  const it = findUexItem(name);
+  if(!it) return false;
+  const rows = await fetchUexItemLocations(it.id);
+  return rows.length > 0;
+}
+// Retourne la liste des noms d'objets de la commande qui ne sont pas trouvables en boutique.
+// Si le catalogue UEX est totalement vide (ex: API indisponible), on ne bloque rien (fail-open)
+// pour éviter de rendre toute commande impossible à cause d'un souci réseau externe.
+async function findUnbuyableItems(items){
+  await loadUexCatalog();
+  if(!uexCommodities.length && !uexItems.length) return [];
+  const bad = [];
+  for(const it of items){
+    const ok = await isItemPurchasable(it.name);
+    if(!ok) bad.push(it.name);
+  }
+  return bad;
+}
 async function fetchUexItemMinPrice(itemId){
   if(uexItemPriceCache[itemId] !== undefined) return uexItemPriceCache[itemId];
   try{
@@ -4274,6 +4301,13 @@ $('sendBtn').addEventListener('click', async ()=>{
   };
   $('sendBtn').disabled = true;
   bootOverlayStart(T[LANG].bootLinesOrder);
+  // Bloque la commande si un des objets demandés n'est pas achetable en boutique en jeu (donc non livrable).
+  const badItems = await findUnbuyableItems(items);
+  if(badItems.length){
+    $('sendBtn').disabled = false;
+    await bootOverlayFinish(T[LANG].orderUnbuyableError+' '+badItems.join(', '), true);
+    return;
+  }
   const { data: newOrder, error } = await sb.from('orders').insert(payload).select().single();
   $('sendBtn').disabled = false;
   if(error){ await bootOverlayFinish(T[LANG].bootError+': '+error.message, true); return; }

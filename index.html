@@ -3181,23 +3181,29 @@ async function refreshNotifBadges(){
   if(!session || !profile) return;
   const isSeller = profile.is_seller || profile.role==='admin';
   const isAdmin = profile.role==='admin';
-  const [sellerCnt, resOfferCnt, mktCnt, clientResOfferCnt, newListingCnt, ordCnt, courierCnt, resCnt, courierAppCnt, sellerAppCnt, dmCnt] = await Promise.all([
-    isSeller ? getUnreadCount('seller_marketplace') : Promise.resolve(0),
-    // Pas de garde-fou "isSeller" ici (contrairement à seller_marketplace ci-dessus) : la pastille par
-    // conversation dans la messagerie (loadMsgUnreadSet) ne filtre déjà pas selon ce flag, donc si on le
-    // fait ici la pastille principale peut rester éteinte alors que celle de la conversation s'allume —
-    // c'était exactement le bug rapporté (notif visible dans la conversation, absente sur la bulle).
-    getUnreadCount('seller_resource_offer'),
-    getUnreadCount('client_marketplace'),
-    getUnreadCount('client_resource_offer'),
-    getUnreadCount('client_new_listing'),
-    getUnreadCount('client_orders'),
-    (profile.is_courier || profile.role==='admin') ? getUnreadCount('courier_pending') : Promise.resolve(0),
-    getUnreadCount('client_resources'),
-    isAdmin ? getUnreadCount('admin_courier_app') : Promise.resolve(0),
-    isAdmin ? getUnreadCount('admin_seller_app') : Promise.resolve(0),
-    getUnreadCount('direct_message')
-  ]);
+  // Avant : 11 requêtes séparées (une par catégorie via getUnreadCount), chacune avec son propre preflight
+  // OPTIONS — jusqu'à 22 appels HTTP à CHAQUE notification reçue en temps réel (déclenché pour tout le monde
+  // de façon répétée, ça fait gonfler énormément le volume de logs côté Supabase). Remplacé par UNE seule
+  // requête qui récupère toutes les notifications non lues de l'utilisateur, et on compte par catégorie
+  // localement en JS (gratuit, pas de requête réseau en plus).
+  const { data: unreadRows } = await sb.from('notifications').select('category').eq('user_id',session.user.id).eq('read',false);
+  const cnt = {};
+  (unreadRows||[]).forEach(r => { cnt[r.category] = (cnt[r.category]||0) + 1; });
+  const sellerCnt = isSeller ? (cnt['seller_marketplace']||0) : 0;
+  // Pas de garde-fou "isSeller" ici (contrairement à seller_marketplace ci-dessus) : la pastille par
+  // conversation dans la messagerie (loadMsgUnreadSet) ne filtre déjà pas selon ce flag, donc si on le
+  // fait ici la pastille principale peut rester éteinte alors que celle de la conversation s'allume —
+  // c'était exactement le bug rapporté (notif visible dans la conversation, absente sur la bulle).
+  const resOfferCnt = cnt['seller_resource_offer']||0;
+  const mktCnt = cnt['client_marketplace']||0;
+  const clientResOfferCnt = cnt['client_resource_offer']||0;
+  const newListingCnt = cnt['client_new_listing']||0;
+  const ordCnt = cnt['client_orders']||0;
+  const courierCnt = (profile.is_courier || profile.role==='admin') ? (cnt['courier_pending']||0) : 0;
+  const resCnt = cnt['client_resources']||0;
+  const courierAppCnt = isAdmin ? (cnt['admin_courier_app']||0) : 0;
+  const sellerAppCnt = isAdmin ? (cnt['admin_seller_app']||0) : 0;
+  const dmCnt = cnt['direct_message']||0;
   const sellerTotal = sellerCnt + resOfferCnt;
   const clientMsgTotal = mktCnt + clientResOfferCnt;
   const adminAppTotal = courierAppCnt + sellerAppCnt;

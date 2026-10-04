@@ -721,6 +721,25 @@
     .boot-panel{padding:16px 18px;}
     .boot-log{min-height:96px; font-size:.85rem;}
   }
+
+  /* --- PORTAIL "PSEUDO RSI OBLIGATOIRE" (première connexion) : s'affiche juste après l'écran de chargement
+     façon BIOS (voir runFirstLoginGateBoot), à la place de l'ancien renvoi direct vers la page profil. Même
+     famille visuelle que .boot-panel (cadre terminal, coins pixelisés) pour que la transition boot → portail
+     soit continue, mais avec un formulaire au lieu d'un log qui défile. Bloque tout accès au reste du site
+     tant que le pseudo RSI n'est pas renseigné. */
+  .rsi-gate-overlay{position:fixed; inset:0; background:rgba(0,0,0,.78); z-index:310; display:flex; align-items:center; justify-content:center; padding:16px;}
+  .rsi-gate-overlay[hidden]{display:none;}
+  .rsi-gate-panel{width:100%; max-width:440px; background:linear-gradient(165deg, var(--panel), var(--bg2)); border:1px solid var(--accent); border-radius:6px;
+    padding:28px 26px; position:relative; box-shadow:0 0 0 1px var(--border) inset, 0 0 40px -10px var(--accent-dim), 0 24px 50px -20px rgba(0,0,0,.7);
+    text-align:center; animation:modalPixelIn .22s steps(6) both;}
+  .rsi-gate-panel::before,.rsi-gate-panel::after{content:""; position:absolute; width:14px; height:14px; border:2px solid var(--accent); opacity:.85;}
+  .rsi-gate-panel::before{top:-1px; left:-1px; border-right:none; border-bottom:none;}
+  .rsi-gate-panel::after{bottom:-1px; right:-1px; border-left:none; border-top:none;}
+  .rsi-gate-icon{width:52px; height:52px; margin:0 auto 14px; border-radius:50%; border:2px solid var(--accent); display:flex; align-items:center; justify-content:center; color:var(--accent); box-shadow:0 0 14px var(--accent-dim);}
+  .rsi-gate-icon svg{width:26px; height:26px;}
+  .rsi-gate-panel h3{margin:0 0 10px; font-family:'VT323',monospace; font-size:1.7rem; letter-spacing:1px; color:var(--accent); text-shadow:0 0 8px var(--accent-dim);}
+  .rsi-gate-panel p{margin:0 0 16px; font-size:.86rem; color:var(--muted); line-height:1.45;}
+  .rsi-gate-panel input{width:100%; text-align:center;}
   .modal-card h3{margin-top:0; padding-right:34px;}
   .modal-card label{display:block; margin:14px 0 6px; font-size:.8rem; color:var(--muted);}
   .modal-card textarea{width:100%; min-height:60px; padding:8px 10px; border-radius:2px; border:1px solid var(--border); background:var(--bg2); color:var(--text); font-family:inherit; font-size:.85rem; resize:none;}
@@ -1894,9 +1913,6 @@
     <section id="view-profile" hidden>
       <button class="back" id="profileBackBtn" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
       <header><h1 data-i18n="profileTitle">Profil</h1></header>
-      <div class="card" id="rsiRequiredBanner" hidden style="border-color:var(--danger);">
-        <p style="color:var(--danger); margin:0; font-weight:700;" data-i18n="rsiRequiredNote">Merci de renseigner ton pseudo RSI ci-dessous avant d'accéder au reste du site.</p>
-      </div>
       <div class="profile-header-row">
         <div class="card profile-id-card">
           <div class="avatar-wrap big">
@@ -2482,6 +2498,23 @@
   </div>
 </div>
 
+<!-- PORTAIL "PSEUDO RSI OBLIGATOIRE" : affiché après l'écran de chargement BIOS ci-dessus, à la toute première
+     connexion (tant que profiles.rsi_handle est vide). Bloque l'accès au reste du site (voir routeApp /
+     runFirstLoginGateBoot / saveRsiHandleGate). -->
+<div class="rsi-gate-overlay" id="rsiGateOverlay" hidden aria-live="polite">
+  <div class="rsi-gate-panel">
+    <div class="rsi-gate-icon">
+      <svg viewBox="0 0 16 16" shape-rendering="crispEdges" width="26" height="26"><g fill="currentColor"><rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="4" y="6" width="2" height="5"/><rect x="10" y="6" width="2" height="5"/><rect x="6" y="7" width="4" height="3"/><rect x="5" y="12" width="2" height="2"/><rect x="9" y="12" width="2" height="2"/></g></svg>
+    </div>
+    <h3 data-i18n="rsiGateTitle">IDENTIFICATION PILOTE</h3>
+    <p data-i18n="rsiGateHint">Renseigne ton pseudo RSI pour accéder au site. Ça permet aux autres membres de t'ajouter facilement en jeu pour échanger et livrer.</p>
+    <input id="rsiGateHandleInput" type="text" autocomplete="off" data-i18n-ph="phRsiHandle" placeholder="ex: Mayco_SC" onkeydown="if(event.key==='Enter') saveRsiHandleGate()">
+    <button class="btn-secondary" style="width:100%; margin-top:10px;" onclick="saveRsiHandleGate()">
+      <span data-i18n="rsiGateBtn">VALIDER ET ACCÉDER AU SITE</span>
+    </button>
+  </div>
+</div>
+
 <script>
 // Fix Safari/iOS : après le retour de la redirection OAuth Discord, Safari restaure parfois
 // la page depuis son cache mémoire (bfcache) au lieu de charger la page fraîchement redirigée
@@ -2751,6 +2784,10 @@ let profile = null;
 // Un membre peut cumuler plusieurs casquettes (client + coursier + vendeur) : currentView retient
 // l'onglet actuellement affiché parmi celles disponibles pour ce compte. 'client' reste le point de départ par défaut.
 let currentView = 'client'; // 'client' | 'courier' | 'seller' | 'admin'
+// État du portail "pseudo RSI obligatoire" (première connexion) : 'idle' tant qu'il n'est pas requis,
+// 'booting' pendant l'écran de chargement BIOS, 'shown' une fois le portail affiché. Remis à 'idle' à la
+// déconnexion (voir onAuthStateChange) pour qu'un autre compte rejoue l'animation si besoin.
+let rsiGateState = 'idle'; // 'idle' | 'booting' | 'shown'
 const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-blueprint','view-seller-create-resource','view-shop-all-listings','view-shop-all-blueprints','view-shop-all-resources','view-listing-detail','view-messages-mobile'];
 // Quitte aussi le mode "page messagerie mobile plein écran" (voir openMobileMessages()) à chaque
 // changement de vue, quel que soit le chemin emprunté pour naviguer ailleurs : on ne veut pas que la
@@ -2822,6 +2859,7 @@ const T = {
     bootLinesBlueprint:["Connexion au catalogue de craft...", "Validation du blueprint...", "Envoi des données...", "Publication du blueprint..."],
     bootLinesResource:["Connexion au réseau d'approvisionnement...", "Validation de la demande...", "Envoi de l'annonce...", "Publication de l'objet recherché..."],
     bootLinesOrder:["Connexion au réseau de livraison...", "Vérification de la disponibilité en boutique...", "Calcul de l'itinéraire...", "Envoi de la commande...", "Notification des coursiers disponibles..."],
+    bootLinesFirstLogin:["Connexion au réseau Couriers United...", "Chargement du profil pilote...", "Synchronisation des données..."],
     orderUnbuyableError:"Commande impossible : introuvable en boutique en jeu, donc non livrable —",
     navProfile:"PROFIL", profileTitle:"Profil", defaultLocTitle:"Lieu de livraison par défaut", saveDefaultLoc2:"ENREGISTRER",
     becomeCourierBtn:"DEMANDER À DEVENIR COURSIER", courierPending:"Ta candidature est en attente de validation par l'administrateur.",
@@ -2844,6 +2882,7 @@ const T = {
     courierAdTitle:"Envie de rejoindre les coursiers Couriers United ?", courierAdSub:"Livre des commandes, gagne des aUEC et débloque des succès.", courierAdBtn:"JE VEUX ME LANCER DANS LA LIVRAISON",
     sellerAdTitle:"Envie d'ouvrir ta propre boutique sur Couriers United ?", sellerAdSub:"Vends tes objets, gère ton stock et débloque des succès de vendeur.", sellerAdBtn:"JE VEUX OUVRIR MA BOUTIQUE", sellerPending:"Ta candidature est en attente de validation par l'administrateur.",
     rsiTitle:"Pseudo RSI (Handle)", rsiHint:"Permet aux autres membres de t'ajouter facilement en jeu.", phRsiHandle:"ex: Mayco_SC", savedRsi:"PSEUDO RSI ENREGISTRÉ !",
+    rsiGateTitle:"IDENTIFICATION PILOTE", rsiGateHint:"Renseigne ton pseudo RSI pour accéder au site. Ça permet aux autres membres de t'ajouter facilement en jeu pour échanger et livrer.", rsiGateBtn:"VALIDER ET ACCÉDER AU SITE",
     soundNotifTitle:"Sons de notification", soundNotifHint:"Joue un petit son quand tu reçois un message ou une nouvelle course (coursiers).", soundOn:"🔊 ACTIVÉS", soundOff:"🔇 COUPÉS", soundPreviewBtn:"▶ TESTER LE SON",
     onlineMembersTitle:"Membres en ligne", onlineCouriersAvailTitle:"🚀 Coursiers disponibles", onlineAllMembersTitle:"Tous les membres en ligne", onlineNoneYet:"Personne pour le moment",
     availForDeliveryTitle:"Disponible pour livrer", availForDeliveryHint:"Affiche-toi comme disponible auprès des clients quand tu es prêt à prendre des courses.", availForDeliveryOn:"DISPONIBLE", availForDeliveryOff:"DEVENIR DISPONIBLE",
@@ -2983,6 +3022,7 @@ const T = {
     bootLinesBlueprint:["Connecting to crafting catalog...", "Validating blueprint...", "Sending data...", "Publishing blueprint..."],
     bootLinesResource:["Connecting to supply network...", "Validating request...", "Sending listing...", "Publishing desired item..."],
     bootLinesOrder:["Connecting to delivery network...", "Checking shop availability...", "Calculating route...", "Sending order...", "Notifying available couriers..."],
+    bootLinesFirstLogin:["Connecting to the Couriers United network...", "Loading pilot profile...", "Syncing data..."],
     orderUnbuyableError:"Order blocked: not found in any in-game shop, so it can't be delivered —",
     navProfile:"PROFILE", profileTitle:"Profile", defaultLocTitle:"Default delivery location", saveDefaultLoc2:"SAVE",
     becomeCourierBtn:"REQUEST TO BECOME A COURIER", courierPending:"Your application is pending admin review.",
@@ -3005,6 +3045,7 @@ const T = {
     courierAdTitle:"Want to join the Couriers United couriers?", courierAdSub:"Deliver orders, earn aUEC and unlock achievements.", courierAdBtn:"I WANT TO START DELIVERING",
     sellerAdTitle:"Want to open your own shop on Couriers United?", sellerAdSub:"Sell your items, manage your stock and unlock seller achievements.", sellerAdBtn:"I WANT TO OPEN MY SHOP", sellerPending:"Your application is pending admin review.",
     rsiTitle:"RSI Handle", rsiHint:"Lets other members add you easily in-game.", phRsiHandle:"e.g. Mayco_SC", savedRsi:"RSI HANDLE SAVED!",
+    rsiGateTitle:"PILOT IDENTIFICATION", rsiGateHint:"Enter your RSI handle to access the site. It lets other members add you easily in-game for trading and deliveries.", rsiGateBtn:"CONFIRM AND ENTER THE SITE",
     soundNotifTitle:"Notification sounds", soundNotifHint:"Plays a short sound when you get a message or a new order (couriers).", soundOn:"🔊 ON", soundOff:"🔇 OFF", soundPreviewBtn:"▶ TEST SOUND",
     onlineMembersTitle:"Online members", onlineCouriersAvailTitle:"🚀 Couriers available", onlineAllMembersTitle:"All online members", onlineNoneYet:"No one right now",
     availForDeliveryTitle:"Available for delivery", availForDeliveryHint:"Show clients you're ready to take on deliveries right now.", availForDeliveryOn:"AVAILABLE", availForDeliveryOff:"BECOME AVAILABLE",
@@ -3357,18 +3398,22 @@ function routeApp(){
   hideAllViews();
   updateProfileChip();
 
-  // Pseudo RSI obligatoire avant d'accéder à quoi que ce soit d'autre, quel que soit le rôle.
+  // Pseudo RSI obligatoire avant d'accéder à quoi que ce soit d'autre, quel que soit le rôle : plutôt que
+  // de renvoyer vers la page profil, on joue l'écran de chargement façon BIOS (même famille que les envois
+  // d'annonces) puis on affiche un portail dédié qui bloque tout le reste tant que le pseudo n'est pas
+  // enregistré (voir runFirstLoginGateBoot / saveRsiHandleGate). rsiGateState évite de relancer l'animation
+  // à chaque appel de routeApp() pendant que le portail est déjà affiché ou en cours de chargement.
   if(profile && !(profile.rsi_handle || '').trim()){
-    $('view-profile').hidden = false;
-    renderProfileView();
-    $('rsiRequiredBanner').hidden = false;
-    $('profileBackBtn').hidden = true;
     $('adminViewBar').hidden = true;
     $('createOrderBtn').hidden = true;
     updatePageTitle();
+    if(rsiGateState === 'idle'){
+      rsiGateState = 'booting';
+      runFirstLoginGateBoot();
+    }
     return;
   }
-  $('rsiRequiredBanner').hidden = true;
+  if(rsiGateState !== 'idle'){ rsiGateState = 'idle'; $('rsiGateOverlay').hidden = true; }
   $('profileBackBtn').hidden = false;
 
   const views = availableViews();
@@ -7368,6 +7413,45 @@ function bootOverlayClose(){
   if(bootCloseResolver){ const r = bootCloseResolver; bootCloseResolver = null; r(); }
 }
 
+// --- PORTAIL "PSEUDO RSI OBLIGATOIRE" (première connexion) ---------------------------------------------
+// runFirstLoginGateBoot() réutilise l'écran de chargement BIOS (bootOverlayStart, même animation que pour
+// l'envoi d'une annonce) mais sans son message de confirmation habituel : une fois la barre à 100%, l'écran
+// se referme directement sur le portail qui demande le pseudo RSI (#rsiGateOverlay), à la place de l'ancien
+// renvoi vers la page profil.
+async function runFirstLoginGateBoot(){
+  const d = T[LANG];
+  bootOverlayStart(d.bootLinesFirstLogin);
+  const elapsed = performance.now() - bootStartedAt;
+  const remaining = Math.max(0, BOOT_MIN_DURATION - elapsed);
+  if(remaining > 0) await new Promise(r => setTimeout(r, remaining));
+  const lastLine = $('bootLogLines').lastElementChild;
+  if(lastLine) lastLine.classList.add('done');
+  const fill = $('bootProgressFill');
+  fill.style.transition = 'width 180ms ease-out';
+  fill.style.width = '100%';
+  animateBootPercent(100, 180);
+  await new Promise(r => setTimeout(r, 280));
+  $('bootOverlay').hidden = true;
+  if(rsiGateState !== 'booting') return; // la personne s'est déconnectée ou le pseudo a été enregistré entre-temps
+  rsiGateState = 'shown';
+  $('rsiGateOverlay').hidden = false;
+  $('rsiGateHandleInput').value = '';
+  $('rsiGateHandleInput').focus();
+}
+async function saveRsiHandleGate(){
+  if(!session) return;
+  const val = $('rsiGateHandleInput').value.trim();
+  if(!val){ alert(T[LANG].rsiRequiredNote); return; }
+  const { error } = await sb.from('profiles').update({ rsi_handle: val }).eq('id', session.user.id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  await loadProfile();
+  updateProfileChip();
+  toastShow(T[LANG].savedRsi);
+  rsiGateState = 'idle';
+  $('rsiGateOverlay').hidden = true;
+  routeApp();
+}
+
 // --- PROFIL / AVATAR / RÔLE ---
 function roleAnimSvg(role, size){
   size = size || 18;
@@ -7399,15 +7483,12 @@ function displayName(p){
 async function saveRsiHandle(){
   if(!session) return;
   const val = $('profileRsiHandle').value.trim();
-  const wasGated = !$('rsiRequiredBanner').hidden;
-  if(wasGated && !val){ alert(T[LANG].rsiRequiredNote); return; }
   const { error } = await sb.from('profiles').update({ rsi_handle: val }).eq('id', session.user.id);
   if(error){ alert('Erreur : '+error.message); return; }
   await loadProfile();
   updateProfileChip();
   sweep();
   toastShow(T[LANG].savedRsi);
-  if(wasGated) routeApp();
 }
 // Synchronise l'avatar Discord (visible uniquement pour soi-même via la session) dans la table profiles,
 // pour qu'il puisse être affiché aux autres (profil public, etc.).
@@ -8752,7 +8833,7 @@ async function initAuth(){
     const wasLoggedIn = !!session;
     session = s2;
     await loadProfile();
-    if(event === 'SIGNED_OUT'){ hasBooted = false; unsubscribeProfileChannel(); unsubscribeNotifChannel(); unsubscribePresenceChannel(); unsubscribeDataChannels(); routeApp(); return; }
+    if(event === 'SIGNED_OUT'){ hasBooted = false; rsiGateState = 'idle'; $('bootOverlay').hidden = true; $('rsiGateOverlay').hidden = true; unsubscribeProfileChannel(); unsubscribeNotifChannel(); unsubscribePresenceChannel(); unsubscribeDataChannels(); routeApp(); return; }
     if(event === 'SIGNED_IN' && !wasLoggedIn){
       subscribeProfileChannel();
       subscribeNotifChannel();

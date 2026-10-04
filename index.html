@@ -2264,7 +2264,6 @@
           <div class="shop-preview-head">
             <h3 data-i18n="shopListingsTitle">Objets en vente</h3>
             <div class="shop-section-head-actions">
-              <button type="button" class="btn-secondary shop-quick-add" id="shopAddListingBtn" onclick="openSellerCreateOption('listing')" hidden>+ <span data-i18n="newListingTitle">Ajouter un objet en vente</span></button>
               <button type="button" class="btn-secondary shop-see-more" id="shopListingsViewMoreBtn" onclick="openShopAllListings()" hidden>
                 <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
               </button>
@@ -2277,7 +2276,9 @@
           <div class="shop-preview-head">
             <h3 data-i18n="shopBlueprintsTitle">Blueprints disponibles au craft</h3>
             <div class="shop-section-head-actions">
-              <button type="button" class="btn-secondary shop-quick-add" id="shopAddBlueprintBtn" onclick="openSellerCreateOption('blueprint')" hidden>+ <span data-i18n="newBlueprintTitle">Ajouter un blueprint</span></button>
+              <button type="button" class="btn-secondary shop-see-more" id="shopBlueprintsViewMoreBtn" onclick="openShopAllBlueprints()" hidden>
+                <span data-i18n="seeMoreBtn">VOIR PLUS →</span>
+              </button>
             </div>
           </div>
           <div id="shopBlueprintsGrid" class="marketplace-grid"></div>
@@ -2303,6 +2304,13 @@
       <button class="back" onclick="openSellerShop(shopViewingSellerId)" data-i18n="back">&lt; RETOUR</button>
       <header><h1 data-i18n="shopListingsTitle">Objets en vente</h1></header>
       <div id="shopListingsGridFull" class="marketplace-grid"></div>
+    </section>
+
+    <!-- TOUS LES BLUEPRINTS DE CE VENDEUR (vue client) -->
+    <section id="view-shop-all-blueprints" hidden>
+      <button class="back" onclick="openSellerShop(shopViewingSellerId)" data-i18n="back">&lt; RETOUR</button>
+      <header><h1 data-i18n="shopBlueprintsTitle">Blueprints disponibles au craft</h1></header>
+      <div id="shopBlueprintsGridFull" class="marketplace-grid"></div>
     </section>
 
     <!-- TOUTES LES RESSOURCES DEMANDÉES DE CE VENDEUR (vue client) -->
@@ -2336,11 +2344,12 @@
           </div>
           <div id="listingDetailSellerBox"></div>
           <div id="listingDetailActionWrap"></div>
-          <!-- Pubs "devenir coursier/vendeur" : exactement les mêmes encarts (discrets) que sur le dashboard
-               client, remplies par les mêmes fonctions renderCourierAd()/renderSellerAd() — pas un nouvel
-               encart "criard" dédié à cette page. -->
-          <div class="card courier-ad" id="listingDetailCourierAd" hidden></div>
-          <div class="card courier-ad" id="listingDetailSellerAd" hidden></div>
+          <!-- Pub "livraison par coursier" : même style graphique (discret) que les encarts "devenir
+               coursier/vendeur" du dashboard client (icône + titre + sous-titre, classe .courier-ad), mais
+               avec son propre contenu : prévient le client que cet objet peut lui être livré par un coursier,
+               avec un prix de commission qui s'adapte au prix de l'annonce. Marketplace uniquement (pas de
+               sens pour un blueprint, qui est fabriqué à la commande). -->
+          <div class="card courier-ad" id="listingDetailDeliveryAd" hidden></div>
         </div>
       </div>
     </section>
@@ -2697,7 +2706,7 @@ let profile = null;
 // Un membre peut cumuler plusieurs casquettes (client + coursier + vendeur) : currentView retient
 // l'onglet actuellement affiché parmi celles disponibles pour ce compte. 'client' reste le point de départ par défaut.
 let currentView = 'client'; // 'client' | 'courier' | 'seller' | 'admin'
-const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-blueprint','view-seller-create-resource','view-shop-all-listings','view-shop-all-resources','view-listing-detail','view-messages-mobile'];
+const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-blueprint','view-seller-create-resource','view-shop-all-listings','view-shop-all-blueprints','view-shop-all-resources','view-listing-detail','view-messages-mobile'];
 // Quitte aussi le mode "page messagerie mobile plein écran" (voir openMobileMessages()) à chaque
 // changement de vue, quel que soit le chemin emprunté pour naviguer ailleurs : on ne veut pas que la
 // barre du haut reste masquée si on quitte la messagerie autrement qu'avec son propre bouton RETOUR.
@@ -2837,6 +2846,7 @@ const T = {
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
     newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingDescriptionLbl:"Description détaillée (optionnel)", phListingDescription:"ex: État, provenance, détails utiles à l'acheteur...", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
     detailDescriptionLbl:"Description", detailNoDescription:"Aucune description fournie pour cette annonce.", detailEyebrowMarketplace:"ANNONCE MARKETPLACE", detailEyebrowBlueprint:"BLUEPRINT",
+    deliveryAdTitle:"Besoin d'un coursier ?", deliveryAdText:"Cet objet peut t'être livré où tu veux dans l'univers via Couriers United, pour {price} de commission.",
     livePreviewTitle:"Aperçu pour les clients", livePreviewBadge:"Aperçu", livePreviewEmptyHint:"Remplis le formulaire pour voir l'aperçu…",
     tabBlueprints:"BLUEPRINTS", blueprintsCatalogTitle:"Catalogue de blueprints", blueprintsCatalogSub:"Des objets craftés sur commande par les vendeurs qui possèdent le blueprint correspondant.", blueprintsEmpty:"Aucun blueprint publié pour le moment.",
     newBlueprintTitle:"Ajouter un blueprint", editBlueprintTitle:"Modifier le blueprint", bpItemLbl:"Objet craftable", phBpItem:"ex: Casque d'armure lourde", bpDescriptionLbl:"Description (optionnel)", phBpDescription:"ex: Finition mate, craft sur mesure selon tes specs...", bpMaterialsLbl:"Ressources nécessaires", phBpMaterials:"ex: 50 Laranite, 20 Titanium, 1h de craft", bpPriceTurnkeyLbl:"Prix clé en main (aUEC)", bpPriceClientMatsLbl:"Prix si tu fournis les ressources (aUEC)", bpPriceHint:"Renseigne au moins un des deux prix. Laisse l'autre vide si tu ne proposes pas cette option.", bpPhotoLbl:"Photo (optionnel)", addBlueprintBtn:"AJOUTER AU CATALOGUE", saveBlueprintBtn:"ENREGISTRER LES MODIFICATIONS", blueprintSaved:"BLUEPRINT AJOUTÉ !", blueprintUpdated:"BLUEPRINT MIS À JOUR !", confirmDeleteBlueprint:"Supprimer ce blueprint du catalogue ?",
@@ -2995,6 +3005,7 @@ const T = {
     rankToNextSales:"{n} more sale(s) to reach {rank}",
     newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingDescriptionLbl:"Detailed description (optional)", phListingDescription:"e.g. Condition, origin, useful details for the buyer...", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
     detailDescriptionLbl:"Description", detailNoDescription:"No description provided for this listing.", detailEyebrowMarketplace:"MARKETPLACE LISTING", detailEyebrowBlueprint:"BLUEPRINT",
+    deliveryAdTitle:"Need a courier?", deliveryAdText:"This item can be delivered anywhere in the verse via Couriers United, for {price} commission.",
     livePreviewTitle:"Preview for clients", livePreviewBadge:"Preview", livePreviewEmptyHint:"Fill in the form to see the preview…",
     tabBlueprints:"BLUEPRINTS", blueprintsCatalogTitle:"Blueprints catalog", blueprintsCatalogSub:"Items crafted to order by sellers who own the matching blueprint.", blueprintsEmpty:"No blueprints published yet.",
     newBlueprintTitle:"Add a blueprint", editBlueprintTitle:"Edit blueprint", bpItemLbl:"Craftable item", phBpItem:"e.g. Heavy armor helmet", bpDescriptionLbl:"Description (optional)", phBpDescription:"e.g. Matte finish, custom craft to your specs...", bpMaterialsLbl:"Required materials", phBpMaterials:"e.g. 50 Laranite, 20 Titanium, 1h craft time", bpPriceTurnkeyLbl:"Ready-made price (aUEC)", bpPriceClientMatsLbl:"Price if you supply the materials (aUEC)", bpPriceHint:"Fill in at least one of the two prices. Leave the other blank if you don't offer that option.", bpPhotoLbl:"Photo (optional)", addBlueprintBtn:"ADD TO CATALOG", saveBlueprintBtn:"SAVE CHANGES", blueprintSaved:"BLUEPRINT ADDED!", blueprintUpdated:"BLUEPRINT UPDATED!", confirmDeleteBlueprint:"Remove this blueprint from the catalog?",
@@ -5802,11 +5813,28 @@ function openListingDetail(id){
   else renderListingDetailView(entry);
 }
 function closeListingDetail(){ routeApp(); }
-// Affiche les deux pubs "devenir coursier/vendeur" (discrètes, communes à tout le site) en bas de la page
-// détail — mêmes fonctions que celles utilisées sur le dashboard client, juste ciblées sur ces encarts-ci.
-function renderListingDetailAds(){
-  renderCourierAd('listingDetailCourierAd');
-  renderSellerAd('listingDetailSellerAd');
+// Pub "livraison par coursier" sur la page détail d'une annonce marketplace : même style graphique
+// (discret) que les encarts "devenir coursier/vendeur" du dashboard client (icône + titre + sous-titre),
+// mais le contenu est propre à CETTE annonce — prix de commission calculé dynamiquement à partir du prix
+// affiché. N'a pas de sens pour un blueprint (fabriqué à la commande, pas acheté en boutique), donc
+// uniquement appelée depuis renderListingDetailView().
+function renderListingDetailDeliveryAd(l){
+  const box = $('listingDetailDeliveryAd'); if(!box) return;
+  const d = T[LANG];
+  box.hidden = false;
+  const gross = (l.price || 0) * (l.quantity || 1);
+  const commission = computeCommission(gross);
+  const adLogo = `
+    <div class="logo-icon-wrap">
+      <svg class="logo-anim-hero" viewBox="0 0 1260 750" role="img" aria-label="Couriers United"><use href="#cuLogoStatic"/></svg>
+      <svg class="logo-star s1" viewBox="0 0 7 7" shape-rendering="crispEdges"><use href="#cuStar"/></svg>
+      <svg class="logo-star s2" viewBox="0 0 7 7" shape-rendering="crispEdges"><use href="#cuStar"/></svg>
+      <svg class="logo-star s3" viewBox="0 0 7 7" shape-rendering="crispEdges"><use href="#cuStar"/></svg>
+    </div>`;
+  box.innerHTML = `
+    <div class="courier-ad-icon">${adLogo}</div>
+    <div class="courier-ad-text"><strong>${d.deliveryAdTitle}</strong><p>${d.deliveryAdText.replace('{price}', fmt(commission))}</p></div>
+  `;
 }
 function renderListingDetailView(entry){
   const d = T[LANG];
@@ -5826,7 +5854,7 @@ function renderListingDetailView(entry){
   else { descEl.textContent = d.detailNoDescription; descEl.classList.add('muted'); }
   $('listingDetailSellerBox').innerHTML = sellerBoxHtml(l.seller_id, entry.seller);
   $('listingDetailActionWrap').innerHTML = mktInterestBtnHtml(l, false);
-  renderListingDetailAds();
+  renderListingDetailDeliveryAd(l);
   window.scrollTo(0,0);
 }
 function renderBlueprintDetailView(entry){
@@ -5854,7 +5882,9 @@ function renderBlueprintDetailView(entry){
   // que le bouton "JE SUIS INTÉRESSÉ(E)" apparaisse de façon fiable sur cette page.
   const canOrder = !!(session && session.user.id !== bp.seller_id);
   $('listingDetailActionWrap').innerHTML = blueprintContactBtnHtml(bp, canOrder, false);
-  renderListingDetailAds();
+  // Pas de pub "livraison par coursier" sur un blueprint : il est fabriqué à la commande par le vendeur,
+  // pas acheté en boutique puis récupéré par un coursier.
+  const adBox = $('listingDetailDeliveryAd'); if(adBox) adBox.hidden = true;
   window.scrollTo(0,0);
 }
 
@@ -6058,9 +6088,10 @@ async function loadMyListings(){
   if(shopViewingSellerId === session.user.id && !$('view-seller-shop').hidden){
     const d = T[LANG];
     const box = $('shopListingsGrid');
-    if(box) box.innerHTML = myListingsCache.length ? myListingsCache.slice(0,4).map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.shopPageEmpty}</p>`;
+    const cap = shopGridCap();
+    if(box) box.innerHTML = myListingsCache.length ? myListingsCache.slice(0,cap).map(l => myListingCardHtml(l)).join('') : `<p class="muted">${d.shopPageEmpty}</p>`;
     const moreBtn = $('shopListingsViewMoreBtn');
-    if(moreBtn) moreBtn.hidden = myListingsCache.length <= 4;
+    if(moreBtn) moreBtn.hidden = myListingsCache.length <= cap;
   }
 }
 function refreshShopAllListingsFullIfOpen(){
@@ -6250,6 +6281,11 @@ function visitorResourceRequestCardHtml(r){
     </div>`;
 }
 let shopListingsCache = [];
+let shopBlueprintsCache = [];
+// Nombre de cards affichées dans les encadrés "aperçu" de la boutique (objets en vente / blueprints), pour
+// que ça tienne toujours sur une seule ligne : 2 colonnes en mobile (cf. breakpoint 640px du .marketplace-grid),
+// jusqu'à 4 en desktop. Le surplus est accessible via le bouton "VOIR PLUS →".
+function shopGridCap(){ return window.innerWidth <= 640 ? 2 : 4; }
 let shopResourceRequestsCache = [];
 let shopSellerMapCache = {};
 async function openSellerShop(sellerId){
@@ -6274,9 +6310,7 @@ async function openSellerShop(sellerId){
   // onglet "vendeur", donc sur la même page. On ne le garde que pour visiter la boutique d'un autre joueur.
   const backBtn = $('shopBackBtn'); if(backBtn) backBtn.hidden = isOwner;
   const editBtn = $('shopEditGearBtn'); if(editBtn) editBtn.hidden = !isOwner;
-  const addListingBtn = $('shopAddListingBtn'); if(addListingBtn) addListingBtn.hidden = !isOwner;
   const addResourceBtn = $('shopAddResourceBtn'); if(addResourceBtn) addResourceBtn.hidden = !isOwner;
-  const addBlueprintBtn = $('shopAddBlueprintBtn'); if(addBlueprintBtn) addBlueprintBtn.hidden = !isOwner;
   const descEl = $('shopDescription');
   if(descEl) descEl.hidden = true;
   // Propriétaire : on récupère TOUTES ses annonces/demandes (y compris fermées) pour qu'il puisse les gérer ;
@@ -6341,9 +6375,10 @@ async function openSellerShop(sellerId){
   if(isOwner) myListingsCache = listings || []; else shopListingsCache = listings || [];
   shopSellerMapCache = { [sellerId]: { ...p, shop_name: (shop && shop.shop_name) || null } };
   const listingsForGrid = isOwner ? myListingsCache : shopListingsCache;
+  const gridCap = shopGridCap();
   if(!listingsForGrid.length){ grid.innerHTML = `<p class="muted">${d.shopPageEmpty}</p>`; }
-  else grid.innerHTML = listingsForGrid.slice(0,4).map(listingCardFn).join('');
-  if(listingsMoreBtn) listingsMoreBtn.hidden = listingsForGrid.length <= 4;
+  else grid.innerHTML = listingsForGrid.slice(0,gridCap).map(listingCardFn).join('');
+  if(listingsMoreBtn) listingsMoreBtn.hidden = listingsForGrid.length <= gridCap;
 
   shopResourceRequestsCache = resourceRequests || [];
   if(isOwner) myResourceRequestsCache = shopResourceRequestsCache;
@@ -6355,14 +6390,16 @@ async function openSellerShop(sellerId){
   // Section "Blueprints disponibles au craft" : visible dès que le vendeur en a publié au moins un, ou
   // tout le temps pour le propriétaire (pour qu'il voie le bouton "+ Ajouter" même quand c'est encore vide).
   const bpGrid = $('shopBlueprintsGrid');
-  myBlueprintsCache = isOwner ? (blueprints || []) : myBlueprintsCache;
-  const bpList = blueprints || [];
+  const bpMoreBtn = $('shopBlueprintsViewMoreBtn');
+  if(isOwner) myBlueprintsCache = blueprints || []; else shopBlueprintsCache = blueprints || [];
+  const bpList = isOwner ? myBlueprintsCache : shopBlueprintsCache;
   if(bpSection) bpSection.hidden = !isOwner && bpList.length === 0;
   if(bpGrid){
     bpGrid.innerHTML = bpList.length
-      ? bpList.map(bp => blueprintCardHtml(bp, shopSellerMapCache, isOwner)).join('')
+      ? bpList.slice(0,gridCap).map(bp => blueprintCardHtml(bp, shopSellerMapCache, isOwner)).join('')
       : `<p class="muted">${d.noBlueprintsOwn}</p>`;
   }
+  if(bpMoreBtn) bpMoreBtn.hidden = bpList.length <= gridCap;
 
   loadShopUpvotes(sellerId, isOwner);
 }
@@ -6514,6 +6551,19 @@ function openShopAllListings(){
   } else {
     box.innerHTML = shopListingsCache.length ? shopListingsCache.map(l => mktCardHtml(l, shopSellerMapCache)).join('') : `<p class="muted">${d.shopPageEmpty}</p>`;
   }
+}
+function openShopAllBlueprints(){
+  hideAllViews();
+  $('createOrderBtn').hidden = true;
+  $('sellerCreateWrap').hidden = true;
+  $('view-shop-all-blueprints').hidden = false;
+  const d = T[LANG];
+  const isOwner = session && session.user.id === shopViewingSellerId;
+  const bpList = isOwner ? myBlueprintsCache : shopBlueprintsCache;
+  const box = $('shopBlueprintsGridFull');
+  box.innerHTML = bpList.length
+    ? bpList.map(bp => blueprintCardHtml(bp, shopSellerMapCache, isOwner)).join('')
+    : `<p class="muted">${d.noBlueprintsOwn}</p>`;
 }
 function openShopAllResources(){
   hideAllViews();

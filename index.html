@@ -685,7 +685,8 @@
   .boot-progress-fill{height:100%; width:0%; background:repeating-linear-gradient(90deg, var(--accent) 0px, var(--accent) 7px, color-mix(in srgb, var(--accent) 65%, transparent) 7px, color-mix(in srgb, var(--accent) 65%, transparent) 10px);
     box-shadow:0 0 14px var(--accent); position:relative;}
   .boot-progress-pct{font-size:1.2rem; color:var(--accent); min-width:44px; text-align:right; text-shadow:0 0 6px var(--accent-dim);}
-  .boot-confirm{display:flex; align-items:center; gap:12px; margin-top:16px; padding-top:14px; border-top:1px solid var(--accent-dim);}
+  .boot-confirm{display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:16px; padding-top:14px; border-top:1px solid var(--accent-dim);}
+  .boot-confirm-close{flex-basis:100%; margin-top:4px;}
   .boot-confirm-icon{width:30px; height:30px; flex:none; border-radius:50%; border:2px solid var(--accent); display:flex; align-items:center; justify-content:center; color:var(--accent); box-shadow:0 0 12px var(--accent-dim);}
   .boot-confirm-icon svg{width:16px; height:16px;}
   .boot-confirm-text{font-size:1.15rem; color:var(--accent); letter-spacing:.5px; text-shadow:0 0 8px var(--accent-dim);}
@@ -2323,6 +2324,7 @@
     <div class="boot-confirm" id="bootConfirm" hidden>
       <div class="boot-confirm-icon" id="bootConfirmIcon"></div>
       <div class="boot-confirm-text" id="bootConfirmText"></div>
+      <button type="button" class="btn-secondary boot-confirm-close" id="bootConfirmCloseBtn" hidden onclick="bootOverlayClose()" data-i18n="bootCloseBtn">FERMER</button>
     </div>
   </div>
 </div>
@@ -2662,7 +2664,7 @@ const T = {
     progressionReset:"Progression réinitialisée.",
     confirmResetMember:"Réinitialiser toute la progression de {name} ? Statistiques, rangs, succès débloqués et historique des livraisons/ventes seront effacés définitivement.",
     toastSent:"COMMANDE ENVOYÉE !", toastUpdated:"MIS À JOUR !",
-    bootTitle:"Traitement en cours", bootError:"ERREUR",
+    bootTitle:"Traitement en cours", bootError:"ERREUR", bootCloseBtn:"FERMER",
     bootLinesListing:["Connexion au relais marché...", "Validation de l'annonce...", "Envoi des données au serveur...", "Publication du listing..."],
     bootLinesBlueprint:["Connexion au catalogue de craft...", "Validation du blueprint...", "Envoi des données...", "Publication du blueprint..."],
     bootLinesResource:["Connexion au réseau d'approvisionnement...", "Validation de la demande...", "Envoi de l'annonce...", "Publication de l'objet recherché..."],
@@ -2819,7 +2821,7 @@ const T = {
     progressionReset:"Progression reset.",
     confirmResetMember:"Reset all progression for {name}? Stats, ranks, unlocked achievements and delivery/sales history will be permanently erased.",
     toastSent:"ORDER SENT!", toastUpdated:"UPDATED!",
-    bootTitle:"Processing request", bootError:"ERROR",
+    bootTitle:"Processing request", bootError:"ERROR", bootCloseBtn:"CLOSE",
     bootLinesListing:["Connecting to market relay...", "Validating listing...", "Sending data to server...", "Publishing listing..."],
     bootLinesBlueprint:["Connecting to crafting catalog...", "Validating blueprint...", "Sending data...", "Publishing blueprint..."],
     bootLinesResource:["Connecting to supply network...", "Validating request...", "Sending listing...", "Publishing desired item..."],
@@ -6867,6 +6869,8 @@ function bootOverlayStart(lines){
   const confirmBox = $('bootConfirm');
   confirmBox.hidden = true;
   confirmBox.classList.remove('boot-confirm-error');
+  $('bootConfirmCloseBtn').hidden = true;
+  bootCloseResolver = null;
   const logBox = $('bootLogLines');
   logBox.innerHTML = '';
   const fill = $('bootProgressFill');
@@ -6892,6 +6896,7 @@ function bootOverlayStart(lines){
     }, 150 + i * spacing);
   });
 }
+let bootCloseResolver = null;
 async function bootOverlayFinish(confirmText, isError){
   const elapsed = performance.now() - bootStartedAt;
   const remaining = Math.max(0, BOOT_MIN_DURATION - elapsed);
@@ -6908,8 +6913,20 @@ async function bootOverlayFinish(confirmText, isError){
   confirmBox.classList.toggle('boot-confirm-error', !!isError);
   $('bootConfirmIcon').innerHTML = isError ? BOOT_ICON_ERR : BOOT_ICON_OK;
   $('bootConfirmText').textContent = confirmText;
-  await new Promise(r => setTimeout(r, 750));
+  if(isError){
+    // En cas d'échec, on laisse l'écran affiché (temps de lire le message) tant que la personne n'a pas
+    // cliqué sur "FERMER" elle-même, plutôt que de le refermer tout seul après un délai fixe.
+    $('bootConfirmCloseBtn').hidden = false;
+    await new Promise(resolve => { bootCloseResolver = resolve; });
+  }else{
+    await new Promise(r => setTimeout(r, 750));
+    $('bootOverlay').hidden = true;
+  }
+}
+function bootOverlayClose(){
+  $('bootConfirmCloseBtn').hidden = true;
   $('bootOverlay').hidden = true;
+  if(bootCloseResolver){ const r = bootCloseResolver; bootCloseResolver = null; r(); }
 }
 
 // --- PROFIL / AVATAR / RÔLE ---

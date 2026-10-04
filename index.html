@@ -1222,6 +1222,14 @@
   .tab-btn{background:none; border:none; border-bottom:2px solid transparent; border-radius:0; padding:10px 4px; color:var(--muted);}
   .tab-btn.active{color:var(--accent); border-bottom-color:var(--accent);}
 
+  /* --- TABS (dashboard client) : icônes pixel + fins séparateurs verticaux entre onglets --- */
+  .tabs-client{gap:0; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+  .tabs-client::-webkit-scrollbar{display:none;}
+  .tabs-client .tab-btn{display:flex; align-items:center; gap:6px; padding:10px 12px; white-space:nowrap; flex:none;}
+  .tabs-client .tab-btn:not(:last-child){border-right:1px solid var(--border);}
+  .tabs-client .tab-icon{width:13px; height:13px; flex:none; color:var(--muted); transition:color .15s;}
+  .tabs-client .tab-btn.active .tab-icon{color:var(--accent);}
+
   .default-loc-row{display:flex; gap:8px; align-items:center; margin-top:8px; position:relative;}
   .default-loc-row button{flex:none; font-size:.8rem; padding:8px 10px;}
 
@@ -1548,11 +1556,23 @@
 
     <!-- DASHBOARD CLIENT -->
     <section id="view-client-dash" hidden>
-      <div class="tabs">
-        <button class="tab-btn active" id="tabBtnDeliveries" onclick="setClientTab('deliveries')"><span data-i18n="tabDeliveries">LIVRAISONS</span><span class="notif-dot" id="dotTabDeliveries"></span></button>
-        <button class="tab-btn" id="tabBtnMarketplace" onclick="setClientTab('marketplace')"><span data-i18n="tabMarketplace">MARKETPLACE</span><span class="notif-dot" id="dotTabMarketplace"></span></button>
-        <button class="tab-btn" id="tabBtnResources" onclick="setClientTab('resources')"><span data-i18n="tabResources">DESIRED ITEMS</span><span class="notif-dot" id="dotTabResources"></span></button>
-        <button class="tab-btn" id="tabBtnBlueprints" onclick="setClientTab('blueprints')"><span data-i18n="tabBlueprints">BLUEPRINTS</span><span class="notif-dot" id="dotTabBlueprints"></span></button>
+      <div class="tabs tabs-client">
+        <button class="tab-btn active" id="tabBtnDeliveries" onclick="setClientTab('deliveries')">
+          <svg class="icon tab-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="5" width="12" height="2"/><rect x="3" y="7" width="10" height="6"/><rect x="7" y="7" width="2" height="6"/></g></svg>
+          <span data-i18n="tabDeliveries">LIVRAISONS</span><span class="notif-dot" id="dotTabDeliveries"></span>
+        </button>
+        <button class="tab-btn" id="tabBtnMarketplace" onclick="setClientTab('marketplace')">
+          <svg class="icon tab-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="4" y="3" width="1" height="3"/><rect x="11" y="3" width="1" height="3"/><rect x="3" y="6" width="10" height="8"/><rect x="6" y="9" width="4" height="1"/></g></svg>
+          <span data-i18n="tabMarketplace">MARKETPLACE</span><span class="notif-dot" id="dotTabMarketplace"></span>
+        </button>
+        <button class="tab-btn" id="tabBtnResources" onclick="setClientTab('resources')">
+          <svg class="icon tab-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="2" width="7" height="2"/><rect x="2" y="4" width="2" height="5"/><rect x="9" y="4" width="2" height="5"/><rect x="3" y="9" width="7" height="2"/><rect x="10" y="10" width="2" height="2"/><rect x="12" y="12" width="2" height="2"/></g></svg>
+          <span data-i18n="tabResources">DESIRED ITEMS</span><span class="notif-dot" id="dotTabResources"></span>
+        </button>
+        <button class="tab-btn" id="tabBtnBlueprints" onclick="setClientTab('blueprints')">
+          <svg class="icon tab-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="2" width="10" height="1"/><rect x="3" y="13" width="10" height="1"/><rect x="3" y="2" width="1" height="12"/><rect x="12" y="2" width="1" height="12"/><rect x="5" y="5" width="6" height="1"/><rect x="5" y="7" width="6" height="1"/><rect x="5" y="9" width="4" height="1"/></g></svg>
+          <span data-i18n="tabBlueprints">BLUEPRINTS</span><span class="notif-dot" id="dotTabBlueprints"></span>
+        </button>
       </div>
       <div id="clientTabDeliveries">
         <div class="card courier-ad" id="courierAdCard" hidden></div>

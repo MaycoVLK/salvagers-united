@@ -374,6 +374,16 @@
   .chat-bubble-row.mine .chat-bubble{background:var(--accent-dim); border-color:var(--accent);}
   .chat-bubble-text{font-size:.88rem; color:var(--text); white-space:pre-wrap; word-break:break-word;}
   .chat-bubble-time{font-size:.62rem; color:var(--muted); text-align:right; margin-top:3px;}
+  /* Récap "demande de craft blueprint" encadré en tête de bulle (voir BP_REQ_MARK / bpRequestRecapHtml) :
+     même bulle de chat que les autres messages, mais avec ce petit encadré au-dessus rappelant l'objet, le
+     mode (clé en main / avec tes ressources) et le prix annoncé. Le texte libre éventuel suit en dessous,
+     et la conversation continue ensuite normalement avec de simples bulles de chat. */
+  .bp-request-recap{background:color-mix(in srgb, var(--bg2) 70%, var(--accent) 30%); border:1px solid var(--accent); border-radius:6px; padding:8px 10px; min-width:170px;}
+  .bp-request-recap-title{font-size:.62rem; text-transform:uppercase; letter-spacing:.5px; color:var(--accent); margin-bottom:3px;}
+  .bp-request-recap-item{font-size:.85rem; color:var(--text); font-weight:600; margin-bottom:4px; word-break:break-word;}
+  .bp-request-recap-row{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.3px;}
+  .bp-request-recap-row strong{font-family:'VT323',monospace; font-size:1rem; color:var(--accent); text-transform:none; letter-spacing:0;}
+  .bp-request-note{margin-top:6px;}
   @media (max-width:480px){
     .online-panel{position:fixed; top:60px; left:8px; right:8px; width:auto; max-width:none;}
   }
@@ -2649,7 +2659,7 @@ const T = {
     shopBlueprintsTitle:"Blueprints disponibles au craft", noBlueprintsOwn:"Tu n'as encore ajouté aucun blueprint.",
     bpTurnkeyLbl:"clé en main", bpClientMatsLbl:"avec tes ressources", bpContactTurnkeyBtn:"COMMANDER CLÉ EN MAIN", bpContactMatsBtn:"COMMANDER (MES RESSOURCES)", bpContactBtn:"CONTACTER LE CRAFTER",
     bpContactPrefillTurnkey:"Salut ! Je suis intéressé par ton blueprint \"{item}\", en clé en main.", bpContactPrefillMats:"Salut ! Je suis intéressé par ton blueprint \"{item}\", je peux fournir les ressources.",
-    phBpContactMsg:"ex: Salut ! Je suis intéressé par ton blueprint.", bpMsgSent:"MESSAGE ENVOYÉ !",
+    phBpContactMsg:"ex: Salut ! Je suis intéressé par ton blueprint.", bpMsgSent:"MESSAGE ENVOYÉ !", bpRequestRecapTitle:"Demande de craft (blueprint)",
     listingStockModeLbl:"Vendre par unité (gérer un stock)", listingStockModeHint:"Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.", listingPriceUnitLbl:"Prix unitaire (aUEC)", listingStockLbl:"Stock disponible", perUnitSuffix:" / unité", stockLbl:"Stock :", yourQtyLbl:"Quantité souhaitée :", stockAvailableLbl:"Disponible :", stockTooLowAlert:"Erreur : il n'y a plus assez de stock disponible pour cette quantité.", invalidQtyAlert:"Erreur : quantité invalide.", qtyRequestedLbl:"Quantité :", listingModeSingleTab:"VENTE UNIQUE", listingModeStockTab:"VENTE PAR QUANTITÉ",
     listingTagsLbl:"Tags (optionnel)", tagCrafted:"CRAFTÉ", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", tagNegotiable:"NÉGOCIABLE", editListingBtn:"MODIFIER",
     requestResourcesTitle:"Poster un objet recherché", requestResourcesBtn:"OBJET RECHERCHÉ", resourceNameLbl:"Objet recherché", phResourceName:"ex: Laranite brute, casque d'armure lourde...", resourceQtyLbl:"Quantité souhaitée", resourcePriceLbl:"Prix proposé (aUEC, optionnel)", resourceNoteLbl:"Note (optionnel)", phResourceNote:"ex: Livraison sur Nyx, quantité négociable...", submitResourceRequestBtn:"PUBLIER L'ANNONCE", resourceRequestSaved:"ANNONCE PUBLIÉE !", resourcePriceNone:"Prix à négocier",
@@ -2800,7 +2810,7 @@ const T = {
     shopBlueprintsTitle:"Blueprints available to craft", noBlueprintsOwn:"You haven't added any blueprint yet.",
     bpTurnkeyLbl:"ready-made", bpClientMatsLbl:"with your materials", bpContactTurnkeyBtn:"ORDER READY-MADE", bpContactMatsBtn:"ORDER (MY MATERIALS)", bpContactBtn:"CONTACT CRAFTER",
     bpContactPrefillTurnkey:"Hey! I'm interested in your \"{item}\" blueprint, ready-made.", bpContactPrefillMats:"Hey! I'm interested in your \"{item}\" blueprint, I can supply the materials.",
-    phBpContactMsg:"e.g. Hey! I'm interested in your blueprint.", bpMsgSent:"MESSAGE SENT!",
+    phBpContactMsg:"e.g. Hey! I'm interested in your blueprint.", bpMsgSent:"MESSAGE SENT!", bpRequestRecapTitle:"Craft request (blueprint)",
     listingStockModeLbl:"Sell by unit (manage a stock)", listingStockModeHint:"The price is counted per unit and the buyer picks how many they want. Stock goes down automatically with each sale.", listingPriceUnitLbl:"Unit price (aUEC)", listingStockLbl:"Stock available", perUnitSuffix:" / unit", stockLbl:"Stock:", yourQtyLbl:"Quantity wanted:", stockAvailableLbl:"Available:", stockTooLowAlert:"Error: there isn't enough stock left for that quantity.", invalidQtyAlert:"Error: invalid quantity.", qtyRequestedLbl:"Quantity:", listingModeSingleTab:"SINGLE SALE", listingModeStockTab:"SELL BY QUANTITY",
     listingTagsLbl:"Tags (optional)", tagCrafted:"CRAFTED", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", tagNegotiable:"NEGOTIABLE", editListingBtn:"EDIT",
     requestResourcesTitle:"Post a desired item", requestResourcesBtn:"DESIRED ITEM", resourceNameLbl:"Item wanted", phResourceName:"e.g. Raw Laranite, heavy armor helmet...", resourceQtyLbl:"Quantity wanted", resourcePriceLbl:"Price offered (aUEC, optional)", resourceNoteLbl:"Note (optional)", phResourceNote:"e.g. Delivery to Nyx, quantity negotiable...", submitResourceRequestBtn:"POST AD", resourceRequestSaved:"AD POSTED!", resourcePriceNone:"Price to negotiate",
@@ -3230,6 +3240,16 @@ async function openMsgThreadWithUser(counterpartId){
   if(isMobileMsgUI()) openMobileMessages(); else openMessagesPanel();
   await openMsgThread(counterpartId);
 }
+// Après l'envoi de N'IMPORTE QUELLE demande sur le site (proposition d'achat marketplace, offre de
+// fourniture sur un desired item, demande de craft blueprint...), on ouvre directement la messagerie sur
+// le fil concerné plutôt que de laisser l'utilisateur sans aucun retour visuel. On recharge d'abord les
+// conversations depuis la base (sinon le nouvel élément qu'on vient de créer — inquiry/offer/message —
+// n'est pas encore dans msgConversationsCache et le fil s'ouvrirait vide) puis on ouvre le fil.
+async function openMsgThreadForNewRequest(counterpartId){
+  if(!counterpartId || !session) return;
+  await loadMsgConversations();
+  await openMsgThreadWithUser(counterpartId);
+}
 async function submitChatMessage(ev){
   ev.preventDefault();
   const input = msgEl('msgComposeInput');
@@ -3325,7 +3345,8 @@ function msgConvPreviewHtml(latest, uid){
   if(!latest) return `<span class="muted">${d.msgNewConversation}</span>`;
   if(latest.__kind === 'chat_sent' || latest.__kind === 'chat_received'){
     const prefix = latest.__kind === 'chat_sent' ? d.msgYouPrefix : '';
-    const snippet = escapeHtml((latest.content||'').slice(0,60));
+    const bpReq = parseBpRequestContent(latest.content);
+    const snippet = bpReq ? d.bpRequestRecapTitle : escapeHtml((latest.content||'').slice(0,60));
     return `${prefix}${snippet}`;
   }
   return `${msgKindLabel(latest.__kind)} — ${inquiryStatusBadge(latest.status)}`;
@@ -3483,10 +3504,14 @@ async function renderMsgThreadItems(g){
 }
 function chatBubbleHtml(item, isMine){
   const time = new Date(item.created_at).toLocaleTimeString(LANG==='fr'?'fr-FR':'en-US', { hour:'2-digit', minute:'2-digit' });
+  const bpReq = parseBpRequestContent(item.content);
+  const textHtml = bpReq
+    ? bpRequestRecapHtml(bpReq.recap) + (bpReq.rest ? `<div class="chat-bubble-text bp-request-note">${escapeHtml(bpReq.rest)}</div>` : '')
+    : `<div class="chat-bubble-text">${escapeHtml(item.content)}</div>`;
   return `
     <div class="chat-bubble-row ${isMine?'mine':'theirs'}">
       <div class="chat-bubble">
-        <div class="chat-bubble-text">${escapeHtml(item.content)}</div>
+        ${textHtml}
         <div class="chat-bubble-time">${time}</div>
       </div>
     </div>`;
@@ -4479,7 +4504,7 @@ async function submitOfferModal(){
   pixelBurst($('offerModalSendBtn'));
   toastShow(d.inquirySent);
   closeOfferModal();
-  msgRefreshAfterAction();
+  openMsgThreadForNewRequest(listing.seller_id);
 }
 let marketplaceFeedCache = [];
 let marketplaceSellerMapCache = {};
@@ -4801,7 +4826,7 @@ async function submitResourceOfferModal(){
   pushNotification(resourceOfferModalSellerId, 'seller_resource_offer', newOffer ? newOffer.id : null);
   toastShow(d.resourceOfferSent);
   closeResourceOfferModal();
-  msgRefreshAfterAction();
+  openMsgThreadForNewRequest(resourceOfferModalSellerId);
 }
 async function cancelResourceOffer(id){
   if(!confirm(T[LANG].confirmCancel)) return;
@@ -5459,7 +5484,7 @@ function blueprintCardHtml(bp, sellerMap, isOwner){
   // séparés sur la carte qui ne faisaient que pré-remplir le champ de messagerie sans rien envoyer.
   let contactBlock = '';
   if(canOrder){
-    contactBlock = `<button type="button" class="mkt-interest-btn" data-seller-id="${bp.seller_id}" data-item-name="${encodeURIComponent(bp.item_name)}" data-has-turnkey="${bp.price_turnkey ? '1':'0'}" data-has-mats="${bp.price_client_mats ? '1':'0'}" onclick="pixelSwoosh(this); openBlueprintContactModal(this)">
+    contactBlock = `<button type="button" class="mkt-interest-btn" data-seller-id="${bp.seller_id}" data-item-name="${encodeURIComponent(bp.item_name)}" data-price-turnkey="${bp.price_turnkey||''}" data-price-mats="${bp.price_client_mats||''}" onclick="pixelSwoosh(this); openBlueprintContactModal(this)">
       <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
         <rect x="1" y="2" width="14" height="2"/><rect x="1" y="9" width="14" height="2"/><rect x="1" y="2" width="2" height="9"/><rect x="13" y="2" width="2" height="9"/>
         <rect x="4" y="5" width="2" height="2"/><rect x="7" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/>
@@ -5601,21 +5626,28 @@ async function deleteBlueprint(id){
 // commande/acceptation pour cette première version de la fonctionnalité).
 let bpContactModalSellerId = null;
 let bpContactModalItemName = '';
+let bpContactModalPriceTurnkey = 0;
+let bpContactModalPriceMats = 0;
+// Marqueur invisible préfixé au contenu du message pour encoder un petit "récapitulatif" structuré (objet,
+// mode choisi, prix) directement DANS le texte stocké en base (pas de nouvelle table) : chatBubbleHtml le
+// détecte et affiche un encadré récap au-dessus du message, puis la conversation continue normalement en
+// dessous avec des bulles de chat classiques (le récap n'apparaît que sur CE message précis).
+const BP_REQ_MARK = '§BPREQ§';
 function openBlueprintContactModal(btn){
   if(!session) return;
   const d = T[LANG];
   bpContactModalSellerId = btn.dataset.sellerId;
   bpContactModalItemName = decodeURIComponent(btn.dataset.itemName);
-  const hasTurnkey = btn.dataset.hasTurnkey === '1';
-  const hasMats = btn.dataset.hasMats === '1';
+  bpContactModalPriceTurnkey = parseFloat(btn.dataset.priceTurnkey) || 0;
+  bpContactModalPriceMats = parseFloat(btn.dataset.priceMats) || 0;
   $('bpContactModalTitle').textContent = bpContactModalItemName;
   $('bpContactModalMsg').value = '';
   const turnkeyBtn = $('bpContactModalTurnkeyBtn');
   turnkeyBtn.textContent = d.bpContactTurnkeyBtn;
-  turnkeyBtn.hidden = !hasTurnkey;
+  turnkeyBtn.hidden = !bpContactModalPriceTurnkey;
   const matsBtn = $('bpContactModalMatsBtn');
   matsBtn.textContent = d.bpContactMatsBtn;
-  matsBtn.hidden = !hasMats;
+  matsBtn.hidden = !bpContactModalPriceMats;
   $('bpContactModalOverlay').hidden = false;
 }
 function closeBlueprintContactModal(){
@@ -5627,10 +5659,38 @@ async function sendBlueprintContactMsg(mode){
   const d = T[LANG];
   const template = mode === 'turnkey' ? d.bpContactPrefillTurnkey : d.bpContactPrefillMats;
   const typed = $('bpContactModalMsg').value.trim();
-  const message = typed || template.replace('{item}', bpContactModalItemName);
-  await sendChatMessage(bpContactModalSellerId, message);
-  toastShow(d.bpMsgSent);
+  const freeText = typed || template.replace('{item}', bpContactModalItemName);
+  const price = mode === 'turnkey' ? bpContactModalPriceTurnkey : bpContactModalPriceMats;
+  const recap = { item: bpContactModalItemName, mode, price };
+  const sellerId = bpContactModalSellerId;
+  const message = BP_REQ_MARK + JSON.stringify(recap) + BP_REQ_MARK + '\n' + freeText;
   closeBlueprintContactModal();
+  await sendChatMessage(sellerId, message);
+  toastShow(d.bpMsgSent);
+  openMsgThreadForNewRequest(sellerId);
+}
+// Détecte le marqueur BP_REQ_MARK en tête d'un message de chat et en extrait le récap structuré
+// {item, mode, price} ainsi que le texte libre qui le suit, pour chatBubbleHtml. Retourne null si le
+// message est un message de chat normal (immense majorité des cas).
+function parseBpRequestContent(content){
+  if(!content || !content.startsWith(BP_REQ_MARK)) return null;
+  const closeIdx = content.indexOf(BP_REQ_MARK, BP_REQ_MARK.length);
+  if(closeIdx === -1) return null;
+  try{
+    const recap = JSON.parse(content.slice(BP_REQ_MARK.length, closeIdx));
+    const rest = content.slice(closeIdx + BP_REQ_MARK.length).replace(/^\n/, '');
+    return { recap, rest };
+  }catch(e){ return null; }
+}
+function bpRequestRecapHtml(recap){
+  const d = T[LANG];
+  const modeLabel = recap.mode === 'turnkey' ? d.bpTurnkeyLbl : d.bpClientMatsLbl;
+  return `
+    <div class="bp-request-recap">
+      <div class="bp-request-recap-title">${d.bpRequestRecapTitle}</div>
+      <div class="bp-request-recap-item">${escapeHtml(recap.item)}</div>
+      <div class="bp-request-recap-row"><span>${modeLabel}</span>${recap.price ? `<strong>${fmt(recap.price)}</strong>` : ''}</div>
+    </div>`;
 }
 let myListingsCache = [];
 let myListingsOrderMap = {};

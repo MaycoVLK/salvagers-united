@@ -61,7 +61,10 @@
   .career-stat .val{font-family:'VT323',monospace; font-size:1.6rem; color:var(--accent); line-height:1.1;}
   .career-stat .lbl{font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;}
 
-  .shop-leaderboard-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;}
+  /* minmax(0,1fr) plutôt que 1fr seul : sans ça, un contenu non cassable dans une colonne (ex: un nom
+     d'objet très long) forçait cette colonne à s'élargir bien au-delà de son tiers de largeur, écrasant
+     les deux autres colonnes du podium — surtout visible sur mobile où il n'y a déjà pas beaucoup de place. */
+  .shop-leaderboard-grid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); gap:10px; margin-top:10px;}
   .shop-lb-slot{display:flex; flex-direction:column; align-items:center; text-align:center; gap:7px; border:1px solid var(--border); border-radius:4px; padding:16px 10px;}
   /* Même gabarit que le logo de la bannière boutique (coins arrondis, pas un rond) ; chaque slot porte
      --accent/--accent-dim en inline-style avec la couleur de la boutique gagnante, donc le logo (et le
@@ -81,7 +84,8 @@
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.3em;}
   .shop-lb-slot-lbl{font-size:.85rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; line-height:1.25; min-height:2.5em;}
   .shop-lb-slot-val{font-family:'VT323',monospace; font-size:1.7rem; color:var(--accent); line-height:1.1;}
-  .shop-lb-slot-item{font-size:.85rem; color:var(--muted); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .shop-lb-slot-item{font-size:.85rem; color:var(--muted); max-width:100%; word-break:break-word; overflow-wrap:break-word;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
   @media (max-width:480px){
     .shop-leaderboard-grid{gap:4px;}
     .shop-lb-slot{padding:8px 3px; gap:5px;}

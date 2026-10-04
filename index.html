@@ -567,6 +567,10 @@
   .mkt-filter-menu{right:0; min-width:200px;}
   .mkt-filter-menu button.active{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
   .mkt-card{position:relative; border:1px solid var(--border); border-radius:4px; background:var(--bg2); overflow:hidden; display:flex; flex-direction:column;}
+  /* Cards marketplace/blueprint cliquables vers leur page détail (pas les cards "mes annonces"/"objet
+     recherché" côté vendeur, qui n'ont pas de page détail dédiée). */
+  .mkt-card-clickable{cursor:pointer; transition:border-color .15s, transform .15s;}
+  .mkt-card-clickable:hover{border-color:var(--accent); transform:translateY(-2px);}
   .mkt-photo-wrap{position:relative; width:100%; aspect-ratio:4/3; background:var(--panel); display:flex; align-items:center; justify-content:center; overflow:hidden;}
   .mkt-photo-wrap img{width:100%; height:100%; object-fit:cover;}
   .mkt-photo-placeholder{width:34px; height:34px; color:var(--muted); opacity:.4;}
@@ -768,6 +772,38 @@
   @media (max-width:1000px){
     .shop-edit-layout{flex-direction:column;}
     .shop-edit-preview-wrap{order:-1; position:static; width:100%; max-width:460px; margin:0 auto 4px;}
+  }
+
+  /* --- PAGE DÉTAIL D'ANNONCE (marketplace / blueprint) : grande photo + infos, dans l'esprit d'une fiche
+     produit façon petites annonces (leboncoin & co), adapté à la DA pixel/terminal du site. Deux colonnes
+     sur grand écran, empilé (photo d'abord) sur mobile — la carte cliquée depuis le feed ouvre cette page. --- */
+  .listing-detail-layout{display:flex; gap:22px; align-items:flex-start; flex-wrap:wrap; max-width:1000px;}
+  .listing-detail-photo-wrap{flex:1 1 380px; min-width:280px; max-width:460px; aspect-ratio:4/3; background:var(--panel); border:1px solid var(--border); border-radius:6px; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;}
+  .listing-detail-photo-wrap img{width:100%; height:100%; object-fit:cover;}
+  .listing-detail-photo-wrap .mkt-photo-placeholder{width:30%; height:30%; color:var(--muted);}
+  .listing-detail-tags{position:absolute; top:10px; left:10px; display:flex; flex-wrap:wrap; gap:4px;}
+  .listing-detail-info{flex:1 1 360px; min-width:280px; display:flex; flex-direction:column; gap:10px;}
+  .listing-detail-title{font-size:1.6rem; color:var(--text); line-height:1.2; margin:0;}
+  .listing-detail-info .mkt-price-row{font-size:1.05rem;}
+  .listing-detail-info .mkt-price{font-size:1.5rem;}
+  .listing-detail-section-lbl{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:4px 0 2px;}
+  .listing-detail-description{font-size:.88rem; color:var(--text); line-height:1.5; white-space:pre-wrap; word-break:break-word;}
+  .listing-detail-description.muted{font-style:italic;}
+  .listing-detail-materials{font-size:.85rem; color:var(--text); line-height:1.45; white-space:pre-wrap; word-break:break-word;}
+  .listing-detail-info .courier-box{width:100%; max-width:none; flex:none;}
+  .listing-detail-info .mkt-interest-btn{min-height:50px; font-size:.9rem;}
+  /* Encart pub "livraison par coursier" (marketplace uniquement) : prix dynamique recalculé selon le prix
+     de l'annonce, même barème que les commandes classiques (computeCommission), pour rester cohérent. */
+  .courier-delivery-ad{border:1px dashed var(--accent); border-radius:6px; padding:12px 14px; background:var(--accent-dim); display:flex; flex-direction:column; gap:6px;}
+  .courier-delivery-ad-title{font-family:'VT323',monospace; font-size:1.05rem; color:var(--accent); display:flex; align-items:center; gap:7px;}
+  .courier-delivery-ad-title .icon{width:16px; height:16px; flex:none;}
+  .courier-delivery-ad-text{font-size:.78rem; color:var(--text); line-height:1.4;}
+  .courier-delivery-ad-price{font-family:'VT323',monospace; font-size:1.2rem; color:var(--accent);}
+  .courier-delivery-ad-price span{font-size:.7rem; color:var(--muted); font-family:inherit; margin-left:4px;}
+  @media (max-width:760px){
+    .listing-detail-layout{flex-direction:column; gap:14px;}
+    .listing-detail-photo-wrap{max-width:none; width:100%;}
+    .listing-detail-title{font-size:1.3rem;}
   }
 
   /* Zone de dépôt du logo : avant, un simple bouton texte "CHOOSE A LOGO" peu engageant. */
@@ -1955,6 +1991,8 @@
           <div class="card">
             <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
             <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute" oninput="updateListingLivePreview()">
+            <label for="listingDescription" data-i18n="listingDescriptionLbl">Description détaillée (optionnel)</label>
+            <textarea id="listingDescription" data-i18n-ph="phListingDescription" placeholder="ex: État, provenance, détails utiles à l'acheteur..." oninput="updateListingLivePreview()"></textarea>
             <input type="checkbox" id="listingStockMode" hidden>
             <div class="tabs listing-mode-tabs">
               <button type="button" class="tab-btn active" id="listingModeTabSingle" onclick="setListingMode(false, this)"><span data-i18n="listingModeSingleTab">VENTE UNIQUE</span></button>
@@ -2268,6 +2306,42 @@
       <button class="back" onclick="openSellerShop(shopViewingSellerId)" data-i18n="back">&lt; RETOUR</button>
       <header><h1 data-i18n="myResourceRequestsTitle">Objets recherchés</h1></header>
       <div id="shopResourceRequestsGridFull" class="resource-request-grid"></div>
+    </section>
+
+    <!-- PAGE DÉTAIL D'UNE ANNONCE (marketplace ou blueprint) : ouverte en cliquant sur une card du feed
+         client, de la boutique d'un vendeur, ou du catalogue de blueprints. Un seul écran, rempli en JS
+         par renderListingDetailView()/renderBlueprintDetailView() selon le type d'annonce cliquée. -->
+    <section id="view-listing-detail" hidden>
+      <button class="back" onclick="closeListingDetail()" data-i18n="back">&lt; RETOUR</button>
+      <div class="listing-detail-layout">
+        <div class="listing-detail-photo-wrap">
+          <div id="listingDetailTags" class="listing-detail-tags"></div>
+          <div id="listingDetailPhoto"></div>
+        </div>
+        <div class="listing-detail-info">
+          <h1 class="listing-detail-title" id="listingDetailTitle"></h1>
+          <div id="listingDetailPriceRow"></div>
+          <div id="listingDetailMaterialsWrap" hidden>
+            <div class="listing-detail-section-lbl" data-i18n="bpMaterialsLbl">Ressources nécessaires</div>
+            <div class="listing-detail-materials" id="listingDetailMaterials"></div>
+          </div>
+          <div>
+            <div class="listing-detail-section-lbl" data-i18n="detailDescriptionLbl">Description</div>
+            <div class="listing-detail-description" id="listingDetailDescription"></div>
+          </div>
+          <div id="listingDetailSellerBox"></div>
+          <div id="listingDetailActionWrap"></div>
+          <div id="listingDetailCourierAd" class="courier-delivery-ad" hidden>
+            <div class="courier-delivery-ad-title">
+              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="5" width="12" height="2"/><rect x="3" y="7" width="10" height="6"/><rect x="7" y="7" width="2" height="6"/></g></svg>
+              <span data-i18n="courierAdTitle">Besoin d'un coursier ?</span>
+            </div>
+            <div class="courier-delivery-ad-text" data-i18n="courierAdText">Fais-toi livrer cet objet où tu veux dans Stanton, Nyx ou Pyro par un de nos coursiers.</div>
+            <div class="courier-delivery-ad-price"><span id="courierAdPriceVal">—</span><span data-i18n="courierAdPriceNote"> estimé selon le prix de l'objet</span></div>
+            <button type="button" class="btn-secondary" style="width:100%;" onclick="openCreateOrder()" data-i18n="courierAdCta">PASSER UNE COMMANDE</button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- MESSAGERIE MOBILE : page dédiée plein écran (remplace le popup sur mobile, voir onMessagesBtnClick()) -->
@@ -2622,7 +2696,7 @@ let profile = null;
 // Un membre peut cumuler plusieurs casquettes (client + coursier + vendeur) : currentView retient
 // l'onglet actuellement affiché parmi celles disponibles pour ce compte. 'client' reste le point de départ par défaut.
 let currentView = 'client'; // 'client' | 'courier' | 'seller' | 'admin'
-const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-blueprint','view-seller-create-resource','view-shop-all-listings','view-shop-all-resources','view-messages-mobile'];
+const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-blueprint','view-seller-create-resource','view-shop-all-listings','view-shop-all-resources','view-listing-detail','view-messages-mobile'];
 // Quitte aussi le mode "page messagerie mobile plein écran" (voir openMobileMessages()) à chaque
 // changement de vue, quel que soit le chemin emprunté pour naviguer ailleurs : on ne veut pas que la
 // barre du haut reste masquée si on quitte la messagerie autrement qu'avec son propre bouton RETOUR.
@@ -2760,7 +2834,8 @@ const T = {
     sellerAchvDesc:{first_sale:"Conclus ta première vente.", first_courier_sale:"Fais livrer une vente par un coursier.", five_sales:"Conclus 5 ventes.", pockets_full:"Mets en ligne 15 annonces ou plus.", good_fences:"Valide une vente de plus de 2 000 000 aUEC en une seule fois.", crafter_confirmed:"Mets en vente un item crafté de qualité 800 ou plus.", not_stolen:"Valide la vente d'une bombe Colossus.", couldnt_be_bothered:"Mets en ligne une annonce sans photo.", your_wish:"Valide la proposition d'un client sur un de tes desired items.", crafterrrrr:"Ajoute 5 blueprints sur ta page de boutique.", made_with_love:"Ajoute 10 blueprints sur ta page de boutique.", better_than_wikelo:"Vends un item crafté de qualité 800 ou plus."},
     sellerRankLabels:{novice:"Novice", trader:"Négociant", merchant:"Marchand", tycoon:"Magnat"}, rankSales:"ventes",
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
-    newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
+    newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingDescriptionLbl:"Description détaillée (optionnel)", phListingDescription:"ex: État, provenance, détails utiles à l'acheteur...", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
+    detailDescriptionLbl:"Description", detailNoDescription:"Aucune description fournie pour cette annonce.", courierAdTitle:"Besoin d'un coursier ?", courierAdText:"Fais-toi livrer cet objet où tu veux dans Stanton, Nyx ou Pyro par un de nos coursiers.", courierAdPriceNote:" estimé selon le prix de l'objet", courierAdCta:"PASSER UNE COMMANDE",
     livePreviewTitle:"Aperçu pour les clients", livePreviewBadge:"Aperçu", livePreviewEmptyHint:"Remplis le formulaire pour voir l'aperçu…",
     tabBlueprints:"BLUEPRINTS", blueprintsCatalogTitle:"Catalogue de blueprints", blueprintsCatalogSub:"Des objets craftés sur commande par les vendeurs qui possèdent le blueprint correspondant.", blueprintsEmpty:"Aucun blueprint publié pour le moment.",
     newBlueprintTitle:"Ajouter un blueprint", editBlueprintTitle:"Modifier le blueprint", bpItemLbl:"Objet craftable", phBpItem:"ex: Casque d'armure lourde", bpDescriptionLbl:"Description (optionnel)", phBpDescription:"ex: Finition mate, craft sur mesure selon tes specs...", bpMaterialsLbl:"Ressources nécessaires", phBpMaterials:"ex: 50 Laranite, 20 Titanium, 1h de craft", bpPriceTurnkeyLbl:"Prix clé en main (aUEC)", bpPriceClientMatsLbl:"Prix si tu fournis les ressources (aUEC)", bpPriceHint:"Renseigne au moins un des deux prix. Laisse l'autre vide si tu ne proposes pas cette option.", bpPhotoLbl:"Photo (optionnel)", addBlueprintBtn:"AJOUTER AU CATALOGUE", saveBlueprintBtn:"ENREGISTRER LES MODIFICATIONS", blueprintSaved:"BLUEPRINT AJOUTÉ !", blueprintUpdated:"BLUEPRINT MIS À JOUR !", confirmDeleteBlueprint:"Supprimer ce blueprint du catalogue ?",
@@ -2917,7 +2992,8 @@ const T = {
     sellerAchvDesc:{first_sale:"Close your first sale.", first_courier_sale:"Have a sale delivered by a courier.", five_sales:"Close 5 sales.", pockets_full:"List 15 or more items for sale.", good_fences:"Close a single sale worth more than 2,000,000 aUEC.", crafter_confirmed:"List a crafted item with quality 800 or higher.", not_stolen:"Complete the sale of a Colossus bomb.", couldnt_be_bothered:"List an item with no photo.", your_wish:"Accept a client's offer on one of your desired items.", crafterrrrr:"Add 5 blueprints to your shop page.", made_with_love:"Add 10 blueprints to your shop page.", better_than_wikelo:"Sell a crafted item with quality 800 or higher."},
     sellerRankLabels:{novice:"Novice", trader:"Trader", merchant:"Merchant", tycoon:"Tycoon"}, rankSales:"sales",
     rankToNextSales:"{n} more sale(s) to reach {rank}",
-    newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
+    newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingDescriptionLbl:"Detailed description (optional)", phListingDescription:"e.g. Condition, origin, useful details for the buyer...", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
+    detailDescriptionLbl:"Description", detailNoDescription:"No description provided for this listing.", courierAdTitle:"Need a courier?", courierAdText:"Get this item delivered anywhere in Stanton, Nyx or Pyro by one of our couriers.", courierAdPriceNote:" estimated based on the item's price", courierAdCta:"PLACE AN ORDER",
     livePreviewTitle:"Preview for clients", livePreviewBadge:"Preview", livePreviewEmptyHint:"Fill in the form to see the preview…",
     tabBlueprints:"BLUEPRINTS", blueprintsCatalogTitle:"Blueprints catalog", blueprintsCatalogSub:"Items crafted to order by sellers who own the matching blueprint.", blueprintsEmpty:"No blueprints published yet.",
     newBlueprintTitle:"Add a blueprint", editBlueprintTitle:"Edit blueprint", bpItemLbl:"Craftable item", phBpItem:"e.g. Heavy armor helmet", bpDescriptionLbl:"Description (optional)", phBpDescription:"e.g. Matte finish, custom craft to your specs...", bpMaterialsLbl:"Required materials", phBpMaterials:"e.g. 50 Laranite, 20 Titanium, 1h craft time", bpPriceTurnkeyLbl:"Ready-made price (aUEC)", bpPriceClientMatsLbl:"Price if you supply the materials (aUEC)", bpPriceHint:"Fill in at least one of the two prices. Leave the other blank if you don't offer that option.", bpPhotoLbl:"Photo (optional)", addBlueprintBtn:"ADD TO CATALOG", saveBlueprintBtn:"SAVE CHANGES", blueprintSaved:"BLUEPRINT ADDED!", blueprintUpdated:"BLUEPRINT UPDATED!", confirmDeleteBlueprint:"Remove this blueprint from the catalog?",
@@ -4589,32 +4665,43 @@ const RESOURCE_PROPOSE_ICON = `<svg class="icon" viewBox="0 0 16 16" shape-rende
   <rect x="1" y="2" width="14" height="2"/><rect x="1" y="9" width="14" height="2"/><rect x="1" y="2" width="2" height="9"/><rect x="13" y="2" width="2" height="9"/>
   <rect x="4" y="5" width="2" height="2"/><rect x="7" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/>
 </g></svg>`;
-function mktCardHtml(listing, sellerMap, unreadSet){
+// Bouton "JE SUIS INTÉRESSÉ(E)" d'une annonce marketplace — extrait dans sa propre fonction pour être
+// réutilisé à l'identique sur la carte ET sur la page détail (evite d'avoir deux fois la même logique).
+function mktInterestBtnHtml(listing, stopProp){
   const d = T[LANG];
-  const seller = sellerMap[listing.seller_id];
-  const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
   const canBuy = session && session.user.id !== listing.seller_id;
-  const interestBlock = canBuy ? `<button type="button" class="mkt-interest-btn" data-listing-id="${listing.id}" data-item-name="${listing.item_name}" data-price="${listing.price}" data-is-stock="${listing.is_stock ? '1' : '0'}" data-stock="${listing.quantity}" onclick="pixelSwoosh(this); openOfferModal(this)">
+  if(!canBuy) return '';
+  return `<button type="button" class="mkt-interest-btn" data-listing-id="${listing.id}" data-item-name="${listing.item_name}" data-price="${listing.price}" data-is-stock="${listing.is_stock ? '1' : '0'}" data-stock="${listing.quantity}" onclick="${stopProp ? 'event.stopPropagation(); ' : ''}pixelSwoosh(this); openOfferModal(this)">
     <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
       <rect x="1" y="2" width="14" height="2"/><rect x="1" y="9" width="14" height="2"/><rect x="1" y="2" width="2" height="9"/><rect x="13" y="2" width="2" height="9"/>
       <rect x="4" y="5" width="2" height="2"/><rect x="7" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/>
     </g></svg>
     ${d.imInterested}
-  </button>` : '';
+  </button>`;
+}
+// Index global {id -> {type, data, seller}} alimenté à chaque rendu de card marketplace/blueprint, pour
+// que la page détail (openListingDetail) puisse retrouver l'annonce cliquée quel que soit l'écran d'où
+// elle vient (feed client, boutique d'un vendeur, catalogue de blueprints...) sans refaire de requête.
+const listingDetailIndex = {};
+function mktCardHtml(listing, sellerMap, unreadSet){
+  const d = T[LANG];
+  const seller = sellerMap[listing.seller_id];
+  if(listing.id !== 'preview') listingDetailIndex[listing.id] = { type:'listing', data:listing, seller };
+  const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
   const isNew = !!(unreadSet && unreadSet.has(listing.id));
   const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
   const hoverAttr = isNew ? ` onmouseenter="markListingSeen('${listing.id}', this)"` : '';
   return `
-    <div class="mkt-card"${hoverAttr}>
+    <div class="mkt-card mkt-card-clickable" onclick="openListingDetail('${listing.id}')"${hoverAttr}>
       ${newDot}
       <div class="mkt-photo-wrap">${photo}${listingTagsHtml(listing.tags)}</div>
       <div class="mkt-info">
         <div class="mkt-item-name">${listing.item_name}</div>
         ${mktPriceRowHtml(listing)}
-        <div class="courier-box" onclick="openSellerShop('${listing.seller_id}')" title="${d.viewShopBtn}">
+        <div class="courier-box" onclick="event.stopPropagation(); openSellerShop('${listing.seller_id}')" title="${d.viewShopBtn}">
           <div class="courier-box-name">${d.mktByLbl} ${(seller && seller.shop_name) || (seller ? displayName(seller) : '—')}</div>
         </div>
-        ${interestBlock}
+        ${mktInterestBtnHtml(listing, true)}
       </div>
     </div>`;
 }
@@ -5365,7 +5452,7 @@ function setListingMode(isStock, btnEl){
   updateListingLivePreview();
 }
 function resetListingForm(){
-  $('listingItem').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
+  $('listingItem').value=''; $('listingDescription').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
   applyListingMode(false);
   listingTagsState = { crafted:false, q700:false, q800:false, q900:false, negotiable:false };
   renderListingTagButtons();
@@ -5380,6 +5467,7 @@ function openEditListing(id){
   $('sellerCreateWrap').hidden = true;
   $('view-seller-create-listing').hidden = false;
   $('listingItem').value = l.item_name;
+  $('listingDescription').value = l.description || '';
   $('listingPrice').value = l.price;
   $('listingQty').value = l.quantity;
   applyListingMode(!!l.is_stock);
@@ -5558,6 +5646,7 @@ async function createListing(){
   if(!session) return;
   const d = T[LANG];
   const item_name = $('listingItem').value.trim();
+  const description = $('listingDescription').value.trim();
   const price = parseFloat($('listingPrice').value) || 0;
   const quantity = parseInt($('listingQty').value,10) || 1;
   const is_stock = $('listingStockMode').checked;
@@ -5566,7 +5655,7 @@ async function createListing(){
   bootOverlayStart(d.bootLinesListing);
   if(editingListingId){
     const id = editingListingId;
-    const { error } = await sb.from('marketplace_listings').update({ item_name, price, quantity, tags, is_stock }).eq('id', id);
+    const { error } = await sb.from('marketplace_listings').update({ item_name, description, price, quantity, tags, is_stock }).eq('id', id);
     if(error){ await bootOverlayFinish(d.bootError+': '+error.message, true); return; }
     if(pendingListingPhotoFile){
       const ext = (pendingListingPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
@@ -5583,7 +5672,7 @@ async function createListing(){
     routeApp();
     return;
   }
-  const { data, error } = await sb.from('marketplace_listings').insert({ seller_id: session.user.id, item_name, price, quantity, tags, is_stock }).select().single();
+  const { data, error } = await sb.from('marketplace_listings').insert({ seller_id: session.user.id, item_name, description, price, quantity, tags, is_stock }).select().single();
   if(error){ await bootOverlayFinish(d.bootError+': '+error.message, true); return; }
   if(pendingListingPhotoFile){
     const ext = (pendingListingPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
@@ -5640,6 +5729,7 @@ function updateListingLivePreview(){
   const fakeListing = {
     id:'preview', seller_id: session.user.id,
     item_name: itemName,
+    description: $('listingDescription').value.trim(),
     price: parseFloat($('listingPrice').value) || 0,
     quantity: parseInt($('listingQty').value,10) || 1,
     is_stock: $('listingStockMode').checked,
@@ -5658,43 +5748,115 @@ function blueprintPriceRowsHtml(bp){
   html += '</div>';
   return html;
 }
+// Bouton "JE SUIS INTÉRESSÉ(E)" d'un blueprint — extrait pour être réutilisé à l'identique sur la carte ET
+// sur la page détail.
+function blueprintContactBtnHtml(bp, canOrder, stopProp){
+  const d = T[LANG];
+  if(!canOrder) return '';
+  return `<button type="button" class="mkt-interest-btn" data-seller-id="${bp.seller_id}" data-item-name="${encodeURIComponent(bp.item_name)}" data-price-turnkey="${bp.price_turnkey||''}" data-price-mats="${bp.price_client_mats||''}" onclick="${stopProp ? 'event.stopPropagation(); ' : ''}pixelSwoosh(this); openBlueprintContactModal(this)">
+    <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+      <rect x="1" y="2" width="14" height="2"/><rect x="1" y="9" width="14" height="2"/><rect x="1" y="2" width="2" height="9"/><rect x="13" y="2" width="2" height="9"/>
+      <rect x="4" y="5" width="2" height="2"/><rect x="7" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/>
+    </g></svg>
+    ${d.imInterested}
+  </button>`;
+}
 function blueprintCardHtml(bp, sellerMap, isOwner){
   const d = T[LANG];
   const seller = sellerMap ? sellerMap[bp.seller_id] : null;
+  if(bp.id !== 'preview') listingDetailIndex[bp.id] = { type:'blueprint', data:bp, seller, isOwner };
   const photo = bp.photo_url ? `<img src="${bp.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
   const canOrder = !isOwner && session && session.user.id !== bp.seller_id;
-  // Un seul bouton "Je suis intéressé(e)" (même logique que sur les cartes marketplace) qui ouvre une
-  // modale avec un message éditable + les deux modes de commande en boutons, plutôt que deux boutons
-  // séparés sur la carte qui ne faisaient que pré-remplir le champ de messagerie sans rien envoyer.
-  let contactBlock = '';
-  if(canOrder){
-    contactBlock = `<button type="button" class="mkt-interest-btn" data-seller-id="${bp.seller_id}" data-item-name="${encodeURIComponent(bp.item_name)}" data-price-turnkey="${bp.price_turnkey||''}" data-price-mats="${bp.price_client_mats||''}" onclick="pixelSwoosh(this); openBlueprintContactModal(this)">
-      <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-        <rect x="1" y="2" width="14" height="2"/><rect x="1" y="9" width="14" height="2"/><rect x="1" y="2" width="2" height="9"/><rect x="13" y="2" width="2" height="9"/>
-        <rect x="4" y="5" width="2" height="2"/><rect x="7" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/>
-      </g></svg>
-      ${d.imInterested}
-    </button>`;
-  }
   const ownerActions = isOwner ? `
     <div class="my-listing-actions">
-      <button type="button" class="btn-secondary" onclick="openEditBlueprint('${bp.id}')" data-i18n="editListingBtn">MODIFIER</button>
-      <button type="button" class="btn-secondary" onclick="deleteBlueprint('${bp.id}')" data-i18n="deleteListingBtn">SUPPRIMER</button>
+      <button type="button" class="btn-secondary" onclick="event.stopPropagation(); openEditBlueprint('${bp.id}')" data-i18n="editListingBtn">MODIFIER</button>
+      <button type="button" class="btn-secondary" onclick="event.stopPropagation(); deleteBlueprint('${bp.id}')" data-i18n="deleteListingBtn">SUPPRIMER</button>
     </div>` : '';
   return `
-    <div class="mkt-card blueprint-card">
+    <div class="mkt-card mkt-card-clickable blueprint-card" onclick="openListingDetail('${bp.id}')">
       <div class="mkt-photo-wrap">${photo}</div>
       <div class="mkt-info">
         <div class="mkt-item-name">${bp.item_name}</div>
         ${bp.description ? `<div class="bp-description">${escapeHtml(bp.description)}</div>` : ''}
         <div class="bp-materials">${escapeHtml(bp.materials||'')}</div>
         ${blueprintPriceRowsHtml(bp)}
-        ${seller ? `<div class="courier-box" onclick="openSellerShop('${bp.seller_id}')"><div class="courier-box-name">${d.mktByLbl} ${seller.shop_name || displayName(seller)}</div></div>` : ''}
-        ${contactBlock}
+        ${seller ? `<div class="courier-box" onclick="event.stopPropagation(); openSellerShop('${bp.seller_id}')"><div class="courier-box-name">${d.mktByLbl} ${seller.shop_name || displayName(seller)}</div></div>` : ''}
+        ${blueprintContactBtnHtml(bp, canOrder, true)}
         ${ownerActions}
       </div>
     </div>`;
 }
+
+// --- PAGE DÉTAIL D'ANNONCE (marketplace / blueprint) --------------------------------------------------------
+function sellerBoxHtml(sellerId, seller){
+  const d = T[LANG];
+  if(!sellerId) return '';
+  const name = (seller && seller.shop_name) || (seller ? displayName(seller) : '—');
+  return `<div class="courier-box" onclick="openSellerShop('${sellerId}')" title="${d.viewShopBtn}"><div class="courier-box-name">${d.mktByLbl} ${name}</div></div>`;
+}
+function openListingDetail(id){
+  const entry = listingDetailIndex[id];
+  if(!entry || id === 'preview') return;
+  if(entry.type === 'blueprint') renderBlueprintDetailView(entry);
+  else renderListingDetailView(entry);
+}
+function closeListingDetail(){ routeApp(); }
+function renderListingDetailView(entry){
+  const d = T[LANG];
+  const l = entry.data;
+  hideAllViews();
+  $('createOrderBtn').hidden = true;
+  $('sellerCreateWrap').hidden = true;
+  $('view-listing-detail').hidden = false;
+  $('listingDetailPhoto').innerHTML = l.photo_url ? `<img src="${l.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  $('listingDetailTags').innerHTML = listingTagsHtml(l.tags);
+  $('listingDetailTitle').textContent = l.item_name;
+  $('listingDetailPriceRow').innerHTML = mktPriceRowHtml(l);
+  $('listingDetailMaterialsWrap').hidden = true;
+  const descEl = $('listingDetailDescription');
+  if(l.description){ descEl.textContent = l.description; descEl.classList.remove('muted'); }
+  else { descEl.textContent = d.detailNoDescription; descEl.classList.add('muted'); }
+  $('listingDetailSellerBox').innerHTML = sellerBoxHtml(l.seller_id, entry.seller);
+  $('listingDetailActionWrap').innerHTML = mktInterestBtnHtml(l, false);
+  // Encart pub "livraison par coursier" : prix dynamique recalculé selon le prix de CETTE annonce, avec le
+  // même barème que les commandes classiques (computeCommission) — cohérent avec ce qu'un client paierait
+  // réellement en passant commande pour se faire livrer cet objet.
+  const adBox = $('listingDetailCourierAd');
+  if(adBox){
+    adBox.hidden = false;
+    const estimate = computeCommission(parseFloat(l.price) || 0);
+    $('courierAdPriceVal').textContent = fmt(estimate);
+  }
+  window.scrollTo(0,0);
+}
+function renderBlueprintDetailView(entry){
+  const d = T[LANG];
+  const bp = entry.data;
+  const isOwner = !!entry.isOwner;
+  hideAllViews();
+  $('createOrderBtn').hidden = true;
+  $('sellerCreateWrap').hidden = true;
+  $('view-listing-detail').hidden = false;
+  $('listingDetailPhoto').innerHTML = bp.photo_url ? `<img src="${bp.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  $('listingDetailTags').innerHTML = '';
+  $('listingDetailTitle').textContent = bp.item_name;
+  $('listingDetailPriceRow').innerHTML = blueprintPriceRowsHtml(bp);
+  const matWrap = $('listingDetailMaterialsWrap');
+  if(bp.materials){ matWrap.hidden = false; $('listingDetailMaterials').textContent = bp.materials; }
+  else matWrap.hidden = true;
+  const descEl = $('listingDetailDescription');
+  if(bp.description){ descEl.textContent = bp.description; descEl.classList.remove('muted'); }
+  else { descEl.textContent = d.detailNoDescription; descEl.classList.add('muted'); }
+  $('listingDetailSellerBox').innerHTML = sellerBoxHtml(bp.seller_id, entry.seller);
+  const canOrder = !isOwner && session && session.user.id !== bp.seller_id;
+  $('listingDetailActionWrap').innerHTML = blueprintContactBtnHtml(bp, canOrder, false);
+  // Pas d'encart livraison coursier pour les blueprints : l'objet n'existe pas tant qu'il n'est pas crafté,
+  // la livraison se négocie directement avec le vendeur une fois le craft terminé.
+  const adBox = $('listingDetailCourierAd');
+  if(adBox) adBox.hidden = true;
+  window.scrollTo(0,0);
+}
+
 function updateBlueprintLivePreview(){
   const box = $('blueprintLivePreview'); if(!box || !session) return;
   const itemName = $('blueprintItem').value.trim();

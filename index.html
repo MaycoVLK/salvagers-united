@@ -524,8 +524,12 @@
     display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
   .bp-materials{font-size:.75rem; color:var(--muted); line-height:1.3; margin:2px 0 4px;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
-  .bp-price-rows{display:flex; flex-direction:column; gap:3px;}
-  .bp-price-rows .mkt-price-row{margin:0;}
+  .bp-price-rows{display:flex; flex-direction:column; gap:7px;}
+  /* Prix empilé au-dessus de son label (plutôt que côte à côte comme sur les cartes marketplace) : avec deux
+     prix possibles ("ready-made" / "avec tes ressources") et des montants aUEC souvent élevés, le côte-à-côte
+     finissait par faire éclater le chiffre lui-même sur deux lignes faute de place pour le label juste à côté. */
+  .bp-price-rows .mkt-price-row{margin:0; flex-direction:column; align-items:flex-start; gap:1px;}
+  .bp-price-rows .mkt-price{white-space:nowrap;}
   .bp-contact-row{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;}
   .bp-contact-row button{flex:1 1 auto; font-size:.68rem; padding:7px 6px; line-height:1.2;}
   /* --- APERÇU EN DIRECT (création/modif d'annonce marketplace ou de blueprint) : même gabarit que l'aperçu
@@ -866,7 +870,13 @@
 
   /* --- BANNIÈRE DE BOUTIQUE (page boutique = aussi le dashboard du vendeur, plus de page séparée) ---
      Logo | nom + localisation + propriétaire | upvote, le tout sur la texture choisie par le vendeur. */
-  .shop-banner-card{position:relative; padding:26px; margin-bottom:22px; border-radius:8px;
+  /* container-type:inline-size fait que la bascule "mobile" ci-dessous (voir @container plus bas) réagit à
+     la largeur RÉELLE de cet encadré plutôt qu'à la largeur de la fenêtre : indispensable pour l'aperçu en
+     direct, qui vit dans une colonne étroite même sur un grand écran desktop — avant, il restait coincé en
+     disposition "desktop" (photo + texte sur une ligne) alors qu'il n'y avait pas la place, d'où le rendu
+     écrasé. La vraie page boutique (pleine largeur) bascule maintenant elle aussi sur sa propre largeur,
+     ce qui est plus fiable qu'un media-query sur certains écrans/zooms. */
+  .shop-banner-card{position:relative; padding:26px; margin-bottom:22px; border-radius:8px; container-type:inline-size; container-name:shopbanner;
     background:linear-gradient(165deg, var(--panel), var(--bg2)); border:1px solid var(--accent-dim);
     box-shadow:0 0 0 1px var(--border) inset, 0 20px 46px -22px rgba(0,0,0,.6), 0 0 28px -14px var(--accent-dim);}
   .shop-banner-card::before,.shop-banner-card::after{content:""; position:absolute; width:14px; height:14px; border:2px solid var(--accent); opacity:.85; z-index:1;}
@@ -925,7 +935,7 @@
   .shop-banner-card .shop-description{position:relative; z-index:1; margin:14px 0 0; padding:18px 16px;
     background:color-mix(in srgb, var(--bg2) 88%, var(--accent) 12%); border:1px solid var(--accent-dim); border-radius:6px;
     flex:1; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden;}
-  @media (max-width:640px){
+  @container shopbanner (max-width:520px){
     .shop-banner-card{padding:16px;}
     .shop-banner-row{flex-direction:column; align-items:center; text-align:center; gap:14px;}
     .shop-banner-logo{width:100%; max-width:220px; height:auto; aspect-ratio:1/1; align-self:center; padding:16px; margin:0 auto;}
@@ -937,6 +947,24 @@
     .shop-banner-meta{justify-content:center;}
     .shop-banner-actions{width:100%; justify-content:center; margin:6px 0 0;}
     .shop-banner-actions .shop-upvote-btn{flex:1 1 auto; justify-content:center;}
+  }
+  /* Repli pour les navigateurs sans support des container queries : on garde quand même la bascule sur la
+     largeur de fenêtre comme avant, pour la vraie page boutique (pleine largeur, donc une approximation
+     correcte) — l'aperçu en direct profitera simplement du comportement desktop par défaut dans ce cas. */
+  @supports not (container-type: inline-size){
+    @media (max-width:640px){
+      .shop-banner-card{padding:16px;}
+      .shop-banner-row{flex-direction:column; align-items:center; text-align:center; gap:14px;}
+      .shop-banner-logo{width:100%; max-width:220px; height:auto; aspect-ratio:1/1; align-self:center; padding:16px; margin:0 auto;}
+      .shop-banner-id{align-items:center; width:100%;}
+      .shop-banner-top{flex-direction:column; align-items:center; width:100%;}
+      .shop-banner-text{align-items:center;}
+      .shop-banner-title-row{justify-content:center;}
+      .shop-banner-title-row h1{flex:none; font-size:1.4rem; text-align:center;}
+      .shop-banner-meta{justify-content:center;}
+      .shop-banner-actions{width:100%; justify-content:center; margin:6px 0 0;}
+      .shop-banner-actions .shop-upvote-btn{flex:1 1 auto; justify-content:center;}
+    }
   }
 
   /* --- STATS & SUCCÈS SUR LA PAGE BOUTIQUE : mis en valeur mais compact (#pubSellerStatsCard/#pubSellerAchvCard
@@ -1553,6 +1581,22 @@
         <div class="offer-modal-note" data-i18n="pickupByDefaultNote">La remise en main propre est proposée par défaut. Si besoin, le vendeur pourra ensuite faire appel à un coursier directement dans la conversation (des frais de livraison s'ajoutent alors au prix).</div>
         <div class="offer-modal-total"><span data-i18n="offerModalTotalLbl">Total estimé :</span> <strong id="offerModalTotal">—</strong></div>
         <button type="button" class="btn-primary" id="offerModalSendBtn" onclick="submitOfferModal()" data-i18n="sendInquiryBtn">ENVOYER LA DEMANDE</button>
+      </div>
+    </div>
+
+    <!-- CONTACTER UN CRAFTER DE BLUEPRINT (modale) : un seul bouton "Je suis intéressé(e)" sur la carte,
+         qui ouvre ici un message éditable + les modes de commande disponibles, et envoie directement via
+         la messagerie au clic sur l'un des deux boutons (pas de vrai système de commande pour l'instant). -->
+    <div class="modal-overlay" id="bpContactModalOverlay" hidden onclick="if(event.target===this) closeBlueprintContactModal()">
+      <div class="card modal-card">
+        <button type="button" class="modal-close" onclick="closeBlueprintContactModal()">&times;</button>
+        <h3 id="bpContactModalTitle">—</h3>
+        <label data-i18n="inquiryMsgLbl">Message au vendeur (prix ok, contre-offre, etc.)</label>
+        <textarea id="bpContactModalMsg" data-i18n-ph="phBpContactMsg" placeholder="ex: Salut ! Je suis intéressé par ton blueprint."></textarea>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+          <button type="button" class="btn-primary" id="bpContactModalTurnkeyBtn" style="flex:1 1 auto;" onclick="sendBlueprintContactMsg('turnkey')"></button>
+          <button type="button" class="btn-primary" id="bpContactModalMatsBtn" style="flex:1 1 auto;" onclick="sendBlueprintContactMsg('mats')"></button>
+        </div>
       </div>
     </div>
 
@@ -2605,6 +2649,7 @@ const T = {
     shopBlueprintsTitle:"Blueprints disponibles au craft", noBlueprintsOwn:"Tu n'as encore ajouté aucun blueprint.",
     bpTurnkeyLbl:"clé en main", bpClientMatsLbl:"avec tes ressources", bpContactTurnkeyBtn:"COMMANDER CLÉ EN MAIN", bpContactMatsBtn:"COMMANDER (MES RESSOURCES)", bpContactBtn:"CONTACTER LE CRAFTER",
     bpContactPrefillTurnkey:"Salut ! Je suis intéressé par ton blueprint \"{item}\", en clé en main.", bpContactPrefillMats:"Salut ! Je suis intéressé par ton blueprint \"{item}\", je peux fournir les ressources.",
+    phBpContactMsg:"ex: Salut ! Je suis intéressé par ton blueprint.", bpMsgSent:"MESSAGE ENVOYÉ !",
     listingStockModeLbl:"Vendre par unité (gérer un stock)", listingStockModeHint:"Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.", listingPriceUnitLbl:"Prix unitaire (aUEC)", listingStockLbl:"Stock disponible", perUnitSuffix:" / unité", stockLbl:"Stock :", yourQtyLbl:"Quantité souhaitée :", stockAvailableLbl:"Disponible :", stockTooLowAlert:"Erreur : il n'y a plus assez de stock disponible pour cette quantité.", invalidQtyAlert:"Erreur : quantité invalide.", qtyRequestedLbl:"Quantité :", listingModeSingleTab:"VENTE UNIQUE", listingModeStockTab:"VENTE PAR QUANTITÉ",
     listingTagsLbl:"Tags (optionnel)", tagCrafted:"CRAFTÉ", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", tagNegotiable:"NÉGOCIABLE", editListingBtn:"MODIFIER",
     requestResourcesTitle:"Poster un objet recherché", requestResourcesBtn:"OBJET RECHERCHÉ", resourceNameLbl:"Objet recherché", phResourceName:"ex: Laranite brute, casque d'armure lourde...", resourceQtyLbl:"Quantité souhaitée", resourcePriceLbl:"Prix proposé (aUEC, optionnel)", resourceNoteLbl:"Note (optionnel)", phResourceNote:"ex: Livraison sur Nyx, quantité négociable...", submitResourceRequestBtn:"PUBLIER L'ANNONCE", resourceRequestSaved:"ANNONCE PUBLIÉE !", resourcePriceNone:"Prix à négocier",
@@ -2755,6 +2800,7 @@ const T = {
     shopBlueprintsTitle:"Blueprints available to craft", noBlueprintsOwn:"You haven't added any blueprint yet.",
     bpTurnkeyLbl:"ready-made", bpClientMatsLbl:"with your materials", bpContactTurnkeyBtn:"ORDER READY-MADE", bpContactMatsBtn:"ORDER (MY MATERIALS)", bpContactBtn:"CONTACT CRAFTER",
     bpContactPrefillTurnkey:"Hey! I'm interested in your \"{item}\" blueprint, ready-made.", bpContactPrefillMats:"Hey! I'm interested in your \"{item}\" blueprint, I can supply the materials.",
+    phBpContactMsg:"e.g. Hey! I'm interested in your blueprint.", bpMsgSent:"MESSAGE SENT!",
     listingStockModeLbl:"Sell by unit (manage a stock)", listingStockModeHint:"The price is counted per unit and the buyer picks how many they want. Stock goes down automatically with each sale.", listingPriceUnitLbl:"Unit price (aUEC)", listingStockLbl:"Stock available", perUnitSuffix:" / unit", stockLbl:"Stock:", yourQtyLbl:"Quantity wanted:", stockAvailableLbl:"Available:", stockTooLowAlert:"Error: there isn't enough stock left for that quantity.", invalidQtyAlert:"Error: invalid quantity.", qtyRequestedLbl:"Quantity:", listingModeSingleTab:"SINGLE SALE", listingModeStockTab:"SELL BY QUANTITY",
     listingTagsLbl:"Tags (optional)", tagCrafted:"CRAFTED", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", tagNegotiable:"NEGOTIABLE", editListingBtn:"EDIT",
     requestResourcesTitle:"Post a desired item", requestResourcesBtn:"DESIRED ITEM", resourceNameLbl:"Item wanted", phResourceName:"e.g. Raw Laranite, heavy armor helmet...", resourceQtyLbl:"Quantity wanted", resourcePriceLbl:"Price offered (aUEC, optional)", resourceNoteLbl:"Note (optional)", phResourceNote:"e.g. Delivery to Nyx, quantity negotiable...", submitResourceRequestBtn:"POST AD", resourceRequestSaved:"AD POSTED!", resourcePriceNone:"Price to negotiate",
@@ -5408,12 +5454,18 @@ function blueprintCardHtml(bp, sellerMap, isOwner){
   const seller = sellerMap ? sellerMap[bp.seller_id] : null;
   const photo = bp.photo_url ? `<img src="${bp.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
   const canOrder = !isOwner && session && session.user.id !== bp.seller_id;
+  // Un seul bouton "Je suis intéressé(e)" (même logique que sur les cartes marketplace) qui ouvre une
+  // modale avec un message éditable + les deux modes de commande en boutons, plutôt que deux boutons
+  // séparés sur la carte qui ne faisaient que pré-remplir le champ de messagerie sans rien envoyer.
   let contactBlock = '';
   if(canOrder){
-    contactBlock = '<div class="bp-contact-row">';
-    if(bp.price_turnkey) contactBlock += `<button type="button" class="btn-secondary" onclick="contactCrafterForBlueprint('${bp.seller_id}','${encodeURIComponent(bp.item_name)}','turnkey')">${d.bpContactTurnkeyBtn}</button>`;
-    if(bp.price_client_mats) contactBlock += `<button type="button" class="btn-secondary" onclick="contactCrafterForBlueprint('${bp.seller_id}','${encodeURIComponent(bp.item_name)}','mats')">${d.bpContactMatsBtn}</button>`;
-    contactBlock += '</div>';
+    contactBlock = `<button type="button" class="mkt-interest-btn" data-seller-id="${bp.seller_id}" data-item-name="${encodeURIComponent(bp.item_name)}" data-has-turnkey="${bp.price_turnkey ? '1':'0'}" data-has-mats="${bp.price_client_mats ? '1':'0'}" onclick="pixelSwoosh(this); openBlueprintContactModal(this)">
+      <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+        <rect x="1" y="2" width="14" height="2"/><rect x="1" y="9" width="14" height="2"/><rect x="1" y="2" width="2" height="9"/><rect x="13" y="2" width="2" height="9"/>
+        <rect x="4" y="5" width="2" height="2"/><rect x="7" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/>
+      </g></svg>
+      ${d.imInterested}
+    </button>`;
   }
   const ownerActions = isOwner ? `
     <div class="my-listing-actions">
@@ -5542,20 +5594,43 @@ async function deleteBlueprint(id){
   // le propriétaire voit ce bouton), ce qui rafraîchit la grille "Blueprints" avec les données à jour.
   if(session) openSellerShop(session.user.id);
 }
-// Contacter un crafter pour commander un blueprint : ouvre (ou crée) le fil de messagerie avec lui et
-// pré-remplit le message, plutôt que de passer par un vrai circuit de commande/acceptation pour cette
-// première version de la fonctionnalité.
-async function contactCrafterForBlueprint(sellerId, encodedItemName, mode){
+// Contacter un crafter pour commander un blueprint : plutôt que deux boutons sur la carte qui ne faisaient
+// que pré-remplir le champ de messagerie (sans rien envoyer — d'où le "il ne se passe rien" rapporté), un
+// seul bouton "Je suis intéressé(e)" ouvre une modale avec un message éditable, et les deux boutons de mode
+// DANS la modale envoient directement le message au crafter via la messagerie (pas de vrai circuit de
+// commande/acceptation pour cette première version de la fonctionnalité).
+let bpContactModalSellerId = null;
+let bpContactModalItemName = '';
+function openBlueprintContactModal(btn){
   if(!session) return;
   const d = T[LANG];
-  const itemName = decodeURIComponent(encodedItemName);
-  await openMsgThreadWithUser(sellerId);
-  const input = msgEl('msgComposeInput');
-  if(input){
-    const template = mode === 'turnkey' ? d.bpContactPrefillTurnkey : d.bpContactPrefillMats;
-    input.value = template.replace('{item}', itemName);
-    input.focus();
-  }
+  bpContactModalSellerId = btn.dataset.sellerId;
+  bpContactModalItemName = decodeURIComponent(btn.dataset.itemName);
+  const hasTurnkey = btn.dataset.hasTurnkey === '1';
+  const hasMats = btn.dataset.hasMats === '1';
+  $('bpContactModalTitle').textContent = bpContactModalItemName;
+  $('bpContactModalMsg').value = '';
+  const turnkeyBtn = $('bpContactModalTurnkeyBtn');
+  turnkeyBtn.textContent = d.bpContactTurnkeyBtn;
+  turnkeyBtn.hidden = !hasTurnkey;
+  const matsBtn = $('bpContactModalMatsBtn');
+  matsBtn.textContent = d.bpContactMatsBtn;
+  matsBtn.hidden = !hasMats;
+  $('bpContactModalOverlay').hidden = false;
+}
+function closeBlueprintContactModal(){
+  $('bpContactModalOverlay').hidden = true;
+  bpContactModalSellerId = null;
+}
+async function sendBlueprintContactMsg(mode){
+  if(!session || !bpContactModalSellerId) return;
+  const d = T[LANG];
+  const template = mode === 'turnkey' ? d.bpContactPrefillTurnkey : d.bpContactPrefillMats;
+  const typed = $('bpContactModalMsg').value.trim();
+  const message = typed || template.replace('{item}', bpContactModalItemName);
+  await sendChatMessage(bpContactModalSellerId, message);
+  toastShow(d.bpMsgSent);
+  closeBlueprintContactModal();
 }
 let myListingsCache = [];
 let myListingsOrderMap = {};

@@ -1093,7 +1093,7 @@
     .shop-stats-achv-row > .card:last-child{margin-bottom:0;}
   }
   #shopStatsCard.shop-stats-card{padding:16px 18px;}
-  #shopStatsCard .career-stats-grid{grid-template-columns:repeat(4,1fr); gap:10px; margin-top:10px;}
+  #shopStatsCard .career-stats-grid{grid-template-columns:repeat(5,1fr); gap:10px; margin-top:10px;}
   @media (max-width:1100px){ #shopStatsCard .career-stats-grid{grid-template-columns:1fr 1fr;} }
   #shopStatsCard .career-stat{background:linear-gradient(165deg, var(--bg2), var(--panel)); border-color:var(--accent-dim);
     padding:10px 10px; border-radius:5px; transition:border-color .2s, transform .2s;}
@@ -1156,7 +1156,8 @@
     #shopStatsCard .career-stat:nth-child(1){grid-column:span 2;}
     #shopStatsCard .career-stat:nth-child(2){grid-column:span 1;}
     #shopStatsCard .career-stat:nth-child(3){grid-column:span 1;}
-    #shopStatsCard .career-stat.career-stat-expensive{grid-column:1/-1; padding:7px 10px;}
+    #shopStatsCard .career-stat:nth-child(4){grid-column:span 2;}
+    #shopStatsCard .career-stat.career-stat-expensive{grid-column:span 2; padding:7px 10px;}
     #shopStatsCard .career-stat.career-stat-expensive .val.val-sm{font-size:.78rem; white-space:normal;}
     #shopAchvCard .rank-track{margin:10px 2px 6px; gap:10px;}
     #shopAchvCard .rank-track-icon{width:24px; height:24px;}
@@ -2866,7 +2867,7 @@ const T = {
     shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille", shopTextureDiag:"Diagonales", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain", shopTextureSkull:"Crâne spatial", shopTextureWaves:"Ondes",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
-    shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
+    shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopCraftDelivered:"Crafts livrés", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
     sellerAchvTitle:"Succès vendeur", viewAllAchvBtn:"VOIR TOUT", viewLessAchvBtn:"RÉDUIRE",
     sellerAchvLabels:{first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
     sellerAchvDesc:{first_sale:"Conclus ta première vente.", first_courier_sale:"Fais livrer une vente par un coursier.", five_sales:"Conclus 5 ventes.", pockets_full:"Mets en ligne 15 annonces ou plus.", good_fences:"Valide une vente de plus de 2 000 000 aUEC en une seule fois.", crafter_confirmed:"Mets en vente un item crafté de qualité 800 ou plus.", not_stolen:"Valide la vente d'une bombe Colossus.", couldnt_be_bothered:"Mets en ligne une annonce sans photo.", your_wish:"Valide la proposition d'un client sur un de tes desired items.", crafterrrrr:"Ajoute 5 blueprints sur ta page de boutique.", made_with_love:"Ajoute 10 blueprints sur ta page de boutique.", better_than_wikelo:"Vends un item crafté de qualité 800 ou plus.", masta_thanks:"Termine la vente de 5 blueprints (craft livré au client)."},
@@ -3027,7 +3028,7 @@ const T = {
     shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid", shopTextureDiag:"Diagonal", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain", shopTextureSkull:"Space skull", shopTextureWaves:"Waves",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
-    shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
+    shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopCraftDelivered:"Crafts delivered", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
     sellerAchvTitle:"Seller achievements", viewAllAchvBtn:"VIEW ALL", viewLessAchvBtn:"COLLAPSE",
     sellerAchvLabels:{first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
     sellerAchvDesc:{first_sale:"Close your first sale.", first_courier_sale:"Have a sale delivered by a courier.", five_sales:"Close 5 sales.", pockets_full:"List 15 or more items for sale.", good_fences:"Close a single sale worth more than 2,000,000 aUEC.", crafter_confirmed:"List a crafted item with quality 800 or higher.", not_stolen:"Complete the sale of a Colossus bomb.", couldnt_be_bothered:"List an item with no photo.", your_wish:"Accept a client's offer on one of your desired items.", crafterrrrr:"Add 5 blueprints to your shop page.", made_with_love:"Add 10 blueprints to your shop page.", better_than_wikelo:"Sell a crafted item with quality 800 or higher.", masta_thanks:"Complete the sale of 5 blueprints (craft delivered to the client)."},
@@ -7735,14 +7736,16 @@ async function fetchSellerShopStats(sellerId){
     // Demandes de craft blueprint menées à terme (voir completeBlueprintRequest) — sert à l'achievement
     // "Masta Thanks" (5 blueprints vendus), distinct de blueprintsCount qui ne compte que les ANNONCES
     // actuellement publiées, pas les ventes réellement conclues.
-    sb.from('blueprint_requests').select('id', { count:'exact', head:true }).eq('seller_id', sellerId).eq('status','completed')
+    // On récupère le prix (pas juste un count) pour pouvoir ajouter ces ventes au total aUEC gagné.
+    sb.from('blueprint_requests').select('price').eq('seller_id', sellerId).eq('status','completed')
   ]);
   const orderRows = ordersRes.data || [];
   const inquiryRows = inquiriesRes.data || [];
   const upvoteCount = upvotesRes.count || 0;
   const listingRows = listingsRes.data || [];
   const blueprintsCount = blueprintsRes.count || 0;
-  const completedBlueprintSalesCount = completedBpReqRes.count || 0;
+  const completedBpReqRows = completedBpReqRes.data || [];
+  const completedBlueprintSalesCount = completedBpReqRows.length;
   let itemsSold = 0, totalEarned = 0, mostExpensive = null, hasBigSale = false, hasSoldColossusBomb = false;
   orderRows.forEach(o => {
     const grossPrice = Number(o.gross_price) || 0;
@@ -7763,6 +7766,11 @@ async function fetchSellerShopStats(sellerId){
     if(lineTotal > 2000000) hasBigSale = true;
     if(!mostExpensive || Number(r.snap_price) > mostExpensive.price) mostExpensive = { name: r.snap_item_name, price: Number(r.snap_price) };
     if(isColossusBomb(r.snap_item_name)) hasSoldColossusBomb = true;
+  });
+  completedBpReqRows.forEach(r => {
+    const price = Number(r.price) || 0;
+    totalEarned += price;
+    if(price > 2000000) hasBigSale = true;
   });
   const salesCount = orderRows.length + inquiryRows.length;
   const listingsCount = listingRows.length;
@@ -7817,6 +7825,7 @@ function renderShopStats(box, stats){
       <div class="career-stat"><div class="val">${fmt(stats.totalEarned)}</div><div class="lbl">${d.shopTotalEarned}</div></div>
       <div class="career-stat"><div class="val">${stats.salesCount}</div><div class="lbl">${d.shopSalesCount}</div></div>
       <div class="career-stat"><div class="val">${stats.itemsSold}</div><div class="lbl">${d.shopItemsSold}</div></div>
+      <div class="career-stat"><div class="val">${stats.completedBlueprintSalesCount||0}</div><div class="lbl">${d.shopCraftDelivered}</div></div>
       <div class="career-stat career-stat-expensive"><div class="val val-sm">${stats.mostExpensive ? stats.mostExpensive.name + ' ('+fmt(stats.mostExpensive.price)+')' : '—'}</div><div class="lbl">${d.shopMostExpensive}</div></div>
       ${isShopPage ? '' : upvoteStatHtml}
     </div>

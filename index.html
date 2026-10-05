@@ -4885,7 +4885,7 @@ function mktCardHtml(listing, sellerMap, unreadSet){
   const d = T[LANG];
   const seller = sellerMap[listing.seller_id];
   if(listing.id !== 'preview') listingDetailIndex[listing.id] = { type:'listing', data:listing, seller };
-  const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="" loading="lazy" decoding="async">` : MKT_PHOTO_PLACEHOLDER;
   const isNew = !!(unreadSet && unreadSet.has(listing.id));
   const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
   const hoverAttr = isNew ? ` onmouseenter="markListingSeen('${listing.id}', this)"` : '';
@@ -5810,28 +5810,34 @@ function confirmCrop(){
   if(isLogo){ canvas.width = 500; canvas.height = 500; } else { canvas.width = 1000; canvas.height = 750; }
   const ctx = canvas.getContext('2d');
   ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-  const ext = (cropState.file.name.split('.').pop() || 'jpg').toLowerCase();
-  const mime = ext === 'png' ? 'image/png' : 'image/jpeg';
+  const srcExt = (cropState.file.name.split('.').pop() || 'jpg').toLowerCase();
+  // PNG conservé uniquement pour les logos de boutique (transparence possible, image 500x500 donc légère) ;
+  // photos d'annonces/blueprints toujours en JPEG : une capture PNG 1000x750 pèse ~1 Mo contre ~100 Ko en JPEG,
+  // ce qui compte directement dans l'egress et le stockage Supabase.
+  const keepPng = isLogo && srcExt === 'png';
+  const mime = keepPng ? 'image/png' : 'image/jpeg';
+  const outName = cropState.file.name.replace(/\.[^.]+$/, '') + (keepPng ? '.png' : '.jpg');
+  if(!keepPng){ ctx.globalCompositeOperation = 'destination-over'; ctx.fillStyle = '#0d1210'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.globalCompositeOperation = 'source-over'; }
   canvas.toBlob(blob => {
     if(!blob) return;
     if(isLogo){
-      pendingShopLogoFile = new File([blob], cropState.file.name, { type: mime });
+      pendingShopLogoFile = new File([blob], outName, { type: mime });
       $('shopLogoPreviewName').textContent = T[LANG].photoReady;
       const preview = $('shopLogoPreviewImg');
       if(preview){ preview.src = URL.createObjectURL(pendingShopLogoFile); preview.hidden = false; }
       syncShopLogoDropzoneUI();
       updateShopLivePreview();
     } else if(cropState.kind === 'blueprint'){
-      pendingBlueprintPhotoFile = new File([blob], cropState.file.name, { type: mime });
+      pendingBlueprintPhotoFile = new File([blob], outName, { type: mime });
       $('blueprintPhotoPreviewName').textContent = T[LANG].photoReady;
       updateBlueprintLivePreview();
     } else {
-      pendingListingPhotoFile = new File([blob], cropState.file.name, { type: mime });
+      pendingListingPhotoFile = new File([blob], outName, { type: mime });
       $('listingPhotoPreviewName').textContent = T[LANG].photoReady;
       updateListingLivePreview();
     }
     closeCropModal();
-  }, mime, 0.9);
+  }, mime, 0.82);
 }
 (function initCropDrag(){
   const stage = $('cropStage');
@@ -5963,7 +5969,7 @@ function blueprintCardHtml(bp, sellerMap, isOwner){
   const d = T[LANG];
   const seller = sellerMap ? sellerMap[bp.seller_id] : null;
   if(bp.id !== 'preview') listingDetailIndex[bp.id] = { type:'blueprint', data:bp, seller, isOwner };
-  const photo = bp.photo_url ? `<img src="${bp.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  const photo = bp.photo_url ? `<img src="${bp.photo_url}" alt="" loading="lazy" decoding="async">` : MKT_PHOTO_PLACEHOLDER;
   const canOrder = !isOwner && session && session.user.id !== bp.seller_id;
   const ownerActions = isOwner ? `
     <div class="my-listing-actions">
@@ -6051,7 +6057,7 @@ function renderListingDetailView(entry){
   $('sellerCreateWrap').hidden = true;
   $('view-listing-detail').hidden = false;
   $('listingDetailEyebrow').textContent = d.detailEyebrowMarketplace;
-  $('listingDetailPhoto').innerHTML = l.photo_url ? `<img src="${l.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  $('listingDetailPhoto').innerHTML = l.photo_url ? `<img src="${l.photo_url}" alt="" loading="lazy" decoding="async">` : MKT_PHOTO_PLACEHOLDER;
   $('listingDetailTags').innerHTML = listingTagsHtml(l.tags);
   $('listingDetailTitle').textContent = l.item_name;
   $('listingDetailPriceRow').innerHTML = mktPriceRowHtml(l);
@@ -6073,7 +6079,7 @@ function renderBlueprintDetailView(entry){
   $('sellerCreateWrap').hidden = true;
   $('view-listing-detail').hidden = false;
   $('listingDetailEyebrow').textContent = d.detailEyebrowBlueprint;
-  $('listingDetailPhoto').innerHTML = bp.photo_url ? `<img src="${bp.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  $('listingDetailPhoto').innerHTML = bp.photo_url ? `<img src="${bp.photo_url}" alt="" loading="lazy" decoding="async">` : MKT_PHOTO_PLACEHOLDER;
   $('listingDetailTags').innerHTML = '';
   $('listingDetailTitle').textContent = bp.item_name;
   $('listingDetailPriceRow').innerHTML = blueprintPriceRowsHtml(bp);
@@ -6321,7 +6327,7 @@ function refreshShopAllListingsFullIfOpen(){
 // mais avec les actions de gestion : demander une livraison, supprimer, ou annuler la livraison en cours.
 function myListingCardHtml(l){
   const d = T[LANG];
-  const photo = l.photo_url ? `<img src="${l.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  const photo = l.photo_url ? `<img src="${l.photo_url}" alt="" loading="lazy" decoding="async">` : MKT_PHOTO_PLACEHOLDER;
   const activeOrder = myListingsOrderMap[l.id];
   const actionsBlock = activeOrder ? `
         <div class="my-listing-delivery-status">
@@ -7686,6 +7692,33 @@ function setHeroPhoto(prefix, p){
     card.hidden = true;
   }
 }
+// Réduit une image (côté navigateur) à maxSide px sur son plus grand côté et la ré-encode en JPEG.
+// En cas d'échec de décodage, renvoie le fichier d'origine (on ne bloque jamais l'envoi pour ça).
+function downscaleImageToJpeg(file, maxSide, quality){
+  return new Promise(resolve => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      try{
+        const ratio = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+        const w = Math.max(1, Math.round(img.naturalWidth * ratio));
+        const h = Math.max(1, Math.round(img.naturalHeight * ratio));
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#0d1210'; ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => {
+          URL.revokeObjectURL(url);
+          if(!blob || blob.size >= file.size) return resolve(file);
+          resolve(new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' }));
+        }, 'image/jpeg', quality);
+      }catch(e){ URL.revokeObjectURL(url); resolve(file); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
 async function onShipPhotoSelected(inputEl){
   if(!session || !inputEl.files || !inputEl.files[0]) return;
   const file = inputEl.files[0];
@@ -7695,9 +7728,13 @@ async function onShipPhotoSelected(inputEl){
   btn.innerHTML = `<span>${d.uploadingPhoto}</span>`;
   btn.disabled = true;
   try{
-    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    // Photo de vaisseau : réduite à 1600 px max (JPEG) avant envoi, au lieu du fichier brut (souvent 3 à 10 Mo).
+    // Les GIF sont envoyés tels quels pour ne pas casser l'animation.
+    const isGif = file.type === 'image/gif' || /\.gif$/i.test(file.name);
+    const upFile = isGif ? file : await downscaleImageToJpeg(file, 1600, 0.85);
+    const ext = isGif ? 'gif' : 'jpg';
     const path = `${session.user.id}/ship.${ext}`;
-    const { error: upErr } = await sb.storage.from('ship-photos').upload(path, file, { upsert: true, cacheControl: '3600' });
+    const { error: upErr } = await sb.storage.from('ship-photos').upload(path, upFile, { upsert: true, cacheControl: '3600', contentType: upFile.type });
     if(upErr) throw upErr;
     const { data: urlData } = sb.storage.from('ship-photos').getPublicUrl(path);
     const publicUrl = urlData.publicUrl + '?t=' + Date.now();
@@ -8222,6 +8259,14 @@ let notifChannel = null;
 // Realtime pour rien) chaque commande créée par tout le monde sur le site alors que ça ne le concerne pas.
 // marketplace-realtime reste large : un client qui parcourt la marketplace doit voir toutes les annonces de
 // tous les vendeurs, donc rien à filtrer par utilisateur là-dessus.
+// Regroupe les rafales d'événements temps réel : si plusieurs changements arrivent coup sur coup (ex. plusieurs
+// annonces modifiées), on ne recharge la liste qu'une seule fois après un court délai, au lieu d'une fois par
+// événement et par visiteur connecté (ce qui multiplie les requêtes/logs quand beaucoup de monde est en ligne).
+const __debounceTimers = {};
+function runDebounced(key, fn, ms){
+  clearTimeout(__debounceTimers[key]);
+  __debounceTimers[key] = setTimeout(fn, ms || 1200);
+}
 let ordersChannel = null, ordersClientChannel = null, ordersSellerChannel = null, marketplaceChannel = null, inquiriesChannel = null, blueprintRequestsChannel = null;
 function subscribeDataChannels(){
   if(!session || !profile) return;
@@ -8230,13 +8275,13 @@ function subscribeDataChannels(){
   if(isCourierOrAdmin && !ordersChannel) ordersChannel = sb.channel('orders-realtime')
     .on('postgres_changes', { event:'*', schema:'public', table:'orders' }, () => {
       const v = effectiveView();
-      if(v === 'courier' && !$('view-courier-dash').hidden) loadCourierData();
+      if(v === 'courier' && !$('view-courier-dash').hidden) runDebounced('courierData', loadCourierData);
       if(v === 'admin' && !$('view-seller-shop').hidden && shopViewingSellerId === session.user.id){ checkAndRenderSellerAchievements('shopAchvCard'); fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('shopStatsCard'), stats)); }
     })
     .subscribe();
   if(!ordersClientChannel) ordersClientChannel = sb.channel('orders-client-'+session.user.id)
     .on('postgres_changes', { event:'*', schema:'public', table:'orders', filter:`client_id=eq.${session.user.id}` }, () => {
-      if(effectiveView() === 'client' && !$('view-client-dash').hidden && clientTab === 'deliveries') loadClientDashboard();
+      if(effectiveView() === 'client' && !$('view-client-dash').hidden && clientTab === 'deliveries') runDebounced('clientDash', loadClientDashboard);
     })
     .subscribe();
   if(isSellerOrAdmin && !ordersSellerChannel) ordersSellerChannel = sb.channel('orders-seller-'+session.user.id)
@@ -8247,13 +8292,13 @@ function subscribeDataChannels(){
   if(!marketplaceChannel) marketplaceChannel = sb.channel('marketplace-realtime')
     .on('postgres_changes', { event:'*', schema:'public', table:'marketplace_listings' }, () => {
       const v = effectiveView();
-      if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'marketplace') loadMarketplaceFeed();
+      if(v === 'client' && !$('view-client-dash').hidden && clientTab === 'marketplace') runDebounced('mktFeed', loadMarketplaceFeed, 2000);
       if(v === 'seller' && !$('view-seller-shop').hidden && shopViewingSellerId === session.user.id) loadMyListings();
     })
     .subscribe();
   if(!inquiriesChannel) inquiriesChannel = sb.channel('inquiries-realtime')
     .on('postgres_changes', { event:'*', schema:'public', table:'marketplace_inquiries' }, () => {
-      msgRefreshAfterAction();
+      runDebounced('msgRefresh', msgRefreshAfterAction, 600);
     })
     .subscribe();
   // Même principe que inquiriesChannel ci-dessus, pour les demandes de craft blueprint (table
@@ -8261,7 +8306,7 @@ function subscribeDataChannels(){
   // accepter/refuser) qu'au prochain rechargement complet de la messagerie.
   if(!blueprintRequestsChannel) blueprintRequestsChannel = sb.channel('blueprint-requests-realtime')
     .on('postgres_changes', { event:'*', schema:'public', table:'blueprint_requests' }, () => {
-      msgRefreshAfterAction();
+      runDebounced('msgRefresh', msgRefreshAfterAction, 600);
     })
     .subscribe();
 }
@@ -8725,7 +8770,7 @@ async function openPublicProfile(id){
   $('pubAdminActions').hidden = !(profile && profile.role === 'admin');
 }
 function shopPreviewCardHtml(listing){
-  const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="">` : MKT_PHOTO_PLACEHOLDER;
+  const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="" loading="lazy" decoding="async">` : MKT_PHOTO_PLACEHOLDER;
   return `
     <div class="shop-preview-card" onclick="openSellerShop(viewingProfileId)">
       <div class="shop-preview-photo">${photo}</div>

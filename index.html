@@ -1065,6 +1065,121 @@
   .shop-banner-logo .shop-hero-logo-img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit;}
   .shop-banner-id{flex:1; min-width:0; display:flex; flex-direction:column; justify-content:flex-start;}
   .shop-banner-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+
+
+  /* ===== Annuaire des shops ===== */
+  .slashes::before, .sl-title::before{content:"// "; color:var(--accent);}
+  .sl{color:var(--accent);}
+  .shops-dir-entry{margin-top:18px; padding-top:16px; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; gap:12px 16px; align-items:center; justify-content:space-between;}
+  .shops-dir-entry-txt{color:var(--muted); font-size:.85rem;}
+  .shops-dir-toolbar{display:flex; flex-direction:column; gap:12px; margin-bottom:14px;}
+  .shops-dir-toolbar .mkt-search-input{flex:none; width:100%; height:auto; min-height:0;}
+  .shop-banner-card:has(.status-pop:not([hidden])){overflow:visible !important; z-index:20;}
+  .shops-dir-sorts{display:flex; gap:8px; flex-wrap:wrap;}
+  .shops-dir-sorts button{padding:8px 14px; font-size:.72rem; letter-spacing:1px; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:2px; cursor:pointer; font-family:inherit;}
+  .shops-dir-sorts button.active{background:var(--accent); border-color:var(--accent); color:#050606;}
+  .shops-dir-count{font-size:.72rem; letter-spacing:2px; color:var(--muted); margin-bottom:12px;}
+  .shops-dir-count::before{content:"// "; color:var(--accent);}
+  .shops-dir-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:14px;}
+  .shop-dir-card{--accent:var(--shop-col); --accent-dim:var(--shop-col-dim); display:flex; gap:14px; align-items:center; padding:14px; background:var(--panel); border:1px solid var(--border); border-radius:4px; cursor:pointer; text-align:left; font:inherit; color:var(--text); width:100%;}
+  .shop-dir-card:hover{border-color:var(--accent);}
+  .shop-dir-logo{width:64px; height:64px; flex:none; border-radius:12px; border:2px solid var(--accent); box-shadow:0 0 14px var(--accent-dim); background:#050606; overflow:hidden; display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:2rem;}
+  .shop-dir-logo img{width:100%; height:100%; object-fit:cover;}
+  .shop-dir-info{display:flex; flex-direction:column; gap:3px; min-width:0;}
+  .shop-dir-name{font-size:1.15rem; line-height:1.1; word-break:break-word;}
+  .shop-dir-sub{font-size:.75rem; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .shop-dir-stats{font-size:.72rem; color:var(--accent);}
+  .shop-dir-status{display:inline-flex; align-items:center; gap:6px; font-size:.7rem; color:var(--text); max-width:100%;}
+  .shop-dir-status .status-dot{width:8px; height:8px; flex:none; border-radius:50%; background:var(--st-col); box-shadow:0 0 6px var(--st-col);}
+  .shop-dir-status span.t{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  @media (max-width:600px){ .shops-dir-grid{grid-template-columns:1fr;} .shops-dir-sorts{flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none;} .shops-dir-sorts button{flex:none;} .shops-dir-entry .btn-primary{width:100%;} }
+
+  /* ===== Accueil client : nouvelle DA ===== */
+  .home-hello{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px 20px; margin:6px 0 16px;}
+  .home-hello h1{margin:0; font-size:2.3rem; line-height:1.1; text-shadow:0 0 8px var(--accent-dim);}
+  .home-stats{display:flex; flex-wrap:wrap; margin:0 0 22px;}
+  .home-stat{flex:1 1 180px; padding:2px 22px; border-left:1px solid var(--border); display:flex; flex-direction:column; gap:2px; min-width:0;}
+  .home-stat-lbl{font-size:.68rem; letter-spacing:2px; color:var(--muted);}
+  .home-stat-val{font-size:2.6rem; line-height:1; color:var(--text);}
+  .home-stat-val.accent{color:var(--accent);} .home-stat-val.green{color:#3dff7a;}
+  .home-section-label{display:flex; align-items:center; gap:8px; font-size:.7rem; letter-spacing:2px; color:var(--muted); margin:0 0 12px;}
+  .home-link{margin-left:auto; background:none; border:none; color:var(--accent); font:inherit; font-size:.7rem; letter-spacing:1px; cursor:pointer; padding:0;}
+  .home-fresh{margin:26px 0 18px;}
+  #clientHomeFresh{grid-template-columns:repeat(4, minmax(0,1fr));}
+  @media (max-width:900px){ #clientHomeFresh{grid-template-columns:repeat(2, minmax(0,1fr));} }
+  div#clientCurrentOrders{display:block !important;}
+  .orders-box{border:1px solid var(--accent); background:var(--panel); border-radius:6px; box-shadow:0 0 18px var(--accent-dim); padding:18px 20px 6px; margin-bottom:18px;}
+  .orders-box-head{display:flex; justify-content:space-between; align-items:center; padding-bottom:10px; color:var(--accent); font-size:1.5rem;}
+  .order-row{display:flex; flex-wrap:wrap; gap:6px 24px; padding:16px 0; border-top:1px solid var(--border);}
+  .order-row-main{flex:2 1 280px; min-width:0; display:flex; flex-direction:column; gap:5px;}
+  .order-row-items{font-size:1.25rem; line-height:1.15;}
+  .order-row-more{background:none; border:none; padding:0 0 0 6px; color:var(--accent); font:inherit; font-size:.8rem; cursor:pointer;}
+  .order-row-sub{color:var(--muted); font-size:.8rem;}
+  .order-row-courier{display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:.8rem; color:var(--muted); margin-top:2px;}
+  .order-row-cargo{margin:6px 0 0; padding:10px 12px; background:var(--bg2); border:1px solid var(--border); border-radius:4px; list-style:none; display:flex; flex-direction:column; gap:3px; font-size:.8rem;}
+  .order-row-cargo[hidden]{display:none;}
+  .order-row-side{flex:3 1 380px; min-width:0; display:flex; flex-direction:column;}
+  .order-row-side .ship-track{margin:6px 30px 4px;}
+  .order-row-foot{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-size:.75rem; letter-spacing:1px;}
+  .order-row-status{color:var(--text);}
+  .order-row-cancel{background:none; border:1px solid var(--border); color:var(--muted); border-radius:2px; font:inherit; font-size:.7rem; padding:6px 12px; cursor:pointer; display:inline-flex; gap:6px; align-items:center;}
+  .order-row-cancel:hover{border-color:var(--danger); color:var(--danger);}
+  .order-row-cancel .icon{width:10px; height:10px;}
+  .order-row-locked{color:var(--muted); font-size:.68rem; max-width:260px; text-align:right;}
+  @media (max-width:600px){
+    .home-hello h1{font-size:1.9rem;} .home-new-order{width:100%;}
+    .home-stat{flex:1 1 45%; padding:2px 12px; margin-bottom:14px;} .home-stat-val{font-size:2.1rem;}
+    .orders-box{padding:14px 12px 4px;}
+    .order-row{padding:14px 0;}
+    .order-row-side .ship-track{margin:6px 22px 2px;}
+    .order-row-side .stage-label:not(.cur){display:none;}
+    .order-row-locked{text-align:left; max-width:none;}
+  }
+
+  /* ===== Nouvelle DA : libellés // sur les titres, bannière shop, côté coursier ===== */
+  section > header h1:not(.slashes)::before{content:"// "; color:var(--accent);}
+  .shop-banner-kicker{font-size:.72rem; letter-spacing:2px; color:var(--muted); margin-bottom:6px; position:relative; z-index:1;}
+  .shop-banner-card{border-color:var(--accent); box-shadow:0 0 18px var(--accent-dim);}
+  .shop-preview-head h3::before, .seller-section-card h3::before{content:"// "; color:var(--accent);}
+  .delivery-mini-list-title::before{content:"// "; color:var(--accent);}
+  .delivery-main-wrap .order-card.big{border-color:var(--accent); border-radius:6px; box-shadow:0 0 18px var(--accent-dim);}
+  .delivery-main-wrap .order-card.big ul{max-height:260px; overflow-y:auto;}
+  .history-toggle::before{content:"// "; color:var(--accent);}
+  .shop-leaderboard-card h3 span::before{content:"// "; color:var(--accent);}
+  .home-fresh .home-section-label{margin-bottom:12px;}
+  @media (max-width:600px){ .shop-banner-kicker{text-align:center;} .shop-status-wrap{justify-content:center;} }
+  .status-pop.sheet{position:fixed; left:10px; right:10px; bottom:10px; top:auto; width:auto; z-index:400;}
+  /* ===== Statut joueur (texte libre + pastille de couleur) ===== */
+  .shop-banner-title-row{flex-wrap:wrap; gap:10px 18px;}
+  .shop-status-wrap{position:relative; display:inline-flex; max-width:100%;}
+  .status-pill{display:inline-flex; align-items:center; gap:8px; max-width:100%; padding:7px 13px; border:1px solid var(--st-col,var(--border)); background:rgba(255,255,255,.03);
+    border-radius:4px; color:var(--text); font:inherit; font-size:.8rem; cursor:default; text-align:left;}
+  .status-pill.editable{cursor:pointer;}
+  .status-pill.editable:hover{background:rgba(255,255,255,.07);}
+  .status-pill .status-dot{width:9px; height:9px; flex:none; border-radius:50%; background:var(--st-col,var(--muted)); box-shadow:0 0 8px var(--st-col,transparent);}
+  .status-pill .status-dot.none{display:none;}
+  .status-pill .status-txt{overflow:hidden; text-overflow:ellipsis; word-break:break-word;}
+  .status-pill .status-pen{color:var(--muted); font-size:.75rem;}
+  .status-pill.empty{border-style:dashed; color:var(--muted);}
+  .status-pop{position:absolute; top:calc(100% + 8px); left:0; z-index:60; width:min(380px, 86vw); padding:16px; background:var(--panel); border:1px solid var(--accent);
+    border-radius:6px; box-shadow:0 8px 30px #000a, 0 0 18px var(--accent-dim); display:flex; flex-direction:column; gap:12px; text-align:left;}
+  .status-pop[hidden]{display:none;}
+  .status-pop .st-lbl{font-size:.68rem; letter-spacing:2px; color:var(--muted);}
+  .status-pop .st-lbl b{color:var(--accent); font-weight:400;}
+  .status-input-row{display:flex; align-items:center; gap:10px; background:var(--bg2); border:1px solid var(--accent); border-radius:2px; padding:0 12px;}
+  .status-input-row .status-dot{width:9px; height:9px; flex:none; border-radius:50%; background:var(--st-col,var(--muted)); box-shadow:0 0 8px var(--st-col,transparent);}
+  .status-input-row input{flex:1; min-width:0; border:none !important; background:transparent !important; padding:11px 0 !important; margin:0 !important; box-shadow:none !important; outline:none;}
+  .status-count{font-size:.7rem; color:var(--muted);}
+  .status-swatches{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+  .status-swatch{width:26px; height:26px; padding:0; border-radius:50%; border:2px solid transparent; cursor:pointer; background:var(--sw);}
+  .status-swatch.sel{border-color:var(--text); box-shadow:0 0 8px var(--sw);}
+  .status-swatch.none{background:transparent; border:1px dashed var(--muted); color:var(--muted); font-size:.7rem; line-height:1;}
+  .status-swatch.none.sel{border-color:var(--text);}
+  .status-swatch.custom{position:relative; overflow:hidden; background:conic-gradient(#ff4d4d,#ffb020,#3dff7a,#4da3ff,#a56bff,#ff4d4d);}
+  .status-swatch.custom input{position:absolute; inset:-6px; width:44px; height:44px; opacity:0; cursor:pointer;}
+  .status-pop-actions{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+  .status-pop-actions .btns{display:flex; gap:8px;}
+  .status-pop-actions button{padding:9px 14px; font-size:.75rem;}
   .shop-banner-text{display:flex; flex-direction:column; min-width:0;}
   .shop-banner-title-row{display:flex; align-items:center; gap:10px;}
   .shop-banner-title-row h1{margin:0; min-width:0; font-size:1.9rem; line-height:1.15; word-break:break-word;}
@@ -1685,13 +1800,19 @@
         </button>
       </div>
       <div id="clientTabDeliveries">
-        <div class="card courier-ad" id="courierAdCard" hidden></div>
-        <div class="card courier-ad" id="sellerAdCard" hidden></div>
+        <div class="home-hello"><h1 class="slashes" id="clientHomeHello">—</h1><button type="button" class="btn-primary home-new-order" onclick="openCreateOrder()" data-i18n="homeNewOrder">+ NOUVELLE COMMANDE</button></div>
+        <div class="home-stats" id="clientHomeStats"></div>
         <div id="clientCurrentOrders"></div>
         <button class="history-toggle" onclick="toggleHistory()">
           <span data-i18n="historyLabel">Historique</span> (<span id="historyCount">0</span>) <span id="historyToggleIcon">▾</span>
         </button>
         <div id="clientHistoryList" hidden></div>
+        <div class="home-fresh" id="clientHomeFreshWrap" hidden>
+          <div class="home-section-label"><span class="sl">//</span> <span data-i18n="homeFresh">NOUVEAUTÉS SUR LA MARKETPLACE</span><button type="button" class="home-link" onclick="setClientTab('marketplace')" data-i18n="homeSeeAll">TOUT VOIR ▸</button></div>
+          <div id="clientHomeFresh" class="marketplace-grid"></div>
+        </div>
+        <div class="card courier-ad" id="courierAdCard" hidden></div>
+        <div class="card courier-ad" id="sellerAdCard" hidden></div>
       </div>
       <div id="clientTabMarketplace" hidden>
         <div class="card shop-leaderboard-card">
@@ -1704,6 +1825,10 @@
             <span data-i18n="leaderboardTitle">Boutiques de la semaine</span>
           </h3>
           <div class="shop-leaderboard-grid" id="shopLeaderboardGrid"></div>
+          <div class="shops-dir-entry">
+            <span class="shops-dir-entry-txt"><span class="sl">//</span> <span id="shopsDirEntryTxt" data-i18n="shopsDirEntryTxt">Cherche, trie, trouve ton prochain vendeur.</span></span>
+            <button type="button" class="btn-primary" onclick="openShopsDirectory()" data-i18n="shopsDirViewAll">VOIR TOUS LES SHOPS ▸</button>
+          </div>
         </div>
         <h3 data-i18n="marketplaceFeedTitle" style="margin-top:0;">Derniers objets en vente</h3>
         <div class="mkt-toolbar">
@@ -2307,8 +2432,21 @@
             <div class="shop-banner-id">
               <div class="shop-banner-top">
                 <div class="shop-banner-text">
+                  <div class="shop-banner-kicker"><span class="sl">//</span> SHOP</div>
                   <div class="shop-banner-title-row">
                     <h1 id="shopPageTitle">—</h1>
+                    <div class="shop-status-wrap" id="shopStatusWrap" hidden>
+                      <button type="button" class="status-pill" id="shopStatusPill" onclick="toggleStatusEditor(event)"></button>
+                      <div class="status-pop" id="statusPop" hidden onclick="event.stopPropagation()">
+                        <div class="st-lbl"><b>//</b> <span data-i18n="statusPopTitle">TON STATUT</span></div>
+                        <div class="status-input-row" id="statusInputRow"><span class="status-dot none" id="statusInputDot"></span>
+                          <input type="text" id="statusInput" maxlength="40" autocomplete="off" data-i18n-ph="statusPh" placeholder="ex : En vacances jusqu'au 20/10" oninput="onStatusInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();saveStatus();} if(event.key==='Escape'){closeStatusEditor();}">
+                          <span class="status-count" id="statusCount">0/40</span></div>
+                        <div class="status-swatches" id="statusSwatches"></div>
+                        <div class="status-pop-actions"><span class="status-count" data-i18n="statusHint">Texte libre · Entrée pour enregistrer</span>
+                          <div class="btns"><button type="button" class="btn-secondary" onclick="clearStatus()" data-i18n="statusClear">EFFACER</button><button type="button" class="btn-primary" onclick="saveStatus()" data-i18n="statusSave">ENREGISTRER</button></div></div>
+                      </div>
+                    </div>
                   </div>
                   <div class="shop-banner-meta">
                     <div class="shop-loc-tag" id="shopLocTag" hidden></div>
@@ -2382,6 +2520,18 @@
           <div id="shopResourceRequestsGrid" class="resource-request-grid"></div>
         </div>
       </div>
+    </section>
+
+    <!-- ANNUAIRE DES SHOPS -->
+    <section id="view-shops-directory" hidden>
+      <button class="back" onclick="closeShopsDirectory()" data-i18n="back">&lt; RETOUR</button>
+      <header><h1 class="slashes" data-i18n="shopsDirTitle">Tous les shops</h1></header>
+      <div class="shops-dir-toolbar">
+        <input type="text" id="shopsDirSearch" class="mkt-search-input" data-i18n-ph="shopsDirSearchPh" placeholder="Rechercher un shop, un vendeur, un lieu…" oninput="renderShopsDirectory()">
+        <div class="shops-dir-sorts" id="shopsDirSorts"></div>
+      </div>
+      <div class="shops-dir-count" id="shopsDirCount"></div>
+      <div id="shopsDirGrid" class="shops-dir-grid"></div>
     </section>
 
     <!-- TOUTES LES ANNONCES DE CE VENDEUR (vue client) -->
@@ -2488,7 +2638,7 @@
   </div>
 
   <footer data-i18n="footer">COURIERS UNITED // RISQUES INCLUS DANS LA COMMISSION // PAIEMENT À LA REMISE</footer>
-  <div class="uex-credit"><span data-i18n="uexCredit">Données d'items par</span> <a href="https://uexcorp.space" target="_blank" rel="noopener">UEX Corp</a> · <span data-i18n="uexDisclaimer">fan project non officiel, prix indicatifs</span></div>
+  <div class="uex-credit"><span data-i18n="uexCredit">Données d'items par</span>&nbsp;<a href="https://uexcorp.space" target="_blank" rel="noopener">UEX Corp</a>&nbsp;·&nbsp;<span data-i18n="uexDisclaimer">fan project non officiel, prix indicatifs</span></div>
   <div class="discord-cta">
     <span class="discord-cta-text" data-i18n="discordCtaText">Rejoins la communauté sur Discord</span>
     <a class="discord-cta-btn" href="https://discord.gg/UAjkGJVrpZ" target="_blank" rel="noopener noreferrer">
@@ -2563,7 +2713,8 @@ window.addEventListener('pageshow', (event) => {
     window.location.reload();
   }
 });
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1554227281721958440/yOxynZkztwvQoBkk64NL1qcriIucXI6BCaw8kuj3_41ls2Hjnwy2YaCFKbA88B-2Nn1a";
+// Le webhook Discord est côté serveur (/api/discord)
+const DISCORD_WEBHOOK_URL = "/api/discord";
 // Frais minimum garanti au coursier : sous ce seuil, frais fixes à ce montant ;
 // à partir de ce seuil, le coursier touche ce montant fixe EN PLUS des 15% habituels.
 const MIN_COMMISSION = 50000;
@@ -2791,7 +2942,8 @@ function onLieuBlur(inputEl){
     if(box) box.hidden = true;
   }, 150);
 }
-const UEX_SECRET_KEY = "d76d4cc1f06bb9764172dff43406640fb5b79b2c";
+// Les appels UEX passent par /api/uex (la clé reste côté serveur)
+const UEX_PROXY = "/api/uex";
 let uexCommodities = [];
 let uexItems = [];
 const uexItemPriceCache = {};
@@ -2913,7 +3065,7 @@ let currentView = 'client'; // 'client' | 'courier' | 'seller' | 'admin'
 // 'booting' pendant l'écran de chargement BIOS, 'shown' une fois le portail affiché. Remis à 'idle' à la
 // déconnexion (voir onAuthStateChange) pour qu'un autre compte rejoue l'animation si besoin.
 let rsiGateState = 'idle'; // 'idle' | 'booting' | 'shown'
-const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-blueprint','view-seller-create-resource','view-shop-all-listings','view-shop-all-blueprints','view-shop-all-resources','view-listing-detail','view-messages-mobile'];
+const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-admin-dash','view-profile','view-public-profile','view-seller-shop','view-seller-shop-edit','view-seller-create-listing','view-seller-create-blueprint','view-seller-create-resource','view-shop-all-listings','view-shop-all-blueprints','view-shop-all-resources','view-listing-detail','view-messages-mobile','view-shops-directory'];
 // Quitte aussi le mode "page messagerie mobile plein écran" (voir openMobileMessages()) à chaque
 // changement de vue, quel que soit le chemin emprunté pour naviguer ailleurs : on ne veut pas que la
 // barre du haut reste masquée si on quitte la messagerie autrement qu'avec son propre bouton RETOUR.
@@ -3045,6 +3197,9 @@ const T = {
     shopLocSystemLbl:"Système", shopLocNameLbl:"Lieu (optionnel)", phShopLoc:"ex: Lorville, Area18, Theta Station...",
     shopLogoDropText:"Glisse une image ici, ou clique pour choisir un logo", shopLogoDropHint:"PNG, JPG ou GIF",
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
+    statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
+    shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
+    homeNewOrder:"+ NOUVELLE COMMANDE", homeHello:"Salut, {name}", homeFresh:"NOUVEAUTÉS SUR LA MARKETPLACE", homeSeeAll:"TOUT VOIR ▸", homeInProgress:"En cours", homeStatOrders:"COMMANDES", homeStatDelivered:"LIVRÉES", homeStatSpent:"DÉPENSÉ (aUEC)", homeStatActive:"EN COURS", homeMore:"+{n} DE PLUS ▾", homeLess:"MOINS ▴", homeCargo:"CARGAISON",
     shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille", shopTextureDiag:"Diagonales", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain", shopTextureSkull:"Crâne spatial", shopTextureWaves:"Ondes",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
@@ -3209,6 +3364,9 @@ const T = {
     shopLocSystemLbl:"System", shopLocNameLbl:"Location (optional)", phShopLoc:"e.g. Lorville, Area18, Theta Station...",
     shopLogoDropText:"Drop an image here, or click to choose a logo", shopLogoDropHint:"PNG, JPG or GIF",
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
+    statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
+    shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
+    homeNewOrder:"+ NEW ORDER", homeHello:"Hello, {name}", homeFresh:"FRESH ON THE MARKETPLACE", homeSeeAll:"SEE ALL ▸", homeInProgress:"In progress", homeStatOrders:"ORDERS", homeStatDelivered:"DELIVERED", homeStatSpent:"SPENT (aUEC)", homeStatActive:"IN PROGRESS", homeMore:"+{n} MORE ▾", homeLess:"LESS ▴", homeCargo:"CARGO",
     shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid", shopTextureDiag:"Diagonal", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain", shopTextureSkull:"Space skull", shopTextureWaves:"Waves",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
@@ -4318,7 +4476,7 @@ async function loadUexCatalog(){
   if(uexLoading) return uexLoading;
   uexLoading = (async () => {
     try{
-      const commoRes = await fetch("https://uexcorp.space/api/2.0/commodities", { headers: { "secret_key": UEX_SECRET_KEY } });
+      const commoRes = await fetch(UEX_PROXY + "?path=commodities");
       const commoData = await commoRes.json();
       if(commoData && commoData.data){
         uexCommodities = commoData.data.filter(c => c.is_buyable && c.price_buy > 0).map(c => ({ name: c.name, price_buy: c.price_buy }));
@@ -4327,7 +4485,7 @@ async function loadUexCatalog(){
     try{
       const itemResults = await Promise.all(UEX_ITEM_CATEGORIES.map(async id => {
         try{
-          const res = await fetch(`https://uexcorp.space/api/2.0/items?id_category=${id}`, { headers: { "secret_key": UEX_SECRET_KEY } });
+          const res = await fetch(`${UEX_PROXY}?path=items&id_category=${id}`);
           const data = await res.json();
           return ((data && data.data) ? data.data : []).map(it => ({ ...it, _cat: id }));
         }catch(e){ return []; }
@@ -4379,7 +4537,7 @@ async function findUnbuyableItems(items){
 async function fetchUexItemMinPrice(itemId){
   if(uexItemPriceCache[itemId] !== undefined) return uexItemPriceCache[itemId];
   try{
-    const res = await fetch(`https://uexcorp.space/api/2.0/items_prices?id_item=${itemId}`, { headers: { "secret_key": UEX_SECRET_KEY } });
+    const res = await fetch(`${UEX_PROXY}?path=items_prices&id_item=${itemId}`);
     const data = await res.json();
     let min = null;
     (data?.data || []).forEach(row => { if(row.price_buy && (min === null || row.price_buy < min)) min = row.price_buy; });
@@ -4393,7 +4551,7 @@ const uexItemLocationsCache = {};
 async function fetchUexItemLocations(itemId){
   if(uexItemLocationsCache[itemId] !== undefined) return uexItemLocationsCache[itemId];
   try{
-    const res = await fetch(`https://uexcorp.space/api/2.0/items_prices?id_item=${itemId}`, { headers: { "secret_key": UEX_SECRET_KEY } });
+    const res = await fetch(`${UEX_PROXY}?path=items_prices&id_item=${itemId}`);
     const data = await res.json();
     const rows = (data?.data || []).filter(row => row.price_buy && row.price_buy > 0).sort((a,b) => a.price_buy - b.price_buy);
     uexItemLocationsCache[itemId] = rows;
@@ -4566,7 +4724,7 @@ async function loadUexVehicles(){
   if(uexVehiclesLoading) return uexVehiclesLoading;
   uexVehiclesLoading = (async () => {
     try{
-      const res = await fetch("https://uexcorp.space/api/2.0/vehicles", { headers: { "secret_key": UEX_SECRET_KEY } });
+      const res = await fetch(UEX_PROXY + "?path=vehicles");
       const data = await res.json();
       if(data && data.data){
         const seen = new Set();
@@ -4794,7 +4952,7 @@ function shipTrackHtml(order){
     const doneClass = i <= curIdx ? 'done' : '';
     const curClass = i === curIdx ? 'current' : '';
     const leftPct = stagePercent(s, steps);
-    return `<div class="stage ${doneClass} ${curClass}" style="left:${leftPct}%"></div><div class="stage-label ${doneClass}" style="left:${leftPct}%">${d.statusShort[s]}</div>`;
+    return `<div class="stage ${doneClass} ${curClass}" style="left:${leftPct}%"></div><div class="stage-label ${doneClass} ${curClass ? 'cur' : ''}" style="left:${leftPct}%">${d.statusShort[s]}</div>`;
   }).join('');
   const pct = stagePercent(order.status, steps);
   return `<div class="ship-track" data-order="${order.id}"><div class="rail"></div><div class="rail-fill" style="width:${pct}%"></div>${stops}
@@ -4817,11 +4975,30 @@ function animateShipTracks(container){
   });
 }
 
+
+function toggleOrderCargo(btn){
+  const ul = btn.closest('.order-row-main').querySelector('.order-row-cargo'); if(!ul) return;
+  ul.hidden = !ul.hidden;
+  const d = T[LANG];
+  btn.textContent = ul.hidden ? d.homeMore.replace('{n}', btn.dataset.n) : d.homeLess;
+}
+async function loadClientHomeFresh(){
+  const wrap = $('clientHomeFreshWrap'), box = $('clientHomeFresh'); if(!wrap || !box) return;
+  const { data: listings } = await sb.from('marketplace_listings').select('*').eq('is_deleted', false).order('created_at',{ascending:false}).limit(4);
+  if(!listings || !listings.length){ wrap.hidden = true; return; }
+  const ids = [...new Set(listings.map(l => l.seller_id))];
+  const { data: shops } = await sb.from('marketplace_shops').select('id,shop_name').in('id', ids);
+  const map = {}; (shops||[]).forEach(sh => { map[sh.id] = { shop_name: sh.shop_name }; });
+  box.innerHTML = listings.map(l => mktCardHtml(l, map)).join('');
+  wrap.hidden = false;
+}
+
 // --- DASHBOARD CLIENT ---
 async function loadClientDashboard(){
   if(!session) return;
   renderCourierAd();
   renderSellerAd();
+  loadClientHomeFresh();
   const { data, error } = await sb.from('orders').select('*').eq('client_id', session.user.id).order('created_at',{ascending:false});
   if(error){ $('clientCurrentOrders').textContent = error.message; return; }
   const orders = (data || []).filter(o => o.order_type !== 'marketplace');
@@ -4841,44 +5018,39 @@ async function loadClientDashboard(){
     : '';
 
   const curBox = $('clientCurrentOrders');
-  const MAX_VISIBLE_ITEMS = 3;
-  curBox.innerHTML = current.length ? current.map(o => {
+  // En-tête + stats (// labels, sans encadrés)
+  const helloEl = $('clientHomeHello');
+  if(helloEl) helloEl.textContent = d.homeHello.replace('{name}', profile ? displayName(profile) : '');
+  const deliveredOrders = orders.filter(o => o.status === 'delivered');
+  const spent = deliveredOrders.reduce((sum,o) => sum + (Number(o.total_price)||0), 0);
+  const statsEl = $('clientHomeStats');
+  if(statsEl) statsEl.innerHTML = [
+    [d.homeStatOrders, orders.length, ''], [d.homeStatActive, current.length, 'accent'], [d.homeStatDelivered, deliveredOrders.length, 'green'], [d.homeStatSpent, fmtNum(spent), '']
+  ].map(([l,v,c]) => `<div class="home-stat"><span class="home-stat-lbl"><span class="sl">//</span> ${l}</span><span class="home-stat-val ${c}">${v}</span></div>`).join('');
+  const MAX_VISIBLE_ITEMS = 2;
+  const rowHtml = o => {
     const c = couriers[o.courier_id];
-    const shipInfo = c && (c.ship_class || c.ship_name)
-      ? `<div class="courier-box-ship">${d.orderShip}${c.ship_name ? '“'+c.ship_name+'”' : ''}${c.ship_class ? (c.ship_name ? ' — ' : '') + c.ship_class : ''}</div>`
-      : '';
-    const courierBox = c ? `
-      <div class="courier-box" onclick="openPublicProfile('${c.id}')" title="${d.viewProfileBtn}">
-        <div class="courier-box-name">${displayName(c)}</div>
-        ${rankBadgeHtml(c.deliveredCount,'md')}
-        ${shipInfo}
-      </div>` : '';
-    const deadlineLine = o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : '';
-    const singleClass = current.length === 1 ? 'single' : '';
     const items = o.items || [];
-    const itemsLi = items.map((it,idx) => `<li${idx>=MAX_VISIBLE_ITEMS?' class="extra-item" hidden':''}>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('');
-    const moreCount = items.length - MAX_VISIBLE_ITEMS;
-    const toggleBtn = moreCount > 0 ? `<button type="button" class="items-toggle" data-more-label="${d.viewMoreItems.replace('{n}', moreCount)}" onclick="toggleItemsList(this)">${d.viewMoreItems.replace('{n}', moreCount)}</button>` : '';
-    const canCancelOrder = !['purchased','in_transit'].includes(o.status);
-    const cancelBlock = canCancelOrder
-      ? `<button class="btn-cancel" onclick="cancelOrder('${o.id}','${o.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>`
-      : `<div class="cancel-locked-note">${d.cancelLockedNote}</div>`;
-    return `
-    <div class="order-card big ${singleClass}">
-      <div class="order-top-row">
-        <div class="status">${d.statusLabels[o.status]}</div>
-        ${courierBox}
+    const shown = items.slice(0, MAX_VISIBLE_ITEMS).map(it => `${escHtml(it.name)} ×${it.qty}`).join(', ');
+    const more = items.length - MAX_VISIBLE_ITEMS;
+    const moreBtn = more > 0 ? `<button type="button" class="order-row-more" data-n="${more}" onclick="toggleOrderCargo(this)">${d.homeMore.replace('{n}', more)}</button>` : '';
+    const cargo = `<ul class="order-row-cargo" hidden>${items.map(it => `<li>${escHtml(it.name)} ×${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>`;
+    const deadline = o.deadline ? ` · ${d.orderDeadline}${formatDeadline(o.deadline)}` : '';
+    const courierLine = c ? `<div class="order-row-courier"><span>${d.orderCourier}</span>${courierLinkHtml(c)}${rankBadgeHtml(c.deliveredCount,'md')}${c.ship_class || c.ship_name ? `<span>· ${c.ship_name ? '“'+escHtml(c.ship_name)+'”' : ''}${c.ship_class ? (c.ship_name ? ' — ' : '') + escHtml(c.ship_class) : ''}</span>` : ''}</div>` : '';
+    const canCancel = !['purchased','in_transit'].includes(o.status);
+    const foot = canCancel
+      ? `<button class="order-row-cancel" onclick="cancelOrder('${o.id}','${o.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>`
+      : `<span class="order-row-locked">${d.cancelLockedNote}</span>`;
+    return `<div class="order-row">
+      <div class="order-row-main">
+        <div class="order-row-items">${shown}${moreBtn}</div>${cargo}
+        <div class="order-row-sub">${escHtml(o.destination_system)} — ${escHtml(o.exact_location||'-')} · ${fmt(o.total_price)}${deadline}</div>
+        ${courierLine}
       </div>
-      <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
-      ${deadlineLine}
-      ${shipTrackHtml(o)}
-      <ul>${itemsLi}</ul>
-      ${toggleBtn}
-      <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
-      ${cancelBlock}
-    </div>
-  `;
-  }).join('') : `
+      <div class="order-row-side">${shipTrackHtml(o)}<div class="order-row-foot"><span class="order-row-status">▸ ${d.statusLabels[o.status]}</span>${foot}</div></div>
+    </div>`;
+  };
+  curBox.innerHTML = current.length ? `<div class="orders-box"><div class="orders-box-head"><span>// ${d.homeInProgress} · ${current.length}</span></div>${current.map(rowHtml).join('')}</div>` : `
     <div class="empty-cta">
       <svg class="empty-cta-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
         <rect x="7" y="3" width="2" height="10"/><rect x="3" y="7" width="10" height="2"/>
@@ -5173,6 +5345,79 @@ function applyBlueprintsFilter(){
   // false : même dans le catalogue, les boutons "modifier/supprimer" n'ont de sens que sur la propre page
   // boutique du vendeur (comme pour les annonces marketplace) — ici on reste en vue "client".
   box.innerHTML = list.map(bp => blueprintCardHtml(bp, blueprintsSellerMapCache, false)).join('');
+}
+
+
+// ===== Annuaire des shops =====
+let shopsDirData = null, shopsDirSort = 'newest';
+const SHOPS_DIR_SORTS = [['newest','shopsDirSortNewest'],['sales','shopsDirSortSales'],['blueprints','shopsDirSortBp'],['listings','shopsDirSortListings'],['name','shopsDirSortName']];
+function closeShopsDirectory(){ routeApp(); setTimeout(() => { try{ setClientTab('marketplace'); }catch(e){} }, 0); }
+async function openShopsDirectory(){
+  hideAllViews();
+  $('createOrderBtn').hidden = false;
+  $('view-shops-directory').hidden = false;
+  window.scrollTo(0,0);
+  renderShopsDirSorts();
+  $('shopsDirGrid').innerHTML = '<p class="muted">…</p>';
+  const [shopsRes, salesRes, listRes, bpRes] = await Promise.all([
+    sb.from('marketplace_shops').select('*'),
+    sb.from('marketplace_inquiries').select('seller_id').eq('status','completed'),
+    sb.from('marketplace_listings').select('seller_id').eq('is_deleted', false),
+    sb.from('blueprints').select('seller_id').eq('is_deleted', false)
+  ]);
+  const count = rows => { const m = {}; (rows||[]).forEach(r => { m[r.seller_id] = (m[r.seller_id]||0)+1; }); return m; };
+  const sales = count(salesRes.data), lists = count(listRes.data), bps = count(bpRes.data);
+  const shops = (shopsRes.data || []).filter(sh => sh.shop_name);
+  const ids = shops.map(sh => sh.id);
+  let profs = {};
+  if(ids.length){
+    const { data } = await sb.from('profiles').select('id,discord_username,rsi_handle,status_text,status_color').in('id', ids);
+    (data||[]).forEach(p => { profs[p.id] = p; });
+  }
+  shopsDirData = shops.map(sh => ({ shop: sh, prof: profs[sh.id] || {}, sales: sales[sh.id]||0, listings: lists[sh.id]||0, bps: bps[sh.id]||0 }));
+  renderShopsDirectory();
+}
+function renderShopsDirSorts(){
+  const d = T[LANG]; const box = $('shopsDirSorts'); if(!box) return;
+  box.innerHTML = SHOPS_DIR_SORTS.map(([k,key]) => `<button type="button" class="${k===shopsDirSort?'active':''}" onclick="setShopsDirSort('${k}')">${d[key]}</button>`).join('');
+}
+function setShopsDirSort(k){ shopsDirSort = k; renderShopsDirSorts(); renderShopsDirectory(); }
+function escHtml(v){ return String(v==null?'':v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function renderShopsDirectory(){
+  const grid = $('shopsDirGrid'); if(!grid || !shopsDirData) return;
+  const d = T[LANG];
+  const q = ($('shopsDirSearch').value || '').trim().toLowerCase();
+  let list = shopsDirData.filter(r => {
+    if(!q) return true;
+    const hay = [r.shop.shop_name, r.shop.description, r.shop.location_name, r.shop.location_system, r.prof.rsi_handle, r.prof.discord_username].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+  const dateOf = r => r.shop.created_at || r.shop.updated_at || '';
+  const by = {
+    newest: (a,b) => String(dateOf(b)).localeCompare(String(dateOf(a))),
+    sales: (a,b) => b.sales - a.sales || a.shop.shop_name.localeCompare(b.shop.shop_name),
+    blueprints: (a,b) => b.bps - a.bps || a.shop.shop_name.localeCompare(b.shop.shop_name),
+    listings: (a,b) => b.listings - a.listings || a.shop.shop_name.localeCompare(b.shop.shop_name),
+    name: (a,b) => a.shop.shop_name.localeCompare(b.shop.shop_name, undefined, {sensitivity:'base'})
+  };
+  list.sort(by[shopsDirSort] || by.name);
+  $('shopsDirCount').textContent = d.shopsDirCount.replace('{n}', list.length);
+  if(!list.length){ grid.innerHTML = `<p class="muted">${d.shopsDirNone}</p>`; return; }
+  grid.innerHTML = list.map(r => {
+    const sh = r.shop, col = normalizeShopColor(sh.theme_color);
+    const name = escHtml(sh.shop_name);
+    const logo = sh.logo_url ? `<img src="${escHtml(sh.logo_url)}" alt="">` : escHtml((sh.shop_name[0]||'?').toUpperCase());
+    const owner = escHtml(r.prof.rsi_handle || r.prof.discord_username || '');
+    const loc = sh.location_system ? escHtml((sh.location_name ? sh.location_name + ' · ' : '') + sh.location_system) : '';
+    const sub = [owner, loc].filter(Boolean).join(' · ');
+    const st = (r.prof.status_text || '').trim(), sc = validStatusColor(r.prof.status_color);
+    const stHtml = st ? `<span class="shop-dir-status" style="--st-col:${sc || 'var(--muted)'}">${sc ? '<span class="status-dot"></span>' : ''}<span class="t">${escHtml(st)}</span></span>` : '';
+    const stats = [d.shopsDirSales.replace('{n}', r.sales), d.shopsDirListings.replace('{n}', r.listings), d.shopsDirBp.replace('{n}', r.bps)].join(' · ');
+    return `<button type="button" class="shop-dir-card" style="--shop-col:${col}; --shop-col-dim:${col}55;" onclick="openSellerShop('${sh.id}')">
+      <div class="shop-dir-logo">${logo}</div>
+      <div class="shop-dir-info"><span class="shop-dir-name">${name}</span><span class="shop-dir-sub">${sub}</span><span class="shop-dir-stats">${stats}</span>${stHtml}</div>
+    </button>`;
+  }).join('');
 }
 
 // --- LEADERBOARD DES BOUTIQUES (3 stats : ventes cette semaine, upvotes cette semaine, objet le plus cher vendu) ---
@@ -6709,6 +6954,7 @@ async function openSellerShop(sellerId){
     }
   }
   $('shopOwnerName').textContent = d.shopOwnerLbl + (p ? displayName(p) : '—');
+  renderShopStatus(p, isOwner);
   if(descEl && shop?.description){ descEl.textContent = shop.description; descEl.hidden = false; }
   const grid = $('shopListingsGrid');
   const resGrid = $('shopResourceRequestsGrid');
@@ -6762,6 +7008,94 @@ async function openSellerShop(sellerId){
 
   loadShopUpvotes(sellerId, isOwner);
 }
+
+// ===== Statut joueur =====
+const STATUS_COLORS = ['#3dff7a','#ffb020','#ff4d4d','#4da3ff','#a56bff','#ffffff'];
+let statusDraftColor = '';
+let statusViewingIsOwner = false;
+function validStatusColor(c){ return (typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c)) ? c : ''; }
+function renderShopStatus(p, isOwner){
+  const wrap = $('shopStatusWrap'), pill = $('shopStatusPill'); if(!wrap || !pill) return;
+  const d = T[LANG];
+  statusViewingIsOwner = !!isOwner;
+  const txt = ((p && p.status_text) || '').trim();
+  const col = validStatusColor(p && p.status_color);
+  closeStatusEditor();
+  if(!txt && !isOwner){ wrap.hidden = true; return; }
+  wrap.hidden = false;
+  pill.className = 'status-pill' + (isOwner ? ' editable' : '') + (txt ? '' : ' empty');
+  pill.style.setProperty('--st-col', col || 'var(--border)');
+  pill.disabled = !isOwner;
+  pill.textContent = '';
+  if(txt){
+    const dot = document.createElement('span'); dot.className = 'status-dot' + (col ? '' : ' none'); pill.appendChild(dot);
+    const t = document.createElement('span'); t.className = 'status-txt'; t.textContent = txt; pill.appendChild(t);
+    if(isOwner){ const pen = document.createElement('span'); pen.className = 'status-pen'; pen.textContent = '✎'; pill.appendChild(pen); }
+  } else {
+    pill.textContent = d.statusSet;
+  }
+  pill.dataset.txt = txt; pill.dataset.col = col;
+}
+function renderStatusSwatches(){
+  const box = $('statusSwatches'); if(!box) return;
+  box.innerHTML = '';
+  const none = document.createElement('button'); none.type = 'button'; none.className = 'status-swatch none' + (!statusDraftColor ? ' sel' : ''); none.textContent = '∅';
+  none.onclick = () => { statusDraftColor = ''; onStatusInput(); renderStatusSwatches(); };
+  box.appendChild(none);
+  STATUS_COLORS.forEach(c => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'status-swatch' + (statusDraftColor.toLowerCase() === c ? ' sel' : ''); b.style.setProperty('--sw', c);
+    b.onclick = () => { statusDraftColor = c; onStatusInput(); renderStatusSwatches(); };
+    box.appendChild(b);
+  });
+  const cust = document.createElement('label'); cust.className = 'status-swatch custom' + (statusDraftColor && !STATUS_COLORS.includes(statusDraftColor.toLowerCase()) ? ' sel' : '');
+  const inp = document.createElement('input'); inp.type = 'color'; inp.value = statusDraftColor || '#ffb020';
+  inp.oninput = () => { statusDraftColor = inp.value; onStatusInput(); };
+  inp.onchange = () => renderStatusSwatches();
+  cust.appendChild(inp); box.appendChild(cust);
+}
+function onStatusInput(){
+  const inp = $('statusInput'); if(!inp) return;
+  $('statusCount').textContent = inp.value.length + '/40';
+  const row = $('statusInputRow'), dot = $('statusInputDot');
+  row.style.setProperty('--st-col', statusDraftColor || 'var(--muted)');
+  dot.classList.toggle('none', !statusDraftColor);
+}
+function toggleStatusEditor(ev){
+  if(ev) ev.stopPropagation();
+  if(!statusViewingIsOwner) return;
+  const pop = $('statusPop');
+  if(!pop.hidden){ closeStatusEditor(); return; }
+  const pill = $('shopStatusPill');
+  $('statusInput').value = pill.dataset.txt || '';
+  statusDraftColor = pill.dataset.col || '';
+  renderStatusSwatches(); onStatusInput();
+  if(window.innerWidth <= 600){ pop.classList.add('sheet'); document.body.appendChild(pop); }
+  pop.hidden = false;
+  setTimeout(() => { const i = $('statusInput'); if(i) i.focus(); }, 30);
+}
+function closeStatusEditor(){
+  const pop = $('statusPop'); if(!pop) return;
+  pop.hidden = true;
+  const wrap = $('shopStatusWrap');
+  if(pop.classList.contains('sheet') && wrap){ pop.classList.remove('sheet'); wrap.appendChild(pop); }
+}
+document.addEventListener('click', e => {
+  const pop = $('statusPop'); if(!pop || pop.hidden) return;
+  if(!e.target.closest('#shopStatusWrap') && !e.target.closest('#statusPop')) closeStatusEditor();
+});
+async function persistStatus(text, color){
+  if(!session) return;
+  const { error } = await sb.from('profiles').update({ status_text: text || null, status_color: text ? (color || null) : null }).eq('id', session.user.id);
+  if(error){ toastShow(T[LANG].statusErr + ' : ' + error.message, true); return; }
+  if(profile){ profile.status_text = text || null; profile.status_color = text ? (color || null) : null; }
+  renderShopStatus({ status_text: text, status_color: color }, true);
+  toastShow(T[LANG].statusSaved);
+}
+function saveStatus(){
+  const text = ($('statusInput').value || '').trim().slice(0,40);
+  persistStatus(text, validStatusColor(statusDraftColor));
+}
+function clearStatus(){ persistStatus('', ''); }
 let shopUpvoted = false;
 async function loadShopUpvotes(sellerId, isOwner){
   const btn = $('shopUpvoteBtn');

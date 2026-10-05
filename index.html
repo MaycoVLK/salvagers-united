@@ -6103,8 +6103,8 @@ function blueprintCardHtml(bp, sellerMap, isOwner){
   const canOrder = !isOwner && session && session.user.id !== bp.seller_id;
   const ownerActions = isOwner ? `
     <div class="my-listing-actions">
-      <button type="button" class="btn-secondary" onclick="event.stopPropagation(); openEditBlueprint('${bp.id}')" data-i18n="editListingBtn">MODIFIER</button>
-      <button type="button" class="btn-secondary" onclick="event.stopPropagation(); deleteBlueprint('${bp.id}')" data-i18n="deleteListingBtn">SUPPRIMER</button>
+      <button type="button" class="btn-secondary" onclick="event.stopPropagation(); openEditBlueprint('${bp.id}')" data-i18n="editListingBtn">${d.editListingBtn}</button>
+      <button type="button" class="btn-secondary" onclick="event.stopPropagation(); deleteBlueprint('${bp.id}')" data-i18n="deleteListingBtn">${d.deleteListingBtn}</button>
     </div>` : '';
   return `
     <div class="mkt-card mkt-card-clickable blueprint-card" onclick="openListingDetail('${bp.id}')">

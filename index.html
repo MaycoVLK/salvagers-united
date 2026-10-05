@@ -159,6 +159,7 @@
   .toast{position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); background:var(--accent); color:#03130a; padding:10px 18px; border-radius:2px; font-family:'VT323',monospace; font-size:1.1rem; letter-spacing:1px; opacity:0; pointer-events:none; transition:opacity .25s; z-index:80;}
   .toast.show{opacity:1;}
   footer{display:table; margin:20px auto 0; color:var(--muted); font-size:.75rem; letter-spacing:1px; text-align:center; max-width:calc(100% - 28px);}
+  .legal-note{max-width:560px; margin:14px auto 0; padding:0 14px; color:var(--muted); font-size:.68rem; line-height:1.5; letter-spacing:.3px; text-align:center; opacity:.8;}
   .discord-cta{width:380px; max-width:calc(100% - 28px); box-sizing:border-box; margin:16px auto 0; padding:14px 18px; border:1px solid var(--border); border-radius:6px; background:var(--panel); display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;}
   .discord-cta-text{font-family:'VT323',monospace; font-size:1rem; letter-spacing:.5px; color:var(--muted); text-transform:uppercase;}
   .discord-cta-btn{display:inline-flex; align-items:center; gap:8px; padding:10px 20px; border:1px solid var(--accent); border-radius:4px; background:transparent; color:var(--accent); font-family:'VT323',monospace; font-size:1.05rem; letter-spacing:1px; text-transform:uppercase; text-decoration:none; cursor:pointer; transition:background .15s, color .15s;}
@@ -1474,6 +1475,7 @@
           <span data-i18n="loginBtn">SE CONNECTER AVEC DISCORD</span>
         </button>
       </div>
+      <p class="legal-note" data-i18n="legalNote">Projet communautaire non officiel, non affilié à CIG. Star Citizen® et Cloud Imperium® sont des marques de Cloud Imperium Rights LLC.</p>
       <div class="topbar">
         <button class="lang-btn" id="lang-fr" onclick="setLang('fr')">FR</button>
         <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
@@ -2471,6 +2473,7 @@
       <span data-i18n="discordCtaBtn">JOIN US ON DISCORD</span>
     </a>
   </div>
+  <p class="legal-note" data-i18n="legalNote">Projet communautaire non officiel, non affilié à CIG. Star Citizen® et Cloud Imperium® sont des marques de Cloud Imperium Rights LLC.</p>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -2844,6 +2847,7 @@ const T = {
     tabPending:"À TRAITER", tabMine:"ATTRIBUÉES", noAvailable:"Aucune commande disponible pour le moment.", noDeliveries:"Aucune livraison en cours.",
     accept:"ACCEPTER", markPurchased:"MARCHANDISE ACHETÉE", markTransit:"MARQUER EN TRANSIT", markDelivered:"MARQUER LIVRÉE",
     members:"Membres", footer:"COURIERS UNITED // RISQUES INCLUS DANS LA COMMISSION // PAIEMENT À LA REMISE",
+    legalNote:"Projet communautaire non officiel, non affilié à CIG. Star Citizen® et Cloud Imperium® sont des marques de Cloud Imperium Rights LLC.",
     discordCtaText:"Rejoins la communauté sur Discord", discordCtaBtn:"REJOINS-NOUS SUR DISCORD",
     msgClearBtn:"EFFACER", confirmClearConversation:"Vider cette conversation ? Les éléments encore en attente d'une réponse resteront affichés.", msgThreadCleared:"Conversation vidée. Les nouveaux échanges apparaîtront ici.",
     clearMsgModalTitle:"Vider cette conversation ?", clearMsgModalWarning:"Tous les messages de cette conversation vont disparaître définitivement de ton affichage, y compris ceux encore en attente d'une réponse. Cette action est irréversible.", confirmClearBtn:"VIDER",
@@ -3007,6 +3011,7 @@ const T = {
     tabPending:"PENDING", tabMine:"ASSIGNED", noAvailable:"No orders available right now.", noDeliveries:"No deliveries in progress.",
     accept:"ACCEPT", markPurchased:"MARK PURCHASED", markTransit:"MARK IN TRANSIT", markDelivered:"MARK DELIVERED",
     members:"Members", footer:"COURIERS UNITED // RISK INCLUDED IN THE COMMISSION // PAYMENT ON DELIVERY",
+    legalNote:"Unofficial community project, not affiliated with CIG. Star Citizen® and Cloud Imperium® are trademarks of Cloud Imperium Rights LLC.",
     discordCtaText:"Join our community on Discord", discordCtaBtn:"JOIN US ON DISCORD",
     msgClearBtn:"CLEAR", confirmClearConversation:"Clear this conversation? Items still awaiting a response will stay visible.", msgThreadCleared:"Conversation cleared. New exchanges will show up here.",
     clearMsgModalTitle:"Clear this conversation?", clearMsgModalWarning:"Every message in this conversation will permanently disappear from your view, including anything still awaiting a response. This cannot be undone.", confirmClearBtn:"CLEAR",

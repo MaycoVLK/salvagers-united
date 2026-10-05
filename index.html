@@ -5713,12 +5713,12 @@ function toggleListingTag(tag){
     listingTagsState.negotiable = !listingTagsState.negotiable;
   } else if(tag === 'crafted'){
     listingTagsState.crafted = !listingTagsState.crafted;
-    if(!listingTagsState.crafted){ listingTagsState.q700 = listingTagsState.q800 = listingTagsState.q900 = false; }
   } else {
+    // 700+/800+/900+ : un seul niveau à la fois, mais indépendant du tag CRAFTÉ.
     const key = 'q'+tag;
     const turningOn = !listingTagsState[key];
     listingTagsState.q700 = listingTagsState.q800 = listingTagsState.q900 = false;
-    if(turningOn){ listingTagsState[key] = true; listingTagsState.crafted = true; }
+    if(turningOn) listingTagsState[key] = true;
   }
   renderListingTagButtons();
   updateListingLivePreview();

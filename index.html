@@ -577,8 +577,17 @@
   .mkt-live-preview-empty{color:var(--muted); font-size:.82rem; text-align:center; padding:26px 10px;}
   .mkt-live-preview-wrap .mkt-card{pointer-events:none;}
   .mkt-toolbar{display:flex; align-items:center; gap:10px; margin:2px 0 16px; flex-wrap:wrap;}
-  .mkt-search-input{flex:1; min-width:160px; width:auto;}
+  .mkt-search-input{flex:1 1 220px; min-width:160px; max-width:340px; width:auto;}
+  @media (max-width:560px){ .mkt-search-input{flex:1 1 100%; max-width:none;} }
   .mkt-filter-wrap{flex:0 0 auto;}
+  .mkt-cat-btn.has-selection{border-color:var(--accent); color:var(--accent);}
+  .mkt-cat-btn .mkt-cat-label{max-width:150px; overflow:hidden; text-overflow:ellipsis;}
+  .mkt-cat-menu{right:auto; left:0; min-width:250px; max-height:min(60vh,460px); overflow-y:auto;}
+  .mkt-cat-menu button.cat-group{color:var(--accent); font-size:1rem; margin-top:4px; border-top:1px solid var(--border); border-radius:0 0 4px 4px;}
+  .mkt-cat-menu button.cat-group:first-of-type{margin-top:0; border-top:none;}
+  .mkt-cat-menu button.cat-sub{padding-left:24px; color:var(--muted);}
+  .mkt-cat-menu button.active{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
+  .cat-required{color:var(--accent);}
   .mkt-filter-btn{display:inline-flex; align-items:center; gap:8px; white-space:nowrap;}
   .mkt-filter-btn .icon{width:14px; height:14px;}
   .mkt-filter-menu{right:0; min-width:200px;}
@@ -1696,6 +1705,15 @@
         <h3 data-i18n="marketplaceFeedTitle" style="margin-top:0;">Derniers objets en vente</h3>
         <div class="mkt-toolbar">
           <input type="text" id="marketplaceSearchInput" class="mkt-search-input" data-i18n-ph="mktSearchPh" placeholder="Rechercher un objet…" oninput="onMarketplaceSearchInput()">
+          <div class="create-wrap mkt-filter-wrap" id="mktCatWrap">
+            <button type="button" class="btn-secondary mkt-filter-btn mkt-cat-btn" id="mktCatBtn" onclick="toggleCatMenu('mkt')">
+              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                <rect x="1" y="1" width="6" height="6"/><rect x="9" y="1" width="6" height="6"/><rect x="1" y="9" width="6" height="6"/><rect x="9" y="9" width="6" height="6"/>
+              </g></svg>
+              <span class="mkt-cat-label" id="mktCatLabel">CATEGORY</span>
+            </button>
+            <div class="create-menu mkt-filter-menu mkt-cat-menu" id="mktCatMenu" hidden></div>
+          </div>
           <div class="create-wrap mkt-filter-wrap" id="mktFilterWrap">
             <button type="button" class="btn-secondary mkt-filter-btn" id="mktFilterBtn" onclick="toggleMktFilterMenu()">
               <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
@@ -1718,6 +1736,15 @@
         <p class="muted" style="margin-top:-8px;" data-i18n="blueprintsCatalogSub">Des objets craftés sur commande par les vendeurs qui possèdent le blueprint correspondant.</p>
         <div class="mkt-toolbar">
           <input type="text" id="blueprintsSearchInput" class="mkt-search-input" data-i18n-ph="mktSearchPh" placeholder="Rechercher un objet…" oninput="onBlueprintsSearchInput()">
+          <div class="create-wrap mkt-filter-wrap" id="bpCatWrap">
+            <button type="button" class="btn-secondary mkt-filter-btn mkt-cat-btn" id="bpCatBtn" onclick="toggleCatMenu('bp')">
+              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                <rect x="1" y="1" width="6" height="6"/><rect x="9" y="1" width="6" height="6"/><rect x="1" y="9" width="6" height="6"/><rect x="9" y="9" width="6" height="6"/>
+              </g></svg>
+              <span class="mkt-cat-label" id="bpCatLabel">CATEGORY</span>
+            </button>
+            <div class="create-menu mkt-filter-menu mkt-cat-menu" id="bpCatMenu" hidden></div>
+          </div>
         </div>
         <div id="blueprintsFeed" class="marketplace-grid"></div>
       </div>
@@ -2045,7 +2072,9 @@
         <div class="shop-edit-form">
           <div class="card">
             <label for="listingItem" data-i18n="listingItemLbl">Objet</label>
-            <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute" oninput="updateListingLivePreview()">
+            <input id="listingItem" type="text" data-i18n-ph="phListingItem" placeholder="ex: Laranite brute" oninput="autoPickCategory('listingItem','listingCategory'); updateListingLivePreview()">
+            <label for="listingCategory"><span data-i18n="categoryLbl">Catégorie</span> <span class="cat-required">*</span></label>
+            <select id="listingCategory" onchange="updateListingLivePreview()"></select>
             <label for="listingDescription" data-i18n="listingDescriptionLbl">Description détaillée (optionnel)</label>
             <textarea id="listingDescription" data-i18n-ph="phListingDescription" placeholder="ex: État, provenance, détails utiles à l'acheteur..." oninput="updateListingLivePreview()"></textarea>
             <input type="checkbox" id="listingStockMode" hidden>
@@ -2099,7 +2128,9 @@
         <div class="shop-edit-form">
           <div class="card">
             <label for="blueprintItem" data-i18n="bpItemLbl">Objet craftable</label>
-            <input id="blueprintItem" type="text" data-i18n-ph="phBpItem" placeholder="ex: Casque d'armure lourde" oninput="updateBlueprintLivePreview()">
+            <input id="blueprintItem" type="text" data-i18n-ph="phBpItem" placeholder="ex: Casque d'armure lourde" oninput="autoPickCategory('blueprintItem','blueprintCategory'); updateBlueprintLivePreview()">
+            <label for="blueprintCategory"><span data-i18n="categoryLbl">Catégorie</span> <span class="cat-required">*</span></label>
+            <select id="blueprintCategory" onchange="updateBlueprintLivePreview()"></select>
             <label for="blueprintDescription" data-i18n="bpDescriptionLbl">Description (optionnel)</label>
             <textarea id="blueprintDescription" data-i18n-ph="phBpDescription" placeholder="ex: Finition mate, craft sur mesure selon tes specs..." oninput="updateBlueprintLivePreview()"></textarea>
             <label for="blueprintMaterials" data-i18n="bpMaterialsLbl">Ressources nécessaires</label>
@@ -2772,6 +2803,93 @@ const UEX_ITEM_CATEGORIES = [
 ];
 let uexCatalogReady = false;
 
+// --- CATÉGORIES D'OBJETS (alignées sur les catégories d'items UEX ; l'id UEX est stocké dans category_id) ---
+const ITEM_CATEGORY_GROUPS = [
+  { key:'weapons',    fr:'Armes personnelles',     en:'Personal Weapons',      cats:[[18,'Personal Weapons'],[17,'Attachments']] },
+  { key:'armor',      fr:'Armures',                en:'Armor',                 cats:[[7,'Full Set'],[3,'Helmets'],[5,'Torso'],[1,'Arms'],[4,'Legs'],[2,'Backpacks']] },
+  { key:'undersuits', fr:'Undersuits',             en:'Undersuits',            cats:[[24,'Undersuits']] },
+  { key:'clothing',   fr:'Vêtements',              en:'Clothing',              cats:[[8,'Footwear'],[9,'Gloves'],[10,'Hats'],[11,'Jackets'],[12,'Jumpsuits'],[13,'Legwear'],[14,'Shirts']] },
+  { key:'vweapons',   fr:'Armes de vaisseau',      en:'Ship Weapons',          cats:[[32,'Guns'],[35,'Turrets'],[34,'Missiles'],[33,'Missile Racks'],[80,'Torpedo Tubes'],[79,'Point Defense Cannon'],[70,'Bombs'],[90,'Bomb Racks']] },
+  { key:'systems',    fr:'Systèmes de vaisseau',   en:'Ship Systems',          cats:[[21,'Power Plants'],[19,'Coolers'],[23,'Shield Generators'],[22,'Quantum Drives'],[81,'Batteries'],[84,'Gravity Generators'],[103,'Life Support Generators']] },
+  { key:'utility',    fr:'Utilitaires de vaisseau',en:'Ship Utility',          cats:[[29,'Mining Laser Heads'],[30,'Mining Modules'],[110,'Salvage Beams'],[31,'Scraper Beams'],[67,'Tractor Beams'],[109,'Fabricators'],[25,'Docking Collars'],[26,'External Fuel Tanks'],[27,'Fuel Nozzles'],[28,'Gadgets']] },
+  { key:'avionics',   fr:'Avionique & propulsion', en:'Avionics & Propulsion', cats:[[83,'Radar'],[82,'Flight Blades'],[86,'Jump Modules']] },
+  { key:'misc',       fr:'Divers',                 en:'Miscellaneous',         cats:[[16,'Consumables'],[62,'Drinks'],[63,'Foods'],[65,'Containers'],[75,'Decorations'],[36,'Commodities'],[38,'Other']] }
+];
+const ITEM_CATEGORY_BY_ID = {};
+ITEM_CATEGORY_GROUPS.forEach(g => g.cats.forEach(([id, name]) => { ITEM_CATEGORY_BY_ID[id] = { id, name, group: g }; }));
+function categoryGroupLabel(g){ return LANG === 'fr' ? g.fr : g.en; }
+function fillCategorySelect(selId, selected){
+  const el = $(selId); if(!el) return;
+  const d = T[LANG];
+  const sel = (selected === undefined || selected === null || selected === '') ? '' : String(selected);
+  el.innerHTML = `<option value="">${d.categoryPh}</option>` + ITEM_CATEGORY_GROUPS.map(g =>
+    `<optgroup label="${categoryGroupLabel(g)}">${g.cats.map(([id, name]) => `<option value="${id}">${name}</option>`).join('')}</optgroup>`
+  ).join('');
+  el.value = sel;
+}
+function refreshCategorySelects(){
+  ['listingCategory','blueprintCategory'].forEach(id => { const el = $(id); fillCategorySelect(id, el ? el.value : ''); });
+}
+// Pré-sélectionne la catégorie quand le nom tapé correspond à un objet (ou une marchandise) du catalogue UEX,
+// uniquement si le vendeur n'en a pas encore choisi une.
+function autoPickCategory(inputId, selId){
+  const sel = $(selId), inp = $(inputId);
+  if(!sel || !inp || sel.value) return;
+  const name = inp.value.trim();
+  if(!name) return;
+  const it = findUexItem(name);
+  if(it && it.cat && ITEM_CATEGORY_BY_ID[it.cat]){ sel.value = String(it.cat); return; }
+  if(findUexCommodityPrice(name) !== null) sel.value = '36';
+}
+// Filtre catégorie côté client (marketplace = 'mkt', catalogue blueprints = 'bp')
+const catFilterState = { mkt:{ type:'all', value:null }, bp:{ type:'all', value:null } };
+function catFilterIds(kind){
+  const s = catFilterState[kind];
+  if(s.type === 'cat') return [s.value];
+  if(s.type === 'group'){ const g = ITEM_CATEGORY_GROUPS.find(x => x.key === s.value); return g ? g.cats.map(c => c[0]) : []; }
+  return null;
+}
+function buildCatMenu(kind){
+  const menu = $(kind + 'CatMenu'); if(!menu) return;
+  const d = T[LANG]; const s = catFilterState[kind];
+  let h = `<button type="button" class="cat-group${s.type==='all'?' active':''}" onclick="setCatFilter('${kind}','all')">${d.categoryAll}</button>`;
+  ITEM_CATEGORY_GROUPS.forEach(g => {
+    h += `<button type="button" class="cat-group${s.type==='group'&&s.value===g.key?' active':''}" onclick="setCatFilter('${kind}','group','${g.key}')">${categoryGroupLabel(g)}</button>`;
+    g.cats.forEach(([id, name]) => {
+      h += `<button type="button" class="cat-sub${s.type==='cat'&&s.value===id?' active':''}" onclick="setCatFilter('${kind}','cat',${id})">${name}</button>`;
+    });
+  });
+  menu.innerHTML = h;
+}
+function toggleCatMenu(kind){
+  const menu = $(kind + 'CatMenu'); if(!menu) return;
+  const willOpen = menu.hidden;
+  document.querySelectorAll('.mkt-cat-menu, .mkt-filter-menu').forEach(m => { m.hidden = true; });
+  if(willOpen){ buildCatMenu(kind); menu.hidden = false; }
+}
+function updateCatBtn(kind){
+  const btn = $(kind + 'CatBtn'), lbl = $(kind + 'CatLabel'); if(!btn || !lbl) return;
+  const s = catFilterState[kind]; const d = T[LANG];
+  let text = d.categoryBtn;
+  if(s.type === 'group'){ const g = ITEM_CATEGORY_GROUPS.find(x => x.key === s.value); if(g) text = categoryGroupLabel(g); }
+  else if(s.type === 'cat'){ const c = ITEM_CATEGORY_BY_ID[s.value]; if(c) text = c.name; }
+  lbl.textContent = text;
+  btn.classList.toggle('has-selection', s.type !== 'all');
+}
+function setCatFilter(kind, type, value){
+  catFilterState[kind] = { type, value: (type === 'all') ? null : value };
+  const menu = $(kind + 'CatMenu'); if(menu) menu.hidden = true;
+  updateCatBtn(kind);
+  if(kind === 'mkt') applyMarketplaceFilters(); else applyBlueprintsFilter();
+}
+document.addEventListener('click', (e) => {
+  ['mkt','bp'].forEach(kind => {
+    const menu = $(kind + 'CatMenu');
+    if(!menu || menu.hidden) return;
+    if(!menu.contains(e.target) && !e.target.closest('#' + kind + 'CatBtn')) menu.hidden = true;
+  });
+});
+
 const SUPABASE_URL = "https://hdstkdubotlmlndmuwnl.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhkc3RrZHVib3RsbWxuZG11d25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0OTQ5ODAsImV4cCI6MjEwNjA3MDk4MH0.mcu8_sH5UEmVXROhf12DN2JKjFUG_WgCOeIbZMsDrRI";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -2910,7 +3028,7 @@ const T = {
     tabDeliveries:"LIVRAISONS", tabMarketplace:"MARKETPLACE",
     marketplaceFeedTitle:"Derniers objets en vente", marketplaceEmpty:"Aucun objet en vente pour le moment.",
     leaderboardTitle:"Boutiques de la semaine", lbWeeklySalesLbl:"Ventes cette semaine", lbWeeklyUpvotesLbl:"Upvotes cette semaine", lbMostExpensiveLbl:"Objet le plus cher vendu", lbNoDataYet:"Pas encore de données", lbSalesWord:"ventes", lbUpvotesWord:"upvotes",
-    mktSearchPh:"Rechercher un objet…", filterBtn:"FILTRER", sortNewest:"Plus récent", sortOldest:"Plus ancien", sortPriceAsc:"Prix croissant", sortPriceDesc:"Prix décroissant", mktNoResults:"Aucun objet ne correspond à ta recherche.",
+    mktSearchPh:"Rechercher un objet…", filterBtn:"FILTRER", categoryBtn:"CATÉGORIE", categoryAll:"Toutes les catégories", categoryLbl:"Catégorie", categoryPh:"— Choisir une catégorie —", categoryRequired:"Erreur : choisis une catégorie pour cet objet.", sortNewest:"Plus récent", sortOldest:"Plus ancien", sortPriceAsc:"Prix croissant", sortPriceDesc:"Prix décroissant", mktNoResults:"Aucun objet ne correspond à ta recherche.",
     mktByLbl:"Vendu par", visitShopBtn:"VOIR LA MARKETPLACE",
     roleWords:{client:"client", courier:"coursier", admin:"admin", seller:"vendeur"},
     becomeSellerBtn:"DEMANDER À DEVENIR VENDEUR", sellerPending:"Ta candidature vendeur est en attente de validation par l'administrateur.",
@@ -3074,7 +3192,7 @@ const T = {
     tabDeliveries:"DELIVERIES", tabMarketplace:"MARKETPLACE",
     marketplaceFeedTitle:"Latest items for sale", marketplaceEmpty:"No items for sale right now.",
     leaderboardTitle:"Shops of the week", lbWeeklySalesLbl:"Sales this week", lbWeeklyUpvotesLbl:"Upvotes this week", lbMostExpensiveLbl:"Most expensive item sold", lbNoDataYet:"No data yet", lbSalesWord:"sales", lbUpvotesWord:"upvotes",
-    mktSearchPh:"Search for an item…", filterBtn:"FILTER", sortNewest:"Newest first", sortOldest:"Oldest first", sortPriceAsc:"Price: low to high", sortPriceDesc:"Price: high to low", mktNoResults:"No items match your search.",
+    mktSearchPh:"Search for an item…", filterBtn:"FILTER", categoryBtn:"CATEGORY", categoryAll:"All categories", categoryLbl:"Category", categoryPh:"— Choose a category —", categoryRequired:"Error: please choose a category for this item.", sortNewest:"Newest first", sortOldest:"Oldest first", sortPriceAsc:"Price: low to high", sortPriceDesc:"Price: high to low", mktNoResults:"No items match your search.",
     mktByLbl:"Sold by", visitShopBtn:"VIEW MARKETPLACE",
     roleWords:{client:"client", courier:"courier", admin:"admin", seller:"seller"},
     becomeSellerBtn:"REQUEST TO BECOME A SELLER", sellerPending:"Your seller application is pending admin review.",
@@ -3175,6 +3293,7 @@ function applyLang(){
   if(session) updatePageTitle();
   syncDiscordCtaWidth();
   updateSoundToggleBtn();
+  refreshCategorySelects(); updateCatBtn('mkt'); updateCatBtn('bp');
 }
 function setLang(l){ LANG = l; try{ localStorage.setItem('su-lang', l); }catch(e){} applyLang(); }
 // Aligne la largeur de l'encart Discord sur celle du texte du footer (qui change de longueur selon
@@ -4206,11 +4325,11 @@ async function loadUexCatalog(){
         try{
           const res = await fetch(`https://uexcorp.space/api/2.0/items?id_category=${id}`, { headers: { "secret_key": UEX_SECRET_KEY } });
           const data = await res.json();
-          return (data && data.data) ? data.data : [];
+          return ((data && data.data) ? data.data : []).map(it => ({ ...it, _cat: id }));
         }catch(e){ return []; }
       }));
       const seen = new Set();
-      itemResults.flat().forEach(it => { if(!seen.has(it.id)){ seen.add(it.id); uexItems.push({ id: it.id, name: it.name }); } });
+      itemResults.flat().forEach(it => { if(!seen.has(it.id)){ seen.add(it.id); uexItems.push({ id: it.id, name: it.name, cat: it._cat }); } });
     }catch(e){}
     const list = $('uexList');
     const allNames = [...uexCommodities.map(c=>c.name), ...uexItems.map(i=>i.name)];
@@ -5042,8 +5161,11 @@ function applyBlueprintsFilter(){
   const d = T[LANG];
   const searchInput = $('blueprintsSearchInput');
   const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
-  const list = q ? blueprintsFeedCache.filter(bp => (bp.item_name||'').toLowerCase().includes(q)) : blueprintsFeedCache;
-  if(!list.length){ box.innerHTML = `<p class="muted">${q ? d.mktNoResults : d.blueprintsEmpty}</p>`; return; }
+  const catIds = catFilterIds('bp');
+  let list = blueprintsFeedCache;
+  if(q) list = list.filter(bp => (bp.item_name||'').toLowerCase().includes(q));
+  if(catIds) list = list.filter(bp => catIds.includes(bp.category_id));
+  if(!list.length){ box.innerHTML = `<p class="muted">${(q || catIds) ? d.mktNoResults : d.blueprintsEmpty}</p>`; return; }
   // false : même dans le catalogue, les boutons "modifier/supprimer" n'ont de sens que sur la propre page
   // boutique du vendeur (comme pour les annonces marketplace) — ici on reste en vue "client".
   box.innerHTML = list.map(bp => blueprintCardHtml(bp, blueprintsSellerMapCache, false)).join('');
@@ -5126,10 +5248,15 @@ async function applyMarketplaceFilters(){
   const d = T[LANG];
   const searchInput = $('marketplaceSearchInput');
   const q = searchInput ? searchInput.value.trim() : '';
+  const catIds = catFilterIds('mkt');
   let list, sellerMap;
-  if(q){
+  // Avec une recherche OU une catégorie choisie : on interroge toute la base (le feed en cache ne contient que les 200 dernières annonces).
+  if(q || catIds){
     box.innerHTML = `<p class="muted">…</p>`;
-    const { data, error } = await sb.from('marketplace_listings').select('*').eq('is_deleted', false).ilike('item_name', `%${q}%`).order('created_at',{ascending:false}).limit(60);
+    let query = sb.from('marketplace_listings').select('*').eq('is_deleted', false);
+    if(q) query = query.ilike('item_name', `%${q}%`);
+    if(catIds) query = query.in('category_id', catIds);
+    const { data, error } = await query.order('created_at',{ascending:false}).limit(q ? 60 : 100);
     if(error){ box.textContent = error.message; return; }
     list = data || [];
     const sellerIds = [...new Set(list.map(l=>l.seller_id))];
@@ -5155,9 +5282,9 @@ async function applyMarketplaceFilters(){
     return new Date(b.created_at) - new Date(a.created_at); // newest (défaut)
   });
   if(!list.length){ box.innerHTML = `<p class="muted">${d.mktNoResults}</p>`; return; }
-  box.innerHTML = list.map(l => mktCardHtml(l, sellerMap, q ? new Set() : marketplaceUnreadSet)).join('');
+  box.innerHTML = list.map(l => mktCardHtml(l, sellerMap, (q || catIds) ? new Set() : marketplaceUnreadSet)).join('');
 }
-function toggleMktFilterMenu(){ $('mktFilterMenu').hidden = !$('mktFilterMenu').hidden; }
+function toggleMktFilterMenu(){ const c = $('mktCatMenu'); if(c) c.hidden = true; $('mktFilterMenu').hidden = !$('mktFilterMenu').hidden; }
 document.addEventListener('click', (e) => {
   const menu = $('mktFilterMenu');
   if(!menu || menu.hidden) return;
@@ -5650,7 +5777,7 @@ function setListingMode(isStock, btnEl){
   updateListingLivePreview();
 }
 function resetListingForm(){
-  $('listingItem').value=''; $('listingDescription').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
+  $('listingItem').value=''; $('listingCategory').value=''; $('listingDescription').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
   applyListingMode(false);
   listingTagsState = { crafted:false, q700:false, q800:false, q900:false, negotiable:false };
   renderListingTagButtons();
@@ -5665,6 +5792,7 @@ function openEditListing(id){
   $('sellerCreateWrap').hidden = true;
   $('view-seller-create-listing').hidden = false;
   $('listingItem').value = l.item_name;
+  $('listingCategory').value = l.category_id ? String(l.category_id) : '';
   $('listingDescription').value = l.description || '';
   $('listingPrice').value = l.price;
   $('listingQty').value = l.quantity;
@@ -5855,11 +5983,13 @@ async function createListing(){
   const quantity = parseInt($('listingQty').value,10) || 1;
   const is_stock = $('listingStockMode').checked;
   if(!item_name || price <= 0){ alert('Erreur : renseigne un objet et un prix valide.'); return; }
+  const category_id = parseInt($('listingCategory').value, 10) || null;
+  if(!category_id || !ITEM_CATEGORY_BY_ID[category_id]){ alert(d.categoryRequired); $('listingCategory').focus(); return; }
   const tags = listingTagsArray();
   bootOverlayStart(d.bootLinesListing);
   if(editingListingId){
     const id = editingListingId;
-    const { error } = await sb.from('marketplace_listings').update({ item_name, description, price, quantity, tags, is_stock }).eq('id', id);
+    const { error } = await sb.from('marketplace_listings').update({ item_name, description, price, quantity, tags, is_stock, category_id }).eq('id', id);
     if(error){ await bootOverlayFinish(d.bootError+': '+error.message, true); return; }
     if(pendingListingPhotoFile){
       const ext = (pendingListingPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
@@ -5876,7 +6006,7 @@ async function createListing(){
     routeApp();
     return;
   }
-  const { data, error } = await sb.from('marketplace_listings').insert({ seller_id: session.user.id, item_name, description, price, quantity, tags, is_stock }).select().single();
+  const { data, error } = await sb.from('marketplace_listings').insert({ seller_id: session.user.id, item_name, description, price, quantity, tags, is_stock, category_id }).select().single();
   if(error){ await bootOverlayFinish(d.bootError+': '+error.message, true); return; }
   if(pendingListingPhotoFile){
     const ext = (pendingListingPhotoFile.name.split('.').pop() || 'jpg').toLowerCase();
@@ -6126,7 +6256,7 @@ let pendingBlueprintPhotoFile = null;
 let editingBlueprintId = null;
 let myBlueprintsCache = [];
 function resetBlueprintForm(){
-  $('blueprintItem').value=''; $('blueprintDescription').value=''; $('blueprintMaterials').value=''; $('blueprintPriceTurnkey').value=''; $('blueprintPriceClientMats').value='';
+  $('blueprintItem').value=''; $('blueprintCategory').value=''; $('blueprintDescription').value=''; $('blueprintMaterials').value=''; $('blueprintPriceTurnkey').value=''; $('blueprintPriceClientMats').value='';
   $('blueprintPhotoInput').value=''; $('blueprintPhotoPreviewName').textContent='';
   pendingBlueprintPhotoFile = null;
 }
@@ -6140,6 +6270,7 @@ function openEditBlueprint(id){
   $('sellerCreateWrap').hidden = true;
   $('view-seller-create-blueprint').hidden = false;
   $('blueprintItem').value = bp.item_name;
+  $('blueprintCategory').value = bp.category_id ? String(bp.category_id) : '';
   $('blueprintDescription').value = bp.description || '';
   $('blueprintMaterials').value = bp.materials || '';
   $('blueprintPriceTurnkey').value = bp.price_turnkey || '';
@@ -6166,7 +6297,9 @@ async function createBlueprint(){
     alert('Erreur : renseigne un objet, les ressources nécessaires et au moins un prix.');
     return;
   }
-  const payload = { item_name, description: description || null, materials, price_turnkey: price_turnkey || null, price_client_mats: price_client_mats || null };
+  const category_id = parseInt($('blueprintCategory').value, 10) || null;
+  if(!category_id || !ITEM_CATEGORY_BY_ID[category_id]){ alert(d.categoryRequired); $('blueprintCategory').focus(); return; }
+  const payload = { item_name, category_id, description: description || null, materials, price_turnkey: price_turnkey || null, price_client_mats: price_client_mats || null };
   bootOverlayStart(d.bootLinesBlueprint);
   if(editingBlueprintId){
     const id = editingBlueprintId;

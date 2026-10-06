@@ -1292,6 +1292,41 @@
   .shop-banner-card .shop-banner-actions .shop-upvote-btn .icon{width:14px; height:14px;}
   .shop-banner-card .shop-banner-actions .shop-upvote-btn, .shop-banner-card .shop-banner-actions .shop-upvote-btn *{color:#050606 !important;}
   .shop-banner-card .shop-banner-actions .shop-upvote-btn.upvoted{filter:brightness(1.2); box-shadow:0 0 12px var(--accent-dim);}
+
+  /* --- UPVOTE : le bouton "se charge" comme la barre de progression des commandes, dans le bouton lui-même.
+     Repos = bouton sombre à liseré accent ; upvoté = plein accent. Au clic, une couche accent se remplit de
+     gauche à droite (clip-path) avec une tête lumineuse, et le motif/rythme de remplissage change selon la
+     texture choisie par le vendeur. --- */
+  .shop-banner-card .shop-banner-actions .shop-upvote-btn{background:color-mix(in srgb, var(--accent) 12%, #050606); border:1px solid var(--accent); box-shadow:none; position:relative; overflow:hidden;}
+  .shop-banner-card .shop-banner-actions .shop-upvote-btn, .shop-banner-card .shop-banner-actions .shop-upvote-btn *{color:var(--accent) !important;}
+  .shop-banner-card .shop-banner-actions .shop-upvote-btn:hover{background:color-mix(in srgb, var(--accent) 24%, #050606); transform:none;}
+  .shop-banner-card .shop-banner-actions .shop-upvote-btn.upvoted{background:var(--accent); filter:none; box-shadow:0 0 12px var(--accent-dim);}
+  .shop-banner-card .shop-banner-actions .shop-upvote-btn.upvoted, .shop-banner-card .shop-banner-actions .shop-upvote-btn.upvoted *{color:#050606 !important;}
+  .shop-upvote-btn.upv-busy{pointer-events:none;}
+  .upv-ov{position:absolute; inset:0; display:inline-flex; align-items:center; gap:inherit; padding:inherit; background-color:var(--accent); pointer-events:none; clip-path:inset(0 100% 0 0); animation:upvFill var(--dur,.9s) var(--ease,cubic-bezier(.2,.8,.2,1)) forwards;}
+  .upv-ov, .upv-ov *{color:#050606 !important;}
+  .upv-ov.drain{animation-name:upvDrain; --dur:.4s;}
+  @keyframes upvFill{from{clip-path:inset(0 100% 0 0);} to{clip-path:inset(0 0 0 0);}}
+  @keyframes upvDrain{from{clip-path:inset(0 0 0 0);} to{clip-path:inset(0 0 0 100%);}}
+  .upv-pat{position:absolute; inset:0; pointer-events:none; opacity:.9; animation:upvPat .8s linear infinite;}
+  @keyframes upvPat{from{background-position:0 0;} to{background-position:16px 0;}}
+  .upv-head{position:absolute; top:-2px; bottom:-2px; width:5px; left:0; background:#fff; box-shadow:0 0 12px 2px var(--accent), 0 0 4px #fff; pointer-events:none; animation:upvHead var(--dur,.9s) var(--ease,cubic-bezier(.2,.8,.2,1)) forwards;}
+  @keyframes upvHead{from{left:0; opacity:1;} 92%{opacity:1;} to{left:calc(100% - 5px); opacity:0;}}
+  /* Un motif par texture (même rythme que le décor de la boutique) */
+  .upv-ov[data-tex="none"] .upv-pat{background-image:linear-gradient(135deg, rgba(255,255,255,.28) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.28) 50%, rgba(255,255,255,.28) 75%, transparent 75%); background-size:16px 16px;}
+  .upv-ov[data-tex="dots"] .upv-pat{background-image:radial-gradient(circle, rgba(255,255,255,.55) 1.6px, transparent 2px); background-size:8px 8px;}
+  .upv-ov[data-tex="scan"] .upv-pat{background-image:repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px); background-size:auto; animation:upvScan .5s linear infinite;}
+  @keyframes upvScan{from{background-position:0 0;} to{background-position:0 6px;}}
+  .upv-ov[data-tex="grid"] .upv-pat{background-image:linear-gradient(rgba(0,0,0,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.3) 1px, transparent 1px); background-size:10px 10px; animation:none;}
+  .upv-ov[data-tex="diag"] .upv-pat{background-image:repeating-linear-gradient(45deg, rgba(255,255,255,.35) 0 4px, transparent 4px 10px);}
+  .upv-ov[data-tex="circuit"] .upv-pat{background-image:linear-gradient(90deg, rgba(0,0,0,.35) 2px, transparent 2px), radial-gradient(circle, rgba(255,255,255,.7) 2px, transparent 2.5px); background-size:18px 100%, 18px 18px; animation:upvBlink .35s steps(2) infinite;}
+  @keyframes upvBlink{0%{opacity:.95;} 50%{opacity:.5;}}
+  .upv-ov[data-tex="noise"] .upv-pat{background-image:repeating-linear-gradient(90deg, rgba(255,255,255,.5) 0 2px, transparent 2px 5px), repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 2px, transparent 2px 4px); animation:upvNoise .3s steps(3) infinite;}
+  @keyframes upvNoise{0%{background-position:0 0, 0 0;} 33%{background-position:3px 2px, 1px 3px;} 66%{background-position:1px 4px, 4px 1px;} 100%{background-position:0 0, 0 0;}}
+  .upv-ov[data-tex="skull"] .upv-pat{background-image:conic-gradient(rgba(0,0,0,.3) 25%, transparent 0 50%, rgba(0,0,0,.3) 0 75%, transparent 0); background-size:10px 10px; animation:none;}
+  .upv-ov[data-tex="waves"] .upv-pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' viewBox='0 0 24 12'%3E%3Cpath d='M0 6 Q6 0 12 6 T24 6' fill='none' stroke='rgba(255,255,255,.6)' stroke-width='2'/%3E%3C/svg%3E"); background-size:24px 12px; animation:upvWave .7s linear infinite;}
+  @keyframes upvWave{from{background-position:0 0;} to{background-position:24px 0;}}
+  @media (prefers-reduced-motion:reduce){ .upv-ov,.upv-head,.upv-pat{animation-duration:.01s !important;} }
   .shop-banner-card .shop-banner-actions .gear-btn{width:44px; height:44px; border-radius:2px;}
   .shop-banner-card .shop-description{border:none; border-left:3px solid var(--accent); border-radius:0; background:rgba(10,13,12,.82); box-shadow:0 0 14px var(--accent-dim); padding:16px 18px; margin:14px 0 0; line-height:1.55; font-size:15px;}
   .shop-banner-card .shop-description::before{content:"// "; color:var(--accent);}
@@ -7522,19 +7557,22 @@ async function toggleShopUpvote(){
   // Un vendeur peut techniquement upvoter sa propre boutique — on laisse faire (pas bien grave, et ça
   // permet de tester les animations du bouton sur sa propre page).
   const btn = $('shopUpvoteBtn');
+  if(btn && btn.classList.contains('upv-busy')) return;
   const countEl = $('shopUpvoteCount');
   if(shopUpvoted){
     const { error } = await sb.from('shop_upvotes').delete().eq('seller_id', sellerId).eq('client_id', session.user.id);
     if(error){ alert('Erreur : '+error.message); return; }
     shopUpvoted = false;
+    if(countEl) countEl.textContent = Math.max(0, (parseInt(countEl.textContent,10)||0) - 1);
+    if(btn){ btn.classList.add('upv-busy'); await upvoteChargeFx(btn, true).catch(()=>{}); btn.classList.remove('upv-busy'); }
+    if(btn) btn.classList.remove('upvoted');
   } else {
     const { error } = await sb.from('shop_upvotes').insert({ seller_id: sellerId, client_id: session.user.id });
     if(error){ alert('Erreur : '+error.message); return; }
     shopUpvoted = true;
-    shopUpvoteBurst(btn);
+    if(countEl) countEl.textContent = (parseInt(countEl.textContent,10)||0) + 1;
+    if(btn){ btn.classList.add('upv-busy'); await upvoteChargeFx(btn, false).catch(()=>{}); btn.classList.remove('upv-busy'); btn.classList.add('upvoted'); }
   }
-  if(btn) btn.classList.toggle('upvoted', shopUpvoted);
-  if(countEl) countEl.textContent = Math.max(0, (parseInt(countEl.textContent,10)||0) + (shopUpvoted ? 1 : -1));
 }
 function shadeColor(hex, percent){
   hex = (hex||'#ff8c1a').trim().replace('#','');
@@ -7586,6 +7624,46 @@ const SHOP_UPVOTE_FX_CONFIG = {
 };
 // Animation du bouton upvote sur la page boutique : par défaut (pas de texture choisie) on garde la
 // flamme 8-bit existante ; sinon, un effet différent par texture.
+
+// Animation "charge" du bouton upvote : une couche accent se remplit dans le bouton (comme la barre de
+// progression des commandes), avec un rythme/motif propre à la texture de la boutique. Pas de popup.
+const UPV_FX_TIMING = {
+  none:{dur:'.9s', ease:'cubic-bezier(.2,.8,.2,1)'},
+  dots:{dur:'.95s', ease:'steps(12,end)'},
+  scan:{dur:'.8s', ease:'steps(16,end)'},
+  grid:{dur:'.9s', ease:'steps(8,end)'},
+  diag:{dur:'.9s', ease:'cubic-bezier(.4,0,.2,1)'},
+  circuit:{dur:'1s', ease:'steps(6,end)'},
+  noise:{dur:'.85s', ease:'steps(10,end)'},
+  skull:{dur:'1s', ease:'steps(7,end)'},
+  waves:{dur:'1s', ease:'cubic-bezier(.45,.05,.55,.95)'}
+};
+function upvoteChargeFx(btn, drain){
+  return new Promise(resolve => {
+    if(!btn){ resolve(); return; }
+    const texKey = currentShopTextureKey();
+    const t = UPV_FX_TIMING[texKey] || UPV_FX_TIMING.none;
+    const ov = document.createElement('span');
+    ov.className = 'upv-ov' + (drain ? ' drain' : '');
+    ov.setAttribute('data-tex', texKey);
+    ov.style.setProperty('--dur', drain ? '.4s' : t.dur);
+    ov.style.setProperty('--ease', drain ? 'ease-in' : t.ease);
+    ov.innerHTML = btn.innerHTML;
+    ov.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+    const pat = document.createElement('span'); pat.className = 'upv-pat'; ov.appendChild(pat);
+    btn.appendChild(ov);
+    let head = null;
+    if(!drain){
+      head = document.createElement('span'); head.className = 'upv-head';
+      head.style.setProperty('--dur', t.dur); head.style.setProperty('--ease', t.ease);
+      btn.appendChild(head);
+    }
+    let done = false;
+    const finish = () => { if(done) return; done = true; ov.remove(); if(head) head.remove(); resolve(); };
+    ov.addEventListener('animationend', finish);
+    setTimeout(finish, 1400);
+  });
+}
 function shopUpvoteBurst(el){
   if(!el) return;
   const texKey = currentShopTextureKey();

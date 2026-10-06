@@ -1067,75 +1067,239 @@
   .shop-banner-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;}
 
 
-  /* ===== Annuaire des shops ===== */
-  .slashes::before, .sl-title::before{content:"// "; color:var(--accent);}
-  .sl{color:var(--accent);}
-  .shops-dir-entry{margin-top:18px; padding-top:16px; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; gap:12px 16px; align-items:center; justify-content:space-between;}
-  .shops-dir-entry-txt{color:var(--muted); font-size:.85rem;}
-  .shops-dir-toolbar{display:flex; flex-direction:column; gap:12px; margin-bottom:14px;}
-  .shops-dir-toolbar .mkt-search-input{flex:none; width:100%; height:auto; min-height:0;}
-  .shop-banner-card:has(.status-pop:not([hidden])){overflow:visible !important; z-index:20;}
-  .shops-dir-sorts{display:flex; gap:8px; flex-wrap:wrap;}
-  .shops-dir-sorts button{padding:8px 14px; font-size:.72rem; letter-spacing:1px; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:2px; cursor:pointer; font-family:inherit;}
-  .shops-dir-sorts button.active{background:var(--accent); border-color:var(--accent); color:#050606;}
-  .shops-dir-count{font-size:.72rem; letter-spacing:2px; color:var(--muted); margin-bottom:12px;}
-  .shops-dir-count::before{content:"// "; color:var(--accent);}
-  .shops-dir-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:14px;}
-  .shop-dir-card{--accent:var(--shop-col); --accent-dim:var(--shop-col-dim); display:flex; gap:14px; align-items:center; padding:14px; background:var(--panel); border:1px solid var(--border); border-radius:4px; cursor:pointer; text-align:left; font:inherit; color:var(--text); width:100%;}
-  .shop-dir-card:hover{border-color:var(--accent);}
-  .shop-dir-logo{width:64px; height:64px; flex:none; border-radius:12px; border:2px solid var(--accent); box-shadow:0 0 14px var(--accent-dim); background:#050606; overflow:hidden; display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:2rem;}
-  .shop-dir-logo img{width:100%; height:100%; object-fit:cover;}
-  .shop-dir-info{display:flex; flex-direction:column; gap:3px; min-width:0;}
-  .shop-dir-name{font-size:1.15rem; line-height:1.1; word-break:break-word;}
-  .shop-dir-sub{font-size:.75rem; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .shop-dir-stats{font-size:.72rem; color:var(--accent);}
-  .shop-dir-status{display:inline-flex; align-items:center; gap:6px; font-size:.7rem; color:var(--text); max-width:100%;}
-  .shop-dir-status .status-dot{width:8px; height:8px; flex:none; border-radius:50%; background:var(--st-col); box-shadow:0 0 6px var(--st-col);}
-  .shop-dir-status span.t{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  @media (max-width:600px){ .shops-dir-grid{grid-template-columns:1fr;} .shops-dir-sorts{flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none;} .shops-dir-sorts button{flex:none;} .shops-dir-entry .btn-primary{width:100%;} }
 
-  /* ===== Accueil client : nouvelle DA ===== */
-  .home-hello{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px 20px; margin:6px 0 16px;}
-  .home-hello h1{margin:0; font-size:2.3rem; line-height:1.1; text-shadow:0 0 8px var(--accent-dim);}
-  .home-stats{display:flex; flex-wrap:wrap; margin:0 0 22px;}
-  .home-stat{flex:1 1 180px; padding:2px 22px; border-left:1px solid var(--border); display:flex; flex-direction:column; gap:2px; min-width:0;}
-  .home-stat-lbl{font-size:.68rem; letter-spacing:2px; color:var(--muted);}
-  .home-stat-val{font-size:2.6rem; line-height:1; color:var(--text);}
-  .home-stat-val.accent{color:var(--accent);} .home-stat-val.green{color:#3dff7a;}
-  .home-section-label{display:flex; align-items:center; gap:8px; font-size:.7rem; letter-spacing:2px; color:var(--muted); margin:0 0 12px;}
-  .home-link{margin-left:auto; background:none; border:none; color:var(--accent); font:inherit; font-size:.7rem; letter-spacing:1px; cursor:pointer; padding:0;}
-  .home-fresh{margin:26px 0 18px;}
-  #clientHomeFresh{grid-template-columns:repeat(4, minmax(0,1fr));}
-  @media (max-width:900px){ #clientHomeFresh{grid-template-columns:repeat(2, minmax(0,1fr));} }
-  div#clientCurrentOrders{display:block !important;}
-  .orders-box{border:1px solid var(--accent); background:var(--panel); border-radius:6px; box-shadow:0 0 18px var(--accent-dim); padding:18px 20px 6px; margin-bottom:18px;}
-  .orders-box-head{display:flex; justify-content:space-between; align-items:center; padding-bottom:10px; color:var(--accent); font-size:1.5rem;}
-  .order-row{display:flex; flex-wrap:wrap; gap:6px 24px; padding:16px 0; border-top:1px solid var(--border);}
-  .order-row-main{flex:2 1 280px; min-width:0; display:flex; flex-direction:column; gap:5px;}
-  .order-row-items{font-size:1.25rem; line-height:1.15;}
-  .order-row-more{background:none; border:none; padding:0 0 0 6px; color:var(--accent); font:inherit; font-size:.8rem; cursor:pointer;}
-  .order-row-sub{color:var(--muted); font-size:.8rem;}
-  .order-row-courier{display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:.8rem; color:var(--muted); margin-top:2px;}
-  .order-row-cargo{margin:6px 0 0; padding:10px 12px; background:var(--bg2); border:1px solid var(--border); border-radius:4px; list-style:none; display:flex; flex-direction:column; gap:3px; font-size:.8rem;}
-  .order-row-cargo[hidden]{display:none;}
-  .order-row-side{flex:3 1 380px; min-width:0; display:flex; flex-direction:column;}
-  .order-row-side .ship-track{margin:6px 30px 4px;}
-  .order-row-foot{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-size:.75rem; letter-spacing:1px;}
-  .order-row-status{color:var(--text);}
-  .order-row-cancel{background:none; border:1px solid var(--border); color:var(--muted); border-radius:2px; font:inherit; font-size:.7rem; padding:6px 12px; cursor:pointer; display:inline-flex; gap:6px; align-items:center;}
-  .order-row-cancel:hover{border-color:var(--danger); color:var(--danger);}
-  .order-row-cancel .icon{width:10px; height:10px;}
-  .order-row-locked{color:var(--muted); font-size:.68rem; max-width:260px; text-align:right;}
+
+  .slashes::before{content:"// "; color:var(--accent);}
+  .sd-h1{font-family:'VT323',monospace; font-size:40px !important; font-weight:400; letter-spacing:1px; margin:0 !important;}
+  .sd-toolbar{display:flex; flex-wrap:wrap; gap:12px; align-items:stretch;}
+  input.sd-search{flex:1 1 320px; min-width:0; width:auto; padding:14px 16px; background:var(--bg2); border:1px solid var(--border); color:var(--text); font-family:'Share Tech Mono',monospace; font-size:15px; border-radius:2px;}
+  button.sd-sort-btn{height:100%; padding:0 20px; background:var(--bg2); border:1px solid var(--border); color:var(--text); font-family:'Share Tech Mono',monospace; font-size:13px; letter-spacing:1px; display:flex; align-items:center; gap:10px; border-radius:2px; min-height:48px; cursor:pointer;}
+  button.sd-sort-btn.open{border-color:var(--accent);}
+  .sd-menu{position:absolute; right:0; top:calc(100% + 6px); z-index:30; min-width:260px; background:var(--panel); border:1px solid var(--accent); box-shadow:0 0 18px var(--accent-dim); display:flex; flex-direction:column; border-radius:6px; overflow:hidden;}
+  .sd-menu[hidden]{display:none;}
+  .sd-menu button{text-align:left; padding:12px 16px; background:transparent; border:none; border-bottom:1px solid var(--border); border-radius:0; color:var(--text); font-family:'Share Tech Mono',monospace; font-size:13px; letter-spacing:1px; cursor:pointer; width:100%; justify-content:flex-start;}
+  .sd-menu button:last-child{border-bottom:none;}
+  .sd-menu button.on{color:var(--accent);}
+  .sd-count-row{display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap; border-bottom:1px solid var(--border); padding-bottom:10px;}
+  .sd-empty{padding:60px 0; text-align:center; color:var(--muted); font-family:'VT323',monospace; font-size:26px;}
+  .sd-grid{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:18px; align-items:stretch;}
+  .sd-card{--accent:var(--sc); --accent-dim:var(--sc-dim); border:1px solid var(--border); background:var(--panel); display:flex; flex-direction:column; border-radius:4px; cursor:pointer; text-align:left; overflow:hidden;}
+  .sd-card:hover{border-color:var(--sc);}
+  .sd-banner{height:64px; flex:none; background:linear-gradient(135deg, var(--sc), #0a0d0c);}
+  .sd-body{padding:0 16px 16px; display:flex; flex-direction:column; gap:10px; margin-top:-30px; flex:1;}
+  .sd-logo{width:60px; height:60px; flex:none; border-radius:12px; border:2px solid var(--sc); box-shadow:0 0 14px var(--sc-dim); background:var(--bg2); display:flex; align-items:center; justify-content:center; font-family:'VT323',monospace; font-size:34px; color:var(--sc); overflow:hidden;}
+  .sd-logo img{width:100%; height:100%; object-fit:cover;}
+  .sd-name{font-family:'VT323',monospace; font-size:24px; line-height:1.1; word-break:break-word;}
+  .sd-tag{color:var(--muted); font-size:12px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:34px;}
+  .sd-stats{display:flex; gap:16px; font-size:12px; color:var(--muted); border-top:1px solid var(--border); padding-top:10px; margin-top:auto;}
+  .sd-stats b{font-weight:400; font-family:'VT323',monospace; font-size:20px; color:var(--text);}
+  .sd-stats b.o{color:var(--sc);}
+  .sd-foot{display:flex; justify-content:space-between; align-items:center; gap:8px; min-height:16px;}
+  .sd-foot .since{font-size:11px; color:var(--muted);}
+  .sd-foot .visit{color:var(--sc); font-size:12px; letter-spacing:1px;}
+  .sd-status{display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--text); max-width:100%;}
+  .sd-status .dot{width:8px; height:8px; flex:none; border-radius:50%; background:var(--st); box-shadow:0 0 6px var(--st);}
+  .sd-status .t{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  @media (max-width:1100px){ .sd-grid{grid-template-columns:repeat(3, minmax(0,1fr));} }
+  @media (max-width:800px){ .sd-grid{grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px;} }
+  @media (max-width:520px){ .sd-grid{grid-template-columns:1fr;} .sd-h1{font-size:34px !important;} .sd-menu{left:0; right:auto; width:100%;} .sd-toolbar > div{width:100%;} button.sd-sort-btn{width:100%; justify-content:space-between;} }
+  /* ===== MK : DA des maquettes (libellés //, bande de stats, boîtes orange) ===== */
+  .page-title-lg{font-family:'VT323',monospace; font-size:40px !important; font-weight:400; letter-spacing:1px; margin:8px 0 20px !important; white-space:normal !important; line-height:1.1;}
+  .page-title-lg::before{content:"// "; color:var(--accent);}
+  .page-title-lg[hidden]{display:none;}
+  .tabs-client .tab-icon{display:none;}
+  .tabs-client .tab-btn, #courierDash > .tabs .tab-btn{border-top:none !important; border-left:none !important; border-right:none !important;}
+  .tabs-client, #courierDash > .tabs{gap:0; flex-wrap:wrap; margin-bottom:0;}
+  .tabs-client .tab-btn, #courierDash > .tabs .tab-btn{padding:14px 22px !important; font-family:'Share Tech Mono',monospace; font-size:13px; letter-spacing:1px; color:var(--muted); border-bottom:2px solid transparent; text-transform:uppercase;}
+  .tabs-client .tab-btn.active, #courierDash > .tabs .tab-btn.active{color:var(--accent); border-bottom-color:var(--accent); text-shadow:none;}
+  .mk-col{display:flex; flex-direction:column; gap:36px; padding-top:30px;}
+  .mk-gap{display:flex; flex-direction:column; gap:12px;}
+  .mk-lbl{font-size:11px; letter-spacing:3px; color:var(--muted); text-transform:uppercase;}
+  .mk-lbl .sl, .mk-stat-l .sl{color:var(--accent);}
+  .mk-lbl-row{display:flex; justify-content:space-between; align-items:baseline; gap:6px 16px; flex-wrap:wrap;}
+  .mk-link{background:none !important; border:none !important; padding:0 !important; color:var(--accent); font-family:'Share Tech Mono',monospace !important; font-size:12px !important; letter-spacing:1px; cursor:pointer; text-transform:none;}
+  .mk-m12{font-size:12px; letter-spacing:1px; color:var(--muted);}
+  .mk-stats{display:flex; flex-wrap:wrap;}
+  .mk-stat{flex:1 1 200px; padding:2px 24px; border-left:1px solid var(--border); display:flex; flex-direction:column; gap:2px; min-width:0;}
+  .mk-stat-l{font-size:11px; letter-spacing:2px; color:var(--muted);}
+  .mk-stat-v{font-family:'VT323',monospace; font-size:48px; line-height:1; color:var(--text);}
+  .mk-stat-v.accent{color:var(--accent);} .mk-stat-v.green{color:#3dff7a;}
+  .mk-box{border:1px solid var(--accent); box-shadow:0 0 18px var(--accent-dim); background:var(--panel); border-radius:6px;}
+  button.mk-btn, a.mk-btn, .mk-btn{display:inline-block; padding:13px 32px; background:var(--accent); color:#050606; letter-spacing:1px; font-size:13px; border:1px solid var(--accent); border-radius:2px; font-family:'Share Tech Mono',monospace; cursor:pointer; text-align:center; text-transform:uppercase; text-decoration:none; text-shadow:none; width:auto;}
+  .mk-btn:hover{filter:brightness(1.1); text-decoration:none;}
+  .mk-btn.ghost{background:transparent; color:var(--accent);}
+  .mk-btn.mute{background:transparent; color:var(--muted); border-color:var(--border);}
+  .mk-btn.mute:hover{color:var(--danger); border-color:var(--danger);}
+  .mk-btn.sm{padding:9px 16px; font-size:12px;}
+  .mk-vt{font-family:'VT323',monospace;}
+  .mk-cta-slim{border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:18px 4px; display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between;}
+  .mk-cta-slim .t{font-family:'VT323',monospace; font-size:26px; letter-spacing:1px;}
+  .mk-cta-top.mk-btn{display:none;}
+  .mk-cta-big{display:flex; flex-wrap:wrap; gap:36px; align-items:stretch;}
+  .mk-cta-card{flex:1 1 420px; min-width:0; padding:34px 28px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; text-align:center;}
+  .mk-cta-card .t{font-family:'VT323',monospace; font-size:28px; letter-spacing:1px;}
+  .mk-cta-card .p{color:var(--muted); font-size:13px; max-width:340px;}
+  .mk-how{flex:2 1 560px; min-width:0; display:flex; flex-direction:column; gap:16px; justify-content:center;}
+  .mk-how-steps{display:flex; flex-wrap:wrap; gap:18px 0;}
+  .mk-how-step{flex:1 1 180px; padding:0 22px; border-left:1px solid var(--border); display:flex; flex-direction:column; gap:6px;}
+  .mk-how-step .n{font-family:'VT323',monospace; font-size:30px; color:var(--accent); line-height:1;}
+  .mk-how-step .h{font-family:'VT323',monospace; font-size:22px;}
+  .mk-how-step .x{color:var(--muted); font-size:13px; line-height:1.5;}
+  /* lignes de commande en cours (D) */
+  .mk-orders{display:flex; flex-direction:column;}
+  .mk-order{border-bottom:1px solid var(--border);}
+  .mk-order:last-child{border-bottom:none;}
+  .mk-order-in{display:flex; flex-wrap:wrap; gap:18px 28px; align-items:center; padding:22px 28px;}
+  .mk-order-l{flex:2 1 260px; min-width:0; display:flex; flex-direction:column; gap:4px;}
+  .mk-order-items{display:flex; flex-wrap:wrap; gap:10px; align-items:baseline;}
+  .mk-order-items .it{font-family:'VT323',monospace; font-size:26px; line-height:1.1; text-shadow:none;}
+  button.mk-more{background:none !important; border:none !important; border-bottom:1px dashed var(--accent) !important; border-radius:0 !important; padding:0 !important; color:var(--accent); font-family:'Share Tech Mono',monospace !important; font-size:12px !important; letter-spacing:1px; cursor:pointer;}
+  .mk-order-sub{color:var(--muted); font-size:13px;}
+  .mk-order-m{flex:3 1 400px; min-width:0; display:flex; flex-direction:column; gap:0;}
+  .mk-order-m .ship-track{margin:6px 34px 4px;}
+  .mk-order-st{font-size:12px; letter-spacing:1px;}
+  .mk-order-r{flex:1 1 220px; display:flex; align-items:center; justify-content:flex-end; gap:12px; flex-wrap:wrap;}
+  .mk-avatar{width:34px; height:34px; border-radius:50%; border:2px solid var(--accent); background:var(--bg2); overflow:hidden; display:flex; align-items:center; justify-content:center; font-family:'VT323',monospace; color:var(--accent); flex:none;}
+  .mk-avatar img{width:100%; height:100%; object-fit:cover;}
+  .mk-cname{font-family:'VT323',monospace; font-size:20px; color:var(--text); cursor:pointer; text-shadow:none;}
+  .mk-order-cargo{padding:0 28px 22px; display:flex; flex-direction:column;}
+  .mk-order-cargo[hidden]{display:none;}
+  .mk-order-cargo .li{display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-top:1px solid var(--border); font-size:13px;}
+  .mk-order-cargo .li span:last-child{color:var(--muted);}
+  .mk-again{display:flex; flex-direction:column; gap:6px;}
+  .mk-again-row{display:flex; flex-wrap:wrap; gap:12px 24px; align-items:center; padding:14px 0; border-top:1px solid var(--border);}
+  .mk-again-row .it{flex:2 1 280px; font-family:'VT323',monospace; font-size:22px;}
+  .mk-again-row .wh{flex:1 1 160px; color:var(--muted); font-size:13px;}
+  .mk-again-row .stt{flex:0 0 120px; color:#3dff7a; font-size:12px; letter-spacing:1px;}
+  .mk-again-row .pr{flex:0 0 160px; color:var(--accent); font-family:'VT323',monospace; font-size:22px; text-align:right; white-space:nowrap;}
+  .mk-chips{display:flex; gap:20px; flex-wrap:wrap; font-size:12px; letter-spacing:1px;}
+  button.mk-chip{background:none !important; border:none !important; border-bottom:1px solid transparent !important; border-radius:0 !important; padding:0 0 3px !important; color:var(--muted); font-family:'Share Tech Mono',monospace !important; font-size:12px !important; letter-spacing:1px; cursor:pointer; text-transform:uppercase;}
+  button.mk-chip.on{color:var(--accent); border-bottom-color:var(--accent) !important;}
+  .mk-fresh-grid{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:18px;}
+  .mk-hist{display:flex; flex-direction:column; gap:8px;}
+  @media (max-width:900px){ .mk-fresh-grid{grid-template-columns:repeat(2, minmax(0,1fr));} }
   @media (max-width:600px){
-    .home-hello h1{font-size:1.9rem;} .home-new-order{width:100%;}
-    .home-stat{flex:1 1 45%; padding:2px 12px; margin-bottom:14px;} .home-stat-val{font-size:2.1rem;}
-    .orders-box{padding:14px 12px 4px;}
-    .order-row{padding:14px 0;}
-    .order-row-side .ship-track{margin:6px 22px 2px;}
-    .order-row-side .stage-label:not(.cur){display:none;}
-    .order-row-locked{text-align:left; max-width:none;}
+    .page-title-lg{font-size:34px !important;}
+    .tabs-client, #courierDash > .tabs{flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none;}
+    .tabs-client .tab-btn, #courierDash > .tabs .tab-btn{flex:none; padding:14px 16px !important; font-size:12px;}
+    .mk-col{gap:26px; padding-top:22px;}
+    .mk-cta-top.mk-btn{display:block; width:100%;}
+    .mk-cta-slim{display:none;}
+    .mk-stat{flex:1 1 45%; padding:2px 14px; margin-bottom:0;}
+    .mk-stats{row-gap:14px;}
+    .mk-stat-v{font-size:38px;}
+    .mk-order-in{padding:16px 14px; gap:10px;}
+    .mk-order-items .it{font-size:22px;}
+    .mk-order-m .ship-track{margin:6px 22px 2px;}
+    .mk-order-m .stage-label:not(.cur){display:none;}
+    .mk-order-r{justify-content:flex-start;}
+    .mk-order-cargo{padding:0 14px 16px;}
+    .mk-cta-card{padding:26px 18px;}
+    .mk-how-step{flex:1 1 100%; padding:0 16px;}
+    .mk-again-row .stt, .mk-again-row .pr{flex:1 1 auto; text-align:left;}
+    .mk-fresh-grid{gap:12px;}
   }
 
+  .mk-col.tight{gap:20px;}
+  #clientTabMarketplace > h3, #clientTabBlueprints > h3, #clientTabResources > h3{font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; text-shadow:none; margin:0 !important;}
+  #clientTabMarketplace > h3::before, #clientTabBlueprints > h3::before, #clientTabResources > h3::before{content:"// "; color:var(--accent);}
+  #clientTabBlueprints > p.muted{margin:-8px 0 0 !important;}
+  .shop-leaderboard-card{border:1px solid var(--border); border-radius:4px; padding:22px 24px; margin-bottom:0; box-shadow:none; background:var(--panel);}
+  .shop-leaderboard-card .trophy-icon{display:none;}
+  .shop-leaderboard-card h3{font-size:26px !important; color:var(--accent); letter-spacing:1px; margin-bottom:18px !important;}
+  .shop-leaderboard-card h3 span::before{content:"// ";}
+  .shops-dir-entry{margin-top:20px; padding-top:18px; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; gap:14px 16px; align-items:center; justify-content:space-between;}
+  .shops-dir-entry-txt{color:var(--muted); font-size:13px;}
+  .shops-dir-entry-txt .sl{color:var(--accent);}
+  @media (max-width:600px){ .shop-leaderboard-card{padding:16px 14px;} .shops-dir-entry .mk-btn{width:100%;} }
+
+  /* ===== MK : page shop (G) ===== */
+  .shop-banner-card.shop-texture-host{padding:28px; margin-bottom:0; border:1px solid var(--accent); border-radius:6px; box-shadow:0 0 18px var(--accent-dim); background:linear-gradient(var(--panel), var(--bg2));}
+  .shop-banner-card.shop-texture-host::before, .shop-banner-card.shop-texture-host::after{display:none;}
+  .shop-banner-card .shop-banner-row{gap:26px; align-items:flex-start;}
+  .shop-banner-card .shop-banner-logo{width:170px; height:170px; border-radius:12px;}
+  .shop-banner-card .shop-banner-kicker{font-size:12px; letter-spacing:2px; color:var(--muted); margin-bottom:8px;}
+  .shop-banner-card .shop-banner-title-row h1{font-size:58px; font-weight:400; line-height:1; letter-spacing:1px;}
+  .shop-banner-card .shop-banner-actions .shop-upvote-btn{background:var(--accent); color:#050606; border:1px solid var(--accent); border-radius:2px; padding:12px 24px; gap:10px; box-shadow:none;}
+  .shop-banner-card .shop-banner-actions .shop-upvote-btn .shop-upvote-label{font-family:'Share Tech Mono',monospace; font-size:13px; letter-spacing:1px; text-shadow:none;}
+  .shop-banner-card .shop-banner-actions .shop-upvote-btn .shop-upvote-count{font-family:'VT323',monospace; font-size:22px; text-shadow:none;}
+  .shop-banner-card .shop-banner-actions .shop-upvote-btn .icon{width:14px; height:14px;}
+  .shop-banner-card .shop-banner-actions .shop-upvote-btn, .shop-banner-card .shop-banner-actions .shop-upvote-btn *{color:#050606 !important;}
+  .shop-banner-card .shop-banner-actions .shop-upvote-btn.upvoted{filter:brightness(1.2); box-shadow:0 0 12px var(--accent-dim);}
+  .shop-banner-card .shop-banner-actions .gear-btn{width:44px; height:44px; border-radius:2px;}
+  .shop-banner-card .shop-description{border:none; border-left:2px solid var(--accent); border-radius:0; background:rgba(10,13,12,.82); padding:16px 18px; margin:14px 0 0; line-height:1.55; font-size:15px;}
+  .shop-banner-card .shop-description::before{content:"// "; color:var(--accent);}
+  .shop-banner-card .shop-loc-tag, .shop-banner-card .shop-banner-meta .shop-owner-box{border-radius:2px; padding:5px 12px; font-size:12px;}
+  @container shopbanner (max-width: 640px){
+    .shop-banner-row{flex-direction:column !important; align-items:center !important; text-align:center; gap:14px !important;}
+    .shop-banner-logo{width:120px !important; height:120px !important;}
+    .shop-banner-id{align-items:center !important; width:100%;}
+    .shop-banner-top{flex-direction:column !important; align-items:center !important; width:100%;}
+    .shop-banner-text{align-items:center !important;}
+    .shop-banner-title-row{justify-content:center !important;}
+    .shop-banner-title-row h1{font-size:38px !important; text-align:center;}
+    .shop-banner-meta{justify-content:center !important;}
+    .shop-banner-actions{width:100%; justify-content:center !important; margin:6px 0 0 !important;}
+    .shop-banner-actions .shop-upvote-btn{flex:1;}
+    .shop-description{text-align:left; width:100%;}
+  }
+  #view-seller-shop #shopMainContent{display:flex; flex-direction:column; gap:30px; padding-top:6px;}
+  #view-seller-shop #shopStatsCard{display:none;}
+  #view-seller-shop .shop-stats-achv-row{margin:0;}
+  #view-seller-shop #shopAchvCard{margin-bottom:0;}
+  #view-seller-shop .seller-section-card{background:transparent; border:none; box-shadow:none; padding:0; margin:0;}
+  #view-seller-shop .seller-section-card::before, #view-seller-shop .seller-section-card::after{display:none;}
+  #view-seller-shop .shop-preview-head{margin-bottom:14px;}
+  #view-seller-shop .shop-preview-head h3{font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; text-shadow:none; margin:0;}
+  #view-seller-shop .shop-see-more{border:none; background:none; padding:0; color:var(--accent); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:1px; text-transform:none;}
+  #view-seller-shop .marketplace-grid{grid-template-columns:repeat(4, minmax(0,1fr)); gap:18px;}
+  @media (max-width:900px){ #view-seller-shop .marketplace-grid{grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px;} }
+
+  /* ===== MK : zone coursier (F) ===== */
+  .mk-slim{border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:14px 4px;}
+  .mk-avl{border:1px solid var(--border); background:var(--panel); border-radius:4px; padding:22px 26px; display:flex; flex-direction:column; gap:12px; margin-bottom:16px;}
+  .mk-avl .top{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:14px;}
+  .mk-avl .st{font-family:'VT323',monospace; font-size:24px; color:var(--accent); line-height:1.1;}
+  .mk-avl .meta{color:var(--muted); font-size:13px;}
+  .mk-lines{display:flex; flex-direction:column;}
+  .mk-lines .li{display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid var(--border); font-size:14px;}
+  .mk-tot{display:flex; justify-content:space-between; padding:12px 0 4px; border-top:1px solid var(--border); font-family:'VT323',monospace; font-size:24px; color:var(--accent);}
+  .mk-mar{display:flex; justify-content:space-between; padding:8px 0; border-top:1px dashed var(--border); font-family:'VT323',monospace; font-size:20px; color:#3dff7a;}
+  .mk-del{padding:26px 30px; display:flex; flex-direction:column; gap:22px;}
+  .mk-del-head{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:16px;}
+  .mk-del-title{font-family:'VT323',monospace; font-size:30px; line-height:1.1; color:var(--accent);}
+  .mk-del-sub{color:var(--muted); font-size:13px;}
+  .mk-del-sub b{font-weight:400; color:var(--text);}
+  .mk-del-actions{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .mk-del .ship-track{margin:6px 34px 4px;}
+  .mk-del-cols{display:flex; flex-wrap:wrap; gap:36px;}
+  .mk-del-col{flex:1 1 380px; min-width:0; display:flex; flex-direction:column; gap:8px;}
+  .mk-route-h{display:flex; justify-content:space-between; align-items:center; cursor:pointer;}
+  .mk-route-h span:first-child{font-family:'VT323',monospace; font-size:22px; letter-spacing:.6px; color:var(--accent); text-shadow:0 0 8px var(--accent-dim);}
+  .mk-rstop{display:flex; gap:16px; align-items:flex-start;}
+  .mk-rstop.dest{padding:14px 16px; border:1px solid var(--accent); border-radius:4px; background:rgba(255,140,26,.08); box-shadow:0 0 16px var(--accent-dim);}
+  .mk-rnum{flex:none; width:32px; height:32px; border-radius:50%; border:2px solid var(--accent); background:rgba(0,0,0,.35); color:var(--accent); font-family:'VT323',monospace; font-size:18px; display:flex; align-items:center; justify-content:center;}
+  .mk-rstop.dest .mk-rnum{background:var(--accent); color:#03130a; box-shadow:0 0 12px var(--accent);}
+  .mk-rbody{flex:1; min-width:0; padding-top:3px; display:flex; flex-direction:column; gap:8px;}
+  .mk-rplace{font-family:'VT323',monospace; font-size:21px; letter-spacing:.4px;}
+  .mk-rstop.dest .mk-rplace{color:var(--accent);}
+  .mk-ritem{font-size:13px; color:var(--muted); padding:7px 12px; background:rgba(255,255,255,.03); border-left:2px solid var(--accent-dim); border-radius:2px; line-height:1.4;}
+  .mk-rarrow{width:32px; text-align:center; color:var(--accent); font-family:'VT323',monospace; font-size:24px; line-height:1; text-shadow:0 0 6px var(--accent-dim); animation:routeArrowPulse 1.6s ease-in-out infinite;}
+  .mk-rfold[hidden]{display:none;}
+  .mk-release{border-top:1px solid var(--border); padding-top:14px; display:flex; justify-content:flex-end;}
+  button.mk-relbtn{background:none !important; border:none !important; color:var(--muted); font-family:'Share Tech Mono',monospace !important; font-size:12px !important; letter-spacing:1px; cursor:pointer; padding:0 !important;}
+  button.mk-relbtn:hover{color:var(--danger);}
+  .mk-others{display:flex; flex-direction:column; gap:4px;}
+  .mk-orow{display:flex; flex-wrap:wrap; gap:12px 24px; align-items:center; padding:14px 8px; border-top:1px solid var(--border); cursor:pointer;}
+  .mk-orow:hover{background:rgba(255,255,255,.025);}
+  .mk-orow .s{flex:0 0 150px; font-size:12px; letter-spacing:1px; text-transform:uppercase;}
+  .mk-orow .n{flex:1 1 160px; font-family:'VT323',monospace; font-size:22px;}
+  .mk-orow .d{flex:2 1 240px; color:var(--muted); font-size:13px;}
+  .mk-orow .m{flex:0 0 150px; color:#3dff7a; font-family:'VT323',monospace; font-size:22px; text-align:right; white-space:nowrap;}
+  @media (max-width:600px){
+    .mk-del{padding:18px 14px; gap:18px;} .mk-del-title{font-size:26px;} .mk-del .ship-track{margin:6px 22px 2px;} .mk-del .stage-label:not(.cur){display:none;}
+    .mk-avl{padding:16px 14px;} .mk-orow .m{flex:1 1 auto; text-align:left;}
+  }
   /* ===== Nouvelle DA : libellés // sur les titres, bannière shop, côté coursier ===== */
   section > header h1:not(.slashes)::before{content:"// "; color:var(--accent);}
   .shop-banner-kicker{font-size:.72rem; letter-spacing:2px; color:var(--muted); margin-bottom:6px; position:relative; z-index:1;}
@@ -1799,22 +1963,24 @@
           <span data-i18n="tabBlueprints">BLUEPRINTS</span><span class="notif-dot" id="dotTabBlueprints"></span>
         </button>
       </div>
-      <div id="clientTabDeliveries">
-        <div class="home-hello"><h1 class="slashes" id="clientHomeHello">—</h1><button type="button" class="btn-primary home-new-order" onclick="openCreateOrder()" data-i18n="homeNewOrder">+ NOUVELLE COMMANDE</button></div>
-        <div class="home-stats" id="clientHomeStats"></div>
-        <div id="clientCurrentOrders"></div>
-        <button class="history-toggle" onclick="toggleHistory()">
-          <span data-i18n="historyLabel">Historique</span> (<span id="historyCount">0</span>) <span id="historyToggleIcon">▾</span>
-        </button>
-        <div id="clientHistoryList" hidden></div>
-        <div class="home-fresh" id="clientHomeFreshWrap" hidden>
-          <div class="home-section-label"><span class="sl">//</span> <span data-i18n="homeFresh">NOUVEAUTÉS SUR LA MARKETPLACE</span><button type="button" class="home-link" onclick="setClientTab('marketplace')" data-i18n="homeSeeAll">TOUT VOIR ▸</button></div>
-          <div id="clientHomeFresh" class="marketplace-grid"></div>
+      <div id="clientTabDeliveries" class="mk-col">
+        <button type="button" class="mk-btn mk-cta-top" onclick="openCreateOrder()" data-i18n="homeNewOrder">+ NOUVELLE COMMANDE</button>
+        <div class="mk-stats" id="clientHomeStats"></div>
+        <div id="clientCurrentOrders" style="display:flex; flex-direction:column; gap:36px;"></div>
+        <div class="mk-again" id="clientOrderAgain" hidden></div>
+        <div class="mk-gap" id="clientHistoryWrap" hidden>
+          <div class="mk-lbl-row"><span class="mk-lbl"><span class="sl">//</span> <span data-i18n="historyLabel">HISTORIQUE</span> (<span id="historyCount">0</span>)</span><button type="button" class="mk-link" onclick="toggleHistory()"><span id="historyToggleIcon">▾</span></button></div>
+          <div id="clientHistoryList" hidden></div>
+        </div>
+        <div class="mk-gap" id="clientHomeFreshWrap" hidden style="gap:14px;">
+          <div class="mk-lbl-row"><span class="mk-lbl"><span class="sl">//</span> <span data-i18n="homeFresh">NOUVEAUTÉS SUR LA MARKETPLACE</span></span><button type="button" class="mk-link" onclick="setClientTab('marketplace')" data-i18n="homeSeeAll">TOUT VOIR ▸</button></div>
+          <div class="mk-chips" id="clientHomeChips"></div>
+          <div id="clientHomeFresh" class="mk-fresh-grid"></div>
         </div>
         <div class="card courier-ad" id="courierAdCard" hidden></div>
         <div class="card courier-ad" id="sellerAdCard" hidden></div>
       </div>
-      <div id="clientTabMarketplace" hidden>
+      <div id="clientTabMarketplace" class="mk-col tight" hidden>
         <div class="card shop-leaderboard-card">
           <h3 style="margin-top:0; display:flex; align-items:center; gap:8px;">
             <svg class="icon trophy-icon" viewBox="0 0 8 7" shape-rendering="crispEdges"><g fill="currentColor">
@@ -1827,7 +1993,7 @@
           <div class="shop-leaderboard-grid" id="shopLeaderboardGrid"></div>
           <div class="shops-dir-entry">
             <span class="shops-dir-entry-txt"><span class="sl">//</span> <span id="shopsDirEntryTxt" data-i18n="shopsDirEntryTxt">Cherche, trie, trouve ton prochain vendeur.</span></span>
-            <button type="button" class="btn-primary" onclick="openShopsDirectory()" data-i18n="shopsDirViewAll">VOIR TOUS LES SHOPS ▸</button>
+            <button type="button" class="mk-btn" onclick="openShopsDirectory()" data-i18n="shopsDirViewAll">VOIR TOUS LES SHOPS ▸</button>
           </div>
         </div>
         <h3 data-i18n="marketplaceFeedTitle" style="margin-top:0;">Derniers objets en vente</h3>
@@ -1859,7 +2025,7 @@
         </div>
         <div id="marketplaceFeed" class="marketplace-grid"></div>
       </div>
-      <div id="clientTabBlueprints" hidden>
+      <div id="clientTabBlueprints" class="mk-col tight" hidden>
         <h3 data-i18n="blueprintsCatalogTitle" style="margin-top:0;">Catalogue de blueprints</h3>
         <p class="muted" style="margin-top:-8px;" data-i18n="blueprintsCatalogSub">Des objets craftés sur commande par les vendeurs qui possèdent le blueprint correspondant.</p>
         <div class="mkt-toolbar">
@@ -1876,7 +2042,7 @@
         </div>
         <div id="blueprintsFeed" class="marketplace-grid"></div>
       </div>
-      <div id="clientTabResources" hidden>
+      <div id="clientTabResources" class="mk-col tight" hidden>
         <h3 data-i18n="requestedResourcesTitle" style="margin-top:0;">Ressources demandées par les vendeurs</h3>
         <div class="mkt-toolbar">
           <input type="text" id="resourceRequestsSearchInput" class="mkt-search-input" data-i18n-ph="mktSearchPh" placeholder="Rechercher un objet…" oninput="onResourceRequestsSearchInput()">
@@ -2037,15 +2203,17 @@
       <div id="courierBlocked" class="card" hidden>
         <p data-i18n="notCourier">Ton compte n'a pas encore le rôle coursier. Contacte l'administrateur pour être ajouté.</p>
       </div>
-      <div id="courierDash" hidden>
-        <div class="card" id="courierAchievementsCard"></div>
-        <div class="card" id="courierAvailCard"></div>
+      <div id="courierDash" class="mk-col" style="padding-top:0; gap:30px;" hidden>
         <div class="tabs">
-          <button class="tab-btn active" id="tab-pending" onclick="switchCourierTab('pending')"><span data-i18n="tabPending">À TRAITER</span><span class="notif-dot" id="dotTabPending"></span></button>
-          <button class="tab-btn" id="tab-mine" onclick="switchCourierTab('mine')" data-i18n="tabMine">ATTRIBUÉES</button>
+          <button class="tab-btn active" id="tab-pending" onclick="switchCourierTab('pending')"><span data-i18n="cTabAvail">COMMANDES DISPONIBLES</span><span class="notif-dot" id="dotTabPending"></span></button>
+          <button class="tab-btn" id="tab-mine" onclick="switchCourierTab('mine')" data-i18n="cTabMine">MES LIVRAISONS</button>
+          <button class="tab-btn" id="tab-ach" onclick="switchCourierTab('ach')" data-i18n="cTabAch">SUCCÈS</button>
         </div>
+        <div class="mk-stats" id="courierStats"></div>
+        <div class="mk-slim" id="courierAvailCard"></div>
         <div id="courierPendingPane"></div>
         <div id="courierMinePane" hidden></div>
+        <div id="courierAchPane" hidden><div class="card" id="courierAchievementsCard"></div></div>
       </div>
     </section>
 
@@ -2478,6 +2646,8 @@
           </div>
         </div>
 
+        <div class="mk-stats" id="shopStatsStrip"></div>
+
         <div class="shop-stats-achv-row">
           <div class="card shop-progress-card" id="shopAchvCard" hidden></div>
           <div class="card shop-stats-card" id="shopStatsCard"></div>
@@ -2525,13 +2695,22 @@
     <!-- ANNUAIRE DES SHOPS -->
     <section id="view-shops-directory" hidden>
       <button class="back" onclick="closeShopsDirectory()" data-i18n="back">&lt; RETOUR</button>
-      <header><h1 class="slashes" data-i18n="shopsDirTitle">Tous les shops</h1></header>
-      <div class="shops-dir-toolbar">
-        <input type="text" id="shopsDirSearch" class="mkt-search-input" data-i18n-ph="shopsDirSearchPh" placeholder="Rechercher un shop, un vendeur, un lieu…" oninput="renderShopsDirectory()">
-        <div class="shops-dir-sorts" id="shopsDirSorts"></div>
+      <div class="mk-col" style="padding-top:6px; gap:24px;">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <h1 class="slashes sd-h1" data-i18n="sdTitle">Shops</h1>
+          <span style="color:var(--muted); font-size:13px;" data-i18n="sdSub">Every shop open on Couriers United.</span>
+        </div>
+        <div class="sd-toolbar">
+          <input type="text" id="shopsDirSearch" class="sd-search" data-i18n-ph="sdSearchPh" placeholder="Search a shop by name or specialty..." oninput="renderShopsDirectory()">
+          <div style="position:relative;">
+            <button type="button" class="sd-sort-btn" id="shopsDirSortBtn" onclick="toggleShopsDirMenu(event)"><span style="color:var(--muted);" data-i18n="sdSortLbl">SORT</span><span id="shopsDirSortLabel" style="color:var(--accent);"></span><span style="color:var(--muted);">▾</span></button>
+            <div class="sd-menu" id="shopsDirMenu" hidden></div>
+          </div>
+        </div>
+        <div class="sd-count-row"><span class="mk-lbl" style="font-size:12px;" id="shopsDirCount"></span><span class="mk-m12" id="shopsDirSortedBy"></span></div>
+        <div id="shopsDirEmpty" class="sd-empty" hidden></div>
+        <div id="shopsDirGrid" class="sd-grid"></div>
       </div>
-      <div class="shops-dir-count" id="shopsDirCount"></div>
-      <div id="shopsDirGrid" class="shops-dir-grid"></div>
     </section>
 
     <!-- TOUTES LES ANNONCES DE CE VENDEUR (vue client) -->
@@ -3069,10 +3248,11 @@ const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-ad
 // Quitte aussi le mode "page messagerie mobile plein écran" (voir openMobileMessages()) à chaque
 // changement de vue, quel que soit le chemin emprunté pour naviguer ailleurs : on ne veut pas que la
 // barre du haut reste masquée si on quitte la messagerie autrement qu'avec son propre bouton RETOUR.
-function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); document.body.classList.remove('msg-mobile-open'); }
+function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); const _pt = $('pageTitle'); if(_pt) _pt.hidden = false; document.body.classList.remove('msg-mobile-open'); }
 let clientTab = 'deliveries'; // 'deliveries' | 'marketplace' | 'resources' | 'blueprints'
 function setClientTab(tab){
   clientTab = tab;
+  try{ updatePageTitle(); }catch(e){}
   $('tabBtnDeliveries').classList.toggle('active', tab === 'deliveries');
   $('tabBtnMarketplace').classList.toggle('active', tab === 'marketplace');
   $('tabBtnResources').classList.toggle('active', tab === 'resources');
@@ -3200,6 +3380,10 @@ const T = {
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
     homeNewOrder:"+ NOUVELLE COMMANDE", homeHello:"Salut, {name}", homeFresh:"NOUVEAUTÉS SUR LA MARKETPLACE", homeSeeAll:"TOUT VOIR ▸", homeInProgress:"En cours", homeStatOrders:"COMMANDES", homeStatDelivered:"LIVRÉES", homeStatSpent:"DÉPENSÉ (aUEC)", homeStatActive:"EN COURS", homeMore:"+{n} DE PLUS ▾", homeLess:"MOINS ▴", homeCargo:"CARGAISON",
+    hmOrdersIn:"COMMANDES EN COURS ({n})", hmMostAdv:"LES PLUS AVANCÉES D'ABORD", hmViewAll:"VOIR TOUTES LES COMMANDES ▸", hmShowLess:"VOIR MOINS ▴", hmNeedElse:"Besoin d'autre chose ?", hmCtaTitle:"Besoin de quelque chose ? Commande maintenant !", hmCtaSub:"Choisis tes objets et une destination à Stanton, Nyx ou Pyro. Un coursier s'occupe du reste.", hmHow:"COMMENT ÇA MARCHE", hm1t:"Tu commandes", hm1x:"Objets et destination. Le prix est affiché avant de confirmer.", hm2t:"Un coursier achète", hm2x:"Il reçoit un itinéraire d'achat suggéré et livre ta cargaison.", hm3t:"Tu suis", hm3x:"Acheté, en transit, livré. Discute avec ton coursier à tout moment.", hmAgain:"COMMANDER À NOUVEAU", hmFullHist:"HISTORIQUE COMPLET ({n}) ▸", hmReorder:"RECOMMANDER", hmDelivered:"LIVRÉE", hmMessage:"MESSAGE", hmWaiting:"// EN ATTENTE D'UN COURSIER", hmCargo:"LISTE DE LA CARGAISON", hmStDel:"LIVRÉES", hmStAct:"EN COURS", hmStDes:"OBJETS RECHERCHÉS", hmStCour:"COURSIERS EN LIGNE", hmNewOrderBtn:"CRÉER UNE COMMANDE", titleOrders:"Mes commandes", titleMkt:"Marketplace", titleDesired:"Objets recherchés", titleBp:"Blueprints", titleCourier:"Coursier",
+    sdTitle:"Shops", sdSub:"Tous les shops ouverts sur Couriers United. Trouve un vendeur, parcours ses annonces et ses blueprints.", sdSearchPh:"Chercher un shop par nom ou spécialité...", sdSortLbl:"TRIER", sdSortedBy:"TRIÉ PAR {x}", sdCount:"{n} SHOPS", sdNone:"Aucun shop ne correspond à ta recherche.", sdSales:"ventes", sdListings:"annonces", sdBp:"bp", sdVisit:"VISITER ▸", sdSinceWeek:"Ouvert cette semaine", sdSinceDays:"Ouvert depuis {n} jours", sdS_newest:"LES PLUS RÉCENTS", sdS_sales:"PLUS DE VENTES (TOTAL)", sdS_blueprints:"PLUS DE BLUEPRINTS", sdS_listings:"PLUS D'ANNONCES", sdS_name:"NOM DE A À Z",
+    shStSales:"VENTES (TOTAL)", shStListings:"ANNONCES", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
+    cTabAvail:"COMMANDES DISPONIBLES", cTabMine:"MES LIVRAISONS", cTabAch:"SUCCÈS", cStDel:"LIVRÉES", cStProg:"EN COURS", cStMargin:"MARGE TOTALE", cStOpen:"COMMANDES OUVERTES", cActive:"LIVRAISON ACTIVE", cMsgClient:"MESSAGE AU CLIENT", cClient:"Client :", cDeadline:"// Échéance :", cCargo:"CARGAISON", cOrderTotal:"Total de la commande", cYourMargin:"Ta marge", cRoute:"// ITINÉRAIRE D'ACHAT SUGGÉRÉ", cRelease:"RELÂCHER CETTE COMMANDE", cOthers:"MES AUTRES LIVRAISONS ({n})", cClickRow:"CLIQUE SUR UNE LIGNE POUR L'ACTIVER", cAvailFor:"DISPONIBLE POUR LIVRER", cNextTransit:"MARQUER EN TRANSIT ▸", cNextPurchased:"MARQUER ACHETÉE ▸", cNextDelivered:"MARQUER LIVRÉE ▸", cWaiting:"EN ATTENTE D'UN COURSIER",
     shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille", shopTextureDiag:"Diagonales", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain", shopTextureSkull:"Crâne spatial", shopTextureWaves:"Ondes",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
@@ -3367,6 +3551,10 @@ const T = {
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
     homeNewOrder:"+ NEW ORDER", homeHello:"Hello, {name}", homeFresh:"FRESH ON THE MARKETPLACE", homeSeeAll:"SEE ALL ▸", homeInProgress:"In progress", homeStatOrders:"ORDERS", homeStatDelivered:"DELIVERED", homeStatSpent:"SPENT (aUEC)", homeStatActive:"IN PROGRESS", homeMore:"+{n} MORE ▾", homeLess:"LESS ▴", homeCargo:"CARGO",
+    hmOrdersIn:"ORDERS IN PROGRESS ({n})", hmMostAdv:"MOST ADVANCED FIRST", hmViewAll:"VIEW ALL ORDERS ▸", hmShowLess:"SHOW LESS ▴", hmNeedElse:"Need something else?", hmCtaTitle:"Need something? Order now!", hmCtaSub:"Pick your items, choose a destination in Stanton, Nyx or Pyro. A courier takes it from there.", hmHow:"HOW IT WORKS", hm1t:"You order", hm1x:"Items and destination. The price is shown before you confirm.", hm2t:"A courier buys", hm2x:"He gets a suggested shopping route and ships your cargo.", hm3t:"You track it", hm3x:"Bought, in transit, delivered. Chat with your courier any time.", hmAgain:"ORDER AGAIN", hmFullHist:"FULL HISTORY ({n}) ▸", hmReorder:"REORDER", hmDelivered:"DELIVERED", hmMessage:"MESSAGE", hmWaiting:"// WAITING FOR A COURIER", hmCargo:"FULL CARGO LIST", hmStDel:"DELIVERED", hmStAct:"IN PROGRESS", hmStDes:"DESIRED ITEMS", hmStCour:"COURIERS ONLINE", hmNewOrderBtn:"CREATE AN ORDER", titleOrders:"My orders", titleMkt:"Marketplace", titleDesired:"Desired items", titleBp:"Blueprints", titleCourier:"Courier",
+    sdTitle:"Shops", sdSub:"Every shop open on Couriers United. Find a seller, browse their listings and blueprints.", sdSearchPh:"Search a shop by name or specialty...", sdSortLbl:"SORT", sdSortedBy:"SORTED BY {x}", sdCount:"{n} SHOPS", sdNone:"No shop matches your search.", sdSales:"sales", sdListings:"listings", sdBp:"bp", sdVisit:"VISIT ▸", sdSinceWeek:"Opened this week", sdSinceDays:"Open for {n} days", sdS_newest:"NEWEST", sdS_sales:"MOST SALES (ALL TIME)", sdS_blueprints:"MOST BLUEPRINTS", sdS_listings:"MOST LISTINGS", sdS_name:"NAME A TO Z",
+    shStSales:"SALES (ALL TIME)", shStListings:"LISTINGS", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
+    cTabAvail:"AVAILABLE ORDERS", cTabMine:"MY DELIVERIES", cTabAch:"ACHIEVEMENTS", cStDel:"DELIVERED", cStProg:"IN PROGRESS", cStMargin:"TOTAL MARGIN", cStOpen:"OPEN ORDERS", cActive:"ACTIVE DELIVERY", cMsgClient:"MESSAGE CLIENT", cClient:"Client:", cDeadline:"// Deadline:", cCargo:"CARGO", cOrderTotal:"Order total", cYourMargin:"Your margin", cRoute:"// SUGGESTED SHOPPING ROUTE", cRelease:"RELEASE THIS ORDER", cOthers:"MY OTHER DELIVERIES ({n})", cClickRow:"CLICK A ROW TO MAKE IT ACTIVE", cAvailFor:"AVAILABLE FOR DELIVERY", cNextTransit:"MARK AS IN TRANSIT ▸", cNextPurchased:"MARK AS PURCHASED ▸", cNextDelivered:"MARK AS DELIVERED ▸", cWaiting:"WAITING FOR A COURIER",
     shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid", shopTextureDiag:"Diagonal", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain", shopTextureSkull:"Space skull", shopTextureWaves:"Waves",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
@@ -3670,7 +3858,10 @@ function effectiveView(){
 function updatePageTitle(){
   const v = effectiveView();
   const d = T[LANG];
-  $('pageTitle').textContent = v==='client' ? d.dashClient : v==='courier' ? d.dashCourier : v==='seller' ? d.dashSeller : d.dashAdmin;
+  const pt = $('pageTitle');
+  const ct = ({deliveries:d.titleOrders, marketplace:d.titleMkt, resources:d.titleDesired, blueprints:d.titleBp})[clientTab] || d.titleOrders;
+  pt.textContent = v==='client' ? ct : v==='courier' ? d.titleCourier : v==='seller' ? d.dashSeller : d.dashAdmin;
+  pt.hidden = (v==='seller');
 }
 
 function routeApp(){
@@ -4976,21 +5167,46 @@ function animateShipTracks(container){
 }
 
 
+let homeFreshGroup = null, clientOrdersShowAll = false, clientOrdersCache = [], clientCouriersCache = {};
+const HOME_MAX_ROWS = 4;
+const HOME_CHIP_KEYS = ['weapons','armor','undersuits','systems','utility'];
 function toggleOrderCargo(btn){
-  const ul = btn.closest('.order-row-main').querySelector('.order-row-cargo'); if(!ul) return;
+  const row = btn.closest('.mk-order'); const ul = row && row.querySelector('.mk-order-cargo'); if(!ul) return;
   ul.hidden = !ul.hidden;
   const d = T[LANG];
   btn.textContent = ul.hidden ? d.homeMore.replace('{n}', btn.dataset.n) : d.homeLess;
 }
+function setHomeFreshGroup(k){ homeFreshGroup = (homeFreshGroup === k) ? null : k; loadClientHomeFresh(); }
 async function loadClientHomeFresh(){
-  const wrap = $('clientHomeFreshWrap'), box = $('clientHomeFresh'); if(!wrap || !box) return;
-  const { data: listings } = await sb.from('marketplace_listings').select('*').eq('is_deleted', false).order('created_at',{ascending:false}).limit(4);
-  if(!listings || !listings.length){ wrap.hidden = true; return; }
+  const wrap = $('clientHomeFreshWrap'), box = $('clientHomeFresh'), chips = $('clientHomeChips'); if(!wrap || !box) return;
+  if(chips) chips.innerHTML = HOME_CHIP_KEYS.map(k => { const g = ITEM_CATEGORY_GROUPS.find(x => x.key === k); return g ? `<button type="button" class="mk-chip${homeFreshGroup===k?' on':''}" onclick="setHomeFreshGroup('${k}')">${categoryGroupLabel(g)}</button>` : ''; }).join('');
+  let q = sb.from('marketplace_listings').select('*').eq('is_deleted', false).order('created_at',{ascending:false}).limit(4);
+  if(homeFreshGroup){ const g = ITEM_CATEGORY_GROUPS.find(x => x.key === homeFreshGroup); if(g) q = q.in('category_id', g.cats.map(c => c[0])); }
+  const { data: listings } = await q;
+  if(!listings || !listings.length){ if(!homeFreshGroup){ wrap.hidden = true; } else { box.innerHTML = ''; } return; }
   const ids = [...new Set(listings.map(l => l.seller_id))];
   const { data: shops } = await sb.from('marketplace_shops').select('id,shop_name').in('id', ids);
   const map = {}; (shops||[]).forEach(sh => { map[sh.id] = { shop_name: sh.shop_name }; });
   box.innerHTML = listings.map(l => mktCardHtml(l, map)).join('');
   wrap.hidden = false;
+}
+function reorderFrom(id){
+  const o = clientOrdersCache.find(x => x.id === id); if(!o) return;
+  openCreateOrder();
+  const list = $('items'); if(list) list.innerHTML = '';
+  (o.items || []).forEach(it => {
+    addItem();
+    const rows = document.querySelectorAll('#items .item-row'); const row = rows[rows.length-1]; if(!row) return;
+    row.querySelector('.name input').value = it.name;
+    row.querySelector('.prix input').value = it.price;
+    row.querySelector('.qte input').value = it.qty;
+  });
+  try{ if(o.destination_system) $('arrivee').value = o.destination_system; if(o.exact_location) $('lieu').value = o.exact_location; calc(); }catch(e){}
+}
+function showAllClientOrders(){ clientOrdersShowAll = !clientOrdersShowAll; loadClientDashboard(); }
+function openFullHistory(){
+  const l = $('clientHistoryList'); if(l && l.hidden) toggleHistory();
+  const w = $('clientHistoryWrap'); if(w) w.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 // --- DASHBOARD CLIENT ---
@@ -4999,95 +5215,119 @@ async function loadClientDashboard(){
   renderCourierAd();
   renderSellerAd();
   loadClientHomeFresh();
-  const { data, error } = await sb.from('orders').select('*').eq('client_id', session.user.id).order('created_at',{ascending:false});
+  const d = T[LANG];
+  const [ordersRes, desiredRes, couriersRes] = await Promise.all([
+    sb.from('orders').select('*').eq('client_id', session.user.id).order('created_at',{ascending:false}),
+    sb.from('resource_requests').select('id',{count:'exact',head:true}).eq('status','open'),
+    sb.from('profiles').select('id',{count:'exact',head:true}).eq('available_for_delivery', true)
+  ]);
+  const { data, error } = ordersRes;
   if(error){ $('clientCurrentOrders').textContent = error.message; return; }
   const orders = (data || []).filter(o => o.order_type !== 'marketplace');
-  const current = orders.filter(o => !['delivered','cancelled'].includes(o.status));
+  clientOrdersCache = orders;
+  const current = orders.filter(o => !['delivered','cancelled'].includes(o.status))
+    .sort((a,b) => stepsFor(b).indexOf(b.status) - stepsFor(a).indexOf(a.status) || new Date(b.created_at) - new Date(a.created_at));
   const history = orders.filter(o => ['delivered','cancelled'].includes(o.status));
-  const d = T[LANG];
+  const delivered = orders.filter(o => o.status === 'delivered');
 
   const courierIds = [...new Set(orders.filter(o=>o.courier_id).map(o=>o.courier_id))];
   let couriers = {};
   if(courierIds.length){
-    const { data: profs } = await sb.from('profiles').select('id,discord_username,rsi_handle,ship_class,ship_name').in('id', courierIds);
+    const { data: profs } = await sb.from('profiles').select('id,discord_username,rsi_handle,avatar_url,ship_class,ship_name').in('id', courierIds);
     (profs||[]).forEach(p => couriers[p.id]=p);
-    await Promise.all(courierIds.map(async id => { couriers[id].deliveredCount = await fetchDeliveredCount(id); }));
   }
+  clientCouriersCache = couriers;
   const courierLinkHtml = c => c
-    ? `<a href="javascript:void(0)" onclick="event.stopPropagation(); openPublicProfile('${c.id}')" style="color:var(--accent); text-decoration:underline; cursor:pointer;">${displayName(c)}</a>`
+    ? `<a href="javascript:void(0)" onclick="event.stopPropagation(); openPublicProfile('${c.id}')" style="color:var(--accent); text-decoration:underline; cursor:pointer;">${escHtml(displayName(c))}</a>`
     : '';
 
-  const curBox = $('clientCurrentOrders');
-  // En-tête + stats (// labels, sans encadrés)
-  const helloEl = $('clientHomeHello');
-  if(helloEl) helloEl.textContent = d.homeHello.replace('{name}', profile ? displayName(profile) : '');
-  const deliveredOrders = orders.filter(o => o.status === 'delivered');
-  const spent = deliveredOrders.reduce((sum,o) => sum + (Number(o.total_price)||0), 0);
-  const statsEl = $('clientHomeStats');
-  if(statsEl) statsEl.innerHTML = [
-    [d.homeStatOrders, orders.length, ''], [d.homeStatActive, current.length, 'accent'], [d.homeStatDelivered, deliveredOrders.length, 'green'], [d.homeStatSpent, fmtNum(spent), '']
-  ].map(([l,v,c]) => `<div class="home-stat"><span class="home-stat-lbl"><span class="sl">//</span> ${l}</span><span class="home-stat-val ${c}">${v}</span></div>`).join('');
-  const MAX_VISIBLE_ITEMS = 2;
+  // Bande de stats (// labels, sans encadrés)
+  $('clientHomeStats').innerHTML = [
+    [d.hmStDel, delivered.length, 'accent'], [d.hmStAct, current.length, ''], [d.hmStDes, desiredRes.count || 0, ''], [d.hmStCour, couriersRes.count || 0, 'green']
+  ].map(([l,v,c]) => `<div class="mk-stat"><span class="mk-stat-l"><span class="sl">//</span> ${l}</span><span class="mk-stat-v ${c}">${v}</span></div>`).join('');
+
   const rowHtml = o => {
     const c = couriers[o.courier_id];
     const items = o.items || [];
-    const shown = items.slice(0, MAX_VISIBLE_ITEMS).map(it => `${escHtml(it.name)} ×${it.qty}`).join(', ');
-    const more = items.length - MAX_VISIBLE_ITEMS;
-    const moreBtn = more > 0 ? `<button type="button" class="order-row-more" data-n="${more}" onclick="toggleOrderCargo(this)">${d.homeMore.replace('{n}', more)}</button>` : '';
-    const cargo = `<ul class="order-row-cargo" hidden>${items.map(it => `<li>${escHtml(it.name)} ×${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>`;
+    const MAXI = 2;
+    const shown = items.slice(0, MAXI).map(it => `${escHtml(it.name)} ×${it.qty}`).join(', ');
+    const more = items.length - MAXI;
+    const moreBtn = more > 0 ? `<button type="button" class="mk-more" data-n="${more}" onclick="toggleOrderCargo(this)">${d.homeMore.replace('{n}', more)}</button>` : '';
+    const cargo = more > 0 ? `<div class="mk-order-cargo" hidden><span class="mk-lbl" style="margin-bottom:6px;"><span class="sl">//</span> ${d.hmCargo}</span>${items.map(it => `<div class="li"><span>${escHtml(it.name)} ×${it.qty}</span><span>${fmt(it.price*it.qty)}</span></div>`).join('')}</div>` : '';
     const deadline = o.deadline ? ` · ${d.orderDeadline}${formatDeadline(o.deadline)}` : '';
-    const courierLine = c ? `<div class="order-row-courier"><span>${d.orderCourier}</span>${courierLinkHtml(c)}${rankBadgeHtml(c.deliveredCount,'md')}${c.ship_class || c.ship_name ? `<span>· ${c.ship_name ? '“'+escHtml(c.ship_name)+'”' : ''}${c.ship_class ? (c.ship_name ? ' — ' : '') + escHtml(c.ship_class) : ''}</span>` : ''}</div>` : '';
     const canCancel = !['purchased','in_transit'].includes(o.status);
-    const foot = canCancel
-      ? `<button class="order-row-cancel" onclick="cancelOrder('${o.id}','${o.status}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>`
-      : `<span class="order-row-locked">${d.cancelLockedNote}</span>`;
-    return `<div class="order-row">
-      <div class="order-row-main">
-        <div class="order-row-items">${shown}${moreBtn}</div>${cargo}
-        <div class="order-row-sub">${escHtml(o.destination_system)} — ${escHtml(o.exact_location||'-')} · ${fmt(o.total_price)}${deadline}</div>
-        ${courierLine}
-      </div>
-      <div class="order-row-side">${shipTrackHtml(o)}<div class="order-row-foot"><span class="order-row-status">▸ ${d.statusLabels[o.status]}</span>${foot}</div></div>
-    </div>`;
+    const cancelBtn = canCancel ? `<button type="button" class="mk-btn mute sm" onclick="cancelOrder('${o.id}','${o.status}')">${d.cancelBtn}</button>` : '';
+    const stColor = o.status === 'pending' ? 'var(--muted)' : 'var(--text)';
+    const right = c
+      ? `<span class="mk-avatar">${c.avatar_url ? `<img src="${escHtml(c.avatar_url)}" alt="">` : escHtml((displayName(c)[0]||'?').toUpperCase())}</span><span class="mk-cname" onclick="openPublicProfile('${c.id}')">${escHtml(displayName(c))}</span><button type="button" class="mk-btn ghost sm" onclick="openMsgThreadWithUser('${c.id}')">${d.hmMessage}</button>${cancelBtn}`
+      : `<span class="mk-m12">${d.hmWaiting}</span>${cancelBtn}`;
+    return `<div class="mk-order"><div class="mk-order-in">
+      <div class="mk-order-l"><div class="mk-order-items"><span class="it">${shown}</span>${moreBtn}</div><span class="mk-order-sub">${escHtml(o.exact_location||o.destination_system||'-')}, ${escHtml(o.destination_system||'')} · ${fmt(o.total_price)}${deadline}</span></div>
+      <div class="mk-order-m">${shipTrackHtml(o)}<span class="mk-order-st" style="color:${stColor};">▸ ${d.statusLabels[o.status].toUpperCase()}</span></div>
+      <div class="mk-order-r">${right}</div>
+    </div>${cargo}</div>`;
   };
-  curBox.innerHTML = current.length ? `<div class="orders-box"><div class="orders-box-head"><span>// ${d.homeInProgress} · ${current.length}</span></div>${current.map(rowHtml).join('')}</div>` : `
-    <div class="empty-cta">
-      <svg class="empty-cta-icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
-        <rect x="7" y="3" width="2" height="10"/><rect x="3" y="7" width="10" height="2"/>
-      </g></svg>
-      <div class="empty-cta-text">${d.emptyCtaText}</div>
-      <button class="btn-primary" onclick="openCreateOrder()" onmouseenter="pixelSwoosh(this)">${d.emptyCtaBtn}</button>
-    </div>`;
+  const curBox = $('clientCurrentOrders');
+  if(current.length){
+    const rows = clientOrdersShowAll ? current : current.slice(0, HOME_MAX_ROWS);
+    const overflow = current.length > HOME_MAX_ROWS;
+    curBox.innerHTML = `
+      <div class="mk-gap">
+        <div class="mk-lbl-row"><span class="mk-lbl"><span class="sl">//</span> ${d.hmOrdersIn.replace('{n}', current.length)}</span>${current.length>1?`<span class="mk-m12">${d.hmMostAdv}</span>`:''}</div>
+        <div class="mk-box mk-orders">${rows.map(rowHtml).join('')}</div>
+        ${overflow ? `<span class="mk-m12"><button type="button" class="mk-link" onclick="showAllClientOrders()">${clientOrdersShowAll ? d.hmShowLess : d.hmViewAll}</button></span>` : ''}
+      </div>
+      <div class="mk-cta-slim"><span class="t"><span style="color:var(--accent);">//</span> ${d.hmNeedElse}</span><button type="button" class="mk-btn" onclick="openCreateOrder()" onmouseenter="pixelSwoosh(this)">${d.hmNewOrderBtn}</button></div>`;
+  } else {
+    curBox.innerHTML = `
+      <div class="mk-cta-big">
+        <div class="mk-box mk-cta-card"><span class="t"><span style="color:var(--accent);">//</span> ${d.hmCtaTitle}</span><span class="p">${d.hmCtaSub}</span><button type="button" class="mk-btn" style="padding:14px 34px;" onclick="openCreateOrder()" onmouseenter="pixelSwoosh(this)">${d.hmNewOrderBtn}</button></div>
+        <div class="mk-how"><span class="mk-lbl"><span class="sl">//</span> ${d.hmHow}</span><div class="mk-how-steps">
+          ${[['01',d.hm1t,d.hm1x],['02',d.hm2t,d.hm2x],['03',d.hm3t,d.hm3x]].map(([n,t,x]) => `<div class="mk-how-step"><span class="n">${n}</span><span class="h">${t}</span><span class="x">${x}</span></div>`).join('')}
+        </div></div>
+      </div>`;
+  }
   animateShipTracks(curBox);
 
+  // Commander à nouveau (3 dernières livrées)
+  const again = $('clientOrderAgain');
+  if(delivered.length){
+    again.hidden = false;
+    again.innerHTML = `<div class="mk-lbl-row" style="margin-bottom:6px;"><span class="mk-lbl"><span class="sl">//</span> ${d.hmAgain}</span><button type="button" class="mk-link" onclick="openFullHistory()">${d.hmFullHist.replace('{n}', history.length)}</button></div>` +
+      delivered.slice(0,3).map(o => {
+        const its = (o.items||[]); const txt = its.slice(0,2).map(it => `${escHtml(it.name)} ×${it.qty}`).join(', ') + (its.length>2 ? ` +${its.length-2}` : '');
+        return `<div class="mk-again-row"><span class="it">${txt}</span><span class="wh">${escHtml(o.exact_location||'-')} · ${escHtml(o.destination_system||'')}</span><span class="stt">${d.hmDelivered}</span><span class="pr">${fmt(o.total_price)}</span><button type="button" class="mk-btn ghost sm" onclick="reorderFrom('${o.id}')">${d.hmReorder}</button></div>`;
+      }).join('');
+  } else { again.hidden = true; again.innerHTML = ''; }
+
+  const histWrap = $('clientHistoryWrap'); if(histWrap) histWrap.hidden = !history.length;
   const histBox = $('clientHistoryList');
   const clearBtn = history.length ? `<button class="btn-secondary" style="width:100%; margin-bottom:8px;" onclick="clearHistory()"><span data-i18n="clearHistory">${d.clearHistory}</span></button>` : '';
-  histBox.innerHTML = clearBtn + (history.length ? history.map(o => {
+  histBox.innerHTML = clearBtn + history.map(o => {
     const c = couriers[o.courier_id];
     const shipLine = c && (c.ship_class || c.ship_name)
-      ? `<div class="meta">${d.orderShip}${c.ship_name ? '“'+c.ship_name+'”' : ''}${c.ship_class ? (c.ship_name ? ' — ' : '') + c.ship_class : ''}</div>`
+      ? `<div class="meta">${d.orderShip}${c.ship_name ? '“'+escHtml(c.ship_name)+'”' : ''}${c.ship_class ? (c.ship_name ? ' — ' : '') + escHtml(c.ship_class) : ''}</div>`
       : '';
     return `
     <div class="order-card history ${o.status==='cancelled'?'cancelled':''}" onclick="toggleHistoryDetail('${o.id}')">
       <div class="hist-row">
         <div class="hist-main">
-          <span>${o.destination_system} — ${o.exact_location||'-'}</span>
+          <span>${escHtml(o.destination_system)} — ${escHtml(o.exact_location||'-')}</span>
           <span class="muted">${o.status==='cancelled' ? d.statusLabels.cancelled : new Date(o.created_at).toLocaleDateString()}</span>
         </div>
         <span class="hist-total">${fmt(o.total_price)}</span>
         <span class="hist-chevron" id="hist-chevron-${o.id}">▾</span>
       </div>
       <div class="hist-detail" id="hist-detail-${o.id}" hidden>
-        <div class="meta">${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}</div>
+        <div class="meta">${d.orderSystem}${escHtml(o.destination_system)} — ${d.orderLieu}${escHtml(o.exact_location||'-')}</div>
         ${c ? `<div class="meta">${d.orderCourier}${courierLinkHtml(c)}</div>` : ''}
         ${shipLine}
         ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
-        <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
+        <ul>${(o.items||[]).map(it=>`<li>${escHtml(it.name)} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
         <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
       </div>
-    </div>
-  `;
-  }).join('') : `<p class="muted">${d.noHistory}</p>`);
+    </div>`;
+  }).join('');
   $('historyCount').textContent = history.length;
 }
 function toggleHistoryDetail(id){
@@ -5354,6 +5594,7 @@ const SHOPS_DIR_SORTS = [['newest','shopsDirSortNewest'],['sales','shopsDirSortS
 function closeShopsDirectory(){ routeApp(); setTimeout(() => { try{ setClientTab('marketplace'); }catch(e){} }, 0); }
 async function openShopsDirectory(){
   hideAllViews();
+  $('pageTitle').hidden = true;
   $('createOrderBtn').hidden = false;
   $('view-shops-directory').hidden = false;
   window.scrollTo(0,0);
@@ -5378,10 +5619,17 @@ async function openShopsDirectory(){
   renderShopsDirectory();
 }
 function renderShopsDirSorts(){
-  const d = T[LANG]; const box = $('shopsDirSorts'); if(!box) return;
-  box.innerHTML = SHOPS_DIR_SORTS.map(([k,key]) => `<button type="button" class="${k===shopsDirSort?'active':''}" onclick="setShopsDirSort('${k}')">${d[key]}</button>`).join('');
+  const d = T[LANG]; const menu = $('shopsDirMenu'); if(!menu) return;
+  menu.innerHTML = SHOPS_DIR_SORTS.map(([k]) => `<button type="button" class="${k===shopsDirSort?'on':''}" onclick="setShopsDirSort('${k}')">${k===shopsDirSort?'▸':'&nbsp;'} ${d['sdS_'+k]}</button>`).join('');
+  const lbl = $('shopsDirSortLabel'); if(lbl) lbl.textContent = d['sdS_'+shopsDirSort];
 }
-function setShopsDirSort(k){ shopsDirSort = k; renderShopsDirSorts(); renderShopsDirectory(); }
+function toggleShopsDirMenu(ev){
+  if(ev) ev.stopPropagation();
+  const m = $('shopsDirMenu'); m.hidden = !m.hidden;
+  $('shopsDirSortBtn').classList.toggle('open', !m.hidden);
+}
+document.addEventListener('click', e => { const m = $('shopsDirMenu'); if(m && !m.hidden && !e.target.closest('#shopsDirMenu') && !e.target.closest('#shopsDirSortBtn')){ m.hidden = true; $('shopsDirSortBtn').classList.remove('open'); } });
+function setShopsDirSort(k){ shopsDirSort = k; const m = $('shopsDirMenu'); if(m) m.hidden = true; const b = $('shopsDirSortBtn'); if(b) b.classList.remove('open'); renderShopsDirSorts(); renderShopsDirectory(); }
 function escHtml(v){ return String(v==null?'':v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function renderShopsDirectory(){
   const grid = $('shopsDirGrid'); if(!grid || !shopsDirData) return;
@@ -5401,25 +5649,28 @@ function renderShopsDirectory(){
     name: (a,b) => a.shop.shop_name.localeCompare(b.shop.shop_name, undefined, {sensitivity:'base'})
   };
   list.sort(by[shopsDirSort] || by.name);
-  $('shopsDirCount').textContent = d.shopsDirCount.replace('{n}', list.length);
-  if(!list.length){ grid.innerHTML = `<p class="muted">${d.shopsDirNone}</p>`; return; }
+  $('shopsDirCount').innerHTML = `<span style="color:var(--accent);">//</span> ` + d.sdCount.replace('{n}', list.length);
+  $('shopsDirSortedBy').textContent = d.sdSortedBy.replace('{x}', d['sdS_'+shopsDirSort]);
+  const empty = $('shopsDirEmpty'); empty.hidden = list.length > 0; empty.innerHTML = `<span style="color:var(--accent);">//</span> ${d.sdNone}`;
   grid.innerHTML = list.map(r => {
     const sh = r.shop, col = normalizeShopColor(sh.theme_color);
-    const name = escHtml(sh.shop_name);
     const logo = sh.logo_url ? `<img src="${escHtml(sh.logo_url)}" alt="">` : escHtml((sh.shop_name[0]||'?').toUpperCase());
-    const owner = escHtml(r.prof.rsi_handle || r.prof.discord_username || '');
-    const loc = sh.location_system ? escHtml((sh.location_name ? sh.location_name + ' · ' : '') + sh.location_system) : '';
-    const sub = [owner, loc].filter(Boolean).join(' · ');
     const st = (r.prof.status_text || '').trim(), sc = validStatusColor(r.prof.status_color);
-    const stHtml = st ? `<span class="shop-dir-status" style="--st-col:${sc || 'var(--muted)'}">${sc ? '<span class="status-dot"></span>' : ''}<span class="t">${escHtml(st)}</span></span>` : '';
-    const stats = [d.shopsDirSales.replace('{n}', r.sales), d.shopsDirListings.replace('{n}', r.listings), d.shopsDirBp.replace('{n}', r.bps)].join(' · ');
-    return `<button type="button" class="shop-dir-card" style="--shop-col:${col}; --shop-col-dim:${col}55;" onclick="openSellerShop('${sh.id}')">
-      <div class="shop-dir-logo">${logo}</div>
-      <div class="shop-dir-info"><span class="shop-dir-name">${name}</span><span class="shop-dir-sub">${sub}</span><span class="shop-dir-stats">${stats}</span>${stHtml}</div>
-    </button>`;
+    const stHtml = st ? `<span class="sd-status" style="--st:${sc || 'var(--muted)'}">${sc ? '<span class="dot"></span>' : ''}<span class="t">${escHtml(st)}</span></span>` : '';
+    let since = '';
+    const ds = sh.created_at ? Math.floor((Date.now() - new Date(sh.created_at).getTime()) / 86400000) : null;
+    if(ds !== null && !isNaN(ds)) since = ds < 7 ? d.sdSinceWeek : d.sdSinceDays.replace('{n}', ds);
+    return `<div class="sd-card" style="--sc:${col}; --sc-dim:${col}88;" onclick="openSellerShop('${sh.id}')">
+      <div class="sd-banner"></div>
+      <div class="sd-body">
+        <div class="sd-logo">${logo}</div>
+        <div style="display:flex; flex-direction:column; gap:4px;"><span class="sd-name">${escHtml(sh.shop_name)}</span><span class="sd-tag">${escHtml(sh.description || '')}</span>${stHtml}</div>
+        <div class="sd-stats"><span><b class="o">${r.sales}</b> ${d.sdSales}</span><span><b>${r.listings}</b> ${d.sdListings}</span><span><b>${r.bps}</b> ${d.sdBp}</span></div>
+        <div class="sd-foot"><span class="since">${since}</span><span class="visit">${d.sdVisit}</span></div>
+      </div>
+    </div>`;
   }).join('');
 }
-
 // --- LEADERBOARD DES BOUTIQUES (3 stats : ventes cette semaine, upvotes cette semaine, objet le plus cher vendu) ---
 async function loadShopLeaderboard(){
   const grid = $('shopLeaderboardGrid'); if(!grid) return;
@@ -6897,6 +7148,7 @@ async function openSellerShop(sellerId){
   shopViewingSellerId = sellerId;
   const isOwner = !!(session && session.user.id === sellerId);
   hideAllViews();
+  $('pageTitle').hidden = true;
   // hideAllViews() ne touche pas aux boutons CRÉER de la topbar (ce ne sont pas des "vues") : sans ça, le
   // bouton CRÉER du client (visible sur l'onglet client) restait affiché en plus de celui du vendeur quand
   // on ouvrait sa propre boutique depuis le leaderboard/une carte marketplace sans repasser par routeApp().
@@ -6967,6 +7219,7 @@ async function openSellerShop(sellerId){
     if(listingsMoreBtn) listingsMoreBtn.hidden = true;
     if(resMoreBtn) resMoreBtn.hidden = true;
     if(bpSection) bpSection.hidden = true;
+    renderShopStrip(0, 0, 0);
     loadShopUpvotes(sellerId, isOwner);
     return;
   }
@@ -7005,6 +7258,7 @@ async function openSellerShop(sellerId){
       : `<p class="muted">${d.noBlueprintsOwn}</p>`;
   }
   if(bpMoreBtn) bpMoreBtn.hidden = bpList.length <= gridCap;
+  renderShopStrip((stats && stats.salesCount) || 0, listingsForGrid.length, bpList.length);
 
   loadShopUpvotes(sellerId, isOwner);
 }
@@ -7025,7 +7279,7 @@ function renderShopStatus(p, isOwner){
   wrap.hidden = false;
   pill.className = 'status-pill' + (isOwner ? ' editable' : '') + (txt ? '' : ' empty');
   pill.style.setProperty('--st-col', col || 'var(--border)');
-  pill.disabled = !isOwner;
+  pill.disabled = false; pill.style.pointerEvents = isOwner ? '' : 'none';
   pill.textContent = '';
   if(txt){
     const dot = document.createElement('span'); dot.className = 'status-dot' + (col ? '' : ' none'); pill.appendChild(dot);
@@ -7096,6 +7350,12 @@ function saveStatus(){
   persistStatus(text, validStatusColor(statusDraftColor));
 }
 function clearStatus(){ persistStatus('', ''); }
+function renderShopStrip(sales, listings, bps){
+  const box = $('shopStatsStrip'); if(!box) return; const d = T[LANG];
+  const prev = $('shopStripUpvotes') ? $('shopStripUpvotes').textContent : '0';
+  box.innerHTML = [[d.shStSales, sales, 'green', ''], [d.shStListings, listings, '', ''], [d.shStBp, bps, '', ''], [d.shStUp, prev, 'accent', 'shopStripUpvotes']]
+    .map(([l,v,c,id]) => `<div class="mk-stat"><span class="mk-stat-l"><span class="sl">//</span> ${l}</span><span class="mk-stat-v ${c}"${id ? ` id="${id}"` : ''}>${v}</span></div>`).join('');
+}
 let shopUpvoted = false;
 async function loadShopUpvotes(sellerId, isOwner){
   const btn = $('shopUpvoteBtn');
@@ -7108,6 +7368,7 @@ async function loadShopUpvotes(sellerId, isOwner){
   const { count } = await sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', sellerId);
   const countEl = $('shopUpvoteCount');
   if(countEl) countEl.textContent = count || 0;
+  const stripUp = $('shopStripUpvotes'); if(stripUp) stripUp.textContent = count || 0;
   if(session){
     const { data } = await sb.from('shop_upvotes').select('id').eq('seller_id', sellerId).eq('client_id', session.user.id).maybeSingle();
     shopUpvoted = !!data;
@@ -7335,8 +7596,10 @@ async function resetMemberProgression(id, name){
 function switchCourierTab(tab){
   $('tab-pending').classList.toggle('active', tab==='pending');
   $('tab-mine').classList.toggle('active', tab==='mine');
+  $('tab-ach').classList.toggle('active', tab==='ach');
   $('courierPendingPane').hidden = tab!=='pending';
   $('courierMinePane').hidden = tab!=='mine';
+  $('courierAchPane').hidden = tab!=='ach';
 }
 // Pastille numérique sur "Propositions reçues" = nombre de propositions en attente d'une décision.
 function updateInquiriesBadge(rows){
@@ -7418,7 +7681,22 @@ async function loadCourierData(){
   if(mineErr) console.error('my_courier_orders:', mineErr);
   await renderAvailable(pending || []);
   await renderMyDeliveries(mine || []);
+  renderCourierStats(pending || [], mine || []);
   checkAndRenderAchievements();
+}
+async function renderCourierStats(pending, mine){
+  const box = $('courierStats'); if(!box) return;
+  const d = T[LANG];
+  let delivered = 0, margin = 0;
+  try{
+    const { data } = await sb.from('orders').select('commission,status').eq('courier_id', session.user.id).eq('status','delivered');
+    (data||[]).forEach(o => { delivered++; margin += Number(o.commission)||0; });
+  }catch(e){}
+  // Si la requête ne renvoie rien (RLS), on retombe sur ce que renvoie my_courier_orders.
+  if(!delivered){ (mine||[]).filter(o=>o.status==='delivered').forEach(o=>{ delivered++; margin += Number(o.commission)||0; }); }
+  const prog = (mine||[]).filter(o=>o.status!=='delivered' && o.status!=='cancelled').length;
+  const st = (l,v,c) => `<div class="mk-stat"><span class="mk-stat-l"><span class="sl">//</span> ${l}</span><span class="mk-stat-v ${c||''}">${v}</span></div>`;
+  box.innerHTML = st(d.cStDel, delivered, 'accent') + st(d.cStProg, prog) + st(d.cStMargin, fmtNum(margin), 'green') + st(d.cStOpen, (pending||[]).length);
 }
 async function renderAvailable(orders){
   const d=T[LANG]; const box=$('courierPendingPane');
@@ -7433,7 +7711,7 @@ async function renderAvailable(orders){
       refreshNotifBadges();
     }
   }
-  if(!orders.length){ box.innerHTML = `<p class="muted">${d.noAvailable}</p>`; return; }
+  if(!orders.length){ box.innerHTML = `<p class="muted" style="padding:20px 0">${d.noAvailable}</p>`; return; }
   const clientIds=[...new Set(orders.filter(o=>o.order_type!=='marketplace').map(o=>o.client_id))];
   const sellerIds=[...new Set(orders.filter(o=>o.order_type==='marketplace').map(o=>o.seller_id))];
   const [profs, sellerProfs, unreadRows] = await Promise.all([
@@ -7446,26 +7724,31 @@ async function renderAvailable(orders){
   const unreadSet = new Set(unreadRows.map(n=>n.ref_id));
   box.innerHTML = orders.map(o => {
     const isMkt = o.order_type === 'marketplace';
-    const badge = isMkt ? `<div class="mkt-delivery-badge">${d.marketplaceDeliveryBadge}</div>` : '';
-    const note = isMkt ? `<div class="mkt-delivery-note">${d.marketplaceDeliveryNote}</div>` : '';
-    const metaLine = isMkt
-      ? `${d.sellerFrom}${displayName(sellers[o.seller_id])}${o.buyer_handle ? ' — '+d.buyerTo+o.buyer_handle : ''} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`
-      : `${d.orderClient}${displayName(clients[o.client_id])} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`;
+    const who = isMkt
+      ? `${d.sellerFrom}<b>${displayName(sellers[o.seller_id])}</b>${o.buyer_handle ? ' → '+d.buyerTo+'<b>'+o.buyer_handle+'</b>' : ''}`
+      : `${d.cClient} <b>${displayName(clients[o.client_id])}</b>`;
+    const where = `${o.destination_system||'-'} · ${o.exact_location||'-'}`;
     const isNew = unreadSet.has(o.id);
     const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
     const hoverAttr = isNew ? ` onmouseenter="markOrderNotifSeen('${o.id}', this)"` : '';
+    const title = (o.items||[]).map(it=>`${escHtml(it.name)}`).slice(0,2).join(', ') + ((o.items||[]).length>2 ? ' +'+((o.items||[]).length-2) : '');
     return `
-    <div class="order-card big"${hoverAttr}>
+    <div class="mk-avl"${hoverAttr}>
       ${newDot}
-      ${badge}
-      <div class="status">${d.statusLabels[o.status]}</div>
-      <div class="meta">${metaLine}</div>
-      ${note}
-      ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
-      <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
-      <div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>
-      <div class="line margin-line"><span>${d.courierMarginLbl}</span><span>${fmt(o.commission)}</span></div>
-      <button onclick="acceptOrder('${o.id}')">${d.accept}</button>
+      <div class="top">
+        <div style="display:flex; flex-direction:column; gap:6px; min-width:0;">
+          <span class="st">${title || '—'}</span>
+          <span class="meta mk-del-sub">${who} · ${where}</span>
+          ${isMkt ? `<span class="meta">${d.marketplaceDeliveryBadge}</span>` : ''}
+          ${o.deadline ? `<span class="meta">${d.cDeadline} ${formatDeadline(o.deadline)}</span>` : ''}
+        </div>
+        <button class="mk-btn" onclick="acceptOrder('${o.id}')">${d.accept}</button>
+      </div>
+      <div class="mk-lines">
+        ${(o.items||[]).map(it=>`<div class="li"><span>${escHtml(it.name)} ×${it.qty}</span><span>${it.price!=null ? fmt(it.price*it.qty) : ''}</span></div>`).join('')}
+        <div class="mk-tot"><span>${d.cOrderTotal}</span><span>${fmt(o.total_price)}</span></div>
+        <div class="mk-mar"><span>${d.cYourMargin}</span><span>${fmt(o.commission)}</span></div>
+      </div>
     </div>
   `;
   }).join('');
@@ -7487,7 +7770,7 @@ let courierMineClientsCache = {};
 async function renderMyDeliveries(orders){
   const d=T[LANG]; const box=$('courierMinePane');
   courierMineOrdersCache = orders;
-  if(!orders.length){ box.innerHTML = `<p class="muted">${d.noDeliveries}</p>`; activeDeliveryId = null; return; }
+  if(!orders.length){ box.innerHTML = `<p class="muted" style="padding:20px 0">${d.noDeliveries}</p>`; activeDeliveryId = null; return; }
   const clientIds=[...new Set(orders.filter(o=>o.order_type!=='marketplace').map(o=>o.client_id))];
   const profs = clientIds.length ? await sb.from('profiles').select('id,discord_username,rsi_handle').in('id', clientIds).then(r=>r.data||[]) : [];
   const clients = {}; profs.forEach(p=>clients[p.id]=p);
@@ -7529,17 +7812,21 @@ function renderMyDeliveriesView(){
   const d=T[LANG]; const box=$('courierMinePane');
   const orders = courierMineOrdersCache, clients = courierMineClientsCache;
   const active = orders.find(o=>o.id===activeDeliveryId) || orders[0];
-  if(!active){ box.innerHTML = `<p class="muted">${d.noDeliveries}</p>`; return; }
-  const mainHtml = `<div class="delivery-main-wrap" id="deliveryMainWrap">${deliveryMainCardHtml(active, clients)}</div>`;
-  if(orders.length <= 1){
-    box.innerHTML = mainHtml;
-  } else {
-    const miniListHtml = `
-      <div class="delivery-mini-list">
-        ${orders.map(o => deliveryMiniRowHtml(o, clients, o.id===active.id)).join('')}
-      </div>`;
-    box.innerHTML = `<div class="delivery-mini-list-title">${d.otherDeliveriesTitle}</div><div class="delivery-layout">${miniListHtml}${mainHtml}</div>`;
-  }
+  if(!active){ box.innerHTML = `<p class="muted" style="padding:20px 0">${d.noDeliveries}</p>`; return; }
+  const others = orders.filter(o=>o.id!==active.id);
+  const othersHtml = others.length ? `
+    <div class="mk-others">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+        <span class="mk-lbl"><span class="sl">//</span> ${d.cOthers.replace('{n}', others.length)}</span>
+        <span style="font-size:12px; letter-spacing:1px; color:var(--muted);">${d.cClickRow}</span>
+      </div>
+      ${others.map(o => deliveryMiniRowHtml(o, clients, false)).join('')}
+    </div>` : '';
+  box.innerHTML = `<div style="display:flex; flex-direction:column; gap:36px;">
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <span class="mk-lbl"><span class="sl">//</span> ${d.cActive}</span>
+      <div class="delivery-main-wrap" id="deliveryMainWrap">${deliveryMainCardHtml(active, clients)}</div>
+    </div>${othersHtml}</div>`;
   const mainWrap = document.getElementById('deliveryMainWrap');
   if(mainWrap){
     mainWrap.classList.remove('delivery-main-enter');
@@ -7548,57 +7835,89 @@ function renderMyDeliveriesView(){
   }
   animateShipTracks(box);
 }
+function mkRouteHtml(o, cached){
+  const d=T[LANG];
+  const dest = o.exact_location ? `${o.exact_location}, ${o.destination_system}` : (o.destination_system || '-');
+  let body;
+  if(!cached){
+    body = `<div class="route-loading-note">${d.routeLoading}</div>`;
+  } else {
+    const route = cached.route;
+    if(!route.stops.length && !route.unresolved.length) return '';
+    const stops = route.stops.map((st, i) => `
+      <div class="mk-rstop">
+        <div class="mk-rnum">${i+1}</div>
+        <div class="mk-rbody">
+          <span class="mk-rplace">${escHtml(st.place)}${st.system ? ' — '+escHtml(st.system) : ''}</span>
+          ${st.items.map(it => `<span class="mk-ritem">${escHtml(it.name)} x${it.qty} — ${fmt(it.price)}${it.terminal ? ' ('+escHtml(it.terminal)+')' : ''}</span>`).join('')}
+        </div>
+      </div>
+      <div class="mk-rarrow">↓</div>`).join('');
+    body = `${stops}
+      <div class="mk-rstop dest">
+        <div class="mk-rnum">${route.stops.length+1}</div>
+        <div class="mk-rbody"><span class="mk-rplace">${d.routeDeliveryStop} — ${escHtml(dest)}</span></div>
+      </div>
+      ${route.unresolved.length ? `<div class="route-unresolved">${d.routeUnresolvedNote} ${route.unresolved.map(escHtml).join(', ')}</div>` : ''}`;
+  }
+  return `<div class="mk-del-col" style="gap:12px;">
+    <div class="mk-route-h"><span>${d.cRoute}</span></div>
+    ${body}
+  </div>`;
+}
 function deliveryMainCardHtml(o, clients){
   const d=T[LANG];
   const isMkt = o.order_type === 'marketplace';
   let btn = '';
-  if(o.status==='accepted' && !isMkt) btn = `<button onclick="advanceOrder('${o.id}','purchased')">${d.markPurchased}</button>`;
-  else if(o.status==='accepted' && isMkt) btn = `<button onclick="advanceOrder('${o.id}','in_transit')">${d.markTransit}</button>`;
-  else if(o.status==='purchased') btn = `<button onclick="advanceOrder('${o.id}','in_transit')">${d.markTransit}</button>`;
-  else if(o.status==='in_transit') btn = `<button onclick="advanceOrder('${o.id}','delivered')">${d.markDelivered}</button>`;
-  const releaseBtn = `<button class="btn-cancel" onclick="releaseOrder('${o.id}')">${ICON_CLOSE}<span>${d.releaseOrderBtn}</span></button>`;
-  const badge = isMkt ? `<div class="mkt-delivery-badge">${d.marketplaceDeliveryBadge}</div>` : '';
-  const metaLine = isMkt
-    ? `${o.buyer_handle ? d.buyerTo+o.buyer_handle+' — ' : ''}${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`
-    : `${d.orderClient}${displayName(clients[o.client_id])} — ${d.orderSystem}${o.destination_system} — ${d.orderLieu}${o.exact_location||'-'}`;
+  if(o.status==='accepted' && !isMkt) btn = `<button class="mk-btn" onclick="advanceOrder('${o.id}','purchased')">${d.cNextPurchased}</button>`;
+  else if(o.status==='accepted' && isMkt) btn = `<button class="mk-btn" onclick="advanceOrder('${o.id}','in_transit')">${d.cNextTransit}</button>`;
+  else if(o.status==='purchased') btn = `<button class="mk-btn" onclick="advanceOrder('${o.id}','in_transit')">${d.cNextTransit}</button>`;
+  else if(o.status==='in_transit') btn = `<button class="mk-btn" onclick="advanceOrder('${o.id}','delivered')">${d.cNextDelivered}</button>`;
+  const clientId = isMkt ? null : o.client_id;
+  const msgBtn = clientId ? `<button class="mk-btn ghost sm" onclick="openMsgThreadWithUser('${clientId}')">${d.cMsgClient}</button>` : '';
+  const who = isMkt ? (o.buyer_handle ? `${d.buyerTo}<b>${escHtml(o.buyer_handle)}</b>` : '') : `${d.cClient} <b>${displayName(clients[o.client_id])}</b>`;
+  const where = `${o.destination_system||'-'} · ${o.exact_location||'-'}`;
+  const title = (o.items||[]).map(it=>escHtml(it.name)).slice(0,2).join(', ') + ((o.items||[]).length>2 ? ' +'+((o.items||[]).length-2) : '');
   const justAccepted = o.id === justAcceptedOrderId ? ' just-accepted' : '';
-  const showRoute = !isMkt && o.status === 'accepted';
-  let routeHtml = '';
-  if(showRoute){
-    const cached = purchaseRouteCache[o.id];
-    routeHtml = cached
-      ? renderPurchaseRouteHtml(cached.order, cached.route)
-      : `<div class="purchase-route"><div class="purchase-route-title">${d.purchaseRouteTitle}</div><div class="route-loading-note">${d.routeLoading}</div></div>`;
-  }
+  const showRoute = !isMkt && ['accepted'].includes(o.status);
+  const routeHtml = showRoute ? mkRouteHtml(o, purchaseRouteCache[o.id]) : '';
   return `
-    <div class="order-card big${justAccepted}">
-      ${badge}
-      <div class="order-top-row">
-        <div class="status">${d.statusLabels[o.status]}</div>
-        ${btn}
+    <div class="mk-box mk-del${justAccepted}">
+      <div class="mk-del-head">
+        <div style="display:flex; flex-direction:column; gap:6px; min-width:0;">
+          <span class="mk-del-title">${title || '—'}</span>
+          <span class="mk-del-sub">${who}${who ? ' · ' : ''}${where}</span>
+          ${o.deadline ? `<span class="mk-del-sub"><span style="color:var(--accent)">//</span> ${d.cDeadline.replace('// ','')} ${formatDeadline(o.deadline)}</span>` : ''}
+        </div>
+        <div class="mk-del-actions">${msgBtn}${btn}</div>
       </div>
-      <div class="meta">${metaLine}</div>
-      ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
       ${shipTrackHtml(o)}
-      <ul>${(o.items||[]).map(it=>`<li>${it.name} x${it.qty}${it.price!=null ? ' — '+fmt(it.price*it.qty) : ''}</li>`).join('')}</ul>
-      ${o.total_price!=null ? `<div class="line total"><span>${d.orderTotal}</span><span>${fmt(o.total_price)}</span></div>` : ''}
-      <div class="line margin-line"><span>${d.courierMarginLbl}</span><span>${fmt(o.commission)}</span></div>
-      ${routeHtml}
-      ${releaseBtn}
+      <div class="mk-del-cols">
+        <div class="mk-del-col">
+          <span class="mk-lbl"><span class="sl">//</span> ${d.cCargo}</span>
+          <div class="mk-lines">
+            ${(o.items||[]).map(it=>`<div class="li"><span>${escHtml(it.name)} ×${it.qty}</span><span>${it.price!=null ? fmt(it.price*it.qty) : ''}</span></div>`).join('')}
+            ${o.total_price!=null ? `<div class="mk-tot"><span>${d.cOrderTotal}</span><span>${fmt(o.total_price)}</span></div>` : ''}
+            <div class="mk-mar"><span>${d.cYourMargin}</span><span>${fmt(o.commission)}</span></div>
+          </div>
+        </div>
+        ${routeHtml}
+      </div>
+      <div class="mk-release"><button class="mk-btn mute sm" style="border:none; padding:6px 0;" onclick="releaseOrder('${o.id}')">${d.cRelease}</button></div>
     </div>`;
 }
 function deliveryMiniRowHtml(o, clients, isActive){
   const d=T[LANG];
   const isMkt = o.order_type === 'marketplace';
   const name = isMkt ? (o.buyer_handle || '—') : displayName(clients[o.client_id]);
-  const dest = `${o.destination_system} — ${o.exact_location||'-'}`;
-  const onclick = isActive ? '' : ` onclick="setActiveDelivery('${o.id}')"`;
+  const dest = `${o.destination_system||'-'} · ${o.exact_location||'-'}`;
+  const moving = o.status==='in_transit' || o.status==='purchased';
   return `
-    <div class="delivery-mini-row${isActive ? ' active' : ''}"${onclick}>
-      <div class="delivery-mini-status">${d.statusLabels[o.status]}</div>
-      <div class="delivery-mini-name">${name}</div>
-      <div class="delivery-mini-dest">${dest}</div>
-      <div class="delivery-mini-margin">${fmt(o.commission)}</div>
+    <div class="mk-orow" onclick="setActiveDelivery('${o.id}')">
+      <span class="s" style="color:${moving ? 'var(--text)' : 'var(--muted)'}">${moving ? '▸' : '·'} ${d.statusLabels[o.status]}</span>
+      <span class="n">${name}</span>
+      <span class="d">${dest}</span>
+      <span class="m">${fmt(o.commission)}</span>
     </div>`;
 }
 function fullErrText(error){
@@ -8876,11 +9195,11 @@ function renderCourierAvailToggle(){
   const on = !!profile.available_for_delivery;
   box.innerHTML = `
     <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-      <div>
-        <strong>${d.availForDeliveryTitle}</strong>
-        <p class="muted" style="margin:4px 0 0;">${d.availForDeliveryHint}</p>
+      <div style="display:flex; flex-direction:column; gap:3px;">
+        <span class="mk-lbl"><span class="sl">//</span> ${d.cAvailFor}</span>
+        <span style="color:var(--muted); font-size:13px;">${d.availForDeliveryHint}</span>
       </div>
-      <button class="${on ? 'btn-primary' : 'btn-secondary'}" style="min-width:170px;" onclick="toggleAvailForDelivery(this)">${on ? AVAIL_CHECK_ICON : ''}${on ? d.availForDeliveryOn : d.availForDeliveryOff}</button>
+      <button class="mk-btn ${on ? '' : 'ghost'}" style="min-width:170px;" onclick="toggleAvailForDelivery(this)">${on ? AVAIL_CHECK_ICON : ''}${on ? d.availForDeliveryOn : d.availForDeliveryOff}</button>
     </div>`;
 }
 async function toggleAvailForDelivery(btnEl){

@@ -1340,6 +1340,26 @@
   }
   .shop-banner-card.upv-lit{box-shadow:0 0 0 1px var(--border) inset, 0 0 26px -6px var(--accent), 0 20px 46px -22px rgba(0,0,0,.6); transition:box-shadow .5s ease;}
   @media (prefers-reduced-motion:reduce){ .upv-ov,.upv-head,.upv-pat,.upv-ring{animation-duration:.01s !important;} }
+
+  /* --- SÉQUENCE "LIVRÉE" (côté coursier) : barre qui se remplit, bouton qui se charge puis passe au vert,
+     contour vert qui fait le tour de la carte, marge gagnée qui monte, puis stats + rang qui avancent. --- */
+  .mk-del{position:relative;}
+  .mk-btn.fx-busy{position:relative; overflow:hidden; pointer-events:none;}
+  .mk-btn.fx-done{background:#3dff7a !important; border-color:#3dff7a !important; color:#050606 !important; box-shadow:0 0 16px rgba(61,255,122,.55); transition:background .3s, box-shadow .3s;}
+  .mk-del.del-done{border-color:#3dff7a !important; box-shadow:0 0 26px -4px rgba(61,255,122,.6) !important; transition:border-color .4s, box-shadow .6s;}
+  .mk-del.del-done .ship-track .rail-fill{background-color:#3dff7a; box-shadow:0 0 8px #3dff7a; transition:width .9s cubic-bezier(.4,0,.2,1), background-color .4s;}
+  .mk-del.del-done .ship-track .stage.done{border-color:#3dff7a; background:#3dff7a; box-shadow:0 0 8px rgba(61,255,122,.6);}
+  .mk-del.del-done .ship-track .stage-label.done{color:#3dff7a;}
+  .mk-del.del-done .ship-icon{color:#3dff7a; filter:drop-shadow(0 0 6px #3dff7a); transition:left .9s cubic-bezier(.4,0,.2,1);}
+  .mk-del .mk-mar.del-pop{animation:delMarPop .9s ease-out;}
+  @keyframes delMarPop{0%{background:transparent;} 25%{background:rgba(61,255,122,.22); transform:scale(1.015);} 100%{background:transparent; transform:none;}}
+  .del-float{position:absolute; z-index:5; pointer-events:none; font-family:'VT323',monospace; font-size:34px; line-height:1; color:#3dff7a; text-shadow:0 0 10px rgba(61,255,122,.8), 0 2px 0 #050606; white-space:nowrap; animation:delFloat 1.7s cubic-bezier(.2,.7,.3,1) forwards;}
+  @keyframes delFloat{0%{opacity:0; transform:translate(-100%,6px) scale(.8);} 15%{opacity:1; transform:translate(-100%,-4px) scale(1.1);} 70%{opacity:1;} 100%{opacity:0; transform:translate(-100%,-62px) scale(1);}}
+  .mk-stat-v.stat-bump{animation:statBump .8s ease-out;}
+  @keyframes statBump{0%{transform:scale(1); text-shadow:none;} 30%{transform:scale(1.25); text-shadow:0 0 14px currentColor;} 100%{transform:scale(1); text-shadow:none;}}
+  @keyframes rkGrowFrom{from{width:var(--p0,0%);} to{width:var(--p);}}
+  .rk.adv .rk-fill{animation:rkGrowFrom 1.5s cubic-bezier(.4,0,.2,1) .15s both, railStripes .9s linear infinite;}
+  @media (prefers-reduced-motion:reduce){ .del-float,.mk-mar.del-pop,.mk-stat-v.stat-bump{animation-duration:.01s !important;} }
   .shop-banner-card .shop-banner-actions .gear-btn{width:44px; height:44px; border-radius:2px;}
   .shop-banner-card .shop-description{border:none; border-left:3px solid var(--accent); border-radius:0; background:rgba(10,13,12,.82); box-shadow:0 0 14px var(--accent-dim); padding:16px 18px; margin:14px 0 0; line-height:1.55; font-size:15px;}
   .shop-banner-card .shop-description::before{content:"// "; color:var(--accent);}
@@ -7902,6 +7922,7 @@ async function deleteResourceRequest(id){
 }
 async function loadCourierData(){
   if(!session) return;
+  if(window.__deliverySeq) return; // la séquence "livrée" recharge elle-même à la fin
   memoReset();
   if(!profile || !(profile.is_courier || profile.role === 'admin')){
     $('courierBlocked').hidden = false; $('courierDash').hidden = true; return;
@@ -7930,8 +7951,31 @@ async function renderCourierStats(pending, mine){
   const st = (l,v,c) => `<div class="mk-stat"><span class="mk-stat-l"><span class="sl">//</span> ${l}</span><span class="mk-stat-v ${c||''}">${v}</span></div>`;
   let rankCount = delivered;
   try{ const cs = await fetchCourierStats(); if(cs && typeof cs.deliveredCount === 'number') rankCount = cs.deliveredCount; }catch(e){}
-  const rb = $('courierRankBar'); if(rb) rb.innerHTML = rankProgressHtml(rankCount);
+  const prev = window.__lastCourierStats;
+  const rb = $('courierRankBar'); if(rb) rb.innerHTML = rankProgressHtml(rankCount, prev ? prev.rankCount : undefined);
   box.innerHTML = st(d.cStDel, delivered, 'accent') + st(d.cStProg, prog) + st(d.cStMargin, fmtNum(margin), 'green') + st(d.cStOpen, (pending||[]).length);
+  // Une livraison vient d'être validée : les compteurs montent en direct au lieu de sauter à la nouvelle valeur.
+  if(prev && (delivered > prev.delivered || margin > prev.margin)){
+    const vals = box.querySelectorAll('.mk-stat-v');
+    if(vals[0] && delivered > prev.delivered) countUpTo(vals[0], prev.delivered, delivered, v => String(v));
+    if(vals[2] && margin > prev.margin) countUpTo(vals[2], prev.margin, margin, v => fmtNum(v));
+  }
+  window.__lastCourierStats = { delivered, margin, rankCount };
+}
+function countUpTo(el, from, to, format){
+  if(!el) return;
+  el.classList.remove('stat-bump'); void el.offsetWidth; el.classList.add('stat-bump');
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(reduce){ el.textContent = format(to); return; }
+  const t0 = performance.now(), dur = 900;
+  el.textContent = format(from);
+  const tick = now => {
+    const k = Math.min(1, (now - t0)/dur);
+    const e = 1 - Math.pow(1 - k, 3);
+    el.textContent = format(Math.round(from + (to - from)*e));
+    if(k < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
 }
 async function renderAvailable(orders){
   const d=T[LANG]; const box=$('courierPendingPane');
@@ -8169,6 +8213,62 @@ async function acceptOrder(id){
   toastShow(T[LANG].orderAccepted);
   sweep(); loadCourierData();
 }
+
+// Séquence de validation d'une livraison (côté coursier), jouée AVANT le rechargement du tableau de bord.
+function deliveredSequenceFx(orderId, commission){
+  return new Promise(resolve => {
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const card = document.querySelector('#deliveryMainWrap .mk-del');
+    if(!card || reduce){ resolve(); return; }
+    const d = T[LANG];
+    const btn = card.querySelector('.mk-del-actions .mk-btn:not(.ghost)');
+    // 1) le bouton se charge (couche qui se remplit, comme l'upvote) puis passe au vert
+    if(btn){
+      btn.classList.add('fx-busy');
+      const ov = document.createElement('span');
+      ov.className = 'upv-ov'; ov.setAttribute('data-tex','none');
+      ov.style.setProperty('--dur','.75s'); ov.style.setProperty('--ease','cubic-bezier(.4,0,.2,1)');
+      ov.style.justifyContent = 'center';
+      ov.innerHTML = btn.innerHTML;
+      const pat = document.createElement('span'); pat.className = 'upv-pat'; ov.appendChild(pat);
+      btn.appendChild(ov);
+      const head = document.createElement('span'); head.className = 'upv-head';
+      head.style.setProperty('--dur','.75s'); head.style.setProperty('--ease','cubic-bezier(.4,0,.2,1)');
+      btn.appendChild(head);
+      setTimeout(() => { ov.remove(); head.remove(); btn.classList.add('fx-done'); btn.textContent = '✓ ' + String((d.statusShort && d.statusShort.delivered) || 'Delivered').toUpperCase(); }, 780);
+    }
+    // 2) la barre de progression va jusqu'au bout, le vaisseau arrive
+    const track = card.querySelector('.ship-track');
+    if(track){
+      const fill = track.querySelector('.rail-fill'); if(fill) fill.style.width = '100%';
+      const ship = track.querySelector('.ship-icon'); if(ship) ship.style.left = '100%';
+      track.querySelectorAll('.stage').forEach(st => st.classList.add('done'));
+      track.querySelectorAll('.stage-label').forEach(st => st.classList.add('done'));
+    }
+    // 3) la carte passe au vert, un contour vert fait le tour du cadre
+    setTimeout(() => {
+      card.classList.add('del-done');
+      const ring = document.createElement('span'); ring.className = 'upv-ring';
+      ring.style.setProperty('--accent','#3dff7a'); ring.style.setProperty('--dur','1.2s'); ring.style.borderRadius = '6px';
+      card.appendChild(ring);
+      setTimeout(() => ring.remove(), 1300);
+    }, 600);
+    // 4) la marge gagnée est mise en avant et monte au-dessus de la ligne
+    setTimeout(() => {
+      const mar = card.querySelector('.mk-mar');
+      if(mar){
+        mar.classList.add('del-pop');
+        const cr = card.getBoundingClientRect(), mr = mar.getBoundingClientRect();
+        const fl = document.createElement('div'); fl.className = 'del-float';
+        fl.textContent = '+' + fmtNum(Number(commission) || 0) + ' aUEC';
+        fl.style.left = (mr.right - cr.left - 4) + 'px'; fl.style.top = (mr.top - cr.top - 6) + 'px';
+        card.appendChild(fl); setTimeout(() => fl.remove(), 1800);
+        pixelBurst(mar, 16);
+      } else { pixelBurst(card, 16); }
+    }, 900);
+    setTimeout(resolve, 2500);
+  });
+}
 async function advanceOrder(id, next){
   const { data, error } = await sb.rpc('advance_order', { order_id: id, new_status: next });
   if(error){ alert('Erreur : '+fullErrText(error)); return; }
@@ -8181,6 +8281,12 @@ async function advanceOrder(id, next){
     // Vente au stock : le stock a déjà été décrémenté (ou l'annonce déjà retirée) au moment de l'acceptation, on n'y retouche pas ici.
     const isStockSale = inq && inq.requested_qty != null;
     if(!isStockSale && row.listing_id) await sb.from('marketplace_listings').update({ is_deleted: true }).eq('id', row.listing_id);
+  }
+  if(next === 'delivered'){
+    const cached = (courierMineOrdersCache || []).find(o => o.id === id);
+    window.__deliverySeq = true;
+    try{ await deliveredSequenceFx(id, (row && row.commission != null) ? row.commission : (cached && cached.commission)); }catch(e){}
+    window.__deliverySeq = false;
   }
   sweep(); loadCourierData();
 }
@@ -8583,8 +8689,9 @@ function rankBadgeHtml(deliveredCount, size){
 // Barre de rang commune (coursier + vendeur) : segments façon jauge, remplissage animé, reflet qui balaye.
 function rankBarHtml(o){
   const pct = o.pct;
+  const adv = (typeof o.fromPct === 'number' && o.fromPct < pct);
   return `
-    <div class="rk${o.isMax ? ' maxed' : ''}" style="--p:${pct}%">
+    <div class="rk${o.isMax ? ' maxed' : ''}${adv ? ' adv' : ''}" style="--p:${pct}%${adv ? `; --p0:${o.fromPct}%` : ''}">
       <div class="rk-ico cur" title="${o.curLabel}">${o.curIcon}</div>
       <div class="rk-mid">
         <div class="rk-top"><span class="rk-cur"><b>//</b> ${o.curLabel}</span><span class="rk-pct">${o.isMax ? 'MAX' : pct + '%'}</span><span class="rk-next">${o.nextLabel}</span></div>
@@ -8594,7 +8701,7 @@ function rankBarHtml(o){
       <div class="rk-ico nxt" title="${o.nextLabel}">${o.nextIcon}</div>
     </div>`;
 }
-function rankProgressHtml(deliveredCount){
+function rankProgressHtml(deliveredCount, prevCount){
   const d = T[LANG];
   const count = deliveredCount || 0;
   const r = getRank(count);
@@ -8608,7 +8715,13 @@ function rankProgressHtml(deliveredCount){
   const curLabel = d.rankLabels[r.key];
   const nextLabel = isMax ? curLabel : d.rankLabels[next.key];
   const midText = isMax ? d.rankMaxed : d.rankToNext.replace('{n}', remaining).replace('{rank}', nextLabel);
-  return rankBarHtml({ pct, isMax, curLabel, nextLabel, midText, curIcon: RANK_ICONS[r.key], nextIcon: RANK_ICONS[next.key] });
+  // Si une livraison vient d'être ajoutée dans le même rang, la barre repart de l'ancienne progression
+  // (au lieu de repartir de 0) pour qu'on la voie avancer.
+  let fromPct;
+  if(typeof prevCount === 'number' && prevCount < count && !isMax && getRank(prevCount).key === r.key){
+    fromPct = Math.min(100, Math.max(0, Math.round(((prevCount - r.min)/span)*100)));
+  }
+  return rankBarHtml({ pct, isMax, curLabel, nextLabel, midText, curIcon: RANK_ICONS[r.key], nextIcon: RANK_ICONS[next.key], fromPct });
 }
 // Grosse mise en avant du rang (page de profil, profil public) : à la manière d'une médaille.
 function rankShowcaseHtml(deliveredCount){

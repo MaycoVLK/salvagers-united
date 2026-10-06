@@ -1085,8 +1085,8 @@
   .sd-grid{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:18px; align-items:stretch;}
   .sd-card{--accent:var(--sc); --accent-dim:var(--sc-dim); border:1px solid var(--border); background:var(--panel); display:flex; flex-direction:column; border-radius:4px; cursor:pointer; text-align:left; overflow:hidden;}
   .sd-card:hover{border-color:var(--sc);}
-  .sd-banner{height:64px; flex:none; background:linear-gradient(135deg, var(--sc), #0a0d0c);}
-  .sd-body{padding:0 16px 16px; display:flex; flex-direction:column; gap:10px; margin-top:-30px; flex:1;}
+  .sd-banner{height:76px; flex:none; background:linear-gradient(var(--panel), var(--bg2)); border-bottom:1px solid var(--sc);}
+  .sd-body{position:relative; z-index:2; padding:0 16px 16px; display:flex; flex-direction:column; gap:10px; margin-top:-30px; flex:1;}
   .sd-logo{width:60px; height:60px; flex:none; border-radius:12px; border:2px solid var(--sc); box-shadow:0 0 14px var(--sc-dim); background:var(--bg2); display:flex; align-items:center; justify-content:center; font-family:'VT323',monospace; font-size:34px; color:var(--sc); overflow:hidden;}
   .sd-logo img{width:100%; height:100%; object-fit:cover;}
   .sd-name{font-family:'VT323',monospace; font-size:24px; line-height:1.1; word-break:break-word;}
@@ -1096,7 +1096,8 @@
   .sd-stats b.o{color:var(--sc);}
   .sd-foot{display:flex; justify-content:space-between; align-items:center; gap:8px; min-height:16px;}
   .sd-foot .since{font-size:11px; color:var(--muted);}
-  .sd-foot .visit{color:var(--sc); font-size:12px; letter-spacing:1px;}
+  .sd-card .visit.mk-btn{padding:7px 14px; font-size:11px; background:transparent; color:var(--sc); border-color:var(--sc); box-shadow:none;}
+  .sd-card:hover .visit.mk-btn{background:var(--sc); color:#050606;}
   .sd-status{display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--text); max-width:100%;}
   .sd-status .dot{width:8px; height:8px; flex:none; border-radius:50%; background:var(--st); box-shadow:0 0 6px var(--st);}
   .sd-status .t{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
@@ -1175,9 +1176,22 @@
   .mk-chips{display:flex; gap:20px; flex-wrap:wrap; font-size:12px; letter-spacing:1px;}
   button.mk-chip{background:none !important; border:none !important; border-bottom:1px solid transparent !important; border-radius:0 !important; padding:0 0 3px !important; color:var(--muted); font-family:'Share Tech Mono',monospace !important; font-size:12px !important; letter-spacing:1px; cursor:pointer; text-transform:uppercase;}
   button.mk-chip.on{color:var(--accent); border-bottom-color:var(--accent) !important;}
-  .mk-fresh-grid{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:18px;}
+  .mk-fresh-grid{display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); gap:12px;}
+  .mk-fresh-grid .mkt-photo-wrap{aspect-ratio:16/10;}
+  .mk-fresh-grid .mkt-info{padding:8px 10px 10px; gap:5px;}
+  .mk-fresh-grid .mkt-item-name{font-size:.95rem; min-height:0; -webkit-line-clamp:1;}
+  .mk-fresh-grid .mkt-info .courier-box{padding:5px 8px;}
+  .mk-fresh-grid .mkt-interest-btn{display:none !important;}
+  .mk-fresh-grid .mkt-price{font-size:1.05rem; white-space:nowrap;}
+  .mk-fresh-grid .mkt-qty{font-size:.65rem; white-space:nowrap;}
+  .mk-fresh-grid .courier-box-name{font-size:.72rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .mk-news{border-top:1px solid var(--border); padding-top:16px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;}
+  .mk-news-l{display:flex; gap:14px; align-items:center; flex-wrap:wrap;}
+  .mk-news .tag{color:var(--accent); font-size:12px; letter-spacing:2px;}
+  .mk-news .txt{color:var(--text); font-size:14px;}
   .mk-hist{display:flex; flex-direction:column; gap:8px;}
-  @media (max-width:900px){ .mk-fresh-grid{grid-template-columns:repeat(2, minmax(0,1fr));} }
+  @media (max-width:1100px){ .mk-fresh-grid{grid-template-columns:repeat(3, minmax(0,1fr));} }
+  @media (max-width:600px){ .mk-fresh-grid{grid-template-columns:repeat(2, minmax(0,1fr));} }
   @media (max-width:600px){
     .page-title-lg{font-size:34px !important;}
     .tabs-client, #courierDash > .tabs{flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none;}
@@ -1213,11 +1227,35 @@
   .shops-dir-entry-txt .sl{color:var(--accent);}
   @media (max-width:600px){ .shop-leaderboard-card{padding:16px 14px;} .shops-dir-entry .mk-btn{width:100%;} }
 
+  /* ===== MK : profil ===== */
+  #view-profile .profile-header-row{gap:18px; margin-bottom:0;}
+  #view-profile .profile-id-card{flex-direction:row; justify-content:flex-start; text-align:left; gap:22px; padding:22px 26px; border-radius:6px; border-color:var(--accent); box-shadow:0 0 18px var(--accent-dim);}
+  #view-profile .profile-id-card::before, #view-profile .profile-id-card::after{display:none;}
+  #view-profile .profile-hero-rsi{font-size:40px; line-height:1;}
+  #view-profile .profile-hero-discord{font-size:13px; margin-top:6px;}
+  #view-profile .profile-ship-card{min-height:150px; flex:1 1 320px; border-radius:6px;}
+  #view-profile .profile-ship-card::before, #view-profile .profile-ship-card::after{display:none;}
+  #view-profile #profileTabs .tab-btn{padding:14px 22px;}
+  #view-profile .prof-pane{display:flex; flex-direction:column; gap:18px;}
+  #view-profile .prof-pane[hidden]{display:none;}
+  #view-profile .prof-grid{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); align-items:start;}
+  #view-profile .prof-pane > .card{margin:0; border-radius:4px;}
+  #view-profile .prof-pane > .card::before, #view-profile .prof-pane > .card::after{display:none;}
+  #view-profile .prof-pane > .card > h3, #view-profile .prof-pane > .card > .shop-achv-head h3{font-family:'VT323',monospace; font-size:24px; font-weight:400; color:var(--accent); letter-spacing:1px; margin:0 0 12px;}
+  #view-profile .prof-pane > .card > h3::before{content:"// "; }
+  #view-profile .career-stats-grid{grid-template-columns:repeat(4, minmax(0,1fr)); gap:0;}
+  #view-profile .career-stat{border:none; border-left:1px solid var(--border); text-align:left; padding:2px 20px;}
+  #view-profile .career-stat .val{font-size:34px; line-height:1;}
+  #view-profile .career-stat .lbl{font-size:11px; letter-spacing:2px; margin-top:6px;}
+  #view-profile .achv-grid{gap:8px;}
+  @media (max-width:900px){ #view-profile .prof-grid{grid-template-columns:1fr;} #view-profile .career-stats-grid{grid-template-columns:repeat(2, minmax(0,1fr)); row-gap:14px;} }
+  @media (max-width:600px){ #view-profile .profile-id-card{flex-direction:column; text-align:center; align-items:center; gap:10px;} #view-profile .profile-hero-rsi{font-size:34px;} #view-profile #profileTabs{flex-wrap:nowrap; overflow-x:auto;} #view-profile #profileTabs .tab-btn{padding:14px 12px; font-size:12px;} }
   /* ===== MK : page shop (G) ===== */
   .shop-banner-card.shop-texture-host{padding:28px; margin-bottom:0; border:1px solid var(--accent); border-radius:6px; box-shadow:0 0 18px var(--accent-dim); background:linear-gradient(var(--panel), var(--bg2));}
   .shop-banner-card.shop-texture-host::before, .shop-banner-card.shop-texture-host::after{display:none;}
   .shop-banner-card .shop-banner-row{gap:26px; align-items:flex-start;}
-  .shop-banner-card .shop-banner-logo{width:170px; height:170px; border-radius:12px;}
+  .shop-banner-card .shop-banner-logo{width:230px; height:230px; border-radius:12px;}
+  .shop-rank-strip{position:relative; z-index:1; border-top:1px solid var(--border); margin-top:22px; padding-top:18px;}
   .shop-banner-card .shop-banner-kicker{font-size:12px; letter-spacing:2px; color:var(--muted); margin-bottom:8px;}
   .shop-banner-card .shop-banner-title-row h1{font-size:58px; font-weight:400; line-height:1; letter-spacing:1px;}
   .shop-banner-card .shop-banner-actions .shop-upvote-btn{background:var(--accent); color:#050606; border:1px solid var(--accent); border-radius:2px; padding:12px 24px; gap:10px; box-shadow:none;}
@@ -1977,6 +2015,10 @@
           <div class="mk-chips" id="clientHomeChips"></div>
           <div id="clientHomeFresh" class="mk-fresh-grid"></div>
         </div>
+        <div class="mk-news" id="clientNews" hidden>
+          <div class="mk-news-l"><span class="tag" data-i18n="newsTag">// BETA 04</span><span class="txt" data-i18n="newsTxt"></span></div>
+          <button type="button" class="mk-link" onclick="dismissNews()" data-i18n="newsDismiss">MASQUER ✕</button>
+        </div>
         <div class="card courier-ad" id="courierAdCard" hidden></div>
         <div class="card courier-ad" id="sellerAdCard" hidden></div>
       </div>
@@ -2237,7 +2279,8 @@
     <!-- PROFIL -->
     <section id="view-profile" hidden>
       <button class="back" id="profileBackBtn" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
-      <header><h1 data-i18n="profileTitle">Profil</h1></header>
+      <div class="mk-col" style="padding-top:0; gap:26px;">
+      <h1 class="page-title-lg" data-i18n="profileTitle">Profil</h1>
       <div class="profile-header-row">
         <div class="card profile-id-card">
           <div class="avatar-wrap big">
@@ -2260,10 +2303,18 @@
           </div>
         </div>
       </div>
+      <div class="tabs" id="profileTabs">
+        <button class="tab-btn active" id="ptab-overview" onclick="switchProfileTab('overview')" data-i18n="pTabOverview">APERÇU</button>
+        <button class="tab-btn" id="ptab-settings" onclick="switchProfileTab('settings')" data-i18n="pTabSettings">RÉGLAGES</button>
+        <button class="tab-btn" id="ptab-account" onclick="switchProfileTab('account')" data-i18n="pTabAccount">COMPTE</button>
+      </div>
+      <div id="ppane-overview" class="prof-pane">
       <div class="card" id="careerStatsCard" hidden></div>
       <div class="card" id="profileAchvCard" hidden></div>
       <div class="card" id="shopStatsProfileCard" hidden></div>
       <div class="card" id="sellerAchvCard" hidden></div>
+      </div>
+      <div id="ppane-settings" class="prof-pane prof-grid" hidden>
       <div class="card">
         <h3 data-i18n="rsiTitle">Pseudo RSI (Handle)</h3>
         <p class="muted" data-i18n="rsiHint" style="margin:-4px 0 8px;">Permet aux autres membres de t'ajouter facilement en jeu.</p>
@@ -2303,9 +2354,13 @@
           <span data-i18n="uploadShipPhoto">CHOISIR UNE PHOTO</span>
         </button>
       </div>
+      </div>
+      <div id="ppane-account" class="prof-pane" hidden>
       <div class="card" id="crewStatusCard" hidden></div>
       <div class="card" id="courierRequestCard"></div>
       <div class="card" id="sellerRequestCard"></div>
+      </div>
+      </div>
     </section>
 
     <!-- PROFIL PUBLIC (vu par un client ou par l'admin) -->
@@ -2644,6 +2699,7 @@
               <div class="shop-description" id="shopDescription" hidden></div>
             </div>
           </div>
+          <div class="shop-rank-strip" id="shopRankStrip" hidden></div>
         </div>
 
         <div class="mk-stats" id="shopStatsStrip"></div>
@@ -3361,7 +3417,7 @@ const T = {
     dtClear:"EFFACER", dtConfirm:"VALIDER", dtPlaceholder:"Choisir une date et une heure",
     dtMonths:["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
     dtWeekdays:["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"],
-    tabDeliveries:"LIVRAISONS", tabMarketplace:"MARKETPLACE",
+    tabDeliveries:"ACCUEIL", tabMarketplace:"MARKETPLACE",
     marketplaceFeedTitle:"Derniers objets en vente", marketplaceEmpty:"Aucun objet en vente pour le moment.",
     leaderboardTitle:"Boutiques de la semaine", lbWeeklySalesLbl:"Ventes cette semaine", lbWeeklyUpvotesLbl:"Upvotes cette semaine", lbMostExpensiveLbl:"Objet le plus cher vendu", lbNoDataYet:"Pas encore de données", lbSalesWord:"ventes", lbUpvotesWord:"upvotes",
     mktSearchPh:"Rechercher un objet…", filterBtn:"FILTRER", categoryBtn:"CATÉGORIE", categoryAll:"Toutes les catégories", categoryLbl:"Catégorie", categoryPh:"— Choisir une catégorie —", categoryRequired:"Erreur : choisis une catégorie pour cet objet.", sortNewest:"Plus récent", sortOldest:"Plus ancien", sortPriceAsc:"Prix croissant", sortPriceDesc:"Prix décroissant", mktNoResults:"Aucun objet ne correspond à ta recherche.",
@@ -3379,8 +3435,8 @@ const T = {
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NOUVELLE COMMANDE", homeHello:"Salut, {name}", homeFresh:"NOUVEAUTÉS SUR LA MARKETPLACE", homeSeeAll:"TOUT VOIR ▸", homeInProgress:"En cours", homeStatOrders:"COMMANDES", homeStatDelivered:"LIVRÉES", homeStatSpent:"DÉPENSÉ (aUEC)", homeStatActive:"EN COURS", homeMore:"+{n} DE PLUS ▾", homeLess:"MOINS ▴", homeCargo:"CARGAISON",
-    hmOrdersIn:"COMMANDES EN COURS ({n})", hmMostAdv:"LES PLUS AVANCÉES D'ABORD", hmViewAll:"VOIR TOUTES LES COMMANDES ▸", hmShowLess:"VOIR MOINS ▴", hmNeedElse:"Besoin d'autre chose ?", hmCtaTitle:"Besoin de quelque chose ? Commande maintenant !", hmCtaSub:"Choisis tes objets et une destination à Stanton, Nyx ou Pyro. Un coursier s'occupe du reste.", hmHow:"COMMENT ÇA MARCHE", hm1t:"Tu commandes", hm1x:"Objets et destination. Le prix est affiché avant de confirmer.", hm2t:"Un coursier achète", hm2x:"Il reçoit un itinéraire d'achat suggéré et livre ta cargaison.", hm3t:"Tu suis", hm3x:"Acheté, en transit, livré. Discute avec ton coursier à tout moment.", hmAgain:"COMMANDER À NOUVEAU", hmFullHist:"HISTORIQUE COMPLET ({n}) ▸", hmReorder:"RECOMMANDER", hmDelivered:"LIVRÉE", hmMessage:"MESSAGE", hmWaiting:"// EN ATTENTE D'UN COURSIER", hmCargo:"LISTE DE LA CARGAISON", hmStDel:"LIVRÉES", hmStAct:"EN COURS", hmStDes:"OBJETS RECHERCHÉS", hmStCour:"COURSIERS EN LIGNE", hmNewOrderBtn:"CRÉER UNE COMMANDE", titleOrders:"Mes commandes", titleMkt:"Marketplace", titleDesired:"Objets recherchés", titleBp:"Blueprints", titleCourier:"Coursier",
+    homeNewOrder:"+ NOUVELLE COMMANDE", pTabOverview:"APERÇU", pTabSettings:"RÉGLAGES", pTabAccount:"COMPTE", newsTag:"// BETA 04", newsTxt:"Nouveau : annuaire des shops, statut personnalisable sur chaque shop et nouvelle interface.", newsDismiss:"MASQUER ✕", homeHello:"Salut, {name}", homeFresh:"NOUVEAUTÉS SUR LA MARKETPLACE", homeSeeAll:"TOUT VOIR ▸", homeInProgress:"En cours", homeStatOrders:"COMMANDES", homeStatDelivered:"LIVRÉES", homeStatSpent:"DÉPENSÉ (aUEC)", homeStatActive:"EN COURS", homeMore:"+{n} DE PLUS ▾", homeLess:"MOINS ▴", homeCargo:"CARGAISON",
+    hmOrdersIn:"COMMANDES EN COURS ({n})", hmMostAdv:"LES PLUS AVANCÉES D'ABORD", hmViewAll:"VOIR TOUTES LES COMMANDES ▸", hmShowLess:"VOIR MOINS ▴", hmNeedElse:"Besoin d'autre chose ?", hmCtaTitle:"Besoin de quelque chose ? Commande maintenant !", hmCtaSub:"Choisis tes objets et une destination à Stanton, Nyx ou Pyro. Un coursier s'occupe du reste.", hmHow:"COMMENT ÇA MARCHE", hm1t:"Tu commandes", hm1x:"Objets et destination. Le prix est affiché avant de confirmer.", hm2t:"Un coursier achète", hm2x:"Il reçoit un itinéraire d'achat suggéré et livre ta cargaison.", hm3t:"Tu suis", hm3x:"Acheté, en transit, livré. Discute avec ton coursier à tout moment.", hmAgain:"COMMANDER À NOUVEAU", hmFullHist:"HISTORIQUE COMPLET ({n}) ▸", hmReorder:"RECOMMANDER", hmDelivered:"LIVRÉE", hmMessage:"MESSAGE", hmWaiting:"// EN ATTENTE D'UN COURSIER", hmCargo:"LISTE DE LA CARGAISON", hmStDel:"LIVRÉES", hmStAct:"EN COURS", hmStDes:"OBJETS RECHERCHÉS", hmStCour:"COURSIERS EN LIGNE", hmNewOrderBtn:"CRÉER UNE COMMANDE", titleOrders:"Dashboard client", titleMkt:"Marketplace", titleDesired:"Objets recherchés", titleBp:"Blueprints", titleCourier:"Coursier",
     sdTitle:"Shops", sdSub:"Tous les shops ouverts sur Couriers United. Trouve un vendeur, parcours ses annonces et ses blueprints.", sdSearchPh:"Chercher un shop par nom ou spécialité...", sdSortLbl:"TRIER", sdSortedBy:"TRIÉ PAR {x}", sdCount:"{n} SHOPS", sdNone:"Aucun shop ne correspond à ta recherche.", sdSales:"ventes", sdListings:"annonces", sdBp:"bp", sdVisit:"VISITER ▸", sdSinceWeek:"Ouvert cette semaine", sdSinceDays:"Ouvert depuis {n} jours", sdS_newest:"LES PLUS RÉCENTS", sdS_sales:"PLUS DE VENTES (TOTAL)", sdS_blueprints:"PLUS DE BLUEPRINTS", sdS_listings:"PLUS D'ANNONCES", sdS_name:"NOM DE A À Z",
     shStSales:"VENTES (TOTAL)", shStListings:"ANNONCES", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
     cTabAvail:"COMMANDES DISPONIBLES", cTabMine:"MES LIVRAISONS", cTabAch:"SUCCÈS", cStDel:"LIVRÉES", cStProg:"EN COURS", cStMargin:"MARGE TOTALE", cStOpen:"COMMANDES OUVERTES", cActive:"LIVRAISON ACTIVE", cMsgClient:"MESSAGE AU CLIENT", cClient:"Client :", cDeadline:"// Échéance :", cCargo:"CARGAISON", cOrderTotal:"Total de la commande", cYourMargin:"Ta marge", cRoute:"// ITINÉRAIRE D'ACHAT SUGGÉRÉ", cRelease:"RELÂCHER CETTE COMMANDE", cOthers:"MES AUTRES LIVRAISONS ({n})", cClickRow:"CLIQUE SUR UNE LIGNE POUR L'ACTIVER", cAvailFor:"DISPONIBLE POUR LIVRER", cNextTransit:"MARQUER EN TRANSIT ▸", cNextPurchased:"MARQUER ACHETÉE ▸", cNextDelivered:"MARQUER LIVRÉE ▸", cWaiting:"EN ATTENTE D'UN COURSIER",
@@ -3532,7 +3588,7 @@ const T = {
     dtClear:"CLEAR", dtConfirm:"CONFIRM", dtPlaceholder:"Choose a date & time",
     dtMonths:["January","February","March","April","May","June","July","August","September","October","November","December"],
     dtWeekdays:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-    tabDeliveries:"DELIVERIES", tabMarketplace:"MARKETPLACE",
+    tabDeliveries:"HOME", tabMarketplace:"MARKETPLACE",
     marketplaceFeedTitle:"Latest items for sale", marketplaceEmpty:"No items for sale right now.",
     leaderboardTitle:"Shops of the week", lbWeeklySalesLbl:"Sales this week", lbWeeklyUpvotesLbl:"Upvotes this week", lbMostExpensiveLbl:"Most expensive item sold", lbNoDataYet:"No data yet", lbSalesWord:"sales", lbUpvotesWord:"upvotes",
     mktSearchPh:"Search for an item…", filterBtn:"FILTER", categoryBtn:"CATEGORY", categoryAll:"All categories", categoryLbl:"Category", categoryPh:"— Choose a category —", categoryRequired:"Error: please choose a category for this item.", sortNewest:"Newest first", sortOldest:"Oldest first", sortPriceAsc:"Price: low to high", sortPriceDesc:"Price: high to low", mktNoResults:"No items match your search.",
@@ -3550,8 +3606,8 @@ const T = {
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NEW ORDER", homeHello:"Hello, {name}", homeFresh:"FRESH ON THE MARKETPLACE", homeSeeAll:"SEE ALL ▸", homeInProgress:"In progress", homeStatOrders:"ORDERS", homeStatDelivered:"DELIVERED", homeStatSpent:"SPENT (aUEC)", homeStatActive:"IN PROGRESS", homeMore:"+{n} MORE ▾", homeLess:"LESS ▴", homeCargo:"CARGO",
-    hmOrdersIn:"ORDERS IN PROGRESS ({n})", hmMostAdv:"MOST ADVANCED FIRST", hmViewAll:"VIEW ALL ORDERS ▸", hmShowLess:"SHOW LESS ▴", hmNeedElse:"Need something else?", hmCtaTitle:"Need something? Order now!", hmCtaSub:"Pick your items, choose a destination in Stanton, Nyx or Pyro. A courier takes it from there.", hmHow:"HOW IT WORKS", hm1t:"You order", hm1x:"Items and destination. The price is shown before you confirm.", hm2t:"A courier buys", hm2x:"He gets a suggested shopping route and ships your cargo.", hm3t:"You track it", hm3x:"Bought, in transit, delivered. Chat with your courier any time.", hmAgain:"ORDER AGAIN", hmFullHist:"FULL HISTORY ({n}) ▸", hmReorder:"REORDER", hmDelivered:"DELIVERED", hmMessage:"MESSAGE", hmWaiting:"// WAITING FOR A COURIER", hmCargo:"FULL CARGO LIST", hmStDel:"DELIVERED", hmStAct:"IN PROGRESS", hmStDes:"DESIRED ITEMS", hmStCour:"COURIERS ONLINE", hmNewOrderBtn:"CREATE AN ORDER", titleOrders:"My orders", titleMkt:"Marketplace", titleDesired:"Desired items", titleBp:"Blueprints", titleCourier:"Courier",
+    homeNewOrder:"+ NEW ORDER", pTabOverview:"OVERVIEW", pTabSettings:"SETTINGS", pTabAccount:"ACCOUNT", newsTag:"// BETA 04", newsTxt:"New: shops directory, custom status on every shop and a refreshed interface.", newsDismiss:"DISMISS ✕", homeHello:"Hello, {name}", homeFresh:"FRESH ON THE MARKETPLACE", homeSeeAll:"SEE ALL ▸", homeInProgress:"In progress", homeStatOrders:"ORDERS", homeStatDelivered:"DELIVERED", homeStatSpent:"SPENT (aUEC)", homeStatActive:"IN PROGRESS", homeMore:"+{n} MORE ▾", homeLess:"LESS ▴", homeCargo:"CARGO",
+    hmOrdersIn:"ORDERS IN PROGRESS ({n})", hmMostAdv:"MOST ADVANCED FIRST", hmViewAll:"VIEW ALL ORDERS ▸", hmShowLess:"SHOW LESS ▴", hmNeedElse:"Need something else?", hmCtaTitle:"Need something? Order now!", hmCtaSub:"Pick your items, choose a destination in Stanton, Nyx or Pyro. A courier takes it from there.", hmHow:"HOW IT WORKS", hm1t:"You order", hm1x:"Items and destination. The price is shown before you confirm.", hm2t:"A courier buys", hm2x:"He gets a suggested shopping route and ships your cargo.", hm3t:"You track it", hm3x:"Bought, in transit, delivered. Chat with your courier any time.", hmAgain:"ORDER AGAIN", hmFullHist:"FULL HISTORY ({n}) ▸", hmReorder:"REORDER", hmDelivered:"DELIVERED", hmMessage:"MESSAGE", hmWaiting:"// WAITING FOR A COURIER", hmCargo:"FULL CARGO LIST", hmStDel:"DELIVERED", hmStAct:"IN PROGRESS", hmStDes:"DESIRED ITEMS", hmStCour:"COURIERS ONLINE", hmNewOrderBtn:"CREATE AN ORDER", titleOrders:"Client dashboard", titleMkt:"Marketplace", titleDesired:"Desired items", titleBp:"Blueprints", titleCourier:"Courier",
     sdTitle:"Shops", sdSub:"Every shop open on Couriers United. Find a seller, browse their listings and blueprints.", sdSearchPh:"Search a shop by name or specialty...", sdSortLbl:"SORT", sdSortedBy:"SORTED BY {x}", sdCount:"{n} SHOPS", sdNone:"No shop matches your search.", sdSales:"sales", sdListings:"listings", sdBp:"bp", sdVisit:"VISIT ▸", sdSinceWeek:"Opened this week", sdSinceDays:"Open for {n} days", sdS_newest:"NEWEST", sdS_sales:"MOST SALES (ALL TIME)", sdS_blueprints:"MOST BLUEPRINTS", sdS_listings:"MOST LISTINGS", sdS_name:"NAME A TO Z",
     shStSales:"SALES (ALL TIME)", shStListings:"LISTINGS", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
     cTabAvail:"AVAILABLE ORDERS", cTabMine:"MY DELIVERIES", cTabAch:"ACHIEVEMENTS", cStDel:"DELIVERED", cStProg:"IN PROGRESS", cStMargin:"TOTAL MARGIN", cStOpen:"OPEN ORDERS", cActive:"ACTIVE DELIVERY", cMsgClient:"MESSAGE CLIENT", cClient:"Client:", cDeadline:"// Deadline:", cCargo:"CARGO", cOrderTotal:"Order total", cYourMargin:"Your margin", cRoute:"// SUGGESTED SHOPPING ROUTE", cRelease:"RELEASE THIS ORDER", cOthers:"MY OTHER DELIVERIES ({n})", cClickRow:"CLICK A ROW TO MAKE IT ACTIVE", cAvailFor:"AVAILABLE FOR DELIVERY", cNextTransit:"MARK AS IN TRANSIT ▸", cNextPurchased:"MARK AS PURCHASED ▸", cNextDelivered:"MARK AS DELIVERED ▸", cWaiting:"WAITING FOR A COURIER",
@@ -5177,10 +5233,18 @@ function toggleOrderCargo(btn){
   btn.textContent = ul.hidden ? d.homeMore.replace('{n}', btn.dataset.n) : d.homeLess;
 }
 function setHomeFreshGroup(k){ homeFreshGroup = (homeFreshGroup === k) ? null : k; loadClientHomeFresh(); }
+const NEWS_KEY = 'cu_news_beta04';
+function renderNews(){
+  const n = $('clientNews'); if(!n) return;
+  let off = false; try{ off = localStorage.getItem(NEWS_KEY) === '1'; }catch(e){}
+  n.hidden = off;
+}
+function dismissNews(){ try{ localStorage.setItem(NEWS_KEY,'1'); }catch(e){} renderNews(); }
 async function loadClientHomeFresh(){
+  renderNews();
   const wrap = $('clientHomeFreshWrap'), box = $('clientHomeFresh'), chips = $('clientHomeChips'); if(!wrap || !box) return;
   if(chips) chips.innerHTML = HOME_CHIP_KEYS.map(k => { const g = ITEM_CATEGORY_GROUPS.find(x => x.key === k); return g ? `<button type="button" class="mk-chip${homeFreshGroup===k?' on':''}" onclick="setHomeFreshGroup('${k}')">${categoryGroupLabel(g)}</button>` : ''; }).join('');
-  let q = sb.from('marketplace_listings').select('*').eq('is_deleted', false).order('created_at',{ascending:false}).limit(4);
+  let q = sb.from('marketplace_listings').select('*').eq('is_deleted', false).order('created_at',{ascending:false}).limit(6);
   if(homeFreshGroup){ const g = ITEM_CATEGORY_GROUPS.find(x => x.key === homeFreshGroup); if(g) q = q.in('category_id', g.cats.map(c => c[0])); }
   const { data: listings } = await q;
   if(!listings || !listings.length){ if(!homeFreshGroup){ wrap.hidden = true; } else { box.innerHTML = ''; } return; }
@@ -5661,12 +5725,12 @@ function renderShopsDirectory(){
     const ds = sh.created_at ? Math.floor((Date.now() - new Date(sh.created_at).getTime()) / 86400000) : null;
     if(ds !== null && !isNaN(ds)) since = ds < 7 ? d.sdSinceWeek : d.sdSinceDays.replace('{n}', ds);
     return `<div class="sd-card" style="--sc:${col}; --sc-dim:${col}88;" onclick="openSellerShop('${sh.id}')">
-      <div class="sd-banner"></div>
+      <div class="sd-banner shop-texture-host"><div class="shop-texture-layer ${(SHOP_TEXTURE_PRESETS.find(t => t.key === (sh.texture || DEFAULT_SHOP_TEXTURE)) || SHOP_TEXTURE_PRESETS[1]).cls}"></div></div>
       <div class="sd-body">
         <div class="sd-logo">${logo}</div>
         <div style="display:flex; flex-direction:column; gap:4px;"><span class="sd-name">${escHtml(sh.shop_name)}</span><span class="sd-tag">${escHtml(sh.description || '')}</span>${stHtml}</div>
         <div class="sd-stats"><span><b class="o">${r.sales}</b> ${d.sdSales}</span><span><b>${r.listings}</b> ${d.sdListings}</span><span><b>${r.bps}</b> ${d.sdBp}</span></div>
-        <div class="sd-foot"><span class="since">${since}</span><span class="visit">${d.sdVisit}</span></div>
+        <div class="sd-foot"><span class="since">${since}</span><span class="visit mk-btn">${d.sdVisit}</span></div>
       </div>
     </div>`;
   }).join('');
@@ -8401,9 +8465,17 @@ function updateProfileChip(){
   const wrap = $('chipRoleAnimWrap'); if(wrap) wrap.innerHTML = roleAnimSvg(v, 18);
   $('chipRoleLabel').textContent = discordDisplayName() + '_' + roleWord(v);
 }
+function switchProfileTab(t){
+  ['overview','settings','account'].forEach(k => {
+    const b = $('ptab-'+k), pn = $('ppane-'+k);
+    if(b) b.classList.toggle('active', k===t);
+    if(pn) pn.hidden = (k!==t);
+  });
+}
 function openProfile(){
   $('settingsPanel').hidden = true;
   hideAllViews();
+  $('pageTitle').hidden = true;
   $('view-profile').hidden = false;
   renderProfileView();
   if(profile && (profile.is_courier || profile.role === 'admin')) loadUexVehicles();
@@ -8456,6 +8528,11 @@ function renderProfileView(){
   renderCrewStatusCard();
   renderCourierRequestCard();
   renderSellerRequestCard();
+  // L'onglet APERÇU n'a de contenu que pour les coursiers/vendeurs ; sinon on ouvre directement RÉGLAGES.
+  const hasOverview = showShip || showSeller;
+  $('ptab-overview').hidden = !hasOverview;
+  const cur = ['overview','settings','account'].find(k => $('ptab-'+k).classList.contains('active') && !$('ptab-'+k).hidden);
+  switchProfileTab(cur || (hasOverview ? 'overview' : 'settings'));
 }
 async function saveShipInfo(){
   if(!session) return;
@@ -8813,7 +8890,7 @@ function renderSellerAchievements(unlockedSet, stats, boxId){
       <h3 style="margin:0;" data-i18n="sellerAchvTitle">${d.sellerAchvTitle}</h3>
       ${isShopPage ? `<button type="button" class="btn-secondary shop-achv-viewall" id="shopAchvViewAllBtn" onclick="toggleShopAchvExpanded()" hidden>${d.viewAllAchvBtn}</button>` : ''}
     </div>
-    ${sellerRankProgressHtml(salesCount)}
+    ${isShopPage ? '' : sellerRankProgressHtml(salesCount)}
     <div class="achv-grid${isShopPage ? ' achv-grid-collapsible' : ''}">
       ${SELLER_ACHIEVEMENTS.map(a => `
         <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-skey="${a.key}" data-tip="${d.sellerAchvDesc[a.key]}">
@@ -8824,6 +8901,7 @@ function renderSellerAchievements(unlockedSet, stats, boxId){
     </div>
   `;
   if(isShopPage){
+    const rs = $('shopRankStrip'); if(rs){ rs.innerHTML = sellerRankProgressHtml(salesCount); rs.hidden = false; }
     shopAchvExpanded = false;
     const card = $('shopAchvCard'); if(card) card.classList.remove('achv-expanded');
     requestAnimationFrame(updateShopAchvViewAllVisibility);

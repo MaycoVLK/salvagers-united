@@ -2301,6 +2301,34 @@
       </div>
     </div>
 
+
+    <!-- ADMIN : retirer une commande en attente -->
+    <div class="modal-overlay" id="adminRemoveOverlay" hidden onclick="if(event.target===this) closeAdminRemove()">
+      <div class="card modal-card" style="max-width:480px;">
+        <button type="button" class="modal-close" onclick="closeAdminRemove()">&times;</button>
+        <h3 id="adminRemoveTitle"></h3>
+        <p class="muted" id="adminRemoveIntro"></p>
+        <div id="adminRemoveSummary" class="muted" style="font-size:13px; margin:8px 0;"></div>
+        <label style="display:block; font-size:12px; letter-spacing:1px; margin-top:10px;" id="adminRemoveReasonLbl"></label>
+        <textarea id="adminRemoveReason" rows="5" style="width:100%; margin-top:6px;"></textarea>
+        <div style="display:flex; gap:10px; margin-top:14px;">
+          <button type="button" class="btn-secondary" style="flex:1;" onclick="closeAdminRemove()" data-i18n="cancelBtn">ANNULER</button>
+          <button type="button" class="btn-logout" style="flex:1;" id="adminRemoveConfirmBtn" onclick="confirmAdminRemove()"></button>
+        </div>
+      </div>
+    </div>
+    <!-- CLIENT : commande retirée par un admin (popup à la connexion) -->
+    <div class="modal-overlay" id="removedOrderOverlay" hidden>
+      <div class="card modal-card" style="max-width:480px;">
+        <h3 id="removedOrderTitle"></h3>
+        <p class="muted" id="removedOrderIntro"></p>
+        <div id="removedOrderList" style="display:flex; flex-direction:column; gap:12px; margin-top:10px; max-height:50vh; overflow:auto;"></div>
+        <div style="display:flex; margin-top:16px;">
+          <button type="button" class="mk-btn" style="flex:1;" id="removedOrderOk" onclick="dismissRemovedOrders()"></button>
+        </div>
+      </div>
+    </div>
+
     <!-- CRÉER UNE COMMANDE -->
     <section id="view-create" hidden>
       <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
@@ -3574,7 +3602,7 @@ const T = {
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NOUVELLE COMMANDE", pAccTitle:"Mon compte", pAccRole:"Rôle", pTabOverview:"APERÇU", pTabSettings:"RÉGLAGES", pTabAccount:"COMPTE", newsTag:"// BETA 04", newsTxt:"Nouveau : annuaire des shops, statut personnalisable sur chaque shop et nouvelle interface.", newsDismiss:"MASQUER ✕", homeHello:"Salut, {name}", homeFresh:"NOUVEAUTÉS SUR LA MARKETPLACE", homeSeeAll:"TOUT VOIR ▸", homeInProgress:"En cours", homeStatOrders:"COMMANDES", homeStatDelivered:"LIVRÉES", homeStatSpent:"DÉPENSÉ (aUEC)", homeStatActive:"EN COURS", homeMore:"+{n} DE PLUS ▾", homeLess:"MOINS ▴", homeCargo:"CARGAISON",
+    homeNewOrder:"+ NOUVELLE COMMANDE", adminRemoveBtn:"RETIRER", adminRemoveTitle:"Retirer cette commande ?", adminRemoveIntro:"La commande sera supprimée et le client verra ce message dans une fenêtre à sa prochaine connexion.", adminRemoveReasonLbl:"Message au client", adminRemoveDefaultReason:"Ta commande a été retirée car elle contient des objets qui ne sont pas achetables en boutique en jeu, ce qui ne respecte pas les conditions d'utilisation du service. Tu peux en passer une nouvelle avec des objets disponibles en boutique.", adminRemoveConfirm:"RETIRER LA COMMANDE", adminRemoveDone:"Commande retirée, le client sera prévenu.", removedOrderTitle:"Commande retirée", removedOrderIntro:"Une de tes commandes a été retirée par un administrateur :", removedOrderMsgLbl:"MESSAGE", removedOrderOk:"COMPRIS", pAccTitle:"Mon compte", pAccRole:"Rôle", pTabOverview:"APERÇU", pTabSettings:"RÉGLAGES", pTabAccount:"COMPTE", newsTag:"// BETA 04", newsTxt:"Nouveau : annuaire des shops, statut personnalisable sur chaque shop et nouvelle interface.", newsDismiss:"MASQUER ✕", homeHello:"Salut, {name}", homeFresh:"NOUVEAUTÉS SUR LA MARKETPLACE", homeSeeAll:"TOUT VOIR ▸", homeInProgress:"En cours", homeStatOrders:"COMMANDES", homeStatDelivered:"LIVRÉES", homeStatSpent:"DÉPENSÉ (aUEC)", homeStatActive:"EN COURS", homeMore:"+{n} DE PLUS ▾", homeLess:"MOINS ▴", homeCargo:"CARGAISON",
     hmOrdersIn:"COMMANDES EN COURS ({n})", hmMostAdv:"LES PLUS AVANCÉES D'ABORD", hmViewAll:"VOIR TOUTES LES COMMANDES ▸", hmShowLess:"VOIR MOINS ▴", hmNeedElse:"Besoin d'autre chose ?", hmCtaTitle:"Besoin de quelque chose ? Commande maintenant !", hmCtaSub:"Choisis tes objets et une destination à Stanton, Nyx ou Pyro. Un coursier s'occupe du reste.", hmHow:"COMMENT ÇA MARCHE", hm1t:"Tu commandes", hm1x:"Objets et destination. Le prix est affiché avant de confirmer.", hm2t:"Un coursier achète", hm2x:"Il reçoit un itinéraire d'achat suggéré et livre ta cargaison.", hm3t:"Tu suis", hm3x:"Acheté, en transit, livré. Discute avec ton coursier à tout moment.", hmAgain:"COMMANDER À NOUVEAU", hmFullHist:"HISTORIQUE COMPLET ({n}) ▸", hmReorder:"RECOMMANDER", hmDelivered:"LIVRÉE", hmMessage:"MESSAGE", hmWaiting:"// EN ATTENTE D'UN COURSIER", hmCargo:"LISTE DE LA CARGAISON", hmStDel:"LIVRÉES", hmStAct:"EN COURS", hmStDes:"OBJETS RECHERCHÉS", hmStCour:"COURSIERS EN LIGNE", hmNewOrderBtn:"CRÉER UNE COMMANDE", titleOrders:"Dashboard client", titleMkt:"Marketplace", titleDesired:"Objets recherchés", titleBp:"Blueprints", titleCourier:"Coursier",
     sdTitle:"Shops", sdSub:"Tous les shops ouverts sur Couriers United. Trouve un vendeur, parcours ses annonces et ses blueprints.", sdSearchPh:"Chercher un shop par nom ou spécialité...", sdSortLbl:"TRIER", sdSortedBy:"TRIÉ PAR {x}", sdCount:"{n} SHOPS", sdNone:"Aucun shop ne correspond à ta recherche.", sdSales:"ventes", sdListings:"annonces", sdBp:"bp", sdVisit:"VISITER ▸", sdSinceWeek:"Ouvert cette semaine", sdSinceDays:"Ouvert depuis {n} jours", sdS_newest:"LES PLUS RÉCENTS", sdS_sales:"PLUS DE VENTES (TOTAL)", sdS_blueprints:"PLUS DE BLUEPRINTS", sdS_listings:"PLUS D'ANNONCES", sdS_name:"NOM DE A À Z",
     shStSales:"VENTES (TOTAL)", shStListings:"ANNONCES", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
@@ -3745,7 +3773,7 @@ const T = {
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NEW ORDER", pAccTitle:"My account", pAccRole:"Role", pTabOverview:"OVERVIEW", pTabSettings:"SETTINGS", pTabAccount:"ACCOUNT", newsTag:"// BETA 04", newsTxt:"New: shops directory, custom status on every shop and a refreshed interface.", newsDismiss:"DISMISS ✕", homeHello:"Hello, {name}", homeFresh:"FRESH ON THE MARKETPLACE", homeSeeAll:"SEE ALL ▸", homeInProgress:"In progress", homeStatOrders:"ORDERS", homeStatDelivered:"DELIVERED", homeStatSpent:"SPENT (aUEC)", homeStatActive:"IN PROGRESS", homeMore:"+{n} MORE ▾", homeLess:"LESS ▴", homeCargo:"CARGO",
+    homeNewOrder:"+ NEW ORDER", adminRemoveBtn:"REMOVE", adminRemoveTitle:"Remove this order?", adminRemoveIntro:"The order will be deleted and the client will see this message in a pop-up the next time they log in.", adminRemoveReasonLbl:"Message to the client", adminRemoveDefaultReason:"Your order was removed because it contains items that can't be bought in in-game shops, which doesn't comply with the service's terms of use. You can place a new one with items available in shops.", adminRemoveConfirm:"REMOVE ORDER", adminRemoveDone:"Order removed, the client will be notified.", removedOrderTitle:"Order removed", removedOrderIntro:"One of your orders was removed by an administrator:", removedOrderMsgLbl:"MESSAGE", removedOrderOk:"GOT IT", pAccTitle:"My account", pAccRole:"Role", pTabOverview:"OVERVIEW", pTabSettings:"SETTINGS", pTabAccount:"ACCOUNT", newsTag:"// BETA 04", newsTxt:"New: shops directory, custom status on every shop and a refreshed interface.", newsDismiss:"DISMISS ✕", homeHello:"Hello, {name}", homeFresh:"FRESH ON THE MARKETPLACE", homeSeeAll:"SEE ALL ▸", homeInProgress:"In progress", homeStatOrders:"ORDERS", homeStatDelivered:"DELIVERED", homeStatSpent:"SPENT (aUEC)", homeStatActive:"IN PROGRESS", homeMore:"+{n} MORE ▾", homeLess:"LESS ▴", homeCargo:"CARGO",
     hmOrdersIn:"ORDERS IN PROGRESS ({n})", hmMostAdv:"MOST ADVANCED FIRST", hmViewAll:"VIEW ALL ORDERS ▸", hmShowLess:"SHOW LESS ▴", hmNeedElse:"Need something else?", hmCtaTitle:"Need something? Order now!", hmCtaSub:"Pick your items, choose a destination in Stanton, Nyx or Pyro. A courier takes it from there.", hmHow:"HOW IT WORKS", hm1t:"You order", hm1x:"Items and destination. The price is shown before you confirm.", hm2t:"A courier buys", hm2x:"He gets a suggested shopping route and ships your cargo.", hm3t:"You track it", hm3x:"Bought, in transit, delivered. Chat with your courier any time.", hmAgain:"ORDER AGAIN", hmFullHist:"FULL HISTORY ({n}) ▸", hmReorder:"REORDER", hmDelivered:"DELIVERED", hmMessage:"MESSAGE", hmWaiting:"// WAITING FOR A COURIER", hmCargo:"FULL CARGO LIST", hmStDel:"DELIVERED", hmStAct:"IN PROGRESS", hmStDes:"DESIRED ITEMS", hmStCour:"COURIERS ONLINE", hmNewOrderBtn:"CREATE AN ORDER", titleOrders:"Client dashboard", titleMkt:"Marketplace", titleDesired:"Desired items", titleBp:"Blueprints", titleCourier:"Courier",
     sdTitle:"Shops", sdSub:"Every shop open on Couriers United. Find a seller, browse their listings and blueprints.", sdSearchPh:"Search a shop by name or specialty...", sdSortLbl:"SORT", sdSortedBy:"SORTED BY {x}", sdCount:"{n} SHOPS", sdNone:"No shop matches your search.", sdSales:"sales", sdListings:"listings", sdBp:"bp", sdVisit:"VISIT ▸", sdSinceWeek:"Opened this week", sdSinceDays:"Open for {n} days", sdS_newest:"NEWEST", sdS_sales:"MOST SALES (ALL TIME)", sdS_blueprints:"MOST BLUEPRINTS", sdS_listings:"MOST LISTINGS", sdS_name:"NAME A TO Z",
     shStSales:"SALES (ALL TIME)", shStListings:"LISTINGS", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
@@ -4061,6 +4089,7 @@ function updatePageTitle(){
 
 function routeApp(){
   if(!session){
+    removedOrdersChecked = false;
     $('view-login').hidden = false;
     $('app').hidden = true;
     return;
@@ -4104,6 +4133,7 @@ function routeApp(){
   else if(v === 'seller'){ openOwnSellerShop(); }
   else if(v === 'admin'){ $('view-admin-dash').hidden = false; loadAdmin(); }
   refreshNotifBadges();
+  checkOrderRemovals();
 }
 
 function setAdminView(v){ currentView = v; $('settingsPanel').hidden = true; routeApp(); }
@@ -7978,6 +8008,7 @@ function countUpTo(el, from, to, format){
   requestAnimationFrame(tick);
 }
 async function renderAvailable(orders){
+  adminAvailableOrdersCache = orders || [];
   const d=T[LANG]; const box=$('courierPendingPane');
   const currentIds = new Set(orders.map(o=>o.id));
   if(session){
@@ -8021,7 +8052,10 @@ async function renderAvailable(orders){
           ${isMkt ? `<span class="meta">${d.marketplaceDeliveryBadge}</span>` : ''}
           ${o.deadline ? `<span class="meta">${d.cDeadline} ${formatDeadline(o.deadline)}</span>` : ''}
         </div>
-        <button class="mk-btn" onclick="acceptOrder('${o.id}')">${d.accept}</button>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          ${(profile && profile.role === 'admin' && !isMkt) ? `<button class="mk-btn ghost sm" style="border-color:var(--danger); color:var(--danger);" onclick="openAdminRemove('${o.id}')">${d.adminRemoveBtn}</button>` : ''}
+          <button class="mk-btn" onclick="acceptOrder('${o.id}')">${d.accept}</button>
+        </div>
       </div>
       <div class="mk-lines">
         ${(o.items||[]).map(it=>`<div class="li"><span>${escHtml(it.name)} ×${it.qty}</span><span>${it.price!=null ? fmt(it.price*it.qty) : ''}</span></div>`).join('')}
@@ -8065,6 +8099,63 @@ async function ensureRouteSystems(orderId){
     const route = await buildPurchaseRoute(o);
     if(route.systems && route.systems.length) saveRouteSystems(orderId, route.systems);
   }catch(e){ console.error('[ensureRouteSystems]', e); }
+}
+
+// --- ADMIN : retirer une commande en attente non conforme (+ message au client) ---
+let adminRemoveOrderId = null;
+let adminAvailableOrdersCache = [];
+function openAdminRemove(orderId){
+  if(!profile || profile.role !== 'admin') return;
+  const d = T[LANG];
+  adminRemoveOrderId = orderId;
+  const o = (adminAvailableOrdersCache || []).find(x => x.id === orderId);
+  $('adminRemoveTitle').textContent = d.adminRemoveTitle;
+  $('adminRemoveIntro').textContent = d.adminRemoveIntro;
+  $('adminRemoveReasonLbl').textContent = d.adminRemoveReasonLbl;
+  $('adminRemoveConfirmBtn').textContent = d.adminRemoveConfirm;
+  $('adminRemoveReason').value = d.adminRemoveDefaultReason;
+  $('adminRemoveSummary').textContent = o ? (o.items||[]).map(it => `${it.name} ×${it.qty}`).join(', ') : '';
+  $('adminRemoveOverlay').hidden = false;
+}
+function closeAdminRemove(){ $('adminRemoveOverlay').hidden = true; adminRemoveOrderId = null; }
+async function confirmAdminRemove(){
+  if(!adminRemoveOrderId || !profile || profile.role !== 'admin') return;
+  const reason = ($('adminRemoveReason').value || '').trim();
+  const btn = $('adminRemoveConfirmBtn'); btn.disabled = true;
+  const { error } = await sb.rpc('admin_remove_order', { p_order_id: adminRemoveOrderId, p_reason: reason });
+  btn.disabled = false;
+  if(error){ alert('Erreur : ' + fullErrText(error)); return; }
+  closeAdminRemove();
+  toastShow(T[LANG].adminRemoveDone);
+  loadCourierData();
+}
+// --- CLIENT : popup à la connexion quand un admin a retiré une de ses commandes ---
+let removedOrdersChecked = false, removedOrdersPending = [];
+async function checkOrderRemovals(){
+  if(removedOrdersChecked || !session) return;
+  removedOrdersChecked = true;
+  try{
+    const { data, error } = await sb.from('order_removals').select('id,items,destination,reason,created_at').eq('client_id', session.user.id).eq('seen', false).order('created_at', { ascending:true });
+    if(error || !data || !data.length) return;
+    removedOrdersPending = data;
+    const d = T[LANG];
+    $('removedOrderTitle').textContent = d.removedOrderTitle;
+    $('removedOrderIntro').textContent = d.removedOrderIntro;
+    $('removedOrderOk').textContent = d.removedOrderOk;
+    $('removedOrderList').innerHTML = data.map(r => `
+      <div class="mk-box" style="padding:12px 14px;">
+        <div class="mk-del-title" style="font-size:22px;">${(r.items||[]).map(it => escHtml(it.name) + ' ×' + (it.qty||1)).join(', ') || '—'}</div>
+        ${r.destination ? `<div class="mk-del-sub">${escHtml(r.destination)}</div>` : ''}
+        <div class="mk-lbl" style="margin-top:8px;"><span class="sl">//</span> ${d.removedOrderMsgLbl}</div>
+        <div style="margin-top:4px; white-space:pre-wrap;">${escHtml(r.reason || '')}</div>
+      </div>`).join('');
+    $('removedOrderOverlay').hidden = false;
+  }catch(e){ console.error('[order_removals]', e); }
+}
+async function dismissRemovedOrders(){
+  $('removedOrderOverlay').hidden = true;
+  const ids = removedOrdersPending.map(r => r.id); removedOrdersPending = [];
+  if(ids.length){ try{ await sb.from('order_removals').update({ seen:true }).in('id', ids); }catch(e){} }
 }
 let justAcceptedOrderId = null;
 // Commande actuellement affichée "en grand" dans l'onglet ATTRIBUÉES, les autres restant en petite liste cliquable.

@@ -8158,24 +8158,11 @@ async function checkOrderRemovals(){
   removedOrdersChecked = true;
   await loadRemovedOrders();
 }
-let removalsChannel = null;
-function subscribeRemovalsChannel(){
-  if(removalsChannel || !session) return;
-  removalsChannel = sb.channel('removals-'+session.user.id)
-    .on('postgres_changes', { event:'INSERT', schema:'public', table:'order_removals', filter:`client_id=eq.${session.user.id}` }, () => {
-      loadRemovedOrders();
-      // La commande a disparu : on rafraîchit le tableau de bord du client s'il est affiché.
-      try{ if(effectiveView() === 'client' && !$('view-client-dash').hidden) loadClientDashboard(); }catch(e){}
-    })
-    .subscribe();
-}
-function unsubscribeRemovalsChannel(){
-  if(removalsChannel){ sb.removeChannel(removalsChannel); removalsChannel = null; }
-}
 async function dismissRemovedOrders(){
   $('removedOrderOverlay').hidden = true;
   const ids = removedOrdersPending.map(r => r.id); removedOrdersPending = [];
   if(ids.length){ try{ await sb.from('order_removals').update({ seen:true }).in('id', ids); }catch(e){} }
+  try{ if(session) await sb.from('notifications').update({ read:true }).eq('user_id', session.user.id).eq('category','client_order_removed').eq('read', false); }catch(e){}
 }
 let justAcceptedOrderId = null;
 // Commande actuellement affichée "en grand" dans l'onglet ATTRIBUÉES, les autres restant en petite liste cliquable.
@@ -9881,6 +9868,12 @@ function subscribeNotifChannel(){
   notifChannel = sb.channel('notifications-self-'+session.user.id)
     .on('postgres_changes', { event:'*', schema:'public', table:'notifications', filter:`user_id=eq.${session.user.id}` }, (payload) => {
       refreshNotifBadges();
+      if(payload && payload.eventType === 'INSERT' && payload.new && payload.new.category === 'client_order_removed'){
+        // Un admin vient de retirer une commande de ce client : popup tout de suite + rafraîchissement du tableau de bord.
+        loadRemovedOrders();
+        try{ if(effectiveView() === 'client' && !$('view-client-dash').hidden) loadClientDashboard(); }catch(e){}
+        return;
+      }
       if(payload && payload.eventType === 'INSERT' && payload.new){ playNotifSound(payload.new.category); }
       if(payload && payload.eventType === 'INSERT' && payload.new && payload.new.category === 'direct_message'){
         // Message reçu en live : on met à jour la liste des conversations, et le fil en cours s'il est ouvert.
@@ -10189,7 +10182,6 @@ async function initAuth(){
   if(session){
     subscribeProfileChannel();
     subscribeNotifChannel();
-    subscribeRemovalsChannel();
     subscribePresenceChannel();
     subscribeDataChannels();
     await checkCourierNotification();
@@ -10204,11 +10196,10 @@ async function initAuth(){
     const wasLoggedIn = !!session;
     session = s2;
     await loadProfile();
-    if(event === 'SIGNED_OUT'){ hasBooted = false; rsiGateState = 'idle'; $('bootOverlay').hidden = true; $('rsiGateOverlay').hidden = true; unsubscribeProfileChannel(); unsubscribeNotifChannel(); unsubscribeRemovalsChannel(); unsubscribePresenceChannel(); unsubscribeDataChannels(); routeApp(); return; }
+    if(event === 'SIGNED_OUT'){ hasBooted = false; rsiGateState = 'idle'; $('bootOverlay').hidden = true; $('rsiGateOverlay').hidden = true; unsubscribeProfileChannel(); unsubscribeNotifChannel(); unsubscribePresenceChannel(); unsubscribeDataChannels(); routeApp(); return; }
     if(event === 'SIGNED_IN' && !wasLoggedIn){
       subscribeProfileChannel();
       subscribeNotifChannel();
-      subscribeRemovalsChannel();
       subscribePresenceChannel();
       subscribeDataChannels();
       await checkCourierNotification();

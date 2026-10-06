@@ -1927,6 +1927,7 @@
       <div class="card login-card">
         <h2 data-i18n="loginTitle">Accès Terminal</h2>
         <p class="muted" data-i18n="loginSub">Connecte-toi avec Discord pour accéder à ton espace.</p>
+        <p class="note-box" id="loginShopHint" data-i18n="loginShopHint" hidden></p>
         <button class="btn-primary" style="width:100%" onclick="loginDiscord()">
           <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
             <rect x="4" y="3" width="8" height="2"/><rect x="2" y="5" width="2" height="6"/><rect x="12" y="5" width="2" height="6"/>
@@ -2870,6 +2871,12 @@
                 </div>
                 <!-- Modifier + Upvote regroupés dans le même bloc, collés tout à droite de la bannière. -->
                 <div class="shop-banner-actions">
+                  <button type="button" class="gear-btn shop-share-btn" id="shopShareBtn" onclick="copyShopLink()" aria-label="Copier le lien de la boutique" data-i18n-title="shopShareTitle" title="Copier le lien de la boutique">
+                    <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                      <rect x="2" y="7" width="2" height="2"/><rect x="4" y="5" width="2" height="2"/><rect x="6" y="3" width="2" height="2"/><rect x="8" y="3" width="4" height="2"/><rect x="12" y="3" width="2" height="4"/>
+                      <rect x="4" y="9" width="2" height="2"/><rect x="6" y="11" width="2" height="2"/><rect x="8" y="9" width="2" height="2"/>
+                    </g></svg>
+                  </button>
                   <button type="button" class="gear-btn shop-edit-gear-btn" id="shopEditGearBtn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique" hidden>
                     <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
                       <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
@@ -3630,7 +3637,7 @@ const T = {
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NOUVELLE COMMANDE", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
+    homeNewOrder:"+ NOUVELLE COMMANDE", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
     classicOrderNote:"COMMANDE CLASSIQUE : uniquement des objets achetables dans une boutique en jeu — le coursier les achète puis te les livre. Un objet introuvable en boutique (loot, craft, rare…) ? Poste plutôt un desired item.", classicOrderLink:"POSTER UN DESIRED ITEM ▸",
     commodityQualityNote:"Commodities : seules des commodities de qualité 500 peuvent être livrées par commande. Pour une qualité supérieure, passe par la marketplace ou poste un desired item.", commodityQualityShort:"Commodity : qualité 500 uniquement.",
     desiredIntroNote:"DESIRED ITEM : un objet que tu cherches et qui n'est PAS achetable en boutique (loot, craft, qualité supérieure…). N'importe quel joueur peut te proposer de te le fournir ; tu choisis l'offre, puis vous pouvez demander un coursier pour la livraison.", myDesiredTitle:"MES DESIRED ITEMS", noMyDesired:"Tu n'as posté aucun desired item.", postDesiredBtn:"+ POSTER", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"LIVRAISON DESIRED ITEM",
@@ -3806,7 +3813,7 @@ const T = {
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NEW ORDER", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
+    homeNewOrder:"+ NEW ORDER", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
     classicOrderNote:"CLASSIC ORDER: only items you can buy in an in-game shop — the courier buys them and delivers them to you. Item not sold in shops (loot, crafted, rare…)? Post a desired item instead.", classicOrderLink:"POST A DESIRED ITEM ▸",
     commodityQualityNote:"Commodities: only quality 500 commodities can be delivered through an order. For a higher quality, use the marketplace or post a desired item.", commodityQualityShort:"Commodity: quality 500 only.",
     desiredIntroNote:"DESIRED ITEM: something you're looking for that is NOT sold in shops (loot, crafted, higher quality…). Any player can offer to supply it; you pick an offer, then you can request a courier for the delivery.", myDesiredTitle:"MY DESIRED ITEMS", noMyDesired:"You haven't posted any desired item.", postDesiredBtn:"+ POST", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"DESIRED ITEM DELIVERY",
@@ -3890,6 +3897,7 @@ function applyLang(){
   const d = T[LANG];
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = d[el.dataset.i18n]; });
   document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = d[el.dataset.i18nPh]; });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = d[el.dataset.i18nTitle]; });
   document.querySelectorAll('.item-row').forEach(row => {
     row.querySelector('.name input').placeholder = d.itemNamePh;
     row.querySelector('.prix input').placeholder = d.itemPricePh;
@@ -4995,10 +5003,37 @@ function enterApp(){
   const v = effectiveView();
   if(!hasBooted && v){
     hasBooted = true;
-    playBoot(v, () => routeApp());
+    playBoot(v, () => { routeApp(); openPendingShop(); });
   } else {
     routeApp();
+    openPendingShop();
   }
+}
+// --- LIEN DE PARTAGE D'UNE BOUTIQUE : https://couriers-united.space/?shop=<id> ---
+// L'identifiant est mis de côté (sessionStorage) dès l'arrivée sur le site, pour survivre à la redirection
+// de connexion Discord, puis la boutique s'ouvre une fois la personne connectée.
+function capturePendingShopFromUrl(){
+  try{
+    const id = new URLSearchParams(window.location.search).get('shop');
+    if(id && /^[0-9a-f-]{36}$/i.test(id)){
+      sessionStorage.setItem('cu_pending_shop', id);
+      history.replaceState(null, '', window.location.pathname + window.location.hash);
+    }
+  }catch(e){}
+}
+function getPendingShop(){ try{ return sessionStorage.getItem('cu_pending_shop'); }catch(e){ return null; } }
+function openPendingShop(){
+  const id = getPendingShop();
+  if(!id || !session || !profile || !(profile.rsi_handle || '').trim()) return;
+  try{ sessionStorage.removeItem('cu_pending_shop'); }catch(e){}
+  openSellerShop(id);
+}
+async function copyShopLink(){
+  if(!shopViewingSellerId) return;
+  const url = window.location.origin + window.location.pathname + '?shop=' + shopViewingSellerId;
+  try{ await navigator.clipboard.writeText(url); }
+  catch(e){ const ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(_){} ta.remove(); }
+  toastShow(T[LANG].shopLinkCopied);
 }
 
 // --- UEX CORP : catalogue (identique à avant) ---
@@ -10336,6 +10371,8 @@ async function loadProfile(){
 }
 
 async function initAuth(){
+  capturePendingShopFromUrl();
+  { const h = $('loginShopHint'); if(h) h.hidden = !getPendingShop(); }
   const { data: { session: s } } = await sb.auth.getSession();
   session = s;
   await loadProfile();

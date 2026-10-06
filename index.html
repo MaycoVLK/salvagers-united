@@ -1270,9 +1270,15 @@
   /* ===== MK : page shop (G) ===== */
   .shop-banner-card.shop-texture-host{padding:28px; margin-bottom:0; border:1px solid var(--accent); border-radius:6px; box-shadow:0 0 18px var(--accent-dim); background:linear-gradient(var(--panel), var(--bg2));}
   .shop-banner-card.shop-texture-host::before, .shop-banner-card.shop-texture-host::after{display:none;}
-  .shop-banner-card .shop-banner-row{gap:26px; align-items:flex-start;}
-  .shop-banner-card .shop-banner-logo{width:230px; height:230px; border-radius:12px;}
-  .shop-rank-strip{position:relative; z-index:1; border-top:1px solid color-mix(in srgb, var(--accent) 60%, transparent); box-shadow:0 -1px 0 0 color-mix(in srgb, var(--accent) 20%, transparent); margin-top:24px; padding-top:20px;}
+  .shop-banner-card .shop-banner-row{gap:28px; align-items:stretch;}
+  .shop-banner-card .shop-banner-logo{width:270px; height:auto; min-height:270px; align-self:stretch; border-radius:12px; padding:18px;}
+  .shop-banner-card .shop-banner-logo img{width:100%; height:100%; object-fit:cover; border-radius:6px;}
+  .shop-rank-strip{position:relative; z-index:1; border-top:1px solid color-mix(in srgb, var(--accent) 60%, transparent); box-shadow:0 -1px 0 0 color-mix(in srgb, var(--accent) 20%, transparent); margin-top:auto; padding-top:16px;}
+  .shop-banner-card .shop-banner-id{justify-content:flex-start;}
+  .shop-banner-card .shop-description{margin-bottom:18px;}
+  .shop-banner-card .shop-banner-meta .shop-owner-box{background:none; cursor:pointer;}
+  .shop-banner-card .shop-banner-meta .shop-owner-box .courier-box-name{color:var(--accent); font-size:12px; text-transform:none; letter-spacing:.5px;}
+  .shop-banner-card .shop-rank-strip .rk{margin:0;}
   .shop-banner-card .shop-banner-kicker{font-size:12px; letter-spacing:2px; color:var(--muted); margin-bottom:8px;}
   .shop-banner-card .shop-banner-title-row h1{font-size:58px; font-weight:400; line-height:1; letter-spacing:1px;}
   .shop-banner-card .shop-banner-actions .shop-upvote-btn{background:var(--accent); color:#050606; border:1px solid var(--accent); border-radius:2px; padding:12px 24px; gap:10px; box-shadow:none;}
@@ -1287,7 +1293,7 @@
   .shop-banner-card .shop-loc-tag, .shop-banner-card .shop-banner-meta .shop-owner-box{border-radius:2px; padding:5px 12px; font-size:12px; border-color:color-mix(in srgb, var(--accent) 60%, transparent);}
   @container shopbanner (max-width: 640px){
     .shop-banner-row{flex-direction:column !important; align-items:center !important; text-align:center; gap:14px !important;}
-    .shop-banner-logo{width:120px !important; height:120px !important;}
+    .shop-banner-logo{width:120px !important; height:120px !important; min-height:0 !important; align-self:center !important;}
     .shop-banner-id{align-items:center !important; width:100%;}
     .shop-banner-top{flex-direction:column !important; align-items:center !important; width:100%;}
     .shop-banner-text{align-items:center !important;}
@@ -2744,9 +2750,9 @@
                 </div>
               </div>
               <div class="shop-description" id="shopDescription" hidden></div>
+              <div class="shop-rank-strip" id="shopRankStrip" hidden></div>
             </div>
           </div>
-          <div class="shop-rank-strip" id="shopRankStrip" hidden></div>
         </div>
 
         <div class="mk-stats" id="shopStatsStrip"></div>
@@ -5379,7 +5385,7 @@ async function loadClientDashboard(){
       : `<span class="mk-m12">${d.hmWaiting}</span>${cancelBtn}`;
     return `<div class="mk-order"><div class="mk-order-in">
       <div class="mk-order-l"><div class="mk-order-items"><span class="it">${shown}</span>${moreBtn}</div><span class="mk-order-sub">${escHtml(o.exact_location||o.destination_system||'-')}, ${escHtml(o.destination_system||'')} · ${fmt(o.total_price)}${deadline}</span></div>
-      <div class="mk-order-m">${shipTrackHtml(o)}<span class="mk-order-st" style="color:${stColor};">▸ ${d.statusLabels[o.status].toUpperCase()}</span></div>
+      <div class="mk-order-m">${shipTrackHtml(o)}</div>
       <div class="mk-order-r">${right}</div>
     </div>${cargo}</div>`;
   };
@@ -7321,7 +7327,7 @@ async function openSellerShop(sellerId){
       locTag.hidden = true;
     }
   }
-  $('shopOwnerName').textContent = d.shopOwnerLbl + (p ? displayName(p) : '—');
+  $('shopOwnerName').textContent = '▸ ' + (p ? displayName(p) : '—');
   renderShopStatus(p, isOwner);
   if(descEl && shop?.description){ descEl.textContent = shop.description; descEl.hidden = false; }
   const grid = $('shopListingsGrid');

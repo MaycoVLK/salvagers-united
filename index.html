@@ -3629,7 +3629,7 @@ const T = {
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NOUVELLE COMMANDE", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
+    homeNewOrder:"+ NOUVELLE COMMANDE", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
     classicOrderNote:"COMMANDE CLASSIQUE : uniquement des objets achetables dans une boutique en jeu — le coursier les achète puis te les livre. Un objet introuvable en boutique (loot, craft, rare…) ? Poste plutôt un desired item.", classicOrderLink:"POSTER UN DESIRED ITEM ▸",
     commodityQualityNote:"Commodities : seules des commodities de qualité 500 peuvent être livrées par commande. Pour une qualité supérieure, passe par la marketplace ou poste un desired item.", commodityQualityShort:"Commodity : qualité 500 uniquement.",
     desiredIntroNote:"DESIRED ITEM : un objet que tu cherches et qui n'est PAS achetable en boutique (loot, craft, qualité supérieure…). N'importe quel joueur peut te proposer de te le fournir ; tu choisis l'offre, puis vous pouvez demander un coursier pour la livraison.", myDesiredTitle:"MES DESIRED ITEMS", noMyDesired:"Tu n'as posté aucun desired item.", postDesiredBtn:"+ POSTER", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"LIVRAISON DESIRED ITEM",
@@ -3805,7 +3805,7 @@ const T = {
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NEW ORDER", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
+    homeNewOrder:"+ NEW ORDER", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
     classicOrderNote:"CLASSIC ORDER: only items you can buy in an in-game shop — the courier buys them and delivers them to you. Item not sold in shops (loot, crafted, rare…)? Post a desired item instead.", classicOrderLink:"POST A DESIRED ITEM ▸",
     commodityQualityNote:"Commodities: only quality 500 commodities can be delivered through an order. For a higher quality, use the marketplace or post a desired item.", commodityQualityShort:"Commodity: quality 500 only.",
     desiredIntroNote:"DESIRED ITEM: something you're looking for that is NOT sold in shops (loot, crafted, higher quality…). Any player can offer to supply it; you pick an offer, then you can request a courier for the delivery.", myDesiredTitle:"MY DESIRED ITEMS", noMyDesired:"You haven't posted any desired item.", postDesiredBtn:"+ POST", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"DESIRED ITEM DELIVERY",
@@ -4694,14 +4694,15 @@ function offerThreadItemHtml(r, iAmSeller, req, order, courierMap){
       </div>
       ${iAmSupplier ? `<div class="delivery-request-form" id="odform-${r.id}" hidden>
         <select id="odsys-${r.id}"><option value="Stanton">Stanton</option><option value="Nyx">Nyx</option><option value="Pyro">Pyro</option></select>
-        <input type="text" id="odloc-${r.id}" placeholder="${d.phLieu}" autocomplete="off" oninput="onLieuInput(this)" onblur="onLieuBlur(this)">
-        <div class="suggest-box" hidden></div>
+        <div style="position:relative;"><input type="text" id="odloc-${r.id}" placeholder="${d.phLieu}" autocomplete="off" style="width:100%;" oninput="onLieuInput(this)" onblur="onLieuBlur(this)">
+        <div class="suggest-box" hidden></div></div>
         <input type="text" id="odbuyer-${r.id}" placeholder="${d.phBuyerHandle}">
         <div class="inquiry-meta">${d.offerDeliveryFeeNote}</div>
         <button class="btn-primary" onclick="requestOfferDelivery('${r.id}')">${d.confirmDeliveryBtn}</button>
       </div>` : ''}`;
     }
   }
+  if(r.status === 'accepted') actions += `<button class="btn-cancel" style="width:100%; margin-top:8px;" onclick="cancelAcceptedOffer('${r.id}', ${r.order_id ? 'true' : 'false'})">${ICON_CLOSE}<span>${d.offerCancelBtn}</span></button>`;
   return `
     <div class="inquiry-row">
       <span class="msg-kind-label">${msgKindLabel(iAmSeller ? 'offer_received' : 'offer_sent')}</span>
@@ -4713,6 +4714,20 @@ function offerThreadItemHtml(r, iAmSeller, req, order, courierMap){
       ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
       ${actions}
     </div>`;
+}
+async function cancelAcceptedOffer(id, hasOrder){
+  const d = T[LANG];
+  if(!confirm(hasOrder ? d.offerCancelConfirmCourier : d.offerCancelConfirm)) return;
+  const { data: o } = await sb.from('resource_offers').select('seller_id,client_id').eq('id', id).maybeSingle();
+  const { error } = await sb.rpc('cancel_resource_offer', { p_offer_id: id });
+  if(error){ alert('Erreur : '+fullErrText(error)); return; }
+  if(o){
+    const other = o.seller_id === session.user.id ? o.client_id : o.seller_id;
+    pushNotification(other, other === o.client_id ? 'client_resource_offer' : 'seller_resource_offer', id);
+  }
+  toastShow(d.offerCancelled);
+  sweep();
+  msgRefreshAfterAction();
 }
 function toggleOfferDeliveryForm(id){ const f = $('odform-'+id); if(f) f.hidden = !f.hidden; }
 async function markOfferDelivered(id){
@@ -8271,19 +8286,20 @@ let removedOrdersChecked = false, removedOrdersPending = [];
 async function loadRemovedOrders(){
   if(!session) return;
   try{
-    const { data, error } = await sb.from('order_removals').select('id,items,destination,reason,created_at').eq('client_id', session.user.id).eq('seen', false).order('created_at', { ascending:true });
+    const { data, error } = await sb.from('order_removals').select('*').eq('client_id', session.user.id).eq('seen', false).order('created_at', { ascending:true });
     if(error || !data || !data.length) return;
     removedOrdersPending = data;
     const d = T[LANG];
-    $('removedOrderTitle').textContent = d.removedOrderTitle;
-    $('removedOrderIntro').textContent = d.removedOrderIntro;
+    const allCancelled = data.every(r => r.kind === 'cancelled');
+    $('removedOrderTitle').textContent = allCancelled ? d.cancelledDeliveryTitle : d.removedOrderTitle;
+    $('removedOrderIntro').textContent = allCancelled ? d.cancelledDeliveryIntro : d.removedOrderIntro;
     $('removedOrderOk').textContent = d.removedOrderOk;
     $('removedOrderList').innerHTML = data.map(r => `
       <div class="mk-box" style="padding:12px 14px;">
         <div class="mk-del-title" style="font-size:22px;">${(r.items||[]).map(it => escHtml(it.name) + ' ×' + (it.qty||1)).join(', ') || '—'}</div>
         ${r.destination ? `<div class="mk-del-sub">${escHtml(r.destination)}</div>` : ''}
         <div class="mk-lbl" style="margin-top:8px;"><span class="sl">//</span> ${d.removedOrderMsgLbl}</div>
-        <div style="margin-top:4px; white-space:pre-wrap;">${escHtml(r.reason || '')}</div>
+        <div style="margin-top:4px; white-space:pre-wrap;">${escHtml(r.kind === 'cancelled' ? d.cancelledDeliveryMsg : (r.reason || ''))}</div>
       </div>`).join('');
     $('removedOrderOverlay').hidden = false;
   }catch(e){ console.error('[order_removals]', e); }
@@ -10009,6 +10025,7 @@ function subscribeNotifChannel(){
         // Un admin vient de retirer une commande de ce client : popup tout de suite + rafraîchissement du tableau de bord.
         loadRemovedOrders();
         try{ if(effectiveView() === 'client' && !$('view-client-dash').hidden) loadClientDashboard(); }catch(e){}
+        try{ if(effectiveView() === 'courier' && !$('view-courier-dash').hidden) loadCourierData(); }catch(e){}
         return;
       }
       if(payload && payload.eventType === 'INSERT' && payload.new){ playNotifSound(payload.new.category); }

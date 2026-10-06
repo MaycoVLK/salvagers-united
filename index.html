@@ -3579,7 +3579,7 @@ const T = {
     courierMarginLbl:"Ta marge (commission)",
     purchaseRouteTitle:"Itinéraire d'achat conseillé", routeLoading:"Calcul de l'itinéraire...", routeDeliveryStop:"LIVRAISON", routeUnresolvedNote:"Objet(s) introuvable(s) dans le catalogue UEX (à récupérer par un autre moyen) :", otherDeliveriesTitle:"Tes livraisons en cours",
     careerStatsTitle:"Statistiques de carrière", careerTotalEarned:"aUEC gagnés au total", careerTopItem:"Objet le plus transporté", careerDeliveries:"Livraisons effectuées", careerAvgMargin:"Marge moyenne / commande", careerNoData:"Pas encore de statistiques — effectue ta première livraison !",
-    shipPhotoTitle:"Photo du vaisseau livreur", shipPhotoHint:"Ajoute une photo de ton vaisseau pour l'immersion — visible sur ton profil public.", uploadShipPhoto:"CHOISIR UNE PHOTO", uploadingPhoto:"ENVOI EN COURS...", shipPhotoSaved:"PHOTO ENREGISTRÉE !", shipPhotoError:"Erreur lors de l'envoi de la photo.",
+    shipPhotoTitle:"Photo du vaisseau livreur", shipPhotoHint:"Ajoute une photo de ton vaisseau pour l'immersion — visible sur ton profil public. Format conseillé : image large en paysage, 1600 × 500 px (environ 3:1), avec ton vaisseau au centre : elle est recadrée selon l'écran (JPG, PNG ou GIF).", uploadShipPhoto:"CHOISIR UNE PHOTO", uploadingPhoto:"ENVOI EN COURS...", shipPhotoSaved:"PHOTO ENREGISTRÉE !", shipPhotoError:"Erreur lors de l'envoi de la photo.",
     emptyCtaText:"Besoin de quelque chose ? Commande maintenant !", emptyCtaBtn:"CRÉER UNE COMMANDE",
     dtClear:"EFFACER", dtConfirm:"VALIDER", dtPlaceholder:"Choisir une date et une heure",
     dtMonths:["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
@@ -3750,7 +3750,7 @@ const T = {
     courierMarginLbl:"Your margin (commission)",
     purchaseRouteTitle:"Suggested shopping route", routeLoading:"Computing route...", routeDeliveryStop:"DELIVERY", routeUnresolvedNote:"Item(s) not found in the UEX catalog (source another way):", otherDeliveriesTitle:"Your ongoing deliveries",
     careerStatsTitle:"Career stats", careerTotalEarned:"Total aUEC earned", careerTopItem:"Most transported item", careerDeliveries:"Deliveries completed", careerAvgMargin:"Avg margin / delivery", careerNoData:"No stats yet — complete your first delivery!",
-    shipPhotoTitle:"Delivery ship photo", shipPhotoHint:"Add a photo of your ship for immersion — visible on your public profile.", uploadShipPhoto:"CHOOSE A PHOTO", uploadingPhoto:"UPLOADING...", shipPhotoSaved:"PHOTO SAVED!", shipPhotoError:"Error uploading photo.",
+    shipPhotoTitle:"Delivery ship photo", shipPhotoHint:"Add a photo of your ship for immersion — visible on your public profile. Recommended: a wide landscape image, 1600 × 500 px (about 3:1), with your ship centered: it is cropped to fit the screen (JPG, PNG or GIF).", uploadShipPhoto:"CHOOSE A PHOTO", uploadingPhoto:"UPLOADING...", shipPhotoSaved:"PHOTO SAVED!", shipPhotoError:"Error uploading photo.",
     emptyCtaText:"Need something? Order now!", emptyCtaBtn:"CREATE AN ORDER",
     dtClear:"CLEAR", dtConfirm:"CONFIRM", dtPlaceholder:"Choose a date & time",
     dtMonths:["January","February","March","April","May","June","July","August","September","October","November","December"],
@@ -8131,9 +8131,10 @@ async function confirmAdminRemove(){
 }
 // --- CLIENT : popup à la connexion quand un admin a retiré une de ses commandes ---
 let removedOrdersChecked = false, removedOrdersPending = [];
-async function checkOrderRemovals(){
-  if(removedOrdersChecked || !session) return;
-  removedOrdersChecked = true;
+// Charge les retraits non lus du client et affiche (ou met à jour) la fenêtre. Appelé à la connexion ET en
+// temps réel quand un admin retire une commande pendant que le client est sur le site.
+async function loadRemovedOrders(){
+  if(!session) return;
   try{
     const { data, error } = await sb.from('order_removals').select('id,items,destination,reason,created_at').eq('client_id', session.user.id).eq('seen', false).order('created_at', { ascending:true });
     if(error || !data || !data.length) return;
@@ -8151,6 +8152,25 @@ async function checkOrderRemovals(){
       </div>`).join('');
     $('removedOrderOverlay').hidden = false;
   }catch(e){ console.error('[order_removals]', e); }
+}
+async function checkOrderRemovals(){
+  if(removedOrdersChecked || !session) return;
+  removedOrdersChecked = true;
+  await loadRemovedOrders();
+}
+let removalsChannel = null;
+function subscribeRemovalsChannel(){
+  if(removalsChannel || !session) return;
+  removalsChannel = sb.channel('removals-'+session.user.id)
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'order_removals', filter:`client_id=eq.${session.user.id}` }, () => {
+      loadRemovedOrders();
+      // La commande a disparu : on rafraîchit le tableau de bord du client s'il est affiché.
+      try{ if(effectiveView() === 'client' && !$('view-client-dash').hidden) loadClientDashboard(); }catch(e){}
+    })
+    .subscribe();
+}
+function unsubscribeRemovalsChannel(){
+  if(removalsChannel){ sb.removeChannel(removalsChannel); removalsChannel = null; }
 }
 async function dismissRemovedOrders(){
   $('removedOrderOverlay').hidden = true;
@@ -10169,6 +10189,7 @@ async function initAuth(){
   if(session){
     subscribeProfileChannel();
     subscribeNotifChannel();
+    subscribeRemovalsChannel();
     subscribePresenceChannel();
     subscribeDataChannels();
     await checkCourierNotification();
@@ -10183,10 +10204,11 @@ async function initAuth(){
     const wasLoggedIn = !!session;
     session = s2;
     await loadProfile();
-    if(event === 'SIGNED_OUT'){ hasBooted = false; rsiGateState = 'idle'; $('bootOverlay').hidden = true; $('rsiGateOverlay').hidden = true; unsubscribeProfileChannel(); unsubscribeNotifChannel(); unsubscribePresenceChannel(); unsubscribeDataChannels(); routeApp(); return; }
+    if(event === 'SIGNED_OUT'){ hasBooted = false; rsiGateState = 'idle'; $('bootOverlay').hidden = true; $('rsiGateOverlay').hidden = true; unsubscribeProfileChannel(); unsubscribeNotifChannel(); unsubscribeRemovalsChannel(); unsubscribePresenceChannel(); unsubscribeDataChannels(); routeApp(); return; }
     if(event === 'SIGNED_IN' && !wasLoggedIn){
       subscribeProfileChannel();
       subscribeNotifChannel();
+      subscribeRemovalsChannel();
       subscribePresenceChannel();
       subscribeDataChannels();
       await checkCourierNotification();

@@ -1229,27 +1229,43 @@
 
   /* ===== MK : profil ===== */
   #view-profile .profile-header-row{gap:18px; margin-bottom:0;}
-  #view-profile .profile-id-card{flex-direction:row; justify-content:flex-start; text-align:left; gap:22px; padding:22px 26px; border-radius:6px; border-color:var(--accent); box-shadow:0 0 18px var(--accent-dim);}
+  #view-profile .profile-id-card{flex-direction:row; justify-content:flex-start; text-align:left; gap:24px; padding:24px 28px; border-radius:6px; border:1px solid var(--accent); box-shadow:0 0 18px var(--accent-dim); background:linear-gradient(var(--panel), var(--bg2));}
   #view-profile .profile-id-card::before, #view-profile .profile-id-card::after{display:none;}
-  #view-profile .profile-hero-rsi{font-size:40px; line-height:1;}
-  #view-profile .profile-hero-discord{font-size:13px; margin-top:6px;}
-  #view-profile .profile-ship-card{min-height:150px; flex:1 1 320px; border-radius:6px;}
+  #view-profile .profile-hero-rsi{font-size:46px; line-height:1; text-shadow:0 0 8px var(--accent-dim);}
+  #view-profile .profile-hero-discord{font-size:13px; margin-top:8px; letter-spacing:1px;}
+  #view-profile .profile-ship-card{min-height:150px; flex:1 1 320px; border-radius:6px; border:1px solid var(--border);}
   #view-profile .profile-ship-card::before, #view-profile .profile-ship-card::after{display:none;}
   #view-profile #profileTabs .tab-btn{padding:14px 22px;}
-  #view-profile .prof-pane{display:flex; flex-direction:column; gap:18px;}
+  #view-profile .prof-pane{display:flex; flex-direction:column; gap:40px;}
   #view-profile .prof-pane[hidden]{display:none;}
-  #view-profile .prof-grid{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); align-items:start;}
-  #view-profile .prof-pane > .card{margin:0; border-radius:4px;}
-  #view-profile .prof-pane > .card::before, #view-profile .prof-pane > .card::after{display:none;}
-  #view-profile .prof-pane > .card > h3, #view-profile .prof-pane > .card > .shop-achv-head h3{font-family:'VT323',monospace; font-size:24px; font-weight:400; color:var(--accent); letter-spacing:1px; margin:0 0 12px;}
-  #view-profile .prof-pane > .card > h3::before{content:"// "; }
-  #view-profile .career-stats-grid{grid-template-columns:repeat(4, minmax(0,1fr)); gap:0;}
-  #view-profile .career-stat{border:none; border-left:1px solid var(--border); text-align:left; padding:2px 20px;}
-  #view-profile .career-stat .val{font-size:34px; line-height:1;}
-  #view-profile .career-stat .lbl{font-size:11px; letter-spacing:2px; margin-top:6px;}
-  #view-profile .achv-grid{gap:8px;}
-  @media (max-width:900px){ #view-profile .prof-grid{grid-template-columns:1fr;} #view-profile .career-stats-grid{grid-template-columns:repeat(2, minmax(0,1fr)); row-gap:14px;} }
-  @media (max-width:600px){ #view-profile .profile-id-card{flex-direction:column; text-align:center; align-items:center; gap:10px;} #view-profile .profile-hero-rsi{font-size:34px;} #view-profile #profileTabs{flex-wrap:nowrap; overflow-x:auto;} #view-profile #profileTabs .tab-btn{padding:14px 12px; font-size:12px;} }
+  /* APERÇU : sections sans boîtes, libellés "// ..." et grands chiffres, comme les maquettes */
+  #ppane-overview > .card{background:none; border:none; box-shadow:none; padding:0; margin:0; border-radius:0;}
+  #ppane-overview > .card::before, #ppane-overview > .card::after{display:none !important;}
+  #ppane-overview h3{font-family:'Share Tech Mono',monospace !important; font-size:11px !important; font-weight:400 !important; letter-spacing:3px !important; text-transform:uppercase; color:var(--muted) !important; text-shadow:none !important; margin:0 0 14px !important;}
+  #ppane-overview h3::before{content:"// "; color:var(--accent);}
+  #ppane-overview h3 + .rank-track, #ppane-overview .shop-achv-head + .rank-track{margin-top:6px;}
+  #ppane-overview .career-stats-grid{display:flex; flex-wrap:wrap; gap:18px 0; margin:0;}
+  #ppane-overview .career-stat{flex:1 1 200px; min-width:0; border:none; border-left:1px solid var(--border); background:none; box-shadow:none; text-align:left; padding:2px 24px; display:flex; flex-direction:column; gap:2px; transform:none;}
+  #ppane-overview .career-stat .val{font-family:'VT323',monospace; font-size:44px; line-height:1; color:var(--accent); text-shadow:none; white-space:normal;}
+  #ppane-overview .career-stat .val.val-sm{font-size:24px; line-height:1.1;}
+  #ppane-overview .career-stat .lbl{order:-1; font-size:11px; letter-spacing:2px; color:var(--muted); margin:0 0 4px; text-transform:uppercase;}
+  #ppane-overview .career-stat-expensive{flex-basis:340px;}
+  #ppane-overview .achv-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:10px; margin-top:14px;}
+  #ppane-overview .achv-badge{border-radius:4px; padding:12px 6px;}
+  #ppane-overview p.muted{font-size:13px;}
+  /* RÉGLAGES : deux colonnes maçonnées (pas de trous), boîtes panneau, boutons du site */
+  #view-profile .prof-grid{display:block; columns:2; column-gap:18px;}
+  #view-profile .prof-grid > .card{display:block; break-inside:avoid; margin:0 0 18px; padding:22px 24px; background:var(--panel); border:1px solid var(--border); border-radius:4px; box-shadow:none;}
+  #view-profile .prof-grid > .card[hidden]{display:none;}
+  #view-profile .prof-grid > .card::before, #view-profile .prof-grid > .card::after, #ppane-account > .card::before, #ppane-account > .card::after{display:none !important;}
+  #view-profile .prof-grid > .card h3, #ppane-account > .card h3{font-family:'VT323',monospace; font-size:24px; font-weight:400; color:var(--accent); letter-spacing:1px; margin:0 0 12px; text-shadow:none;}
+  #view-profile .prof-grid > .card h3::before, #ppane-account > .card h3::before{content:"// ";}
+  #view-profile .prof-grid label{font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin:14px 0 6px; display:block;}
+  #view-profile .prof-grid .btn-secondary{width:auto !important; margin:16px 0 0 auto !important; padding:11px 24px; background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:2px; font-size:12px; letter-spacing:1px; display:block;}
+  #ppane-account{display:flex; flex-direction:column; gap:18px; max-width:760px;}
+  #ppane-account > .card{margin:0; padding:22px 24px; background:var(--panel); border:1px solid var(--border); border-radius:4px; box-shadow:none;}
+  @media (max-width:900px){ #view-profile .prof-grid{columns:1;} #ppane-overview .career-stat{flex-basis:45%; padding:2px 16px;} }
+  @media (max-width:600px){ #view-profile .profile-id-card{flex-direction:column; text-align:center; align-items:center; gap:10px;} #view-profile .profile-hero-rsi{font-size:36px;} #view-profile #profileTabs{flex-wrap:nowrap; overflow-x:auto;} #view-profile #profileTabs .tab-btn{padding:14px 12px; font-size:12px;} #view-profile .prof-pane{gap:30px;} }
   /* ===== MK : page shop (G) ===== */
   .shop-banner-card.shop-texture-host{padding:28px; margin-bottom:0; border:1px solid var(--accent); border-radius:6px; box-shadow:0 0 18px var(--accent-dim); background:linear-gradient(var(--panel), var(--bg2));}
   .shop-banner-card.shop-texture-host::before, .shop-banner-card.shop-texture-host::after{display:none;}
@@ -5282,7 +5298,7 @@ async function loadClientDashboard(){
   const d = T[LANG];
   const [ordersRes, desiredRes, couriersRes] = await Promise.all([
     sb.from('orders').select('*').eq('client_id', session.user.id).order('created_at',{ascending:false}),
-    sb.from('resource_requests').select('id',{count:'exact',head:true}).eq('status','open'),
+    sb.from('resource_requests').select('id',{count:'exact',head:true}).eq('status','open').eq('seller_id', session.user.id),
     sb.from('profiles').select('id',{count:'exact',head:true}).eq('available_for_delivery', true)
   ]);
   const { data, error } = ordersRes;

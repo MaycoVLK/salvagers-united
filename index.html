@@ -858,9 +858,8 @@
   .frm-leaf{position:absolute; left:0; width:10px; height:6px; background:var(--accent); -webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%225%22%20height%3D%223%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%221%22%20y%3D%220%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%221%22%20width%3D%225%22%20height%3D%221%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%222%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E") center/100% 100% no-repeat; mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%225%22%20height%3D%223%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%221%22%20y%3D%220%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%221%22%20width%3D%225%22%20height%3D%221%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%222%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E") center/100% 100% no-repeat; opacity:0; animation:frmWind var(--dur,6s) linear var(--del,0s) infinite;}
   @keyframes frmWind{0%{opacity:0; transform:translate(0,0) rotate(0deg);} 10%{opacity:.9;} 90%{opacity:.9;} 100%{opacity:0; transform:translate(var(--travel,600px), var(--drift,20px)) rotate(300deg);}}
   .frm-streak{position:absolute; left:0; height:2px; width:26px; background:linear-gradient(90deg, transparent, var(--accent), transparent); opacity:0; animation:frmWind var(--dur,4s) linear var(--del,0s) infinite;}
-  /* Traînée lumineuse : anneau conique + vaisseau en tête */
-  .shop-frame-layer.frame-trail{padding:3px; background:conic-gradient(from var(--frmAng), transparent 0 62%, var(--accent) 100%);
-    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);}
+  /* Vaisseau + traînée lumineuse : canvas, le vaisseau vole librement dans des directions aléatoires */
+  .shop-frame-layer.frame-trail{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
   .shop-frame-extra{position:absolute; inset:0; pointer-events:none; z-index:5; border-radius:inherit;}
   .frm-ship{position:absolute; left:0; top:0; width:15px; height:15px; margin:-7px 0 0 -7px; background:var(--accent); clip-path:polygon(0 0, 100% 50%, 0 100%); filter:drop-shadow(0 0 5px var(--accent));}
   @media (prefers-reduced-motion:reduce){ .shop-frame-layer, .shop-frame-layer::before, .shop-frame-layer::after{animation:none !important;} }
@@ -880,8 +879,9 @@
   .company-card .company-name{font-family:'VT323',monospace; font-size:34px; letter-spacing:1px; color:var(--text); line-height:1;}
   .company-card .company-actions{position:relative; z-index:5;}
   .shop-swatch-item.locked, .shop-texture-item.locked, .shop-frame-item.locked{position:relative;}
-  .locked[data-tip]::after{content:attr(data-tip); position:absolute; bottom:calc(100% + 8px); left:50%; z-index:80; width:150px; padding:7px 9px; border-radius:4px; border:1px solid var(--accent); background:var(--bg2); color:var(--text); font-size:.62rem; line-height:1.4; text-transform:none; text-align:left; letter-spacing:normal; box-shadow:0 6px 16px rgba(0,0,0,.5); opacity:0; pointer-events:none; transform:translate(-50%,4px); transition:opacity .16s ease, transform .16s ease;}
-  .locked[data-tip]:hover::after{opacity:1; transform:translate(-50%,0);}
+  .shop-frame-item, .shop-texture-item, .shop-swatch-item{position:relative;}
+  .shop-frame-item[data-tip]::after, .shop-texture-item[data-tip]::after, .shop-swatch-item[data-tip]::after{content:attr(data-tip); position:absolute; bottom:calc(100% + 8px); left:50%; z-index:80; width:150px; padding:7px 9px; border-radius:4px; border:1px solid var(--accent); background:var(--bg2); color:var(--text); font-size:.62rem; line-height:1.4; text-transform:none; text-align:left; letter-spacing:normal; box-shadow:0 6px 16px rgba(0,0,0,.5); opacity:0; pointer-events:none; transform:translate(-50%,4px); transition:opacity .16s ease, transform .16s ease;}
+  .shop-frame-item[data-tip]:hover::after, .shop-texture-item[data-tip]:hover::after, .shop-swatch-item[data-tip]:hover::after{opacity:1; transform:translate(-50%,0);}
   .shop-swatch-item.locked, .shop-texture-item.locked{opacity:.5; filter:grayscale(.6); cursor:not-allowed;}
   .shop-lock-req{font-size:.55rem; color:var(--accent); letter-spacing:.3px; text-align:center; line-height:1.15; max-width:76px; pointer-events:none;}
   .shop-swatch-item:hover{background:var(--bg2); border-color:var(--border);}
@@ -3720,7 +3720,7 @@ const T = {
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NOUVELLE COMMANDE", unlockSales:"{n} ventes", frameLbl:"Cadre", frameNone:"Aucun", frameDrops:"Pixels qui tombent", frameOrbit:"Coins orbitaux", frameNeon:"Néon pulsé", frameShield:"Boucliers", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Traînée", unlockRank:"Rang vendeur : ", unlockCAch:"Succès coursier : ", companyTitle:"ENTREPRISE DE LIVRAISON", companyCustomize:"PERSONNALISER", companyCreate:"CRÉER MON ENTREPRISE", companyNoShop:"Donne un nom, un logo et un style à ton entreprise : ils sont partagés avec ton shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Succès : ", lockedTip:"Pour débloquer : ", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
+    homeNewOrder:"+ NOUVELLE COMMANDE", unlockSales:"{n} ventes", frameLbl:"Cadre", frameNone:"Aucun", frameDrops:"Pixels qui tombent", frameOrbit:"Coins orbitaux", frameNeon:"Néon pulsé", frameShield:"Boucliers", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Traînée", unlockRank:"Rang vendeur : ", unlockCAch:"Succès coursier : ", companyTitle:"ENTREPRISE DE LIVRAISON", companyCustomize:"PERSONNALISER", companyCreate:"CRÉER MON ENTREPRISE", companyNoShop:"Donne un nom, un logo et un style à ton entreprise : ils sont partagés avec ton shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Succès : ", lockedTip:"Pour débloquer : ", unlockedTip:"Condition : ", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
     classicOrderNote:"COMMANDE CLASSIQUE : uniquement des objets achetables dans une boutique en jeu — le coursier les achète puis te les livre. Un objet introuvable en boutique (loot, craft, rare…) ? Poste plutôt un desired item.", classicOrderLink:"POSTER UN DESIRED ITEM ▸",
     commodityQualityNote:"Commodities : seules des commodities de qualité 500 peuvent être livrées par commande. Pour une qualité supérieure, passe par la marketplace ou poste un desired item.", commodityQualityShort:"Commodity : qualité 500 uniquement.",
     desiredIntroNote:"DESIRED ITEM : un objet que tu cherches et qui n'est PAS achetable en boutique (loot, craft, qualité supérieure…). N'importe quel joueur peut te proposer de te le fournir ; tu choisis l'offre, puis vous pouvez demander un coursier pour la livraison.", myDesiredTitle:"MES DESIRED ITEMS", noMyDesired:"Tu n'as posté aucun desired item.", postDesiredBtn:"+ POSTER", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"LIVRAISON DESIRED ITEM",
@@ -3896,7 +3896,7 @@ const T = {
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NEW ORDER", unlockSales:"{n} sales", frameLbl:"Frame", frameNone:"None", frameDrops:"Falling pixels", frameOrbit:"Orbiting corners", frameNeon:"Pulsing neon", frameShield:"Shields", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Light trail", unlockRank:"Seller rank: ", unlockCAch:"Courier achievement: ", companyTitle:"DELIVERY COMPANY", companyCustomize:"CUSTOMIZE", companyCreate:"CREATE MY COMPANY", companyNoShop:"Give your company a name, a logo and a style: they are shared with your shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Achievement: ", lockedTip:"To unlock: ", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
+    homeNewOrder:"+ NEW ORDER", unlockSales:"{n} sales", frameLbl:"Frame", frameNone:"None", frameDrops:"Falling pixels", frameOrbit:"Orbiting corners", frameNeon:"Pulsing neon", frameShield:"Shields", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Light trail", unlockRank:"Seller rank: ", unlockCAch:"Courier achievement: ", companyTitle:"DELIVERY COMPANY", companyCustomize:"CUSTOMIZE", companyCreate:"CREATE MY COMPANY", companyNoShop:"Give your company a name, a logo and a style: they are shared with your shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Achievement: ", lockedTip:"To unlock: ", unlockedTip:"Requirement: ", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
     classicOrderNote:"CLASSIC ORDER: only items you can buy in an in-game shop — the courier buys them and delivers them to you. Item not sold in shops (loot, crafted, rare…)? Post a desired item instead.", classicOrderLink:"POST A DESIRED ITEM ▸",
     commodityQualityNote:"Commodities: only quality 500 commodities can be delivered through an order. For a higher quality, use the marketplace or post a desired item.", commodityQualityShort:"Commodity: quality 500 only.",
     desiredIntroNote:"DESIRED ITEM: something you're looking for that is NOT sold in shops (loot, crafted, higher quality…). Any player can offer to supply it; you pick an offer, then you can request a courier for the delivery.", myDesiredTitle:"MY DESIRED ITEMS", noMyDesired:"You haven't posted any desired item.", postDesiredBtn:"+ POST", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"DESIRED ITEM DELIVERY",
@@ -6562,6 +6562,51 @@ async function loadShopUnlockCtx(){
   shopUnlockCtx = ctx;
 }
 // Pose (ou retire) la couche de cadre décorative sur une carte ou un logo.
+// --- Vaisseau + traînée : un seul moteur d'animation partagé (une boucle pour toutes les cartes affichées) ---
+const shipTrailInstances = new Set(); let shipTrailRaf = null, shipTrailLast = 0;
+function shipTrailTick(ts){
+  const dt = Math.min(.05, Math.max(0, (ts - shipTrailLast) / 1000) || .016); shipTrailLast = ts;
+  shipTrailInstances.forEach(inst => { if(!inst.canvas.isConnected){ shipTrailInstances.delete(inst); return; } inst.step(dt, ts); });
+  shipTrailRaf = (shipTrailInstances.size && !document.hidden) ? requestAnimationFrame(shipTrailTick) : null;
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden && shipTrailInstances.size && !shipTrailRaf){ shipTrailLast = performance.now(); shipTrailRaf = requestAnimationFrame(shipTrailTick); } });
+function startShipTrail(layer){
+  const canvas = document.createElement('canvas'); canvas.style.cssText = 'position:absolute; inset:0; width:100%; height:100%;'; layer.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  const inst = { canvas, W:0, H:0, pts:[], x:0, y:0, ang:Math.random()*6.283, tx:0, ty:0, nextPick:0, color:'#fff', colorAge:99, ready:false };
+  const pickTarget = (now) => { inst.tx = inst.W*(.06+Math.random()*.88); inst.ty = inst.H*(.1+Math.random()*.8); inst.nextPick = now + 1800 + Math.random()*2600; };
+  inst.step = (dt, now) => {
+    const w = layer.clientWidth, h = layer.clientHeight;
+    if(!w || !h) return; // vue masquée : on attend
+    const dpr = window.devicePixelRatio || 1;
+    if(w !== inst.W || h !== inst.H){ inst.W = w; inst.H = h; canvas.width = Math.round(w*dpr); canvas.height = Math.round(h*dpr); if(!inst.ready){ inst.x = w*(.15+Math.random()*.7); inst.y = h*(.2+Math.random()*.6); inst.ready = true; pickTarget(now); } }
+    if(++inst.colorAge > 90){ inst.color = (getComputedStyle(layer).getPropertyValue('--accent') || '#fff').trim() || '#fff'; inst.colorAge = 0; }
+    const speed = Math.max(70, Math.min(210, (inst.W + inst.H) * .18));
+    const turn = 2.6; // rad/s : virages doux
+    if(now > inst.nextPick || Math.hypot(inst.tx-inst.x, inst.ty-inst.y) < 28) pickTarget(now);
+    let diff = Math.atan2(inst.ty-inst.y, inst.tx-inst.x) - inst.ang;
+    while(diff > Math.PI) diff -= 2*Math.PI; while(diff < -Math.PI) diff += 2*Math.PI;
+    inst.ang += Math.max(-turn*dt, Math.min(turn*dt, diff));
+    inst.x += Math.cos(inst.ang)*speed*dt; inst.y += Math.sin(inst.ang)*speed*dt;
+    if(inst.x < 2 || inst.x > inst.W-2 || inst.y < 2 || inst.y > inst.H-2){ inst.x = Math.max(2, Math.min(inst.W-2, inst.x)); inst.y = Math.max(2, Math.min(inst.H-2, inst.y)); inst.tx = inst.W/2 + (Math.random()-.5)*inst.W*.4; inst.ty = inst.H/2 + (Math.random()-.5)*inst.H*.4; }
+    inst.pts.push({ x:inst.x, y:inst.y, t:now });
+    const life = 1300; while(inst.pts.length && now - inst.pts[0].t > life) inst.pts.shift();
+    ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,inst.W,inst.H);
+    ctx.strokeStyle = inst.color; ctx.fillStyle = inst.color; ctx.lineCap = 'round'; ctx.shadowColor = inst.color;
+    const sz = Math.max(6, Math.min(13, Math.min(inst.W, inst.H) / 10));
+    for(let i=1;i<inst.pts.length;i++){
+      const a = inst.pts[i-1], b = inst.pts[i], age = (now - b.t) / life, k = Math.max(0, 1-age);
+      ctx.globalAlpha = Math.pow(k, 1.4) * .95; ctx.lineWidth = .8 + k * sz * .32; ctx.shadowBlur = 8*k;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+    ctx.globalAlpha = 1; ctx.shadowBlur = 10;
+    ctx.save(); ctx.translate(inst.x, inst.y); ctx.rotate(inst.ang);
+    ctx.beginPath(); ctx.moveTo(sz, 0); ctx.lineTo(-sz*.7, -sz*.62); ctx.lineTo(-sz*.7, sz*.62); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  };
+  shipTrailInstances.add(inst);
+  if(!shipTrailRaf){ shipTrailLast = performance.now(); shipTrailRaf = requestAnimationFrame(shipTrailTick); }
+}
 function applyShopFrame(host, key){
   if(!host) return;
   let layer = host.querySelector(':scope > .shop-frame-layer');
@@ -6647,24 +6692,8 @@ function applyShopFrame(host, key){
     const n = count(14000, 3, 7);
     for(let i=0;i<n;i++) mk('frm-leaf', { top: rnd(15,80)+'%', '--travel': (W+30)+'px', '--drift': rnd(-12,24).toFixed(0)+'px', '--dur': rnd(5,9).toFixed(1)+'s', '--del': (-rnd(0,9)).toFixed(1)+'s' });
     for(let i=0;i<3;i++) mk('frm-streak', { top: rnd(20,85)+'%', '--travel': (W+30)+'px', '--drift': '0px', '--dur': rnd(3,5).toFixed(1)+'s', '--del': (-rnd(0,5)).toFixed(1)+'s' });
-  } else if(key === 'trail' && !reduce && layer.animate){
-    const dur = Math.max(4200, (W+H)*9), N = 120, m = 2, hw = W/2 - m, hh = H/2 - m, cx = W/2, cy = H/2;
-    const at = th => { const dx = Math.sin(th), dy = -Math.cos(th); const t = Math.min(Math.abs(dx) > 1e-6 ? hw/Math.abs(dx) : 1e9, Math.abs(dy) > 1e-6 ? hh/Math.abs(dy) : 1e9); return [cx + dx*t, cy + dy*t]; };
-    const pts = []; for(let i=0;i<=N;i++) pts.push(at(i/N*2*Math.PI));
-    let prevRot = 0; const kf = pts.map((q,i) => {
-      const a = pts[Math.max(0,i-1)], b = pts[Math.min(N,i+1)];
-      let rot = Math.atan2(b[1]-a[1], b[0]-a[0]) * 180/Math.PI;
-      if(i === 0) rot = 0;
-      while(rot - prevRot > 180) rot -= 360; while(rot - prevRot < -180) rot += 360; prevRot = rot;
-      return { offset: i/N, transform: `translate(${q[0].toFixed(1)}px, ${q[1].toFixed(1)}px) rotate(${rot.toFixed(1)}deg)` };
-    });
-    kf[N].transform = kf[N].transform.replace(/rotate\([^)]*\)/, 'rotate(360deg)'); // boucle propre : même direction qu'au départ
-    const extra = document.createElement('div'); extra.className = 'shop-frame-extra'; host.appendChild(extra);
-    const ship = document.createElement('span'); ship.className = 'frm-ship'; extra.appendChild(ship);
-    const t0 = document.timeline.currentTime;
-    const a1 = layer.animate({ '--frmAng': ['0deg','360deg'] }, { duration: dur, iterations: Infinity });
-    const a2 = ship.animate(kf, { duration: dur, iterations: Infinity });
-    a1.startTime = t0; a2.startTime = t0;
+  } else if(key === 'trail' && !reduce){
+    startShipTrail(layer);
   }
 }
 function f2(f){ return Math.max(.5, f); }
@@ -6682,7 +6711,7 @@ function initShopFramePicker(){
       const req = unlockRuleText(f.unlock);
       item.classList.add('locked'); item.dataset.tip = d.lockedTip + req;
       const r = document.createElement('span'); r.className='shop-lock-req'; r.textContent = req; item.appendChild(r);
-    }
+    } else if(f.unlock){ item.title = ''; item.dataset.tip = d.unlockedTip + unlockRuleText(f.unlock); }
     item.addEventListener('click', () => {
       if(!frameAllowed(f.key)){ toastShow(d.lockedTip + unlockRuleText(f.unlock), true); return; }
       selectedShopFrame = f.key; syncShopFramePicker(); updateShopLivePreview();
@@ -6732,7 +6761,7 @@ function initShopTexturePicker(){
       const req = unlockRuleText(SHOP_TEXTURE_UNLOCKS[t.key]);
       item.classList.add('locked'); item.dataset.tip = d.lockedTip + req;
       const r = document.createElement('span'); r.className='shop-lock-req'; r.textContent = req; item.appendChild(r);
-    }
+    } else if(SHOP_TEXTURE_UNLOCKS[t.key]){ item.title = ''; item.dataset.tip = d.unlockedTip + unlockRuleText(SHOP_TEXTURE_UNLOCKS[t.key]); }
     item.addEventListener('click', () => {
       if(!textureAllowed(t.key)){ toastShow(d.lockedTip + unlockRuleText(SHOP_TEXTURE_UNLOCKS[t.key]), true); return; }
       setShopTexture(t.key);
@@ -6773,7 +6802,7 @@ function initShopThemePicker(){
       const req = unlockRuleText(SHOP_COLOR_UNLOCKS[c.key]);
       item.classList.add('locked'); item.dataset.tip = d.lockedTip + req;
       const r = document.createElement('span'); r.className='shop-lock-req'; r.textContent = req; item.appendChild(r);
-    }
+    } else if(SHOP_COLOR_UNLOCKS[c.key]){ item.title = ''; item.dataset.tip = d.unlockedTip + unlockRuleText(SHOP_COLOR_UNLOCKS[c.key]); }
     item.addEventListener('click', () => {
       if(!colorAllowed(c.hex)){ toastShow(d.lockedTip + unlockRuleText(SHOP_COLOR_UNLOCKS[c.key]), true); return; }
       setShopColor(c.hex, true);

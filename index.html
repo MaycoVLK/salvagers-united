@@ -294,6 +294,11 @@
   }
   .gear-wrap{position:relative;}
   .create-wrap{position:relative;}
+  #clientCreateWrap:has(#createOrderBtn[hidden]){display:none;}
+  .note-box{border:1px solid var(--border); border-left:3px solid var(--accent); background:var(--bg2); padding:10px 12px; font-size:.78rem; line-height:1.45; color:var(--text); margin:0 0 14px;}
+  .note-box button{background:none; border:none; color:var(--accent); font-family:'VT323',monospace; font-size:1rem; letter-spacing:.5px; cursor:pointer; padding:4px 0 0; display:block;}
+  .desired-tag{display:inline-block; font-family:'VT323',monospace; font-size:.9rem; letter-spacing:1px; color:var(--bg); background:var(--accent); padding:0 6px; margin-left:6px; vertical-align:middle;}
+  .my-desired-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:6px 0 10px;}
   .create-menu{position:absolute; top:48px; right:0; background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:8px; min-width:220px; box-shadow:0 10px 26px rgba(0,0,0,.55); z-index:60; display:flex; flex-direction:column; gap:4px;}
   .create-menu button{width:100%; justify-content:flex-start; text-align:left; display:flex; align-items:center; gap:8px; background:none; border:1px solid transparent; color:var(--text); padding:9px 10px; font-family:'VT323',monospace; font-size:.95rem; letter-spacing:.5px; cursor:pointer; border-radius:4px;}
   .create-menu button:hover{background:var(--bg2); border-color:var(--border);}
@@ -1961,10 +1966,25 @@
       </div>
 
       <div class="topbar-actions">
-        <button class="btn-primary" id="createOrderBtn" onclick="openCreateOrder()" hidden>
-          <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="2" width="2" height="12"/><rect x="2" y="7" width="12" height="2"/></g></svg>
-          <span data-i18n="createOrder">CRÉER</span>
-        </button>
+        <div class="create-wrap" id="clientCreateWrap">
+          <button class="btn-primary" id="createOrderBtn" onclick="toggleClientCreateMenu()" hidden>
+            <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="2" width="2" height="12"/><rect x="2" y="7" width="12" height="2"/></g></svg>
+            <span data-i18n="createOrder">CRÉER</span>
+          </button>
+          <div class="create-menu" id="clientCreateMenu" hidden>
+            <button type="button" onclick="closeClientCreateMenu(); openCreateOrder()">
+              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="3" width="2" height="10"/><rect x="3" y="7" width="10" height="2"/></g></svg>
+              <span data-i18n="createMenuOrder">Nouvelle commande (objets en boutique)</span>
+            </button>
+            <button type="button" onclick="closeClientCreateMenu(); openSellerCreateOption('resource')">
+              <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                <rect x="2" y="7" width="12" height="2"/><rect x="6" y="3" width="2" height="2"/><rect x="8" y="3" width="2" height="2"/>
+                <rect x="4" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/><rect x="7" y="9" width="2" height="5"/>
+              </g></svg>
+              <span data-i18n="createMenuDesired">Poster un desired item (introuvable en boutique)</span>
+            </button>
+          </div>
+        </div>
         <div class="create-wrap" id="sellerCreateWrap" hidden>
           <button class="btn-primary" onclick="toggleSellerCreateMenu()">
             <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="2" width="2" height="12"/><rect x="2" y="7" width="12" height="2"/></g></svg>
@@ -2128,6 +2148,7 @@
       </div>
       <div id="clientTabDeliveries" class="mk-col">
         <button type="button" class="mk-btn mk-cta-top" onclick="openCreateOrder()" data-i18n="homeNewOrder">+ NOUVELLE COMMANDE</button>
+        <button type="button" class="mk-btn ghost mk-cta-top" onclick="openSellerCreateOption('resource')" data-i18n="newDesiredBtn">+ DESIRED ITEM</button>
         <div class="mk-stats" id="clientHomeStats"></div>
         <div id="clientCurrentOrders" style="display:flex; flex-direction:column; gap:36px;"></div>
         <div class="mk-again" id="clientOrderAgain" hidden></div>
@@ -2210,7 +2231,10 @@
         <div id="blueprintsFeed" class="marketplace-grid"></div>
       </div>
       <div id="clientTabResources" class="mk-col tight" hidden>
-        <h3 data-i18n="requestedResourcesTitle" style="margin-top:0;">Ressources demandées par les vendeurs</h3>
+        <div class="note-box" data-i18n="desiredIntroNote">DESIRED ITEM</div>
+        <div class="my-desired-head"><span class="mk-lbl"><span class="sl">//</span> <span data-i18n="myDesiredTitle">MES DESIRED ITEMS</span></span><button type="button" class="mk-btn sm" onclick="openSellerCreateOption('resource')" data-i18n="postDesiredBtn">+ POSTER</button></div>
+        <div id="myDesiredList" class="resource-request-grid"></div>
+        <h3 data-i18n="requestedResourcesTitle" style="margin-top:18px;">Ressources demandées par les vendeurs</h3>
         <div class="mkt-toolbar">
           <input type="text" id="resourceRequestsSearchInput" class="mkt-search-input" data-i18n-ph="mktSearchPh" placeholder="Rechercher un objet…" oninput="onResourceRequestsSearchInput()">
         </div>
@@ -2334,6 +2358,7 @@
       <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
       <header><h1 data-i18n="newOrder">Nouvelle commande</h1></header>
       <div class="card">
+        <div class="note-box"><span data-i18n="classicOrderNote">COMMANDE CLASSIQUE</span><button type="button" onclick="openSellerCreateOption('resource')" data-i18n="classicOrderLink">POSTER UN DESIRED ITEM ▸</button></div>
         <label for="arrivee" data-i18n="lblSystem">Système de livraison souhaité</label>
         <select id="arrivee"><option value="Stanton">Stanton</option><option value="Nyx">Nyx</option><option value="Pyro">Pyro</option></select>
         <label for="lieu" data-i18n="lblLieu">Lieu exact de livraison</label>
@@ -2377,6 +2402,7 @@
         <label data-i18n="lblItems">Objets souhaités</label>
         <p class="muted" data-i18n="uexHint" style="margin:-6px 0 8px;">Astuce : tape le nom d'une marchandise, arme ou armure pour voir le prix UEX (le plus bas trouvé) se remplir automatiquement (modifiable ensuite).</p>
         <div id="items"></div>
+        <div class="note-box" id="commodityQualityBox" hidden><span data-i18n="commodityQualityNote">Commodities : qualité 500 uniquement.</span><button type="button" onclick="openSellerCreateOption('resource')" data-i18n="classicOrderLink">POSTER UN DESIRED ITEM ▸</button></div>
         <datalist id="uexList"></datalist>
         <button class="btn-secondary" style="width:100%" onclick="addItem()">
           <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="2" width="2" height="12"/><rect x="2" y="7" width="12" height="2"/></g></svg>
@@ -2681,6 +2707,7 @@
       <button class="back" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
       <header><h1 data-i18n="requestResourcesTitle">Poster un objet recherché</h1></header>
       <div class="card">
+        <div class="note-box" data-i18n="desiredIntroNote">DESIRED ITEM</div>
         <label for="resourceName" data-i18n="resourceNameLbl">Objet recherché</label>
         <input id="resourceName" type="text" data-i18n-ph="phResourceName" placeholder="ex: Laranite brute, casque d'armure lourde...">
         <label for="resourceQty" data-i18n="resourceQtyLbl">Quantité souhaitée</label>
@@ -3487,7 +3514,7 @@ function setClientTab(tab){
   if(tab === 'deliveries'){ loadClientDashboard(); markCategoryRead('client_orders'); }
   else if(tab === 'marketplace'){ loadMarketplaceFeed(); }
   else if(tab === 'blueprints'){ loadBlueprintsFeed(); }
-  else { loadResourceRequestsFeed(); }
+  else { loadMyDesiredItems(); loadResourceRequestsFeed(); }
 }
 let hasBooted = false;
 let trackedShipPct = {}; // orderId -> pourcentage précédemment affiché (pour l'animation)
@@ -3602,7 +3629,12 @@ const T = {
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NOUVELLE COMMANDE", adminRemoveBtn:"RETIRER", adminRemoveTitle:"Retirer cette commande ?", adminRemoveIntro:"La commande sera supprimée et le client verra ce message dans une fenêtre à sa prochaine connexion.", adminRemoveReasonLbl:"Message au client", adminRemoveDefaultReason:"Ta commande a été retirée car elle contient des objets qui ne sont pas achetables en boutique en jeu, ce qui ne respecte pas les conditions d'utilisation du service. Tu peux en passer une nouvelle avec des objets disponibles en boutique.", adminRemoveConfirm:"RETIRER LA COMMANDE", adminRemoveDone:"Commande retirée, le client sera prévenu.", removedOrderTitle:"Commande retirée", removedOrderIntro:"Une de tes commandes a été retirée par un administrateur :", removedOrderMsgLbl:"MESSAGE", removedOrderOk:"COMPRIS", pAccTitle:"Mon compte", pAccRole:"Rôle", pTabOverview:"APERÇU", pTabSettings:"RÉGLAGES", pTabAccount:"COMPTE", newsTag:"// BETA 04", newsTxt:"Nouveau : annuaire des shops, statut personnalisable sur chaque shop et nouvelle interface.", newsDismiss:"MASQUER ✕", homeHello:"Salut, {name}", homeFresh:"NOUVEAUTÉS SUR LA MARKETPLACE", homeSeeAll:"TOUT VOIR ▸", homeInProgress:"En cours", homeStatOrders:"COMMANDES", homeStatDelivered:"LIVRÉES", homeStatSpent:"DÉPENSÉ (aUEC)", homeStatActive:"EN COURS", homeMore:"+{n} DE PLUS ▾", homeLess:"MOINS ▴", homeCargo:"CARGAISON",
+    homeNewOrder:"+ NOUVELLE COMMANDE", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
+    classicOrderNote:"COMMANDE CLASSIQUE : uniquement des objets achetables dans une boutique en jeu — le coursier les achète puis te les livre. Un objet introuvable en boutique (loot, craft, rare…) ? Poste plutôt un desired item.", classicOrderLink:"POSTER UN DESIRED ITEM ▸",
+    commodityQualityNote:"Commodities : seules des commodities de qualité 500 peuvent être livrées par commande. Pour une qualité supérieure, passe par la marketplace ou poste un desired item.", commodityQualityShort:"Commodity : qualité 500 uniquement.",
+    desiredIntroNote:"DESIRED ITEM : un objet que tu cherches et qui n'est PAS achetable en boutique (loot, craft, qualité supérieure…). N'importe quel joueur peut te proposer de te le fournir ; tu choisis l'offre, puis vous pouvez demander un coursier pour la livraison.", myDesiredTitle:"MES DESIRED ITEMS", noMyDesired:"Tu n'as posté aucun desired item.", postDesiredBtn:"+ POSTER", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"LIVRAISON DESIRED ITEM",
+    offerMarkDeliveredBtn:"MARK AS DELIVERED", offerRequestCourierBtn:"DEMANDER UN COURIER", offerCourierPending:"Coursier demandé — en attente d'un coursier.", offerCourierAssigned:"Coursier assigné :", offerDeliveredDone:"Marqué comme livré.", offerNeedLocation:"Renseigne un lieu de livraison valide (liste de lieux).", offerDeliveryFeeNote:"Frais coursier (min 50 000 aUEC) ajoutés à la commande.",
+ adminRemoveBtn:"RETIRER", adminRemoveTitle:"Retirer cette commande ?", adminRemoveIntro:"La commande sera supprimée et le client verra ce message dans une fenêtre à sa prochaine connexion.", adminRemoveReasonLbl:"Message au client", adminRemoveDefaultReason:"Ta commande a été retirée car elle contient des objets qui ne sont pas achetables en boutique en jeu, ce qui ne respecte pas les conditions d'utilisation du service. Tu peux en passer une nouvelle avec des objets disponibles en boutique.", adminRemoveConfirm:"RETIRER LA COMMANDE", adminRemoveDone:"Commande retirée, le client sera prévenu.", removedOrderTitle:"Commande retirée", removedOrderIntro:"Une de tes commandes a été retirée par un administrateur :", removedOrderMsgLbl:"MESSAGE", removedOrderOk:"COMPRIS", pAccTitle:"Mon compte", pAccRole:"Rôle", pTabOverview:"APERÇU", pTabSettings:"RÉGLAGES", pTabAccount:"COMPTE", newsTag:"// BETA 04", newsTxt:"Nouveau : annuaire des shops, statut personnalisable sur chaque shop et nouvelle interface.", newsDismiss:"MASQUER ✕", homeHello:"Salut, {name}", homeFresh:"NOUVEAUTÉS SUR LA MARKETPLACE", homeSeeAll:"TOUT VOIR ▸", homeInProgress:"En cours", homeStatOrders:"COMMANDES", homeStatDelivered:"LIVRÉES", homeStatSpent:"DÉPENSÉ (aUEC)", homeStatActive:"EN COURS", homeMore:"+{n} DE PLUS ▾", homeLess:"MOINS ▴", homeCargo:"CARGAISON",
     hmOrdersIn:"COMMANDES EN COURS ({n})", hmMostAdv:"LES PLUS AVANCÉES D'ABORD", hmViewAll:"VOIR TOUTES LES COMMANDES ▸", hmShowLess:"VOIR MOINS ▴", hmNeedElse:"Besoin d'autre chose ?", hmCtaTitle:"Besoin de quelque chose ? Commande maintenant !", hmCtaSub:"Choisis tes objets et une destination à Stanton, Nyx ou Pyro. Un coursier s'occupe du reste.", hmHow:"COMMENT ÇA MARCHE", hm1t:"Tu commandes", hm1x:"Objets et destination. Le prix est affiché avant de confirmer.", hm2t:"Un coursier achète", hm2x:"Il reçoit un itinéraire d'achat suggéré et livre ta cargaison.", hm3t:"Tu suis", hm3x:"Acheté, en transit, livré. Discute avec ton coursier à tout moment.", hmAgain:"COMMANDER À NOUVEAU", hmFullHist:"HISTORIQUE COMPLET ({n}) ▸", hmReorder:"RECOMMANDER", hmDelivered:"LIVRÉE", hmMessage:"MESSAGE", hmWaiting:"// EN ATTENTE D'UN COURSIER", hmCargo:"LISTE DE LA CARGAISON", hmStDel:"LIVRÉES", hmStAct:"EN COURS", hmStDes:"OBJETS RECHERCHÉS", hmStCour:"COURSIERS EN LIGNE", hmNewOrderBtn:"CRÉER UNE COMMANDE", titleOrders:"Dashboard client", titleMkt:"Marketplace", titleDesired:"Objets recherchés", titleBp:"Blueprints", titleCourier:"Coursier",
     sdTitle:"Shops", sdSub:"Tous les shops ouverts sur Couriers United. Trouve un vendeur, parcours ses annonces et ses blueprints.", sdSearchPh:"Chercher un shop par nom ou spécialité...", sdSortLbl:"TRIER", sdSortedBy:"TRIÉ PAR {x}", sdCount:"{n} SHOPS", sdNone:"Aucun shop ne correspond à ta recherche.", sdSales:"ventes", sdListings:"annonces", sdBp:"bp", sdVisit:"VISITER ▸", sdSinceWeek:"Ouvert cette semaine", sdSinceDays:"Ouvert depuis {n} jours", sdS_newest:"LES PLUS RÉCENTS", sdS_sales:"PLUS DE VENTES (TOTAL)", sdS_blueprints:"PLUS DE BLUEPRINTS", sdS_listings:"PLUS D'ANNONCES", sdS_name:"NOM DE A À Z",
     shStSales:"VENTES (TOTAL)", shStListings:"ANNONCES", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
@@ -3630,7 +3662,7 @@ const T = {
     listingTagsLbl:"Tags (optionnel)", tagCrafted:"CRAFTÉ", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", tagNegotiable:"NÉGOCIABLE", editListingBtn:"MODIFIER",
     requestResourcesTitle:"Poster un objet recherché", requestResourcesBtn:"OBJET RECHERCHÉ", resourceNameLbl:"Objet recherché", phResourceName:"ex: Laranite brute, casque d'armure lourde...", resourceQtyLbl:"Quantité souhaitée", resourcePriceLbl:"Prix proposé (aUEC, optionnel)", resourceNoteLbl:"Note (optionnel)", phResourceNote:"ex: Livraison sur Nyx, quantité négociable...", submitResourceRequestBtn:"PUBLIER L'ANNONCE", resourceRequestSaved:"ANNONCE PUBLIÉE !", resourcePriceNone:"Prix à négocier",
     myResourceRequestsTitle:"Objets recherchés", noResourceRequests:"Tu n'as posté aucune annonce d'objet recherché pour le moment.",
-    tabResources:"DESIRED ITEMS", requestedResourcesTitle:"Objets recherchés par les vendeurs", noOpenResourceRequests:"Aucune annonce en cours.", resourceRequestedBy:"Demandé par ",
+    tabResources:"DESIRED ITEMS", requestedResourcesTitle:"Objets recherchés par les joueurs", noOpenResourceRequests:"Aucune annonce en cours.", resourceRequestedBy:"Demandé par ",
     proposeResourceBtn:"PROPOSER DE FOURNIR", resourceOfferMsgLbl:"Message au vendeur", phResourceOfferMsg:"ex: J'en ai 50 unités disponibles, je peux livrer sur Stanton.", resourceOfferPriceLbl:"Ton prix (aUEC, optionnel)", submitResourceOfferBtn:"ENVOYER LA PROPOSITION", resourceOfferSent:"PROPOSITION ENVOYÉE !",
     myResourceOffersTitle:"Mes propositions", noResourceOffers:"Tu n'as envoyé aucune proposition pour le moment.", resourceOfferLabel:"Objet recherché :",
     shopDescLbl:"Description de la boutique (optionnel)", phShopDesc:"ex: Spécialiste minerais rares, livraison rapide sur Stanton.", shopDescMaxHint:"260 caractères max, pour garder un bel alignement avec ta photo de boutique.",
@@ -3773,7 +3805,12 @@ const T = {
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NEW ORDER", adminRemoveBtn:"REMOVE", adminRemoveTitle:"Remove this order?", adminRemoveIntro:"The order will be deleted and the client will see this message in a pop-up the next time they log in.", adminRemoveReasonLbl:"Message to the client", adminRemoveDefaultReason:"Your order was removed because it contains items that can't be bought in in-game shops, which doesn't comply with the service's terms of use. You can place a new one with items available in shops.", adminRemoveConfirm:"REMOVE ORDER", adminRemoveDone:"Order removed, the client will be notified.", removedOrderTitle:"Order removed", removedOrderIntro:"One of your orders was removed by an administrator:", removedOrderMsgLbl:"MESSAGE", removedOrderOk:"GOT IT", pAccTitle:"My account", pAccRole:"Role", pTabOverview:"OVERVIEW", pTabSettings:"SETTINGS", pTabAccount:"ACCOUNT", newsTag:"// BETA 04", newsTxt:"New: shops directory, custom status on every shop and a refreshed interface.", newsDismiss:"DISMISS ✕", homeHello:"Hello, {name}", homeFresh:"FRESH ON THE MARKETPLACE", homeSeeAll:"SEE ALL ▸", homeInProgress:"In progress", homeStatOrders:"ORDERS", homeStatDelivered:"DELIVERED", homeStatSpent:"SPENT (aUEC)", homeStatActive:"IN PROGRESS", homeMore:"+{n} MORE ▾", homeLess:"LESS ▴", homeCargo:"CARGO",
+    homeNewOrder:"+ NEW ORDER", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
+    classicOrderNote:"CLASSIC ORDER: only items you can buy in an in-game shop — the courier buys them and delivers them to you. Item not sold in shops (loot, crafted, rare…)? Post a desired item instead.", classicOrderLink:"POST A DESIRED ITEM ▸",
+    commodityQualityNote:"Commodities: only quality 500 commodities can be delivered through an order. For a higher quality, use the marketplace or post a desired item.", commodityQualityShort:"Commodity: quality 500 only.",
+    desiredIntroNote:"DESIRED ITEM: something you're looking for that is NOT sold in shops (loot, crafted, higher quality…). Any player can offer to supply it; you pick an offer, then you can request a courier for the delivery.", myDesiredTitle:"MY DESIRED ITEMS", noMyDesired:"You haven't posted any desired item.", postDesiredBtn:"+ POST", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"DESIRED ITEM DELIVERY",
+    offerMarkDeliveredBtn:"MARK AS DELIVERED", offerRequestCourierBtn:"REQUEST A COURIER", offerCourierPending:"Courier requested — waiting for a courier.", offerCourierAssigned:"Courier assigned:", offerDeliveredDone:"Marked as delivered.", offerNeedLocation:"Enter a valid delivery location (from the list).", offerDeliveryFeeNote:"Courier fee (min 50,000 aUEC) added to the order.",
+ adminRemoveBtn:"REMOVE", adminRemoveTitle:"Remove this order?", adminRemoveIntro:"The order will be deleted and the client will see this message in a pop-up the next time they log in.", adminRemoveReasonLbl:"Message to the client", adminRemoveDefaultReason:"Your order was removed because it contains items that can't be bought in in-game shops, which doesn't comply with the service's terms of use. You can place a new one with items available in shops.", adminRemoveConfirm:"REMOVE ORDER", adminRemoveDone:"Order removed, the client will be notified.", removedOrderTitle:"Order removed", removedOrderIntro:"One of your orders was removed by an administrator:", removedOrderMsgLbl:"MESSAGE", removedOrderOk:"GOT IT", pAccTitle:"My account", pAccRole:"Role", pTabOverview:"OVERVIEW", pTabSettings:"SETTINGS", pTabAccount:"ACCOUNT", newsTag:"// BETA 04", newsTxt:"New: shops directory, custom status on every shop and a refreshed interface.", newsDismiss:"DISMISS ✕", homeHello:"Hello, {name}", homeFresh:"FRESH ON THE MARKETPLACE", homeSeeAll:"SEE ALL ▸", homeInProgress:"In progress", homeStatOrders:"ORDERS", homeStatDelivered:"DELIVERED", homeStatSpent:"SPENT (aUEC)", homeStatActive:"IN PROGRESS", homeMore:"+{n} MORE ▾", homeLess:"LESS ▴", homeCargo:"CARGO",
     hmOrdersIn:"ORDERS IN PROGRESS ({n})", hmMostAdv:"MOST ADVANCED FIRST", hmViewAll:"VIEW ALL ORDERS ▸", hmShowLess:"SHOW LESS ▴", hmNeedElse:"Need something else?", hmCtaTitle:"Need something? Order now!", hmCtaSub:"Pick your items, choose a destination in Stanton, Nyx or Pyro. A courier takes it from there.", hmHow:"HOW IT WORKS", hm1t:"You order", hm1x:"Items and destination. The price is shown before you confirm.", hm2t:"A courier buys", hm2x:"He gets a suggested shopping route and ships your cargo.", hm3t:"You track it", hm3x:"Bought, in transit, delivered. Chat with your courier any time.", hmAgain:"ORDER AGAIN", hmFullHist:"FULL HISTORY ({n}) ▸", hmReorder:"REORDER", hmDelivered:"DELIVERED", hmMessage:"MESSAGE", hmWaiting:"// WAITING FOR A COURIER", hmCargo:"FULL CARGO LIST", hmStDel:"DELIVERED", hmStAct:"IN PROGRESS", hmStDes:"DESIRED ITEMS", hmStCour:"COURIERS ONLINE", hmNewOrderBtn:"CREATE AN ORDER", titleOrders:"Client dashboard", titleMkt:"Marketplace", titleDesired:"Desired items", titleBp:"Blueprints", titleCourier:"Courier",
     sdTitle:"Shops", sdSub:"Every shop open on Couriers United. Find a seller, browse their listings and blueprints.", sdSearchPh:"Search a shop by name or specialty...", sdSortLbl:"SORT", sdSortedBy:"SORTED BY {x}", sdCount:"{n} SHOPS", sdNone:"No shop matches your search.", sdSales:"sales", sdListings:"listings", sdBp:"bp", sdVisit:"VISIT ▸", sdSinceWeek:"Opened this week", sdSinceDays:"Open for {n} days", sdS_newest:"NEWEST", sdS_sales:"MOST SALES (ALL TIME)", sdS_blueprints:"MOST BLUEPRINTS", sdS_listings:"MOST LISTINGS", sdS_name:"NAME A TO Z",
     shStSales:"SALES (ALL TIME)", shStListings:"LISTINGS", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
@@ -3801,7 +3838,7 @@ const T = {
     listingTagsLbl:"Tags (optional)", tagCrafted:"CRAFTED", tagQ700:"700+", tagQ800:"800+", tagQ900:"900+", tagNegotiable:"NEGOTIABLE", editListingBtn:"EDIT",
     requestResourcesTitle:"Post a desired item", requestResourcesBtn:"DESIRED ITEM", resourceNameLbl:"Item wanted", phResourceName:"e.g. Raw Laranite, heavy armor helmet...", resourceQtyLbl:"Quantity wanted", resourcePriceLbl:"Price offered (aUEC, optional)", resourceNoteLbl:"Note (optional)", phResourceNote:"e.g. Delivery to Nyx, quantity negotiable...", submitResourceRequestBtn:"POST AD", resourceRequestSaved:"AD POSTED!", resourcePriceNone:"Price to negotiate",
     myResourceRequestsTitle:"Desired items", noResourceRequests:"You haven't posted any desired item ad yet.",
-    tabResources:"DESIRED ITEMS", requestedResourcesTitle:"Items sellers are looking for", noOpenResourceRequests:"No open desired item ads right now.", resourceRequestedBy:"Requested by ",
+    tabResources:"DESIRED ITEMS", requestedResourcesTitle:"Items players are looking for", noOpenResourceRequests:"No open desired item ads right now.", resourceRequestedBy:"Requested by ",
     proposeResourceBtn:"PROPOSE TO SUPPLY", resourceOfferMsgLbl:"Message to the seller", phResourceOfferMsg:"e.g. I have 50 units available, I can deliver to Stanton.", resourceOfferPriceLbl:"Your price (aUEC, optional)", submitResourceOfferBtn:"SEND PROPOSAL", resourceOfferSent:"PROPOSAL SENT!",
     myResourceOffersTitle:"My proposals", noResourceOffers:"You haven't sent any proposal yet.", resourceOfferLabel:"Desired item:",
     shopDescLbl:"Shop description (optional)", phShopDesc:"e.g. Rare ore specialist, fast delivery on Stanton.", shopDescMaxHint:"260 characters max, to keep a clean alignment with your shop photo.",
@@ -4015,6 +4052,13 @@ document.addEventListener('click', (e) => {
 
 // Bouton "CRÉER" du vendeur (topbar) : petit menu avec les deux sous-actions.
 function toggleSellerCreateMenu(){ $('sellerCreateMenu').hidden = !$('sellerCreateMenu').hidden; }
+function toggleClientCreateMenu(){ $('clientCreateMenu').hidden = !$('clientCreateMenu').hidden; }
+function closeClientCreateMenu(){ const m = $('clientCreateMenu'); if(m) m.hidden = true; }
+document.addEventListener('click', (e) => {
+  const menu = $('clientCreateMenu');
+  if(!menu || menu.hidden) return;
+  if(!menu.contains(e.target) && !e.target.closest('#createOrderBtn')) menu.hidden = true;
+});
 document.addEventListener('click', (e) => {
   const menu = $('sellerCreateMenu');
   if(!menu || menu.hidden) return;
@@ -4022,6 +4066,7 @@ document.addEventListener('click', (e) => {
 });
 function openSellerCreateOption(kind){
   $('sellerCreateMenu').hidden = true;
+  closeClientCreateMenu();
   hideAllViews();
   $('createOrderBtn').hidden = true;
   $('sellerCreateWrap').hidden = true;
@@ -4488,11 +4533,11 @@ async function renderMsgThreadItems(g){
   const bpReqItems = g.items.filter(it => it.__kind === 'bpreq_received' || it.__kind === 'bpreq_sent');
   const listingIds = [...new Set(inqItems.map(r=>r.listing_id).filter(Boolean))];
   const requestIds = [...new Set(offItems.map(r=>r.request_id).filter(Boolean))];
-  const orderIds = [...new Set(inqItems.map(r=>r.order_id).filter(Boolean))];
+  const orderIds = [...new Set([...inqItems, ...offItems].map(r=>r.order_id).filter(Boolean))];
   const blueprintIds = [...new Set(bpReqItems.map(r=>r.blueprint_id).filter(Boolean))];
   const [listings, requests, orders, blueprints] = await Promise.all([
     listingIds.length ? sb.from('marketplace_listings').select('*').in('id', listingIds).then(r=>r.data||[]) : Promise.resolve([]),
-    requestIds.length ? sb.from('resource_requests').select('id,item_name,quantity').in('id', requestIds).then(r=>r.data||[]) : Promise.resolve([]),
+    requestIds.length ? sb.from('resource_requests').select('id,item_name,quantity,price').in('id', requestIds).then(r=>r.data||[]) : Promise.resolve([]),
     orderIds.length ? sb.from('orders').select('id,status,courier_id').in('id', orderIds).then(r=>r.data||[]) : Promise.resolve([]),
     blueprintIds.length ? sb.from('blueprints').select('id,item_name').in('id', blueprintIds).then(r=>r.data||[]) : Promise.resolve([])
   ]);
@@ -4514,7 +4559,7 @@ async function renderMsgThreadItems(g){
   const emptyMsg = g.items.length ? d.msgThreadCleared : d.msgNewConversation;
   box.innerHTML = sorted.length ? sorted.map(it => {
     if(it.__kind === 'inq_received' || it.__kind === 'inq_sent') return inquiryThreadItemHtml(it, it.__kind === 'inq_received', lMap[it.listing_id], orderMap[it.order_id], courierMap);
-    if(it.__kind === 'offer_received' || it.__kind === 'offer_sent') return offerThreadItemHtml(it, it.__kind === 'offer_received', rMap[it.request_id]);
+    if(it.__kind === 'offer_received' || it.__kind === 'offer_sent') return offerThreadItemHtml(it, it.__kind === 'offer_received', rMap[it.request_id], orderMap[it.order_id], courierMap);
     if(it.__kind === 'bpreq_received' || it.__kind === 'bpreq_sent') return blueprintRequestThreadItemHtml(it, it.__kind === 'bpreq_received', bpMap[it.blueprint_id]);
     return chatBubbleHtml(it, it.__kind === 'chat_sent');
   }).join('') : `<p class="muted">${emptyMsg}</p>`;
@@ -4623,29 +4668,83 @@ function inquiryThreadItemHtml(r, iAmSeller, listing, order, courierMap){
       ${actions}
     </div>`;
 }
-function offerThreadItemHtml(r, iAmSeller, req){
+function offerThreadItemHtml(r, iAmSeller, req, order, courierMap){
   const d = T[LANG];
+  // Rappel : sur une offre, "seller_id" = celui qui a posté le desired item (l'acheteur),
+  // "client_id" = le joueur qui propose de le fournir.
+  const iAmSupplier = !iAmSeller;
   let actions = '';
   if(iAmSeller && r.status === 'pending'){
-    // Le vendeur (celui qui a posté l'objet recherché) peut accepter ou refuser l'offre de fourniture reçue.
     actions = `<div class="inquiry-actions">
       <button class="btn-secondary" onclick="acceptResourceOffer('${r.id}')">${d.acceptInquiryBtn}</button>
       <button class="btn-logout" onclick="rejectResourceOffer('${r.id}')">${d.rejectInquiryBtn}</button>
     </div>`;
-  } else if(!iAmSeller && r.status === 'pending'){
+  } else if(iAmSupplier && r.status === 'pending'){
     actions = `<button class="btn-cancel" style="width:100%; margin-top:8px;" onclick="cancelResourceOffer('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>`;
+  } else if(r.status === 'accepted'){
+    if(r.order_id){
+      const courier = (order && order.courier_id && courierMap) ? courierMap[order.courier_id] : null;
+      actions = courier
+        ? `<div class="inquiry-meta inquiry-courier-assigned">${d.offerCourierAssigned} <strong>${escHtml(courier.rsi_handle || courier.discord_username || '—')}</strong></div>`
+        : `<div class="inquiry-meta">${d.offerCourierPending}</div>`;
+    } else {
+      actions = `<div class="inquiry-actions">
+        <button class="btn-secondary" onclick="markOfferDelivered('${r.id}')">${d.offerMarkDeliveredBtn}</button>
+        ${iAmSupplier ? `<button class="btn-secondary" onclick="toggleOfferDeliveryForm('${r.id}')">${d.offerRequestCourierBtn}</button>` : ''}
+      </div>
+      ${iAmSupplier ? `<div class="delivery-request-form" id="odform-${r.id}" hidden>
+        <select id="odsys-${r.id}"><option value="Stanton">Stanton</option><option value="Nyx">Nyx</option><option value="Pyro">Pyro</option></select>
+        <input type="text" id="odloc-${r.id}" placeholder="${d.phLieu}" autocomplete="off" oninput="onLieuInput(this)" onblur="onLieuBlur(this)">
+        <div class="suggest-box" hidden></div>
+        <input type="text" id="odbuyer-${r.id}" placeholder="${d.phBuyerHandle}">
+        <div class="inquiry-meta">${d.offerDeliveryFeeNote}</div>
+        <button class="btn-primary" onclick="requestOfferDelivery('${r.id}')">${d.confirmDeliveryBtn}</button>
+      </div>` : ''}`;
+    }
   }
   return `
     <div class="inquiry-row">
       <span class="msg-kind-label">${msgKindLabel(iAmSeller ? 'offer_received' : 'offer_sent')}</span>
       <div class="inquiry-head">
-        <div class="inquiry-item">${d.resourceOfferLabel} ${req ? req.item_name : '—'}</div>
+        <div class="inquiry-item">${d.resourceOfferLabel} ${req ? req.item_name : '—'}<span class="desired-tag">${d.desiredBadge}</span></div>
         ${inquiryStatusBadge(r.status)}
       </div>
       ${r.price ? `<div class="inquiry-price-line">${d.listingPriceLbl} <strong>${fmt(r.price)}</strong></div>` : ''}
       ${r.message ? `<div class="inquiry-msg">${r.message}</div>` : ''}
       ${actions}
     </div>`;
+}
+function toggleOfferDeliveryForm(id){ const f = $('odform-'+id); if(f) f.hidden = !f.hidden; }
+async function markOfferDelivered(id){
+  const d = T[LANG];
+  const { error } = await sb.rpc('complete_resource_offer', { p_offer_id: id });
+  if(error){ alert('Erreur : '+fullErrText(error)); return; }
+  const { data: o } = await sb.from('resource_offers').select('seller_id,client_id').eq('id', id).maybeSingle();
+  if(o){
+    const other = o.seller_id === session.user.id ? o.client_id : o.seller_id;
+    pushNotification(other, other === o.client_id ? 'client_resource_offer' : 'seller_resource_offer', id);
+  }
+  toastShow(d.offerDeliveredDone);
+  msgRefreshAfterAction();
+  fetchSellerShopStats(session.user.id).then(stats => {
+    if(shopViewingSellerId === session.user.id && !$('view-seller-shop').hidden) renderShopStats($('shopStatsCard'), stats);
+  });
+}
+async function requestOfferDelivery(id){
+  const d = T[LANG];
+  const sysEl = $('odsys-'+id), locEl = $('odloc-'+id), buyerEl = $('odbuyer-'+id);
+  const location = locEl ? locEl.value.trim() : '';
+  if(!isValidUexLocation(location)){ alert(d.invalidLocationAlert); if(locEl) locEl.focus(); return; }
+  const { data: orderId, error } = await sb.rpc('request_desired_item_delivery', {
+    p_offer_id: id, p_system: sysEl ? sysEl.value : 'Stanton', p_location: location, p_buyer_handle: buyerEl ? buyerEl.value.trim() : ''
+  });
+  if(error){ alert('Erreur : '+fullErrText(error)); return; }
+  if(orderId) notifyAllCouriers(orderId);
+  const { data: o } = await sb.from('resource_offers').select('seller_id').eq('id', id).maybeSingle();
+  if(o) pushNotification(o.seller_id, 'seller_resource_offer', id);
+  sweep();
+  toastShow(d.deliveryRequested);
+  msgRefreshAfterAction();
 }
 // Demande de craft blueprint reçue/envoyée dans le fil de messagerie — même esprit que inquiryThreadItemHtml/
 // offerThreadItemHtml : le vendeur peut Accepter/Refuser tant que c'est "pending", puis marquer le craft
@@ -4895,7 +4994,7 @@ async function loadUexCatalog(){
       const commoRes = await uexFetch("commodities");
       const commoData = await commoRes.json();
       if(commoData && commoData.data){
-        uexCommodities = commoData.data.filter(c => c.is_buyable && c.price_buy > 0).map(c => ({ name: c.name, price_buy: c.price_buy }));
+        uexCommodities = commoData.data.filter(c => c.is_buyable && c.price_buy > 0).map(c => ({ id: c.id, name: c.name, price_buy: c.price_buy }));
       }
     }catch(e){}
     try{
@@ -4974,6 +5073,22 @@ async function fetchUexItemLocations(itemId){
     return rows;
   }catch(e){ uexItemLocationsCache[itemId] = []; return []; }
 }
+// --- UEX CORP : lieux d'achat par commodity (terminaux qui la VENDENT : price_buy > 0) ---
+const uexCommodityLocationsCache = {};
+async function fetchUexCommodityLocations(commodityId){
+  if(uexCommodityLocationsCache[commodityId] !== undefined) return uexCommodityLocationsCache[commodityId];
+  try{
+    const res = await uexFetch(`commodities_prices?id_commodity=${commodityId}`);
+    const data = await res.json();
+    const rows = (data?.data || []).filter(row => row.price_buy && row.price_buy > 0).sort((a,b) => a.price_buy - b.price_buy);
+    uexCommodityLocationsCache[commodityId] = rows;
+    return rows;
+  }catch(e){ uexCommodityLocationsCache[commodityId] = []; return []; }
+}
+function findUexCommodity(name){
+  const n = String(name||'').trim().toLowerCase();
+  return uexCommodities.find(c => c.name.toLowerCase() === n) || null;
+}
 // Identifiant du lieu le plus précis disponible sur une ligne de prix UEX (pour regrouper les objets par lieu commun).
 function placeKeyFor(row){
   if(row.id_city) return 'city:'+row.id_city;
@@ -5003,12 +5118,15 @@ async function buildPurchaseRoute(order){
   const destSystem = String(order.destination_system||'').trim().toLowerCase();
   const destPlace = String(order.exact_location||'').trim().toLowerCase();
   const pool = []; // { name, qty, candidates: [rows] }
+  let hasCommodity = false;
   const unresolved = [];
   for(const it of items){
     const uexItem = findUexItem(it.name);
-    if(!uexItem){ unresolved.push(it.name); continue; }
-    const rows = await fetchUexItemLocations(uexItem.id);
+    const uexCommo = uexItem ? null : findUexCommodity(it.name);
+    if(!uexItem && !uexCommo){ unresolved.push(it.name); continue; }
+    const rows = uexCommo ? await fetchUexCommodityLocations(uexCommo.id) : await fetchUexItemLocations(uexItem.id);
     if(!rows.length){ unresolved.push(it.name); continue; }
+    if(uexCommo) hasCommodity = true;
     pool.push({ name: it.name, qty: it.qty, candidates: rows });
   }
   // Niveau de proximité d'une ligne de prix UEX par rapport au lieu de livraison : 0 = exactement la même
@@ -5090,7 +5208,7 @@ async function buildPurchaseRoute(order){
     grouped.push(...merged);
   });
   const systems = [...new Set(grouped.map(s => s.system).filter(Boolean))];
-  return { stops: grouped, unresolved, systems };
+  return { stops: grouped, unresolved, systems, hasCommodity };
 }
 // Rend le schéma HTML de l'itinéraire d'achat pour une commande acceptée.
 function renderPurchaseRouteHtml(order, route){
@@ -5114,7 +5232,7 @@ function renderPurchaseRouteHtml(order, route){
         <div class="route-stop-place">${d.routeDeliveryStop} — ${dest}</div>
       </div>
     </div>`;
-  const unresolvedHtml = route.unresolved.length ? `<div class="route-unresolved">${d.routeUnresolvedNote} ${route.unresolved.join(', ')}</div>` : '';
+  const unresolvedHtml = (route.hasCommodity ? `<div class="route-unresolved">${d.commodityQualityShort}</div>` : '') + (route.unresolved.length ? `<div class="route-unresolved">${d.routeUnresolvedNote} ${route.unresolved.join(', ')}</div>` : '');
   return `
     <div class="purchase-route collapsed">
       <div class="purchase-route-title" onclick="togglePurchaseRoute(this)">${d.purchaseRouteTitle}<span class="purchase-route-toggle">▸</span></div>
@@ -5287,8 +5405,15 @@ async function checkCraftOnly(nameInput){
     toastShow(T[LANG].craftOnlyNotice, true);
   }
 }
+function updateCommodityNotice(){
+  const box = $('commodityQualityBox'); if(!box) return;
+  let any = false;
+  document.querySelectorAll('#items .item-row .name input').forEach(i => { if(findUexCommodity(i.value)) any = true; });
+  box.hidden = !any;
+}
 function calc(){
   let brut=0;
+  updateCommodityNotice();
   document.querySelectorAll('#items .item-row').forEach(row=>{
     const prix=parseFloat(row.querySelector('.prix input').value)||0;
     const qte=parseFloat(row.querySelector('.qte input').value)||0;
@@ -6064,7 +6189,7 @@ async function loadResourceRequestsFeed(){
   box.innerHTML = `<p class="muted">…</p>`;
   const { data, error } = await sb.from('resource_requests').select('*').eq('status','open').order('created_at',{ascending:false}).limit(50);
   if(error){ box.textContent = error.message; return; }
-  const rows = data || [];
+  const rows = (data || []).filter(r => !session || r.seller_id !== session.user.id);
   resourceRequestsFeedCache = rows;
   const currentIds = new Set(rows.map(r=>r.id));
   if(session){
@@ -7905,9 +8030,18 @@ async function createResourceRequest(){
   $('resourceName').value=''; $('resourceQty').value='1'; $('resourcePrice').value=''; $('resourceNote').value='';
   if(data) notifyAllUsersOfResourceRequest(data.id, session.user.id);
   await bootOverlayFinish(d.resourceRequestSaved);
+  if(typeof effectiveView === 'function' && effectiveView() === 'client') clientTab = 'resources';
   routeApp();
 }
 let myResourceRequestsCache = [];
+async function loadMyDesiredItems(){
+  const box = $('myDesiredList'); if(!box || !session) return;
+  const d = T[LANG];
+  const { data, error } = await sb.from('resource_requests').select('*').eq('seller_id', session.user.id).order('created_at',{ascending:false});
+  if(error){ box.textContent = error.message; return; }
+  myResourceRequestsCache = data || [];
+  box.innerHTML = myResourceRequestsCache.length ? myResourceRequestsCache.map(r => ownResourceRequestCardHtml(r)).join('') : `<p class="muted">${d.noMyDesired}</p>`;
+}
 function ownResourceRequestCardHtml(r){
   const d = T[LANG];
   return `
@@ -7949,6 +8083,7 @@ async function deleteResourceRequest(id){
   if(error){ alert('Erreur : '+error.message); return; }
   await loadMyResourceRequests();
   refreshShopAllResourcesFullIfOpen();
+  if($('myDesiredList') && !$('view-client-dash').hidden) loadMyDesiredItems();
 }
 async function loadCourierData(){
   if(!session) return;
@@ -8049,7 +8184,7 @@ async function renderAvailable(orders){
         <div style="display:flex; flex-direction:column; gap:6px; min-width:0;">
           <span class="st">${title || '—'}</span>
           <span class="meta mk-del-sub">${who} · ${where}</span>
-          ${isMkt ? `<span class="meta">${d.marketplaceDeliveryBadge}</span>` : ''}
+          ${isMkt ? `<span class="meta">${isDesiredOrder(o) ? d.desiredDeliveryBadge : d.marketplaceDeliveryBadge}</span>` : ''}
           ${o.deadline ? `<span class="meta">${d.cDeadline} ${formatDeadline(o.deadline)}</span>` : ''}
         </div>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
@@ -8258,6 +8393,7 @@ function mkRouteHtml(o, cached){
         <div class="mk-rnum">${route.stops.length+1}</div>
         <div class="mk-rbody"><span class="mk-rplace">${d.routeDeliveryStop} — ${escHtml(dest)}</span></div>
       </div>
+      ${route.hasCommodity ? `<div class="route-unresolved">${d.commodityQualityShort}</div>` : ''}
       ${route.unresolved.length ? `<div class="route-unresolved">${d.routeUnresolvedNote} ${route.unresolved.map(escHtml).join(', ')}</div>` : ''}`;
   }
   return `<div class="mk-del-col" style="gap:12px;">
@@ -8265,6 +8401,7 @@ function mkRouteHtml(o, cached){
     ${body}
   </div>`;
 }
+function isDesiredOrder(o){ return !!(o && o.items && o.items[0] && o.items[0].desired); }
 function deliveryMainCardHtml(o, clients){
   const d=T[LANG];
   const isMkt = o.order_type === 'marketplace';
@@ -8285,7 +8422,7 @@ function deliveryMainCardHtml(o, clients){
     <div class="mk-box mk-del${justAccepted}">
       <div class="mk-del-head">
         <div style="display:flex; flex-direction:column; gap:6px; min-width:0;">
-          <span class="mk-del-title">${title || '—'}</span>
+          <span class="mk-del-title">${title || '—'}${isDesiredOrder(o) ? `<span class="desired-tag">${d.desiredBadge}</span>` : ''}</span>
           <span class="mk-del-sub">${who}${who ? ' · ' : ''}${where}</span>
           ${o.deadline ? `<span class="mk-del-sub"><span style="color:var(--accent)">//</span> ${d.cDeadline.replace('// ','')} ${formatDeadline(o.deadline)}</span>` : ''}
         </div>
@@ -9145,7 +9282,7 @@ async function fetchSellerShopStatsRaw(sellerId){
     sb.from('marketplace_inquiries').select('snap_item_name,snap_price,snap_qty,status,order_id,listing_id').eq('seller_id', sellerId).eq('status','completed').is('order_id', null),
     sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', sellerId),
     sb.from('marketplace_listings').select('tags,photo_url').eq('seller_id', sellerId),
-    sb.from('resource_offers').select('id', { count:'exact', head:true }).eq('seller_id', sellerId).eq('status','accepted'),
+    sb.from('resource_offers').select('id', { count:'exact', head:true }).eq('seller_id', sellerId).in('status',['accepted','completed']),
     sb.from('blueprints').select('id', { count:'exact', head:true }).eq('seller_id', sellerId).eq('is_deleted', false),
     // Demandes de craft blueprint menées à terme (voir completeBlueprintRequest) — sert à l'achievement
     // "Masta Thanks" (5 blueprints vendus), distinct de blueprintsCount qui ne compte que les ANNONCES

@@ -6643,7 +6643,7 @@ function startPixelScene(layer, kind){
     const { W, H, p } = inst; inst.items = []; inst.parts = []; inst.spawnT = 0; inst.S = {};
     if(kind === 'ammo'){ const n = Math.max(2, Math.min(5, Math.round(W*H/30000))); for(let i=0;i<n;i++) inst.items.push(newBullet(true)); }
     if(kind === 'route') newRoute();
-    if(kind === 'forge'){ const u = p, aw = 14*u, right = Math.random() < .5; const cx = right ? W - 6 - 19*u : 6 + 7*u; inst.S = { cx, top: H - 6*u - 5, u, t:rnd(0,1), struck:false }; }
+    if(kind === 'forge'){ const u = p, aw = 14*u, right = true; const cx = right ? W - 6 - 19*u : 6 + 7*u; inst.S = { cx, top: H - 6*u - 5, u, t:rnd(0,1), struck:false }; }
     if(kind === 'fifteen'){ inst.S = { x:rnd(.2,.7)*W, y:rnd(.2,.7)*H, ang:rnd(0,6.283), state:'live', t:0, pop:0 }; }
   };
   const newBullet = (anywhere) => {

@@ -4729,7 +4729,7 @@ async function cancelAcceptedOffer(id, hasOrder){
   sweep();
   msgRefreshAfterAction();
 }
-function toggleOfferDeliveryForm(id){ const f = $('odform-'+id); if(f) f.hidden = !f.hidden; }
+function toggleOfferDeliveryForm(id){ const f = $('odform-'+id); if(!f) return; f.hidden = !f.hidden; if(!f.hidden) setTimeout(() => f.scrollIntoView({ behavior:'smooth', block:'end' }), 60); }
 async function markOfferDelivered(id){
   const d = T[LANG];
   const { error } = await sb.rpc('complete_resource_offer', { p_offer_id: id });
@@ -7371,6 +7371,7 @@ async function sellerCancelDelivery(orderId, currentStatus){
 function toggleInquiryDeliveryForm(id){
   const form = $('idform-'+id); if(!form) return;
   form.hidden = !form.hidden;
+  if(!form.hidden) setTimeout(() => form.scrollIntoView({ behavior:'smooth', block:'end' }), 60);
 }
 function toggleCounterForm(id){
   const f = $('cform-'+id); if(!f) return;

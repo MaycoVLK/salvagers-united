@@ -552,6 +552,7 @@
      automatiquement à la largeur d'écran, au lieu d'un nombre de colonnes fixe. */
   #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid,
   #shopBlueprintsGrid.marketplace-grid, #blueprintsFeed.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
+  #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid, #shopBlueprintsGrid.marketplace-grid, #shopBlueprintsGridFull.marketplace-grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr)); gap:12px;}
   /* Sur mobile, minmax(210px,1fr) ne laisse jamais la place à 2 colonnes (2x210px > largeur d'écran dispo),
      donc les cartes s'affichaient en une seule colonne pleine largeur. On force une grille 2x2 sous 640px. */
   @media (max-width:640px){
@@ -1271,7 +1272,7 @@
   .shop-banner-card.shop-texture-host::before, .shop-banner-card.shop-texture-host::after{display:none;}
   .shop-banner-card .shop-banner-row{gap:26px; align-items:flex-start;}
   .shop-banner-card .shop-banner-logo{width:230px; height:230px; border-radius:12px;}
-  .shop-rank-strip{position:relative; z-index:1; border-top:1px solid var(--border); margin-top:22px; padding-top:18px;}
+  .shop-rank-strip{position:relative; z-index:1; border-top:1px solid color-mix(in srgb, var(--accent) 60%, transparent); box-shadow:0 -1px 0 0 color-mix(in srgb, var(--accent) 20%, transparent); margin-top:24px; padding-top:20px;}
   .shop-banner-card .shop-banner-kicker{font-size:12px; letter-spacing:2px; color:var(--muted); margin-bottom:8px;}
   .shop-banner-card .shop-banner-title-row h1{font-size:58px; font-weight:400; line-height:1; letter-spacing:1px;}
   .shop-banner-card .shop-banner-actions .shop-upvote-btn{background:var(--accent); color:#050606; border:1px solid var(--accent); border-radius:2px; padding:12px 24px; gap:10px; box-shadow:none;}
@@ -1281,9 +1282,9 @@
   .shop-banner-card .shop-banner-actions .shop-upvote-btn, .shop-banner-card .shop-banner-actions .shop-upvote-btn *{color:#050606 !important;}
   .shop-banner-card .shop-banner-actions .shop-upvote-btn.upvoted{filter:brightness(1.2); box-shadow:0 0 12px var(--accent-dim);}
   .shop-banner-card .shop-banner-actions .gear-btn{width:44px; height:44px; border-radius:2px;}
-  .shop-banner-card .shop-description{border:none; border-left:2px solid var(--accent); border-radius:0; background:rgba(10,13,12,.82); padding:16px 18px; margin:14px 0 0; line-height:1.55; font-size:15px;}
+  .shop-banner-card .shop-description{border:none; border-left:3px solid var(--accent); border-radius:0; background:rgba(10,13,12,.82); box-shadow:0 0 14px var(--accent-dim); padding:16px 18px; margin:14px 0 0; line-height:1.55; font-size:15px;}
   .shop-banner-card .shop-description::before{content:"// "; color:var(--accent);}
-  .shop-banner-card .shop-loc-tag, .shop-banner-card .shop-banner-meta .shop-owner-box{border-radius:2px; padding:5px 12px; font-size:12px;}
+  .shop-banner-card .shop-loc-tag, .shop-banner-card .shop-banner-meta .shop-owner-box{border-radius:2px; padding:5px 12px; font-size:12px; border-color:color-mix(in srgb, var(--accent) 60%, transparent);}
   @container shopbanner (max-width: 640px){
     .shop-banner-row{flex-direction:column !important; align-items:center !important; text-align:center; gap:14px !important;}
     .shop-banner-logo{width:120px !important; height:120px !important;}
@@ -1306,8 +1307,13 @@
   #view-seller-shop .shop-preview-head{margin-bottom:14px;}
   #view-seller-shop .shop-preview-head h3{font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; text-shadow:none; margin:0;}
   #view-seller-shop .shop-see-more{border:none; background:none; padding:0; color:var(--accent); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:1px; text-transform:none;}
-  #view-seller-shop .marketplace-grid{grid-template-columns:repeat(4, minmax(0,1fr)); gap:18px;}
-  @media (max-width:900px){ #view-seller-shop .marketplace-grid{grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px;} }
+  #view-seller-shop .marketplace-grid{grid-template-columns:repeat(6, minmax(0,1fr)); gap:12px;}
+  @media (max-width:1200px){ #view-seller-shop .marketplace-grid{grid-template-columns:repeat(4, minmax(0,1fr));} }
+  @media (max-width:900px){ #view-seller-shop .marketplace-grid{grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px;} }
+  @media (max-width:600px){ #view-seller-shop .marketplace-grid{grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px;} }
+  #view-seller-shop .marketplace-grid .mkt-info{padding:8px 10px 10px; gap:5px;}
+  #view-seller-shop .marketplace-grid .courier-box{padding:5px 8px;}
+  #view-seller-shop .marketplace-grid .courier-box-name{font-size:.72rem;}
 
   /* ===== MK : zone coursier (F) ===== */
   .mk-slim{border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:14px 4px;}
@@ -1513,9 +1519,9 @@
     background:linear-gradient(175deg, var(--bg2), var(--panel)); transition:border-color .2s, transform .2s, box-shadow .2s;}
   #shopListingsGrid .mkt-card:hover, #shopListingsGridFull .mkt-card:hover{border-color:var(--accent); transform:translateY(-3px);
     box-shadow:0 14px 30px -16px rgba(0,0,0,.6), 0 0 0 1px var(--accent-dim);}
-  #shopListingsGrid .mkt-photo-wrap, #shopListingsGridFull .mkt-photo-wrap{aspect-ratio:1/1;}
-  #shopListingsGrid .mkt-item-name, #shopListingsGridFull .mkt-item-name{font-size:1.25rem;}
-  #shopListingsGrid .mkt-price, #shopListingsGridFull .mkt-price{font-size:1.5rem; text-shadow:0 0 10px var(--accent-dim);}
+  #shopListingsGrid .mkt-photo-wrap, #shopListingsGridFull .mkt-photo-wrap{aspect-ratio:4/3;}
+  #shopListingsGrid .mkt-item-name, #shopListingsGridFull .mkt-item-name{font-size:1rem; min-height:0;}
+  #shopListingsGrid .mkt-price, #shopListingsGridFull .mkt-price{font-size:1.15rem; text-shadow:0 0 10px var(--accent-dim);}
 
   /* --- VERSION MOBILE DE LA PAGE BOUTIQUE : inspirée des profils type réseau social (bannière compacte,
      stats en bandeau serré, succès en bande défilante horizontale) pour éviter le scroll à rallonge, tout
@@ -1733,6 +1739,30 @@
   }
 
   /* --- ACHIEVEMENTS COURSIER --- */
+  /* ===== Barre de rang animée (coursier + vendeur) ===== */
+  .rk{display:flex; align-items:center; gap:16px; margin:12px 0 6px;}
+  .rk-ico{width:34px; height:34px; flex:none; color:var(--muted); filter:drop-shadow(0 0 0 transparent);}
+  .rk-ico svg{width:100%; height:100%; display:block;}
+  .rk-ico.cur{color:var(--accent); filter:drop-shadow(0 0 6px var(--accent)); animation:rkIco 2.4s ease-in-out infinite;}
+  .rk.maxed .rk-ico.nxt{color:var(--accent);}
+  .rk-mid{flex:1; min-width:0; display:flex; flex-direction:column; gap:7px;}
+  .rk-top{display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted);}
+  .rk-top .rk-cur{color:var(--accent);} .rk-top .rk-cur b{font-weight:400; opacity:.7;}
+  .rk-top .rk-pct{font-family:'VT323',monospace; font-size:22px; letter-spacing:1px; color:var(--text); line-height:1;}
+  .rk-bar{position:relative; height:16px; border:1px solid color-mix(in srgb, var(--accent) 55%, transparent); border-radius:2px; background:var(--bg2); overflow:hidden; box-shadow:inset 0 0 8px rgba(0,0,0,.6);}
+  .rk-fill{position:absolute; left:0; top:0; bottom:0; width:var(--p); background-color:var(--accent); box-shadow:0 0 10px var(--accent);
+    background-image:linear-gradient(135deg, rgba(255,255,255,.28) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.28) 50%, rgba(255,255,255,.28) 75%, transparent 75%, transparent);
+    background-size:16px 16px; animation:rkGrow 1.3s cubic-bezier(.2,.8,.2,1) both, railStripes .9s linear infinite;}
+  .rk-fill::after{content:""; position:absolute; top:0; bottom:0; width:40px; left:-60px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); animation:rkShine 3.2s ease-in-out 1.4s infinite;}
+  .rk-head{position:absolute; right:0; top:-2px; bottom:-2px; width:5px; background:#fff; box-shadow:0 0 12px 2px var(--accent), 0 0 4px #fff; animation:rkHead 1s ease-in-out infinite;}
+  .rk.maxed .rk-head{display:none;}
+  .rk-ticks{position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(90deg, transparent 0, transparent calc(10% - 2px), rgba(5,6,6,.85) calc(10% - 2px), rgba(5,6,6,.85) 10%);}
+  .rk-bot{font-size:12px; color:var(--muted); letter-spacing:.5px;}
+  @keyframes rkGrow{from{width:0;}to{width:var(--p);}}
+  @keyframes rkShine{0%{left:-60px;}55%,100%{left:calc(100% + 20px);}}
+  @keyframes rkHead{0%,100%{opacity:1;}50%{opacity:.45;}}
+  @keyframes rkIco{0%,100%{transform:translateY(0);}50%{transform:translateY(-2px);}}
+  @media (max-width:600px){ .rk{gap:10px;} .rk-ico{width:26px; height:26px;} .rk-top{font-size:10px; letter-spacing:1px;} }
   .rank-track{display:flex; align-items:center; gap:10px; margin:10px 2px 4px;}
   .rank-track-icon{width:26px; height:26px; flex:none; color:var(--muted);}
   .rank-track-icon.start{color:var(--accent);}
@@ -2268,6 +2298,7 @@
           <button class="tab-btn" id="tab-ach" onclick="switchCourierTab('ach')" data-i18n="cTabAch">SUCCÈS</button>
         </div>
         <div class="mk-stats" id="courierStats"></div>
+        <div id="courierRankBar"></div>
         <div class="mk-slim" id="courierAvailCard"></div>
         <div id="courierPendingPane"></div>
         <div id="courierMinePane" hidden></div>
@@ -7781,6 +7812,9 @@ async function renderCourierStats(pending, mine){
   if(!delivered){ (mine||[]).filter(o=>o.status==='delivered').forEach(o=>{ delivered++; margin += Number(o.commission)||0; }); }
   const prog = (mine||[]).filter(o=>o.status!=='delivered' && o.status!=='cancelled').length;
   const st = (l,v,c) => `<div class="mk-stat"><span class="mk-stat-l"><span class="sl">//</span> ${l}</span><span class="mk-stat-v ${c||''}">${v}</span></div>`;
+  let rankCount = delivered;
+  try{ const cs = await fetchCourierStats(); if(cs && typeof cs.deliveredCount === 'number') rankCount = cs.deliveredCount; }catch(e){}
+  const rb = $('courierRankBar'); if(rb) rb.innerHTML = rankProgressHtml(rankCount);
   box.innerHTML = st(d.cStDel, delivered, 'accent') + st(d.cStProg, prog) + st(d.cStMargin, fmtNum(margin), 'green') + st(d.cStOpen, (pending||[]).length);
 }
 async function renderAvailable(orders){
@@ -8419,6 +8453,20 @@ function rankBadgeHtml(deliveredCount, size){
   return `<span class="${cls}" title="${label}">${RANK_ICONS[r.key]}<span class="rank-label">${label}</span></span>`;
 }
 // Barre de progression animée (même style visuel que le rail des commandes) vers le rang suivant.
+// Barre de rang commune (coursier + vendeur) : segments façon jauge, remplissage animé, reflet qui balaye.
+function rankBarHtml(o){
+  const pct = o.pct;
+  return `
+    <div class="rk${o.isMax ? ' maxed' : ''}" style="--p:${pct}%">
+      <div class="rk-ico cur" title="${o.curLabel}">${o.curIcon}</div>
+      <div class="rk-mid">
+        <div class="rk-top"><span class="rk-cur"><b>//</b> ${o.curLabel}</span><span class="rk-pct">${o.isMax ? 'MAX' : pct + '%'}</span><span class="rk-next">${o.nextLabel}</span></div>
+        <div class="rk-bar"><div class="rk-fill"><i class="rk-head"></i></div><div class="rk-ticks"></div></div>
+        <div class="rk-bot">${o.midText}</div>
+      </div>
+      <div class="rk-ico nxt" title="${o.nextLabel}">${o.nextIcon}</div>
+    </div>`;
+}
 function rankProgressHtml(deliveredCount){
   const d = T[LANG];
   const count = deliveredCount || 0;
@@ -8433,22 +8481,7 @@ function rankProgressHtml(deliveredCount){
   const curLabel = d.rankLabels[r.key];
   const nextLabel = isMax ? curLabel : d.rankLabels[next.key];
   const midText = isMax ? d.rankMaxed : d.rankToNext.replace('{n}', remaining).replace('{rank}', nextLabel);
-  return `
-    <div class="rank-track">
-      <div class="rank-track-icon start" title="${curLabel}">${RANK_ICONS[r.key]}</div>
-      <div class="rank-track-bar">
-        <div class="rank-track-rail"></div>
-        <div class="rank-track-fill" style="width:${pct}%"></div>
-        <div class="rank-track-marker" style="left:${pct}%"></div>
-      </div>
-      <div class="rank-track-icon end ${isMax?'maxed':''}" title="${nextLabel}">${RANK_ICONS[next.key]}</div>
-    </div>
-    <div class="rank-track-label">
-      <span class="current">${curLabel}</span>
-      <span>${midText}</span>
-      <span>${nextLabel}</span>
-    </div>
-  `;
+  return rankBarHtml({ pct, isMax, curLabel, nextLabel, midText, curIcon: RANK_ICONS[r.key], nextIcon: RANK_ICONS[next.key] });
 }
 // Grosse mise en avant du rang (page de profil, profil public) : à la manière d'une médaille.
 function rankShowcaseHtml(deliveredCount){
@@ -8722,22 +8755,7 @@ function sellerRankProgressHtml(salesCount){
   const curLabel = d.sellerRankLabels[r.key];
   const nextLabel = isMax ? curLabel : d.sellerRankLabels[next.key];
   const midText = isMax ? d.rankMaxed : d.rankToNextSales.replace('{n}', remaining).replace('{rank}', nextLabel);
-  return `
-    <div class="rank-track">
-      <div class="rank-track-icon start" title="${curLabel}">${SELLER_RANK_ICONS[r.key]}</div>
-      <div class="rank-track-bar">
-        <div class="rank-track-rail"></div>
-        <div class="rank-track-fill" style="width:${pct}%"></div>
-        <div class="rank-track-marker" style="left:${pct}%"></div>
-      </div>
-      <div class="rank-track-icon end ${isMax?'maxed':''}" title="${nextLabel}">${SELLER_RANK_ICONS[next.key]}</div>
-    </div>
-    <div class="rank-track-label">
-      <span class="current">${curLabel}</span>
-      <span>${midText}</span>
-      <span>${nextLabel}</span>
-    </div>
-  `;
+  return rankBarHtml({ pct, isMax, curLabel, nextLabel, midText, curIcon: SELLER_RANK_ICONS[r.key], nextIcon: SELLER_RANK_ICONS[next.key] });
 }
 function sellerRankShowcaseHtml(salesCount){
   const r = getSellerRank(salesCount || 0);

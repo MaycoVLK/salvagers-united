@@ -4740,6 +4740,8 @@ function inquiryThreadItemHtml(r, iAmSeller, listing, order, courierMap){
       </div>`;
     } else if(r.status === 'accepted' && r.order_id){
       actions = courierHandoffLine;
+    } else if(r.status === 'accepted'){
+      actions = `<div class="inquiry-actions"><button class="btn-secondary" onclick="markPickedUp('${r.id}')">${d.markPickedUpBtn}</button></div>`;
     }
     // Contrairement aux commandes classiques, le coursier n'achète jamais l'objet sur une vente marketplace
     // (il ne fait que la transporter) : l'acheteur peut donc annuler à tout moment tant que la vente n'a pas
@@ -8008,24 +8010,10 @@ async function counterInquiry(id, price){
 async function markPickedUp(id){
   const { data: inquiry, error: iErr } = await sb.from('marketplace_inquiries').select('*').eq('id', id).single();
   if(iErr || !inquiry){ alert('Erreur : demande introuvable.'); return; }
-  const isStockSale = inquiry.requested_qty != null;
-  const updatePayload = { status:'completed', updated_at: new Date().toISOString() };
-  let listing = null;
-  if(!isStockSale){
-    // Vente "au lot" classique : le stock a déjà été géré (ou pas) au moment de l'acceptation pour les ventes au stock ;
-    // ici on gère encore le cas historique où toute l'annonce est vendue d'un coup.
-    const { data: l } = await sb.from('marketplace_listings').select('*').eq('id', inquiry.listing_id).maybeSingle();
-    listing = l;
-    const unitPrice = inquiry.offer_price != null ? Number(inquiry.offer_price) : (listing ? Number(listing.price) : 0);
-    updatePayload.snap_item_name = listing ? listing.item_name : null;
-    updatePayload.snap_price = unitPrice;
-    updatePayload.snap_qty = listing ? listing.quantity : 1;
-  }
-  const { data: updated, error } = await sb.from('marketplace_inquiries').update(updatePayload).eq('id', id).select().maybeSingle();
+  const { error } = await sb.rpc('complete_marketplace_inquiry', { p_inquiry_id: id });
   if(error){ alert('Erreur : '+error.message); return; }
-  if(!updated){ alert('Erreur : la mise à jour a été bloquée (droits insuffisants sur la base). La vente n\'a PAS été validée, réessaie ou contacte l\'admin.'); return; }
-  if(!isStockSale && listing) await sb.from('marketplace_listings').update({ is_deleted: true }).eq('id', listing.id);
-  pushNotification(inquiry.buyer_id, 'client_marketplace', id);
+  const other = session.user.id === inquiry.seller_id ? inquiry.buyer_id : inquiry.seller_id;
+  if(other) pushNotification(other, 'client_marketplace', id);
   sweep(); msgRefreshAfterAction(); loadMyListings();
   if(shopViewingSellerId === session.user.id && !$('view-seller-shop').hidden){
     checkAndRenderSellerAchievements('shopAchvCard');

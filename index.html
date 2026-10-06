@@ -8041,6 +8041,31 @@ async function markOrderNotifSeen(orderId, cardEl){
   await sb.from('notifications').update({read:true}).eq('user_id',session.user.id).eq('category','courier_pending').eq('ref_id', orderId).eq('read',false);
   refreshNotifBadges();
 }
+
+// Systèmes traversés par l'itinéraire d'achat suggéré, par commande. On les garde AUSSI en mémoire (en plus
+// de la colonne route_systems en base) : si l'écriture en base échoue en silence (droits d'accès, réseau,
+// UEX indisponible au moment du calcul…), les succès basés sur l'itinéraire (Pyrolowda, This is the way)
+// peuvent quand même être calculés au moment de la livraison.
+const routeSystemsByOrder = {};
+function saveRouteSystems(orderId, systems){
+  routeSystemsByOrder[orderId] = systems.slice();
+  sb.from('orders').update({ route_systems: systems }).eq('id', orderId).select('id').then(({ data, error }) => {
+    if(error) console.error('[route_systems]', error);
+    else if(!data || !data.length) console.warn('[route_systems] aucune ligne mise à jour (droits ?) pour', orderId);
+  });
+}
+// S'assure que les systèmes de l'itinéraire d'une commande sont connus AVANT de la marquer livrée.
+async function ensureRouteSystems(orderId){
+  try{
+    if(routeSystemsByOrder[orderId]) return;
+    const cached = purchaseRouteCache[orderId];
+    if(cached && cached.route && cached.route.systems && cached.route.systems.length){ saveRouteSystems(orderId, cached.route.systems); return; }
+    const o = (courierMineOrdersCache || []).find(x => x.id === orderId);
+    if(!o || o.order_type === 'marketplace') return;
+    const route = await buildPurchaseRoute(o);
+    if(route.systems && route.systems.length) saveRouteSystems(orderId, route.systems);
+  }catch(e){ console.error('[ensureRouteSystems]', e); }
+}
 let justAcceptedOrderId = null;
 // Commande actuellement affichée "en grand" dans l'onglet ATTRIBUÉES, les autres restant en petite liste cliquable.
 let activeDeliveryId = null;
@@ -8075,9 +8100,7 @@ async function renderMyDeliveries(orders){
       purchaseRouteCache[o.id] = { order: o, route };
       // Sauvegarde les systèmes de l'itinéraire suggéré sur la commande : sert à l'achievement
       // "This is the way" (itinéraire + lieu de livraison couvrant les 3 systèmes).
-      if(route.systems && route.systems.length){
-        sb.from('orders').update({ route_systems: route.systems }).eq('id', o.id).then(({error})=>{ if(error) console.error('[route_systems]', error); });
-      }
+      if(route.systems && route.systems.length){ saveRouteSystems(o.id, route.systems); }
       if(o.id === activeDeliveryId) renderMyDeliveriesView();
     }catch(e){ console.error('[buildPurchaseRoute] exception:', e); }
   });
@@ -8270,6 +8293,8 @@ function deliveredSequenceFx(orderId, commission){
   });
 }
 async function advanceOrder(id, next){
+  // Avant de marquer livrée : on s'assure de connaître les systèmes de l'itinéraire (en parallèle du reste).
+  const routeReady = next === 'delivered' ? ensureRouteSystems(id) : null;
   const { data, error } = await sb.rpc('advance_order', { order_id: id, new_status: next });
   if(error){ alert('Erreur : '+fullErrText(error)); return; }
   const row = data && data[0];
@@ -8288,6 +8313,7 @@ async function advanceOrder(id, next){
     try{ await deliveredSequenceFx(id, (row && row.commission != null) ? row.commission : (cached && cached.commission)); }catch(e){}
     window.__deliverySeq = false;
   }
+  if(routeReady){ try{ await routeReady; }catch(e){} }
   sweep(); loadCourierData();
 }
 async function releaseOrder(id){
@@ -8344,14 +8370,15 @@ function isMagazineItem(name){
   return n.includes('magazine') || n.includes('chargeur');
 }
 function orderSystemsSet(o){
-  return new Set([...(o.route_systems||[]), o.destination_system].filter(Boolean).map(s=>String(s).toLowerCase()));
+  const local = (o && o.id && typeof routeSystemsByOrder !== 'undefined' && routeSystemsByOrder[o.id]) || [];
+  return new Set([...(o.route_systems||[]), ...local, o.destination_system].filter(Boolean).map(s=>String(s).toLowerCase()));
 }
 // UNE seule requête (toutes les colonnes utiles) pour les commandes livrées d'un coursier : elle alimente
 // les stats de rang/succès, les stats de carrière et la bande de stats du tableau de bord coursier, qui
 // faisaient avant chacune leur propre requête identique.
 function fetchCourierDeliveredRows(courierId){
   return memoOnce('cdel:'+courierId, async () => {
-    const { data } = await sb.from('orders').select('accepted_at,purchased_at,updated_at,status,items,gross_price,commission,destination_system,route_systems,order_type').eq('courier_id', courierId).eq('status','delivered');
+    const { data } = await sb.from('orders').select('id,accepted_at,purchased_at,updated_at,status,items,gross_price,commission,destination_system,route_systems,order_type').eq('courier_id', courierId).eq('status','delivered');
     return data || [];
   });
 }

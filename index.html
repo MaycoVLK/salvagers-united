@@ -816,23 +816,18 @@
     -webkit-mask-size:140px 110px, 100% 100%; mask-size:140px 110px, 100% 100%; -webkit-mask-repeat:repeat, no-repeat; mask-repeat:repeat, no-repeat;
     -webkit-mask-composite:source-in; mask-composite:intersect; animation:frmDrops 3.2s steps(22) infinite;}
   @keyframes frmDrops{from{-webkit-mask-position:0 0, 0 0; mask-position:0 0, 0 0;} to{-webkit-mask-position:0 110px, 0 0; mask-position:0 110px, 0 0;}}
-  .shop-frame-layer.frame-orbit{background:
-    linear-gradient(var(--accent),var(--accent)) left 5px top 5px/14px 2px no-repeat, linear-gradient(var(--accent),var(--accent)) left 5px top 5px/2px 14px no-repeat,
-    linear-gradient(var(--accent),var(--accent)) right 5px top 5px/14px 2px no-repeat, linear-gradient(var(--accent),var(--accent)) right 5px top 5px/2px 14px no-repeat,
-    linear-gradient(var(--accent),var(--accent)) left 5px bottom 5px/14px 2px no-repeat, linear-gradient(var(--accent),var(--accent)) left 5px bottom 5px/2px 14px no-repeat,
-    linear-gradient(var(--accent),var(--accent)) right 5px bottom 5px/14px 2px no-repeat, linear-gradient(var(--accent),var(--accent)) right 5px bottom 5px/2px 14px no-repeat;}
-  .shop-frame-layer.frame-orbit::before, .shop-frame-layer.frame-orbit::after{content:""; position:absolute; width:8px; height:8px; background:var(--accent); box-shadow:0 0 8px var(--accent); animation:frmOrbit 6s linear infinite;}
-  .shop-frame-layer.frame-orbit::after{animation-delay:-3s;}
-  @keyframes frmOrbit{0%{top:0; left:0;} 25%{top:0; left:calc(100% - 8px);} 50%{top:calc(100% - 8px); left:calc(100% - 8px);} 75%{top:calc(100% - 8px); left:0;} 100%{top:0; left:0;}}
+  /* Pixels orbitaux : plusieurs pixels, chacun sa vitesse (posés en JS) */
+  .frm-orb{position:absolute; left:0; top:0; width:var(--s,8px); height:var(--s,8px); background:var(--accent); box-shadow:0 0 8px var(--accent); animation:frmOrbit var(--dur,6s) var(--ease,linear) var(--del,0s) infinite;}
+  @keyframes frmOrbit{0%{top:0; left:0;} 25%{top:0; left:calc(100% - var(--s,8px));} 50%{top:calc(100% - var(--s,8px)); left:calc(100% - var(--s,8px));} 75%{top:calc(100% - var(--s,8px)); left:0;} 100%{top:0; left:0;}}
   .shop-frame-layer.frame-neon{border:2px solid var(--accent); box-shadow:0 0 8px var(--accent), inset 0 0 14px var(--accent-dim); animation:frmNeon 2.2s ease-in-out infinite alternate;}
   @keyframes frmNeon{from{opacity:.55; box-shadow:0 0 4px var(--accent), inset 0 0 6px var(--accent-dim);} to{opacity:1; box-shadow:0 0 14px var(--accent), inset 0 0 22px var(--accent-dim);}}
   /* néon style années 80 : bordure néon + anneaux qui pulsent vers l'intérieur + ligne de balayage */
   .shop-frame-layer.frame-neon{border:2px solid var(--accent); box-shadow:0 0 12px var(--accent), inset 0 0 14px var(--accent-dim); animation:frmNeonBase 2.4s ease-in-out infinite alternate;}
   @keyframes frmNeonBase{from{opacity:.65;} to{opacity:1;}}
-  .frm-ring{position:absolute; border:2px solid var(--accent); box-shadow:0 0 8px var(--accent); opacity:0; animation:frmRing 2.4s ease-out infinite;}
-  @keyframes frmRing{0%{opacity:0;} 15%{opacity:.8;} 55%{opacity:0;} 100%{opacity:0;}}
-  .frm-sweep{position:absolute; left:0; right:0; top:-4px; height:3px; background:linear-gradient(90deg, transparent, var(--accent) 18%, var(--accent) 82%, transparent); box-shadow:0 0 12px var(--accent), 0 0 26px var(--accent-dim); opacity:0; animation:frmSweep 3.8s linear infinite;}
-  @keyframes frmSweep{0%{top:-4px; opacity:0;} 8%{opacity:.85;} 92%{opacity:.85;} 100%{top:100%; opacity:0;}}
+  .frm-dash{position:absolute; left:0; top:0; width:100%; height:100%; overflow:visible; animation:frmDashPulse 2.4s ease-in-out infinite alternate;}
+  .frm-dash rect{fill:none; stroke:var(--accent); stroke-width:2; stroke-dasharray:10 8; shape-rendering:crispEdges; animation:frmDashRun 1.4s linear infinite; filter:drop-shadow(0 0 3px var(--accent));}
+  @keyframes frmDashRun{to{stroke-dashoffset:-36;}}
+  @keyframes frmDashPulse{from{opacity:.35;} to{opacity:.95;}}
   /* boucliers qui apparaissent / disparaissent en fondu */
   .shop-frame-layer.frame-shield{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent);}
   .frm-shield{position:absolute; width:18px; height:21px; background:var(--accent); opacity:0; -webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2214%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%221%22%20y%3D%220%22%20width%3D%2210%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%222%22%20width%3D%2212%22%20height%3D%226%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%228%22%20width%3D%2210%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%228%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%224%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E") center/100% 100% no-repeat; mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2214%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%221%22%20y%3D%220%22%20width%3D%2210%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%222%22%20width%3D%2212%22%20height%3D%226%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%228%22%20width%3D%2210%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%228%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%224%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E") center/100% 100% no-repeat; animation:frmShieldFade var(--dur,5s) ease-in-out var(--del,0s) infinite;}
@@ -842,6 +837,8 @@
   .frm-rock{position:absolute; background:var(--accent); opacity:.6; animation:frmAstFloat var(--dur,8s) ease-in-out var(--del,0s) infinite alternate;}
   .frm-rock.big{-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2218%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%226%22%20y%3D%220%22%20width%3D%228%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%2214%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%2218%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%227%22%20width%3D%2220%22%20height%3D%224%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%2211%22%20width%3D%2218%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%2214%22%20width%3D%2214%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%226%22%20y%3D%2216%22%20width%3D%228%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E") center/100% 100% no-repeat; mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2218%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%226%22%20y%3D%220%22%20width%3D%228%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%2214%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%2218%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%227%22%20width%3D%2220%22%20height%3D%224%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%2211%22%20width%3D%2218%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%2214%22%20width%3D%2214%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%226%22%20y%3D%2216%22%20width%3D%228%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E") center/100% 100% no-repeat;}
   .frm-rock.big::after{content:""; position:absolute; inset:0; background:rgba(0,0,0,.5); -webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2218%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%229%22%20width%3D%224%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%227%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%229%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E") center/100% 100% no-repeat; mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2218%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%229%22%20width%3D%224%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%227%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%229%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E") center/100% 100% no-repeat;}
+  .frm-dust{position:absolute; background:var(--accent); opacity:0; box-shadow:0 0 4px var(--accent); animation:frmTwinkle var(--dur,4s) ease-in-out var(--del,0s) infinite;}
+  @keyframes frmTwinkle{0%,100%{opacity:0; transform:translateY(0);} 50%{opacity:.85; transform:translateY(-4px);}}
   .frm-rock.small{-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%229%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%223%22%20y%3D%220%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%228%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%223%22%20width%3D%2210%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%228%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%228%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E") center/100% 100% no-repeat; mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%229%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%223%22%20y%3D%220%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%228%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%223%22%20width%3D%2210%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%228%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%228%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E") center/100% 100% no-repeat;}
   @keyframes frmAstFloat{0%{transform:translate(0,0);} 50%{transform:translate(var(--dx,8px), var(--dy,-6px));} 100%{transform:translate(calc(var(--dx,8px) * -.7), calc(var(--dy,-6px) * 1.3));}}
   /* Pyro : éclats ("shattered") — fissures qui apparaissent puis disparaissent, avec de petits éclats pixel */
@@ -6584,18 +6581,36 @@ function applyShopFrame(host, key){
   const f = Math.max(.32, Math.min(1, H/240));
   const count = (div, lo, hi) => Math.max(lo, Math.min(hi, Math.round(W*H/div)));
   if(key === 'neon'){
-    const g = Math.max(3, Math.min(8, Math.min(W,H)/38));
-    for(let i=0;i<3;i++){ const r = mk('frm-ring', { '--x':'' }); const o = g*(i+1.5); r.style.inset = o+'px'; r.style.animationDelay = (i*0.22)+'s'; }
-    mk('frm-sweep');
+    // ligne en tirets "lumières de piste" qui défile le long de la bordure, juste à l'intérieur du néon
+    const inset = 8, svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg'); svg.setAttribute('class','frm-dash'); svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('preserveAspectRatio','none');
+    const rc = document.createElementNS(svgNS, 'rect'); rc.setAttribute('x', inset); rc.setAttribute('y', inset); rc.setAttribute('width', W-2*inset); rc.setAttribute('height', H-2*inset);
+    svg.appendChild(rc); layer.appendChild(svg);
+  } else if(key === 'orbit'){
+    [{s:8,dur:4.2,ease:'linear',rev:false},{s:6,dur:6.8,ease:'ease-in-out',rev:true},{s:5,dur:9.5,ease:'linear',rev:false},{s:7,dur:5.4,ease:'ease-in-out',rev:false}].forEach((o,i) => {
+      const e = mk('frm-orb', { '--s': o.s+'px', '--dur': o.dur+'s', '--ease': o.ease, '--del': (-rnd(0,o.dur)).toFixed(1)+'s' });
+      if(o.rev) e.style.animationDirection = 'reverse';
+    });
   } else if(key === 'shield'){
     const n = count(7000, 4, 14);
     for(let i=0;i<n;i++){ const e = mk('frm-shield', { left: rnd(2,92)+'%', top: rnd(4,88)+'%', '--dur': rnd(4,8).toFixed(1)+'s', '--del': (-rnd(0,8)).toFixed(1)+'s' }); const sc = rnd(.8,1.3)*f; e.style.width = (18*sc)+'px'; e.style.height = (21*sc)+'px'; }
   } else if(key === 'nyx'){
-    const B = Math.max(16, Math.min(64, Math.min(W,H)*.2));
-    const cx = rnd(14,70), cy = rnd(12,58);
-    const big = mk('frm-rock big', { left: cx+'%', top: cy+'%', '--dur': '9s', '--del': '-2s', '--dx': (B*.25)+'px', '--dy': (-B*.2)+'px' }); big.style.width = B+'px'; big.style.height = (B*.9)+'px';
-    const s1 = mk('frm-rock small', { left: `calc(${cx}% + ${B*1.15}px)`, top: `calc(${cy}% - ${B*.35}px)`, '--dur': '6s', '--del': '-1s', '--dx': (B*.3)+'px', '--dy': (B*.25)+'px' }); s1.style.width = (B*.36)+'px'; s1.style.height = (B*.32)+'px';
-    const s2 = mk('frm-rock small', { left: `calc(${cx}% - ${B*.55}px)`, top: `calc(${cy}% + ${B*1.05}px)`, '--dur': '7.5s', '--del': '-4s', '--dx': (-B*.25)+'px', '--dy': (B*.2)+'px' }); s2.style.width = (B*.26)+'px'; s2.style.height = (B*.23)+'px';
+    const isLogo = host.matches('.shop-banner-logo, .sd-logo, .company-logo, .shop-frame-swatch') && Math.min(W,H) <= 300;
+    if(isLogo){
+      // sur le logo : poussière d'étoiles qui scintille (plus discret qu'un astéroïde sur une image)
+      const n = count(1800, 8, 22);
+      for(let i=0;i<n;i++){ const e = mk('frm-dust', { left: rnd(4,94)+'%', top: rnd(4,94)+'%', '--dur': rnd(2.5,5.5).toFixed(1)+'s', '--del': (-rnd(0,5)).toFixed(1)+'s' }); const z = Math.random()<.2 ? 4 : 2; e.style.width = e.style.height = z+'px'; }
+    } else {
+      // un gros astéroïde + deux petits, ancrés dans un coin (là où il n'y a pas de contenu), qui lévitent sur place
+      const B = Math.max(14, Math.min(34, Math.min(W,H)*.1));
+      const corners = [{r:false,b:true},{r:true,b:true},{r:false,b:false}];
+      const c = corners[Math.floor(Math.random()*corners.length)];
+      const pos = (dx, dy, w, h) => { const st = {}; st[c.r ? 'right' : 'left'] = (4+dx)+'px'; st[c.b ? 'bottom' : 'top'] = (4+dy)+'px'; return st; };
+      const amp = Math.max(3, B*.18);
+      const big = mk('frm-rock big', Object.assign(pos(0,0), { '--dur': '9s', '--del': '-2s', '--dx': (amp)+'px', '--dy': (-amp)+'px' })); big.style.width = B+'px'; big.style.height = (B*.9)+'px';
+      const s1 = mk('frm-rock small', Object.assign(pos(B*1.15, B*.55), { '--dur': '6s', '--del': '-1s', '--dx': (amp)+'px', '--dy': (amp*.7)+'px' })); s1.style.width = (B*.36)+'px'; s1.style.height = (B*.32)+'px';
+      const s2 = mk('frm-rock small', Object.assign(pos(B*.45, B*1.15), { '--dur': '7.5s', '--del': '-4s', '--dx': (-amp)+'px', '--dy': (amp*.6)+'px' })); s2.style.width = (B*.26)+'px'; s2.style.height = (B*.23)+'px';
+    }
   } else if(key === 'pyro'){
     const n = count(26000, 2, 5);
     for(let i=0;i<n;i++){

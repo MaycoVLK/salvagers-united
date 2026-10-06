@@ -7280,6 +7280,7 @@ let shopResourceRequestsCache = [];
 let shopSellerMapCache = {};
 async function openSellerShop(sellerId){
   if(!sellerId) return;
+  memoReset();
   shopViewingSellerId = sellerId;
   const isOwner = !!(session && session.user.id === sellerId);
   hideAllViews();
@@ -7358,9 +7359,8 @@ async function openSellerShop(sellerId){
     loadShopUpvotes(sellerId, isOwner);
     return;
   }
-  const stats = await fetchSellerShopStats(sellerId);
+  const [stats, unlockedSet] = await Promise.all([fetchSellerShopStats(sellerId), fetchUnlockedSellerAchievements(sellerId)]);
   renderShopStats($('shopStatsCard'), stats);
-  const unlockedSet = await fetchUnlockedSellerAchievements(sellerId);
   renderSellerAchievements(unlockedSet, stats, 'shopAchvCard');
   if(isOwner) checkAndRenderSellerAchievements('shopAchvCard');
 
@@ -7395,7 +7395,7 @@ async function openSellerShop(sellerId){
   if(bpMoreBtn) bpMoreBtn.hidden = bpList.length <= gridCap;
   renderShopStrip((stats && stats.salesCount) || 0, listingsForGrid.length, bpList.length);
 
-  loadShopUpvotes(sellerId, isOwner);
+  loadShopUpvotes(sellerId, isOwner, stats ? stats.upvoteCount : undefined);
 }
 
 // ===== Statut joueur =====
@@ -7492,7 +7492,7 @@ function renderShopStrip(sales, listings, bps){
     .map(([l,v,c,id]) => `<div class="mk-stat"><span class="mk-stat-l"><span class="sl">//</span> ${l}</span><span class="mk-stat-v ${c}"${id ? ` id="${id}"` : ''}>${v}</span></div>`).join('');
 }
 let shopUpvoted = false;
-async function loadShopUpvotes(sellerId, isOwner){
+async function loadShopUpvotes(sellerId, isOwner, knownCount){
   const btn = $('shopUpvoteBtn');
   if(!btn) return;
   // Le bouton upvote (avec son compteur) reste maintenant visible pour tout le monde, y compris le
@@ -7500,7 +7500,12 @@ async function loadShopUpvotes(sellerId, isOwner){
   btn.hidden = false;
   btn.classList.remove('upvoted');
   shopUpvoted = false;
-  const { count } = await sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', sellerId);
+  // Le nombre d'upvotes est déjà calculé avec les stats de la boutique : on le réutilise au lieu de le redemander.
+  let count = knownCount;
+  if(typeof count !== 'number'){
+    const r = await sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', sellerId);
+    count = r.count;
+  }
   const countEl = $('shopUpvoteCount');
   if(countEl) countEl.textContent = count || 0;
   const stripUp = $('shopStripUpvotes'); if(stripUp) stripUp.textContent = count || 0;
@@ -7806,6 +7811,7 @@ async function deleteResourceRequest(id){
 }
 async function loadCourierData(){
   if(!session) return;
+  memoReset();
   if(!profile || !(profile.is_courier || profile.role === 'admin')){
     $('courierBlocked').hidden = false; $('courierDash').hidden = true; return;
   }
@@ -7824,7 +7830,7 @@ async function renderCourierStats(pending, mine){
   const d = T[LANG];
   let delivered = 0, margin = 0;
   try{
-    const { data } = await sb.from('orders').select('commission,status').eq('courier_id', session.user.id).eq('status','delivered');
+    const data = await fetchCourierDeliveredRows(session.user.id);
     (data||[]).forEach(o => { delivered++; margin += Number(o.commission)||0; });
   }catch(e){}
   // Si la requête ne renvoie rien (RLS), on retombe sur ce que renvoie my_courier_orders.
@@ -8143,10 +8149,18 @@ function isMagazineItem(name){
 function orderSystemsSet(o){
   return new Set([...(o.route_systems||[]), o.destination_system].filter(Boolean).map(s=>String(s).toLowerCase()));
 }
+// UNE seule requête (toutes les colonnes utiles) pour les commandes livrées d'un coursier : elle alimente
+// les stats de rang/succès, les stats de carrière et la bande de stats du tableau de bord coursier, qui
+// faisaient avant chacune leur propre requête identique.
+function fetchCourierDeliveredRows(courierId){
+  return memoOnce('cdel:'+courierId, async () => {
+    const { data } = await sb.from('orders').select('accepted_at,purchased_at,updated_at,status,items,gross_price,commission,destination_system,route_systems,order_type').eq('courier_id', courierId).eq('status','delivered');
+    return data || [];
+  });
+}
 async function fetchCourierStats(){
   if(!session) return null;
-  const { data } = await sb.from('orders').select('accepted_at,purchased_at,updated_at,status,items,gross_price,destination_system,route_systems,order_type').eq('courier_id', session.user.id).eq('status','delivered');
-  const rows = data || [];
+  const rows = await fetchCourierDeliveredRows(session.user.id);
   const deliveredCount = rows.length;
   const hasMarketplaceDelivery = rows.some(o => o.order_type === 'marketplace');
   const hasFastDelivery = rows.some(o => o.accepted_at && o.purchased_at && (new Date(o.purchased_at) - new Date(o.accepted_at)) <= 10*60*1000);
@@ -8165,8 +8179,11 @@ async function fetchCourierStats(){
 }
 async function loadUnlockedAchievements(){
   if(!session) return new Set();
-  const { data } = await sb.from('courier_achievements').select('key').eq('courier_id', session.user.id);
-  return new Set((data||[]).map(r=>r.key));
+  const keys = await memoOnce('cach:'+session.user.id, async () => {
+    const { data } = await sb.from('courier_achievements').select('key').eq('courier_id', session.user.id);
+    return (data||[]).map(r=>r.key);
+  });
+  return new Set(keys);
 }
 function renderAchievements(unlockedSet, deliveredCount, boxId){
   const box = $(boxId || 'courierAchievementsCard'); if(!box) return;
@@ -8201,7 +8218,7 @@ async function checkAndRenderAchievements(){
     if(!unlocked.has(a.key) && a.check(stats)){
       const { error, data } = await sb.from('courier_achievements').insert({ courier_id: session.user.id, key: a.key }).select();
       if(error) console.error('Achievement coursier non débloqué ('+a.key+') :', error);
-      if(!error && data && data.length){ unlocked.add(a.key); newlyUnlocked.push(a.key); }
+      if(!error && data && data.length){ unlocked.add(a.key); newlyUnlocked.push(a.key); memoReset(); }
     }
   }
   renderAchievements(unlocked, stats.deliveredCount);
@@ -8546,6 +8563,7 @@ function switchProfileTab(t){
   });
 }
 function openProfile(){
+  memoReset();
   $('settingsPanel').hidden = true;
   hideAllViews();
   $('pageTitle').hidden = true;
@@ -8695,8 +8713,7 @@ async function onShipPhotoSelected(inputEl){
 }
 async function fetchCourierCareerStats(courierId){
   if(!courierId) return null;
-  const { data } = await sb.from('orders').select('items,commission,status').eq('courier_id', courierId).eq('status','delivered');
-  const rows = data || [];
+  const rows = await fetchCourierDeliveredRows(courierId);
   if(!rows.length) return null;
   let totalEarned = 0;
   const itemCounts = {};
@@ -8785,8 +8802,11 @@ function sellerRankShowcaseHtml(salesCount){
 }
 
 // --- STATISTIQUES & SUCCÈS DE BOUTIQUE (vendeur) ---
-async function fetchSellerShopStats(sellerId){
-  if(!sellerId) return null;
+function fetchSellerShopStats(sellerId){
+  if(!sellerId) return Promise.resolve(null);
+  return memoOnce('sstats:'+sellerId, () => fetchSellerShopStatsRaw(sellerId));
+}
+async function fetchSellerShopStatsRaw(sellerId){
   const [ordersRes, inquiriesRes, upvotesRes, listingsRes, acceptedOffersRes, blueprintsRes, completedBpReqRes] = await Promise.all([
     sb.from('orders').select('items,gross_price,status,listing_id').eq('seller_id', sellerId).eq('order_type','marketplace').eq('status','delivered'),
     // On se base sur order_id IS NULL (et non sur la colonne delivery_method, qui peut être absente/périmée
@@ -8932,8 +8952,11 @@ function isColossusBomb(name){
 }
 async function fetchUnlockedSellerAchievements(sellerId){
   if(!sellerId) return new Set();
-  const { data } = await sb.from('seller_achievements').select('key').eq('seller_id', sellerId);
-  return new Set((data||[]).map(r=>r.key));
+  const keys = await memoOnce('sach:'+sellerId, async () => {
+    const { data } = await sb.from('seller_achievements').select('key').eq('seller_id', sellerId);
+    return (data||[]).map(r=>r.key);
+  });
+  return new Set(keys);
 }
 function renderSellerAchievements(unlockedSet, stats, boxId){
   const box = $(boxId); if(!box) return;
@@ -9033,7 +9056,7 @@ async function checkAndRenderSellerAchievements(boxId){
     if(!unlocked.has(a.key) && a.check(stats)){
       const { error, data } = await sb.from('seller_achievements').insert({ seller_id: session.user.id, key: a.key }).select();
       if(error) console.error('Achievement vendeur non débloqué ('+a.key+') :', error);
-      if(!error && data && data.length){ unlocked.add(a.key); newlyUnlocked.push(a.key); }
+      if(!error && data && data.length){ unlocked.add(a.key); newlyUnlocked.push(a.key); memoReset(); }
     }
   }
   if(boxId) renderSellerAchievements(unlocked, stats, boxId);
@@ -9204,6 +9227,21 @@ function runDebounced(key, fn, ms){
   clearTimeout(__debounceTimers[key]);
   __debounceTimers[key] = setTimeout(fn, ms || 1200);
 }
+// Mémo de très courte durée (3 s) : quand plusieurs blocs d'une même page demandent exactement la même
+// donnée au même moment (ex. le profil qui recalcule 2-3 fois les stats de livraisons), on ne fait qu'UNE
+// requête et on partage le résultat. memoReset() vide tout (appelé à l'ouverture des pages et sur les
+// événements temps réel) pour ne jamais afficher une donnée périmée.
+const __memo = new Map();
+function memoOnce(key, fn){
+  const hit = __memo.get(key);
+  if(hit) return hit;
+  const pr = Promise.resolve().then(fn);
+  __memo.set(key, pr);
+  pr.catch(() => { if(__memo.get(key) === pr) __memo.delete(key); });
+  setTimeout(() => { if(__memo.get(key) === pr) __memo.delete(key); }, 3000);
+  return pr;
+}
+function memoReset(){ __memo.clear(); }
 let ordersChannel = null, ordersClientChannel = null, ordersSellerChannel = null, marketplaceChannel = null, inquiriesChannel = null, blueprintRequestsChannel = null;
 function subscribeDataChannels(){
   if(!session || !profile) return;
@@ -9211,6 +9249,7 @@ function subscribeDataChannels(){
   const isSellerOrAdmin = profile.is_seller || profile.role === 'admin';
   if(isCourierOrAdmin && !ordersChannel) ordersChannel = sb.channel('orders-realtime')
     .on('postgres_changes', { event:'*', schema:'public', table:'orders' }, () => {
+      memoReset();
       const v = effectiveView();
       if(v === 'courier' && !$('view-courier-dash').hidden) runDebounced('courierData', loadCourierData);
       if(v === 'admin' && !$('view-seller-shop').hidden && shopViewingSellerId === session.user.id){ checkAndRenderSellerAchievements('shopAchvCard'); fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('shopStatsCard'), stats)); }
@@ -9218,11 +9257,13 @@ function subscribeDataChannels(){
     .subscribe();
   if(!ordersClientChannel) ordersClientChannel = sb.channel('orders-client-'+session.user.id)
     .on('postgres_changes', { event:'*', schema:'public', table:'orders', filter:`client_id=eq.${session.user.id}` }, () => {
+      memoReset();
       if(effectiveView() === 'client' && !$('view-client-dash').hidden && clientTab === 'deliveries') runDebounced('clientDash', loadClientDashboard);
     })
     .subscribe();
   if(isSellerOrAdmin && !ordersSellerChannel) ordersSellerChannel = sb.channel('orders-seller-'+session.user.id)
     .on('postgres_changes', { event:'*', schema:'public', table:'orders', filter:`seller_id=eq.${session.user.id}` }, () => {
+      memoReset();
       if(effectiveView() === 'seller' && !$('view-seller-shop').hidden && shopViewingSellerId === session.user.id){ checkAndRenderSellerAchievements('shopAchvCard'); fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('shopStatsCard'), stats)); }
     })
     .subscribe();
@@ -9698,10 +9739,9 @@ async function openPublicProfile(id){
     // La progression/les succès vendeur n'étaient affichés que sur la page boutique (openSellerShop), jamais
     // sur la fiche profil — d'où l'impression qu'une vente complétée "ne donnait rien" alors que le succès
     // était en réalité bien débloqué en base. On réutilise ici exactement la même logique que la boutique.
-    const sellerStats = await fetchSellerShopStats(id);
+    const [sellerStats, unlockedSellerSet] = await Promise.all([fetchSellerShopStats(id), fetchUnlockedSellerAchievements(id)]);
     renderShopStats($('pubSellerStatsCard'), sellerStats);
     $('pubSellerStatsCard').hidden = false;
-    const unlockedSellerSet = await fetchUnlockedSellerAchievements(id);
     renderSellerAchievements(unlockedSellerSet, sellerStats, 'pubSellerAchvCard');
     if(session && session.user.id === id) checkAndRenderSellerAchievements('pubSellerAchvCard');
   }

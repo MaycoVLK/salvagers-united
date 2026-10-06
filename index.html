@@ -3221,8 +3221,10 @@
 // la page depuis son cache mémoire (bfcache) au lieu de charger la page fraîchement redirigée
 // contenant le jeton de session (#access_token=...) dans l'URL. On force un rechargement complet
 // dans ce cas précis pour que Supabase puisse bien récupérer la session.
+// On ne recharge QUE si on revient réellement d'une connexion (jeton/code dans l'URL) : sinon, au retour d'un
+// sélecteur de photo/appareil photo sur mobile, la page était rechargée et le créateur d'annonce se fermait.
 window.addEventListener('pageshow', (event) => {
-  if (event.persisted) {
+  if (event.persisted && (/access_token=|[?&]code=/.test(window.location.hash + window.location.search))) {
     window.location.reload();
   }
 });
@@ -10734,6 +10736,7 @@ async function initAuth(){
 
   sb.auth.onAuthStateChange(async (event, s2) => {
     const wasLoggedIn = !!session;
+    const prevUserId = session && session.user ? session.user.id : null;
     session = s2;
     await loadProfile();
     if(event === 'SIGNED_OUT'){ hasBooted = false; rsiGateState = 'idle'; $('bootOverlay').hidden = true; $('rsiGateOverlay').hidden = true; unsubscribeProfileChannel(); unsubscribeNotifChannel(); unsubscribePresenceChannel(); unsubscribeDataChannels(); routeApp(); return; }
@@ -10749,6 +10752,9 @@ async function initAuth(){
       return;
     }
     updateProfileChip();
+    // Même utilisateur déjà connecté (rafraîchissement du jeton, retour sur l'onglet après une photo/appareil
+    // photo, etc.) : on ne ré-aiguille PAS la page, sinon le formulaire en cours se ferme et se vide.
+    if(prevUserId && s2 && s2.user && s2.user.id === prevUserId && event !== 'USER_UPDATED') return;
     routeApp();
   });
 }

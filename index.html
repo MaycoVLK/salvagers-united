@@ -859,9 +859,10 @@
   @keyframes frmWind{0%{opacity:0; transform:translate(0,0) rotate(0deg);} 10%{opacity:.9;} 90%{opacity:.9;} 100%{opacity:0; transform:translate(var(--travel,600px), var(--drift,20px)) rotate(300deg);}}
   .frm-streak{position:absolute; left:0; height:2px; width:26px; background:linear-gradient(90deg, transparent, var(--accent), transparent); opacity:0; animation:frmWind var(--dur,4s) linear var(--del,0s) infinite;}
   /* Vaisseau + traînée lumineuse : canvas, le vaisseau vole librement dans des directions aléatoires */
-  .shop-frame-layer.frame-coins, .shop-frame-layer.frame-crates, .shop-frame-layer.frame-bolts, .shop-frame-layer.frame-ammo, .shop-frame-layer.frame-route, .shop-frame-layer.frame-flash, .shop-frame-layer.frame-forge, .shop-frame-layer.frame-hearts, .shop-frame-layer.frame-fifteen{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
+  .shop-frame-layer.frame-coins, .shop-frame-layer.frame-crates, .shop-frame-layer.frame-bolts, .shop-frame-layer.frame-ammo, .shop-frame-layer.frame-route, .shop-frame-layer.frame-flash, .shop-frame-layer.frame-forge, .shop-frame-layer.frame-hearts, .shop-frame-layer.frame-fifteen, .shop-frame-layer.frame-glitch{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
   .shop-frame-layer.frame-trail{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
   .shop-frame-extra{position:absolute; inset:0; pointer-events:none; z-index:5; border-radius:inherit;}
+  .shop-frame-back{z-index:-1; overflow:hidden;}
   .frm-ship{position:absolute; left:0; top:0; width:15px; height:15px; margin:-7px 0 0 -7px; background:var(--accent); clip-path:polygon(0 0, 100% 50%, 0 100%); filter:drop-shadow(0 0 5px var(--accent));}
   @media (prefers-reduced-motion:reduce){ .shop-frame-layer, .shop-frame-layer::before, .shop-frame-layer::after{animation:none !important;} }
   .shop-frame-item{display:flex; flex-direction:column; align-items:center; gap:5px; background:none; border:1px solid var(--border); border-radius:4px; padding:6px 4px; cursor:pointer; width:92px;}
@@ -979,27 +980,16 @@
   .shop-texture-layer.tex-scan{background-image:repeating-linear-gradient(0deg, color-mix(in srgb, var(--accent) 22%, transparent) 0px, color-mix(in srgb, var(--accent) 22%, transparent) 1px, transparent 1px, transparent 4px);}
   .shop-texture-layer.tex-grid{background-image:linear-gradient(color-mix(in srgb, var(--accent) 26%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--accent) 26%, transparent) 1px, transparent 1px); background-size:16px 16px;}
   .shop-texture-layer.tex-diag{background-image:repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 26%, transparent) 0px, color-mix(in srgb, var(--accent) 26%, transparent) 2px, transparent 2px, transparent 11px);}
-  .shop-texture-layer.tex-circuit{background-image:
-      linear-gradient(color-mix(in srgb, var(--accent) 21%, transparent) 1px, transparent 1px),
-      linear-gradient(90deg, color-mix(in srgb, var(--accent) 21%, transparent) 1px, transparent 1px),
-      radial-gradient(color-mix(in srgb, var(--accent) 42%, transparent) 1.5px, transparent 1.5px);
-    background-size:22px 22px, 22px 22px, 22px 22px;}
   .shop-texture-layer.tex-noise{background-image:radial-gradient(color-mix(in srgb, var(--accent) 21%, transparent) 1px, transparent 1px), radial-gradient(color-mix(in srgb, var(--accent) 15%, transparent) 1px, transparent 1px); background-size:7px 7px, 17px 17px; background-position:0 0, 4px 6px;}
   .shop-texture-layer.tex-none{background-image:none;}
-  /* Crâne de pirate spatial, pixel art minimaliste (silhouette ronde, orbites carrées, sans dents — design
-     propre à ce site, pas une reprise d'un crâne existant), dessiné en masque SVG (forme opaque = alpha)
-     puis "repeint" avec background-color pour qu'il suive la couleur d'accent de la boutique comme les
-     autres textures. Le viewBox est volontairement plus grand que la silhouette (marge de 2 unités tout
-     autour) et le mask-size généreux pour que les crânes du motif restent bien espacés les uns des autres. */
-  .shop-texture-layer.tex-skull{
-    --skull-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' shape-rendering='crispEdges'%3E%3Cg fill='%23fff'%3E%3Crect x='5' y='2' width='4' height='1'/%3E%3Crect x='4' y='3' width='6' height='1'/%3E%3Crect x='3' y='4' width='8' height='1'/%3E%3Crect x='2' y='5' width='10' height='1'/%3E%3Crect x='3' y='6' width='3' height='1'/%3E%3Crect x='8' y='6' width='3' height='1'/%3E%3Crect x='3' y='7' width='3' height='1'/%3E%3Crect x='8' y='7' width='3' height='1'/%3E%3Crect x='2' y='8' width='10' height='1'/%3E%3Crect x='3' y='9' width='8' height='1'/%3E%3Crect x='4' y='10' width='6' height='1'/%3E%3Crect x='5' y='11' width='4' height='1'/%3E%3C/g%3E%3C/svg%3E");
-    -webkit-mask-image:var(--skull-svg); mask-image:var(--skull-svg);
-    -webkit-mask-size:46px 46px; mask-size:46px 46px; -webkit-mask-repeat:repeat; mask-repeat:repeat;
-    background-color:color-mix(in srgb, var(--accent) 34%, transparent); background-image:none;}
-  /* Ondes circulaires concentriques, pur CSS (repeating-radial-gradient). */
-  .shop-texture-layer.tex-waves{background-image:repeating-radial-gradient(circle at 50% 50%,
-      color-mix(in srgb, var(--accent) 24%, transparent) 0px, color-mix(in srgb, var(--accent) 24%, transparent) 1.5px,
-      transparent 1.5px, transparent 10px); background-size:48px 48px;}
+  /* Textures discrètes (les cadres animés portent maintenant l'essentiel de la déco) : lueur douce, étoiles clairsemées, faisceaux diffus. */
+  .shop-texture-layer.tex-glow{background-image:radial-gradient(ellipse 85% 70% at 0% 0%, color-mix(in srgb, var(--accent) 17%, transparent), transparent 70%), radial-gradient(ellipse 70% 60% at 100% 100%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 70%);}
+  .shop-texture-layer.tex-stars{background-image:
+      radial-gradient(circle, color-mix(in srgb, var(--accent) 55%, transparent) 1px, transparent 1.5px),
+      radial-gradient(circle, color-mix(in srgb, var(--accent) 34%, transparent) .8px, transparent 1.2px),
+      radial-gradient(circle, color-mix(in srgb, var(--accent) 24%, transparent) .8px, transparent 1.2px);
+    background-size:137px 131px, 89px 97px, 53px 61px; background-position:12px 20px, 47px 8px, 5px 33px;}
+  .shop-texture-layer.tex-rays{background-image:repeating-linear-gradient(115deg, transparent 0px, transparent 46px, color-mix(in srgb, var(--accent) 9%, transparent) 70px, transparent 96px);}
 
   /* Pastilles de sélection de texture : chacune montre un échantillon miniature du motif réel. */
   .shop-texture-presets{display:flex; gap:10px; flex-wrap:wrap; margin-top:2px;}
@@ -1401,12 +1391,12 @@
   @keyframes upvScan{from{background-position:0 0;} to{background-position:0 6px;}}
   .upv-ov[data-tex="grid"] .upv-pat{background-image:linear-gradient(rgba(0,0,0,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.3) 1px, transparent 1px); background-size:10px 10px; animation:none;}
   .upv-ov[data-tex="diag"] .upv-pat{background-image:repeating-linear-gradient(45deg, rgba(255,255,255,.35) 0 4px, transparent 4px 10px);}
-  .upv-ov[data-tex="circuit"] .upv-pat{background-image:linear-gradient(90deg, rgba(0,0,0,.35) 2px, transparent 2px), radial-gradient(circle, rgba(255,255,255,.7) 2px, transparent 2.5px); background-size:18px 100%, 18px 18px; animation:upvBlink .35s steps(2) infinite;}
+  .upv-ov[data-tex="glow"] .upv-pat{background-image:linear-gradient(90deg, rgba(0,0,0,.35) 2px, transparent 2px), radial-gradient(circle, rgba(255,255,255,.7) 2px, transparent 2.5px); background-size:18px 100%, 18px 18px; animation:upvBlink .35s steps(2) infinite;}
   @keyframes upvBlink{0%{opacity:.95;} 50%{opacity:.5;}}
   .upv-ov[data-tex="noise"] .upv-pat{background-image:repeating-linear-gradient(90deg, rgba(255,255,255,.5) 0 2px, transparent 2px 5px), repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 2px, transparent 2px 4px); animation:upvNoise .3s steps(3) infinite;}
   @keyframes upvNoise{0%{background-position:0 0, 0 0;} 33%{background-position:3px 2px, 1px 3px;} 66%{background-position:1px 4px, 4px 1px;} 100%{background-position:0 0, 0 0;}}
-  .upv-ov[data-tex="skull"] .upv-pat{background-image:conic-gradient(rgba(0,0,0,.3) 25%, transparent 0 50%, rgba(0,0,0,.3) 0 75%, transparent 0); background-size:10px 10px; animation:none;}
-  .upv-ov[data-tex="waves"] .upv-pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' viewBox='0 0 24 12'%3E%3Cpath d='M0 6 Q6 0 12 6 T24 6' fill='none' stroke='rgba(255,255,255,.6)' stroke-width='2'/%3E%3C/svg%3E"); background-size:24px 12px; animation:upvWave .7s linear infinite;}
+  .upv-ov[data-tex="stars"] .upv-pat{background-image:conic-gradient(rgba(0,0,0,.3) 25%, transparent 0 50%, rgba(0,0,0,.3) 0 75%, transparent 0); background-size:10px 10px; animation:none;}
+  .upv-ov[data-tex="rays"] .upv-pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' viewBox='0 0 24 12'%3E%3Cpath d='M0 6 Q6 0 12 6 T24 6' fill='none' stroke='rgba(255,255,255,.6)' stroke-width='2'/%3E%3C/svg%3E"); background-size:24px 12px; animation:upvWave .7s linear infinite;}
   @keyframes upvWave{from{background-position:0 0;} to{background-position:24px 0;}}
 
   /* Contour de l'encadré du haut : une lumière fait le tour du cadre pendant que le bouton se charge. */
@@ -3669,8 +3659,8 @@ const T = {
     courierAccepted:"🎉 Ta demande pour devenir coursier a été acceptée !", courierRejected:"Ta demande pour devenir coursier a été refusée.",
     courierApplications:"Candidatures Coursier", noApplications:"Aucune candidature en attente.", acceptApp:"ACCEPTER", rejectApp:"REFUSER",
     achvTitle:"Succès", achvUnlocked:"Nouveau succès débloqué :",
-    achvLabels:{first_delivery:"Première livraison", five_deliveries:"5 livraisons", veteran:"Coursier fiable", lightning:"Rapide comme l'éclair", this_is_the_way:"This is the way", trunk_contents:"What is that in your trunk, sir?", dangerous_deliveries:"Dangerous Deliveries", raising_army:"Are you raising an army?", paperwork:"Do you have the paperwork for that?", pyrolowda:"Pyrolowda", keegabelta:"Keegabelta", stantawalla:"Stantawalla", special_delivery:"Special Delivery"},
-    achvDesc:{first_delivery:"Termine ta première commande.", five_deliveries:"Termine 5 commandes.", veteran:"Termine 20 commandes.", lightning:"Marque une commande comme achetée dans les 10 minutes après l'avoir acceptée.", this_is_the_way:"Termine une commande dont l'itinéraire d'achat suggéré traverse les 3 systèmes stellaires (lieu de livraison inclus).", trunk_contents:"Transporte une Colossus Bomb ou une torpille de taille 5 ou plus.", dangerous_deliveries:"Livre une commande à Pyro.", raising_army:"Transporte 100 chargeurs ou plus (toutes armes combinées) dans une même commande.", paperwork:"Transporte plus de 2 000 000 aUEC de marchandise dans une même commande.", pyrolowda:"Termine une commande dont l'itinéraire passe par Pyro à un moment donné.", keegabelta:"Termine une commande dont l'itinéraire passe par Nyx à un moment donné.", stantawalla:"Termine une commande dont l'itinéraire passe par Stanton à un moment donné.", special_delivery:"Termine la livraison d'une vente marketplace."},
+    achvLabels:{jawas_food:"Jawa's food", first_delivery:"Première livraison", five_deliveries:"5 livraisons", veteran:"Coursier fiable", lightning:"Rapide comme l'éclair", this_is_the_way:"This is the way", trunk_contents:"What is that in your trunk, sir?", dangerous_deliveries:"Dangerous Deliveries", raising_army:"Are you raising an army?", paperwork:"Do you have the paperwork for that?", pyrolowda:"Pyrolowda", keegabelta:"Keegabelta", stantawalla:"Stantawalla", special_delivery:"Special Delivery"},
+    achvDesc:{jawas_food:"Transporte des fuses, des Cambio SRT Canister ou des Cambio-lite SRT Canister. Se valide aussi automatiquement côté vendeur.", first_delivery:"Termine ta première commande.", five_deliveries:"Termine 5 commandes.", veteran:"Termine 20 commandes.", lightning:"Marque une commande comme achetée dans les 10 minutes après l'avoir acceptée.", this_is_the_way:"Termine une commande dont l'itinéraire d'achat suggéré traverse les 3 systèmes stellaires (lieu de livraison inclus).", trunk_contents:"Transporte une Colossus Bomb ou une torpille de taille 5 ou plus.", dangerous_deliveries:"Livre une commande à Pyro.", raising_army:"Transporte 100 chargeurs ou plus (toutes armes combinées) dans une même commande.", paperwork:"Transporte plus de 2 000 000 aUEC de marchandise dans une même commande.", pyrolowda:"Termine une commande dont l'itinéraire passe par Pyro à un moment donné.", keegabelta:"Termine une commande dont l'itinéraire passe par Nyx à un moment donné.", stantawalla:"Termine une commande dont l'itinéraire passe par Stanton à un moment donné.", special_delivery:"Termine la livraison d'une vente marketplace."},
     statusLabels:{pending:"En attente d'un coursier",accepted:"Acceptée",purchased:"Marchandise achetée",in_transit:"En transit",delivered:"Livrée",cancelled:"Annulée"},
     statusShort:{pending:"Attente",accepted:"Acceptée",purchased:"Achetée",in_transit:"Transit",delivered:"Livrée"},
     orderSystem:"Système : ", orderLieu:"Lieu : ", orderTotal:"Total : ", orderCourier:"Coursier : ", orderClient:"Client : ", orderShip:"Vaisseau : ",
@@ -3721,7 +3711,7 @@ const T = {
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NOUVELLE COMMANDE", unlockSales:"{n} ventes", frameLbl:"Cadre", frameNone:"Aucun", frameDrops:"Pixels qui tombent", frameOrbit:"Coins orbitaux", frameNeon:"Néon pulsé", frameShield:"Boucliers", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Traînée", frameCoins:"Pièces", frameCrates:"Caisses", frameBolts:"Éclairs", frameAmmo:"Munitions", frameRoute:"Itinéraire", frameFlash:"Flashs", frameForge:"Forge", frameHearts:"Cœurs", frameFifteen:"Poches pleines", unlockRank:"Rang vendeur : ", unlockCAch:"Succès coursier : ", companyTitle:"ENTREPRISE DE LIVRAISON", companyCustomize:"PERSONNALISER", companyCreate:"CRÉER MON ENTREPRISE", companyNoShop:"Donne un nom, un logo et un style à ton entreprise : ils sont partagés avec ton shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Succès : ", lockedTip:"Pour débloquer : ", unlockedTip:"Condition : ", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
+    homeNewOrder:"+ NOUVELLE COMMANDE", unlockSales:"{n} ventes", frameLbl:"Cadre", frameNone:"Aucun", frameDrops:"Pixels qui tombent", frameOrbit:"Coins orbitaux", frameNeon:"Néon pulsé", frameShield:"Boucliers", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Traînée", frameCoins:"Pièces", frameCrates:"Caisses", frameBolts:"Éclairs", frameAmmo:"Munitions", frameRoute:"Itinéraire", frameFlash:"Flashs", frameForge:"Forge", frameHearts:"Cœurs", frameFifteen:"Poches pleines", frameGlitch:"Glitch", unlockRank:"Rang vendeur : ", unlockCAch:"Succès coursier : ", companyTitle:"ENTREPRISE DE LIVRAISON", companyCustomize:"PERSONNALISER", companyCreate:"CRÉER MON ENTREPRISE", companyNoShop:"Donne un nom, un logo et un style à ton entreprise : ils sont partagés avec ton shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Succès : ", lockedTip:"Pour débloquer : ", unlockedTip:"Condition : ", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
     classicOrderNote:"COMMANDE CLASSIQUE : uniquement des objets achetables dans une boutique en jeu — le coursier les achète puis te les livre. Un objet introuvable en boutique (loot, craft, rare…) ? Poste plutôt un desired item.", classicOrderLink:"POSTER UN DESIRED ITEM ▸",
     commodityQualityNote:"Commodities : seules des commodities de qualité 500 peuvent être livrées par commande. Pour une qualité supérieure, passe par la marketplace ou poste un desired item.", commodityQualityShort:"Commodity : qualité 500 uniquement.",
     desiredIntroNote:"DESIRED ITEM : un objet que tu cherches et qui n'est PAS achetable en boutique (loot, craft, qualité supérieure…). N'importe quel joueur peut te proposer de te le fournir ; tu choisis l'offre, puis vous pouvez demander un coursier pour la livraison.", myDesiredTitle:"MES DESIRED ITEMS", noMyDesired:"Tu n'as posté aucun desired item.", postDesiredBtn:"+ POSTER", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"LIVRAISON DESIRED ITEM",
@@ -3731,13 +3721,13 @@ const T = {
     sdTitle:"Shops", sdSub:"Tous les shops ouverts sur Couriers United. Trouve un vendeur, parcours ses annonces et ses blueprints.", sdSearchPh:"Chercher un shop par nom ou spécialité...", sdSortLbl:"TRIER", sdSortedBy:"TRIÉ PAR {x}", sdCount:"{n} SHOPS", sdNone:"Aucun shop ne correspond à ta recherche.", sdSales:"ventes", sdListings:"annonces", sdBp:"bp", sdVisit:"VISITER ▸", sdSinceWeek:"Ouvert cette semaine", sdSinceDays:"Ouvert depuis {n} jours", sdS_newest:"LES PLUS RÉCENTS", sdS_sales:"PLUS DE VENTES (TOTAL)", sdS_blueprints:"PLUS DE BLUEPRINTS", sdS_listings:"PLUS D'ANNONCES", sdS_name:"NOM DE A À Z",
     shStSales:"VENTES (TOTAL)", shStListings:"ANNONCES", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
     cTabAvail:"COMMANDES DISPONIBLES", cTabMine:"MES LIVRAISONS", cTabAch:"SUCCÈS", cStDel:"LIVRÉES", cStProg:"EN COURS", cStMargin:"MARGE TOTALE", cStOpen:"COMMANDES OUVERTES", cActive:"LIVRAISON ACTIVE", cMsgClient:"MESSAGE AU CLIENT", cClient:"Client :", cDeadline:"// Échéance :", cCargo:"CARGAISON", cOrderTotal:"Total de la commande", cYourMargin:"Ta marge", cRoute:"// ITINÉRAIRE D'ACHAT SUGGÉRÉ", cRelease:"RELÂCHER CETTE COMMANDE", cOthers:"MES AUTRES LIVRAISONS ({n})", cClickRow:"CLIQUE SUR UNE LIGNE POUR L'ACTIVER", cAvailFor:"DISPONIBLE POUR LIVRER", cNextTransit:"MARQUER EN TRANSIT ▸", cNextPurchased:"MARQUER ACHETÉE ▸", cNextDelivered:"MARQUER LIVRÉE ▸", cWaiting:"EN ATTENTE D'UN COURSIER",
-    shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille", shopTextureDiag:"Diagonales", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain", shopTextureSkull:"Crâne spatial", shopTextureWaves:"Ondes",
+    shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille", shopTextureDiag:"Diagonales", shopTextureNoise:"Grain", shopTextureGlow:"Lueur", shopTextureStars:"Étoiles", shopTextureRays:"Faisceaux",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
     shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopCraftDelivered:"Crafts livrés", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
     sellerAchvTitle:"Succès vendeur", viewAllAchvBtn:"VOIR TOUT", viewLessAchvBtn:"RÉDUIRE",
-    sellerAchvLabels:{first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
-    sellerAchvDesc:{first_sale:"Conclus ta première vente.", first_courier_sale:"Fais livrer une vente par un coursier.", five_sales:"Conclus 5 ventes.", pockets_full:"Mets en ligne 15 annonces ou plus.", good_fences:"Valide une vente de plus de 2 000 000 aUEC en une seule fois.", crafter_confirmed:"Mets en vente un item crafté de qualité 800 ou plus.", not_stolen:"Valide la vente d'une bombe Colossus.", couldnt_be_bothered:"Mets en ligne une annonce sans photo.", your_wish:"Valide la proposition d'un client sur un de tes desired items.", crafterrrrr:"Ajoute 5 blueprints sur ta page de boutique.", made_with_love:"Ajoute 10 blueprints sur ta page de boutique.", better_than_wikelo:"Vends un item crafté de qualité 800 ou plus.", masta_thanks:"Termine la vente de 5 blueprints (craft livré au client)."},
+    sellerAchvLabels:{jawas_food:"Jawa's food", first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
+    sellerAchvDesc:{jawas_food:"Vends des fuses, des Cambio SRT Canister ou des Cambio-lite SRT Canister. Se valide aussi automatiquement côté coursier.", first_sale:"Conclus ta première vente.", first_courier_sale:"Fais livrer une vente par un coursier.", five_sales:"Conclus 5 ventes.", pockets_full:"Mets en ligne 15 annonces ou plus.", good_fences:"Valide une vente de plus de 2 000 000 aUEC en une seule fois.", crafter_confirmed:"Mets en vente un item crafté de qualité 800 ou plus.", not_stolen:"Valide la vente d'une bombe Colossus.", couldnt_be_bothered:"Mets en ligne une annonce sans photo.", your_wish:"Valide la proposition d'un client sur un de tes desired items.", crafterrrrr:"Ajoute 5 blueprints sur ta page de boutique.", made_with_love:"Ajoute 10 blueprints sur ta page de boutique.", better_than_wikelo:"Vends un item crafté de qualité 800 ou plus.", masta_thanks:"Termine la vente de 5 blueprints (craft livré au client)."},
     sellerRankLabels:{novice:"Novice", trader:"Négociant", merchant:"Marchand", tycoon:"Magnat"}, rankSales:"ventes",
     rankToNextSales:"Encore {n} vente(s) avant {rank}",
     newListingTitle:"Ajouter un objet en vente", editListingTitle:"Modifier l'annonce", listingItemLbl:"Objet", phListingItem:"ex: Laranite brute", listingDescriptionLbl:"Description détaillée (optionnel)", phListingDescription:"ex: État, provenance, détails utiles à l'acheteur...", listingPriceLbl:"Prix de vente (aUEC)", listingQtyLbl:"Quantité", listingPhotoLbl:"Photo (optionnel)", uploadListingPhoto:"CHOISIR UNE PHOTO", addListingBtn:"METTRE EN VENTE", saveListingBtn:"ENREGISTRER LES MODIFICATIONS", listingSaved:"OBJET MIS EN VENTE !", listingUpdated:"ANNONCE MISE À JOUR !", listingPhotoKeepNote:"Photo actuelle conservée si tu n'en choisis pas une nouvelle.",
@@ -3845,8 +3835,8 @@ const T = {
     courierAccepted:"🎉 Your courier application was accepted!", courierRejected:"Your courier application was rejected.",
     courierApplications:"Courier Applications", noApplications:"No pending applications.", acceptApp:"ACCEPT", rejectApp:"REJECT",
     achvTitle:"Achievements", achvUnlocked:"New achievement unlocked:",
-    achvLabels:{first_delivery:"First delivery", five_deliveries:"5 deliveries", veteran:"Reliable courier", lightning:"Lightning fast", this_is_the_way:"This is the way", trunk_contents:"What is that in your trunk, sir?", dangerous_deliveries:"Dangerous Deliveries", raising_army:"Are you raising an army?", paperwork:"Do you have the paperwork for that?", pyrolowda:"Pyrolowda", keegabelta:"Keegabelta", stantawalla:"Stantawalla", special_delivery:"Special Delivery"},
-    achvDesc:{first_delivery:"Complete your first order.", five_deliveries:"Complete 5 orders.", veteran:"Complete 20 orders.", lightning:"Mark an order as purchased within 10 minutes of accepting it.", this_is_the_way:"Complete an order whose suggested shopping route passes through all 3 star systems (delivery location included).", trunk_contents:"Carry a Colossus Bomb or a size 5+ torpedo.", dangerous_deliveries:"Deliver an order to Pyro.", raising_army:"Carry 100+ magazines (any weapons combined) in a single order.", paperwork:"Carry over 2,000,000 aUEC worth of goods in a single order.", pyrolowda:"Complete an order whose route passes through Pyro at any point.", keegabelta:"Complete an order whose route passes through Nyx at any point.", stantawalla:"Complete an order whose route passes through Stanton at any point.", special_delivery:"Complete the delivery of a marketplace sale."},
+    achvLabels:{jawas_food:"Jawa's food", first_delivery:"First delivery", five_deliveries:"5 deliveries", veteran:"Reliable courier", lightning:"Lightning fast", this_is_the_way:"This is the way", trunk_contents:"What is that in your trunk, sir?", dangerous_deliveries:"Dangerous Deliveries", raising_army:"Are you raising an army?", paperwork:"Do you have the paperwork for that?", pyrolowda:"Pyrolowda", keegabelta:"Keegabelta", stantawalla:"Stantawalla", special_delivery:"Special Delivery"},
+    achvDesc:{jawas_food:"Carry fuses, Cambio SRT Canisters or Cambio-lite SRT Canisters. Also unlocks automatically on the seller side.", first_delivery:"Complete your first order.", five_deliveries:"Complete 5 orders.", veteran:"Complete 20 orders.", lightning:"Mark an order as purchased within 10 minutes of accepting it.", this_is_the_way:"Complete an order whose suggested shopping route passes through all 3 star systems (delivery location included).", trunk_contents:"Carry a Colossus Bomb or a size 5+ torpedo.", dangerous_deliveries:"Deliver an order to Pyro.", raising_army:"Carry 100+ magazines (any weapons combined) in a single order.", paperwork:"Carry over 2,000,000 aUEC worth of goods in a single order.", pyrolowda:"Complete an order whose route passes through Pyro at any point.", keegabelta:"Complete an order whose route passes through Nyx at any point.", stantawalla:"Complete an order whose route passes through Stanton at any point.", special_delivery:"Complete the delivery of a marketplace sale."},
     statusLabels:{pending:"Waiting for a courier",accepted:"Accepted",purchased:"Purchased",in_transit:"In transit",delivered:"Delivered",cancelled:"Cancelled"},
     statusShort:{pending:"Waiting",accepted:"Accepted",purchased:"Purchased",in_transit:"Transit",delivered:"Delivered"},
     orderSystem:"System: ", orderLieu:"Location: ", orderTotal:"Total: ", orderCourier:"Courier: ", orderClient:"Client: ", orderShip:"Ship: ",
@@ -3897,7 +3887,7 @@ const T = {
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NEW ORDER", unlockSales:"{n} sales", frameLbl:"Frame", frameNone:"None", frameDrops:"Falling pixels", frameOrbit:"Orbiting corners", frameNeon:"Pulsing neon", frameShield:"Shields", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Light trail", frameCoins:"Coins", frameCrates:"Crates", frameBolts:"Lightning", frameAmmo:"Ammo", frameRoute:"Route", frameFlash:"Flashes", frameForge:"Forge", frameHearts:"Hearts", frameFifteen:"Full pockets", unlockRank:"Seller rank: ", unlockCAch:"Courier achievement: ", companyTitle:"DELIVERY COMPANY", companyCustomize:"CUSTOMIZE", companyCreate:"CREATE MY COMPANY", companyNoShop:"Give your company a name, a logo and a style: they are shared with your shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Achievement: ", lockedTip:"To unlock: ", unlockedTip:"Requirement: ", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
+    homeNewOrder:"+ NEW ORDER", unlockSales:"{n} sales", frameLbl:"Frame", frameNone:"None", frameDrops:"Falling pixels", frameOrbit:"Orbiting corners", frameNeon:"Pulsing neon", frameShield:"Shields", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Light trail", frameCoins:"Coins", frameCrates:"Crates", frameBolts:"Lightning", frameAmmo:"Ammo", frameRoute:"Route", frameFlash:"Flashes", frameForge:"Forge", frameHearts:"Hearts", frameFifteen:"Full pockets", frameGlitch:"Glitch", unlockRank:"Seller rank: ", unlockCAch:"Courier achievement: ", companyTitle:"DELIVERY COMPANY", companyCustomize:"CUSTOMIZE", companyCreate:"CREATE MY COMPANY", companyNoShop:"Give your company a name, a logo and a style: they are shared with your shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Achievement: ", lockedTip:"To unlock: ", unlockedTip:"Requirement: ", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
     classicOrderNote:"CLASSIC ORDER: only items you can buy in an in-game shop — the courier buys them and delivers them to you. Item not sold in shops (loot, crafted, rare…)? Post a desired item instead.", classicOrderLink:"POST A DESIRED ITEM ▸",
     commodityQualityNote:"Commodities: only quality 500 commodities can be delivered through an order. For a higher quality, use the marketplace or post a desired item.", commodityQualityShort:"Commodity: quality 500 only.",
     desiredIntroNote:"DESIRED ITEM: something you're looking for that is NOT sold in shops (loot, crafted, higher quality…). Any player can offer to supply it; you pick an offer, then you can request a courier for the delivery.", myDesiredTitle:"MY DESIRED ITEMS", noMyDesired:"You haven't posted any desired item.", postDesiredBtn:"+ POST", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"DESIRED ITEM DELIVERY",
@@ -3907,13 +3897,13 @@ const T = {
     sdTitle:"Shops", sdSub:"Every shop open on Couriers United. Find a seller, browse their listings and blueprints.", sdSearchPh:"Search a shop by name or specialty...", sdSortLbl:"SORT", sdSortedBy:"SORTED BY {x}", sdCount:"{n} SHOPS", sdNone:"No shop matches your search.", sdSales:"sales", sdListings:"listings", sdBp:"bp", sdVisit:"VISIT ▸", sdSinceWeek:"Opened this week", sdSinceDays:"Open for {n} days", sdS_newest:"NEWEST", sdS_sales:"MOST SALES (ALL TIME)", sdS_blueprints:"MOST BLUEPRINTS", sdS_listings:"MOST LISTINGS", sdS_name:"NAME A TO Z",
     shStSales:"SALES (ALL TIME)", shStListings:"LISTINGS", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
     cTabAvail:"AVAILABLE ORDERS", cTabMine:"MY DELIVERIES", cTabAch:"ACHIEVEMENTS", cStDel:"DELIVERED", cStProg:"IN PROGRESS", cStMargin:"TOTAL MARGIN", cStOpen:"OPEN ORDERS", cActive:"ACTIVE DELIVERY", cMsgClient:"MESSAGE CLIENT", cClient:"Client:", cDeadline:"// Deadline:", cCargo:"CARGO", cOrderTotal:"Order total", cYourMargin:"Your margin", cRoute:"// SUGGESTED SHOPPING ROUTE", cRelease:"RELEASE THIS ORDER", cOthers:"MY OTHER DELIVERIES ({n})", cClickRow:"CLICK A ROW TO MAKE IT ACTIVE", cAvailFor:"AVAILABLE FOR DELIVERY", cNextTransit:"MARK AS IN TRANSIT ▸", cNextPurchased:"MARK AS PURCHASED ▸", cNextDelivered:"MARK AS DELIVERED ▸", cWaiting:"WAITING FOR A COURIER",
-    shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid", shopTextureDiag:"Diagonal", shopTextureCircuit:"Circuit", shopTextureNoise:"Grain", shopTextureSkull:"Space skull", shopTextureWaves:"Waves",
+    shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid", shopTextureDiag:"Diagonal", shopTextureNoise:"Grain", shopTextureGlow:"Glow", shopTextureStars:"Stars", shopTextureRays:"Rays",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
     upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
     shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopCraftDelivered:"Crafts delivered", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
     sellerAchvTitle:"Seller achievements", viewAllAchvBtn:"VIEW ALL", viewLessAchvBtn:"COLLAPSE",
-    sellerAchvLabels:{first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
-    sellerAchvDesc:{first_sale:"Close your first sale.", first_courier_sale:"Have a sale delivered by a courier.", five_sales:"Close 5 sales.", pockets_full:"List 15 or more items for sale.", good_fences:"Close a single sale worth more than 2,000,000 aUEC.", crafter_confirmed:"List a crafted item with quality 800 or higher.", not_stolen:"Complete the sale of a Colossus bomb.", couldnt_be_bothered:"List an item with no photo.", your_wish:"Accept a client's offer on one of your desired items.", crafterrrrr:"Add 5 blueprints to your shop page.", made_with_love:"Add 10 blueprints to your shop page.", better_than_wikelo:"Sell a crafted item with quality 800 or higher.", masta_thanks:"Complete the sale of 5 blueprints (craft delivered to the client)."},
+    sellerAchvLabels:{jawas_food:"Jawa's food", first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
+    sellerAchvDesc:{jawas_food:"Sell fuses, Cambio SRT Canisters or Cambio-lite SRT Canisters. Also unlocks automatically on the courier side.", first_sale:"Close your first sale.", first_courier_sale:"Have a sale delivered by a courier.", five_sales:"Close 5 sales.", pockets_full:"List 15 or more items for sale.", good_fences:"Close a single sale worth more than 2,000,000 aUEC.", crafter_confirmed:"List a crafted item with quality 800 or higher.", not_stolen:"Complete the sale of a Colossus bomb.", couldnt_be_bothered:"List an item with no photo.", your_wish:"Accept a client's offer on one of your desired items.", crafterrrrr:"Add 5 blueprints to your shop page.", made_with_love:"Add 10 blueprints to your shop page.", better_than_wikelo:"Sell a crafted item with quality 800 or higher.", masta_thanks:"Complete the sale of 5 blueprints (craft delivered to the client)."},
     sellerRankLabels:{novice:"Novice", trader:"Trader", merchant:"Merchant", tycoon:"Tycoon"}, rankSales:"sales",
     rankToNextSales:"{n} more sale(s) to reach {rank}",
     newListingTitle:"List an item for sale", editListingTitle:"Edit listing", listingItemLbl:"Item", phListingItem:"e.g. Raw Laranite", listingDescriptionLbl:"Detailed description (optional)", phListingDescription:"e.g. Condition, origin, useful details for the buyer...", listingPriceLbl:"Sale price (aUEC)", listingQtyLbl:"Quantity", listingPhotoLbl:"Photo (optional)", uploadListingPhoto:"CHOOSE A PHOTO", addListingBtn:"LIST FOR SALE", saveListingBtn:"SAVE CHANGES", listingSaved:"ITEM LISTED!", listingUpdated:"LISTING UPDATED!", listingPhotoKeepNote:"Current photo kept unless you choose a new one.",
@@ -6167,7 +6157,7 @@ function renderShopsDirectory(){
   }).join('');
   grid.querySelectorAll('.sd-card[data-frame]').forEach(card => {
     const fk = card.dataset.frame; if(!fk) return;
-    applyShopFrame(card.querySelector('.sd-banner'), fk); applyShopFrame(card.querySelector('.sd-logo'), fk);
+    applyShopFrame(card.querySelector('.sd-banner'), fk);
   });
 }
 // --- LEADERBOARD DES BOUTIQUES (3 stats : ventes cette semaine, upvotes cette semaine, objet le plus cher vendu) ---
@@ -6530,6 +6520,7 @@ const SHOP_FRAMES = [
   { key:'forge', nameKey:'frameForge', unlock:{ ach:'crafter_confirmed' } },
   { key:'hearts', nameKey:'frameHearts', unlock:{ ach:'made_with_love' } },
   { key:'fifteen', nameKey:'frameFifteen', unlock:{ ach:'pockets_full' } },
+  { key:'glitch', nameKey:'frameGlitch', unlock:{ ach:'jawas_food', both:true } },
 ];
 let selectedShopFrame = 'none', shopSavedFrame = null, shopHasFrameColumn = false;
 let shopUnlockCtx = { sales:0, upvotes:0, ach:new Set(), cach:new Set(), admin:false };
@@ -6538,7 +6529,7 @@ function unlockRuleMet(rule){
   if(!rule || shopUnlockCtx.admin) return true;
   if(rule.rank || rule.sales) return shopUnlockCtx.sales >= rule.sales;
   if(rule.upvotes) return shopUnlockCtx.upvotes >= rule.upvotes;
-  if(rule.ach) return shopUnlockCtx.ach.has(rule.ach);
+  if(rule.ach) return shopUnlockCtx.ach.has(rule.ach) || (!!rule.both && shopUnlockCtx.cach.has(rule.ach));
   if(rule.cach) return shopUnlockCtx.cach.has(rule.cach);
   return true;
 }
@@ -6594,13 +6585,20 @@ function startShipTrail(layer){
     if(w !== inst.W || h !== inst.H){ inst.W = w; inst.H = h; canvas.width = Math.round(w*dpr); canvas.height = Math.round(h*dpr); if(!inst.ready){ inst.x = w*(.15+Math.random()*.7); inst.y = h*(.2+Math.random()*.6); inst.ready = true; pickTarget(now); } }
     if(++inst.colorAge > 90){ inst.color = (getComputedStyle(layer).getPropertyValue('--accent') || '#fff').trim() || '#fff'; inst.colorAge = 0; }
     const speed = Math.max(70, Math.min(210, (inst.W + inst.H) * .18));
-    const turn = 2.6; // rad/s : virages doux
-    if(now > inst.nextPick || Math.hypot(inst.tx-inst.x, inst.ty-inst.y) < 28) pickTarget(now);
-    let diff = Math.atan2(inst.ty-inst.y, inst.tx-inst.x) - inst.ang;
-    while(diff > Math.PI) diff -= 2*Math.PI; while(diff < -Math.PI) diff += 2*Math.PI;
-    inst.ang += Math.max(-turn*dt, Math.min(turn*dt, diff));
-    inst.x += Math.cos(inst.ang)*speed*dt; inst.y += Math.sin(inst.ang)*speed*dt;
-    if(inst.x < 2 || inst.x > inst.W-2 || inst.y < 2 || inst.y > inst.H-2){ inst.x = Math.max(2, Math.min(inst.W-2, inst.x)); inst.y = Math.max(2, Math.min(inst.H-2, inst.y)); inst.tx = inst.W/2 + (Math.random()-.5)*inst.W*.4; inst.ty = inst.H/2 + (Math.random()-.5)*inst.H*.4; }
+    const m = Math.max(6, Math.min(13, Math.min(inst.W, inst.H)/10));
+    // trajectoire droite, façon écran de veille DVD : le vaisseau rebondit sur les bords et repart dans une nouvelle direction
+    if(!inst.dvd){ inst.dvd = true; inst.ang = Math.PI/4 + Math.floor(Math.random()*4)*Math.PI/2 + (Math.random()-.5)*.5; }
+    let vx = Math.cos(inst.ang), vy = Math.sin(inst.ang);
+    inst.x += vx*speed*dt; inst.y += vy*speed*dt;
+    let bounced = false;
+    if(inst.x < m){ inst.x = m; vx = Math.abs(vx); bounced = true; } else if(inst.x > inst.W-m){ inst.x = inst.W-m; vx = -Math.abs(vx); bounced = true; }
+    if(inst.y < m){ inst.y = m; vy = Math.abs(vy); bounced = true; } else if(inst.y > inst.H-m){ inst.y = inst.H-m; vy = -Math.abs(vy); bounced = true; }
+    if(bounced){
+      let a = Math.atan2(vy, vx) + (Math.random()-.5)*.7; vx = Math.cos(a); vy = Math.sin(a);
+      if(inst.x <= m+1) vx = Math.abs(vx); if(inst.x >= inst.W-m-1) vx = -Math.abs(vx); if(inst.y <= m+1) vy = Math.abs(vy); if(inst.y >= inst.H-m-1) vy = -Math.abs(vy);
+      if(Math.abs(vy) < .3) vy = (vy < 0 ? -1 : 1)*.3; if(Math.abs(vx) < .3) vx = (vx < 0 ? -1 : 1)*.3;
+      inst.ang = Math.atan2(vy, vx);
+    }
     inst.pts.push({ x:inst.x, y:inst.y, t:now });
     const life = 1300; while(inst.pts.length && now - inst.pts[0].t > life) inst.pts.shift();
     ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,inst.W,inst.H);
@@ -6629,11 +6627,19 @@ const PX_BMP = {
   bullet:['.#.','###','###','###','###','...','###','###','###']
 };
 function startPixelScene(layer, kind){
-  const canvas = document.createElement('canvas'); canvas.style.cssText = 'position:absolute; inset:0; width:100%; height:100%;'; layer.appendChild(canvas);
+  const canvas = document.createElement('canvas'); canvas.style.cssText = 'position:absolute; inset:0; width:100%; height:100%;';
+  let mount = layer;
+  if(kind === 'stanton' || kind === 'nyx'){
+    // Décor placé DERRIÈRE le contenu de la carte (z-index négatif dans l'hôte isolé) : le texte passe devant.
+    const host = layer.parentElement; const back = document.createElement('div'); back.className = 'shop-frame-extra shop-frame-back';
+    host.insertBefore(back, layer); if(getComputedStyle(host).isolation !== 'isolate') host.style.isolation = 'isolate'; mount = back;
+  }
+  mount.appendChild(canvas);
   const ctx = canvas.getContext('2d');
   const rnd = (a,b) => a + Math.random()*(b-a);
   const inst = { canvas, W:0, H:0, p:2, items:[], parts:[], spawnT:0, color:'#fff', colorAge:99, ready:false, S:{} };
-  const burst = (x, y, n, sp, life) => { for(let i=0;i<n;i++){ const a = rnd(0, 6.283), v = rnd(.35,1)*sp; inst.parts.push({ x, y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, age:0, life:rnd(.6,1)*life, s:Math.random()<.35 ? inst.p*1.5 : inst.p }); } };
+  const burst = (x, y, n, sp, life, type) => { for(let i=0;i<n;i++){ const a = rnd(0, 6.283), v = rnd(.35,1)*sp; inst.parts.push({ x, y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, age:0, life:rnd(.6,1)*life, s:Math.random()<.35 ? inst.p*1.5 : inst.p, type:type||'px' }); } };
+  const star4 = (x, y, r) => { ctx.beginPath(); ctx.moveTo(x, y-r); ctx.quadraticCurveTo(x, y, x+r, y); ctx.quadraticCurveTo(x, y, x, y+r); ctx.quadraticCurveTo(x, y, x-r, y); ctx.quadraticCurveTo(x, y, x, y-r); ctx.fill(); };
   const drawBmp = (bmp, cx, cy, p, sx, sc, rot) => {
     ctx.save(); ctx.translate(Math.round(cx), Math.round(cy)); if(rot) ctx.rotate(rot); ctx.scale(sx*sc, sc);
     const w = bmp[0].length, h = bmp.length;
@@ -6643,8 +6649,18 @@ function startPixelScene(layer, kind){
   const easeBack = t => { const c = 1.9; return 1 + (c+1)*Math.pow(t-1,3) + c*Math.pow(t-1,2); };
   const reset = () => {
     const { W, H, p } = inst; inst.items = []; inst.parts = []; inst.spawnT = 0; inst.S = {};
-    if(kind === 'ammo'){ const n = Math.max(2, Math.min(5, Math.round(W*H/30000))); for(let i=0;i<n;i++) inst.items.push(newBullet(true)); }
     if(kind === 'route') newRoute();
+    if(kind === 'stanton'){
+      inst.S = { layers:[{ k:.55, v:12, a:.26, items:[], nx:-20, hmin:.1, hmax:.16 }, { k:.8, v:26, a:.4, items:[], nx:-20, hmin:.16, hmax:.26 }, { k:1, v:46, a:.55, items:[], nx:-20, hmin:.26, hmax:.38 }] };
+      inst.S.layers.forEach(L => { L.v *= Math.max(.6, W/400); let x = rnd(0, W); while(x < W + 40){ L.items.push({ x, t:Math.floor(Math.random()*4), h:rnd(L.hmin, L.hmax)*H }); x += rnd(.14,.4)*W; } L.nx = -rnd(30, .3*W); });
+    }
+    if(kind === 'nyx'){
+      const sx = W*rnd(.38,.62), sy = H*.5, R = Math.min(W*.42, H*1.05), flat = Math.min(.46, (H*.44)/R);
+      inst.S = { sx, sy, flat, star:Math.max(5, Math.min(13, Math.min(W,H)/9)), t:0,
+        planets:[{ r:R*.34, sz:.55, sp:.55, ph:rnd(0,6.28), ring:false, moon:false }, { r:R*.62, sz:.85, sp:.32, ph:rnd(0,6.28), ring:true, moon:false }, { r:R*.92, sz:.7, sp:.2, ph:rnd(0,6.28), ring:false, moon:true }],
+        rocks:Array.from({length:Math.max(14, Math.min(34, Math.round(W/12)))}, () => ({ r:R*rnd(.44,.52), ph:rnd(0,6.28), sz:Math.random()<.2 ? 2 : 1, sp:rnd(.9,1.1) })) , R };
+    }
+    if(kind === 'glitch'){ inst.S = { t:0, next:rnd(.6,1.4), burst:0, seg:[], hold:0 }; }
     if(kind === 'forge'){ const u = p, aw = 14*u, right = true; const cx = right ? W - 6 - 19*u : 6 + 7*u; inst.S = { cx, top: H - 6*u - 5, u, t:rnd(0,1), struck:false }; }
     if(kind === 'fifteen'){ inst.S = { x:rnd(.2,.7)*W, y:rnd(.2,.7)*H, ang:rnd(0,6.283), state:'live', t:0, pop:0 }; }
   };
@@ -6675,14 +6691,47 @@ function startPixelScene(layer, kind){
     ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
     ctx.fillStyle = inst.color; ctx.strokeStyle = inst.color; ctx.shadowColor = inst.color; ctx.shadowBlur = 0; ctx.lineJoin = 'miter'; ctx.lineCap = 'butt';
     if(kind === 'coins' || kind === 'crates'){
-      const max = Math.max(3, Math.min(7, Math.round(W*H/16000))), bmp = kind === 'coins' ? PX_BMP.coin : PX_BMP.crate;
-      if((inst.spawnT -= dt) <= 0 && inst.items.length < max){ inst.spawnT = rnd(.35,.9); inst.items.push({ x:rnd(.07,.93)*W, y:rnd(.1,.9)*H, age:0, life:rnd(2.6,4.4), ph:rnd(0,6.283), spd:rnd(3,5.5) }); }
+      const max = Math.max(3, Math.min(7, Math.round(W*H/16000))), R = Math.max(7, Math.min(15, Math.min(W,H)/12));
+      if((inst.spawnT -= dt) <= 0 && inst.items.length < max){ inst.spawnT = rnd(.4,1); inst.items.push({ x:rnd(.07,.93)*W, y:rnd(.12,.88)*H, age:0, life:rnd(3,5), ph:rnd(0,6.283), spd:rnd(1.6,3), bob:rnd(0,6.283), tw:rnd(.6,1.6) }); }
       for(let i=inst.items.length-1;i>=0;i--){
         const it = inst.items[i]; it.age += dt;
-        if(it.age >= it.life){ burst(it.x, it.y, 11, 70, .7); inst.items.splice(i,1); continue; }
-        const left = it.life - it.age; const sc = it.age < .3 ? Math.max(0, easeBack(it.age/.3)) : (left < .22 ? left/.22 : 1);
-        let sx = Math.cos(it.ph + it.age*it.spd); if(Math.abs(sx) < .14) sx = sx < 0 ? -.14 : .14;
-        ctx.globalAlpha = .85; ctx.shadowBlur = 6; drawBmp(bmp, it.x, it.y, p, sx, sc, 0);
+        if(it.age >= it.life){ burst(it.x, it.y, 9, 85, .8, 'star'); burst(it.x, it.y, 7, 60, .9, 'dot'); inst.items.splice(i,1); continue; }
+        const left = it.life - it.age; const sc = it.age < .35 ? Math.max(0, easeBack(it.age/.35)) : (left < .25 ? left/.25 : 1);
+        const cy = it.y + Math.sin(it.bob + it.age*1.7)*R*.35, ang = it.ph + it.age*it.spd;
+        if(it.age > it.tw && !it.twd){ it.twd = true; burst(it.x + rnd(-R,R), cy + rnd(-R,R), 1, 8, .7, 'star'); }
+        ctx.save(); ctx.translate(it.x, cy); ctx.shadowColor = inst.color; ctx.shadowBlur = 14;
+        if(kind === 'coins'){
+          const sx = Math.cos(ang), ax = Math.max(.1, Math.abs(sx)), r = R*sc, th = r*.2*(1-ax)*(sx < 0 ? -1 : 1);
+          ctx.globalAlpha = .55; ctx.beginPath(); ctx.ellipse(th, 0, r*ax, r, 0, 0, 6.283); ctx.fill();
+          ctx.globalAlpha = .92; ctx.beginPath(); ctx.ellipse(0, 0, r*ax, r, 0, 0, 6.283); ctx.fill(); ctx.shadowBlur = 0;
+          ctx.save(); ctx.beginPath(); ctx.ellipse(0, 0, r*ax, r, 0, 0, 6.283); ctx.clip();
+          ctx.fillStyle = '#000'; ctx.globalAlpha = .24; ctx.beginPath(); ctx.ellipse(0, 0, r*.72*ax, r*.72, 0, 0, 6.283); ctx.fill();
+          ctx.strokeStyle = '#fff'; ctx.globalAlpha = .5; ctx.lineWidth = 1; ctx.stroke();
+          ctx.fillStyle = '#fff'; ctx.globalAlpha = .75; ctx.save(); ctx.scale(ax, 1); star4(0, 0, r*.42); ctx.restore();
+          const sh = (((it.age*.8) % 1.6) - .3) * 2.4 - 1.2; ctx.globalAlpha = .32; ctx.rotate(.5); ctx.fillRect(sh*r - r*.1, -r*1.6, r*.3, r*3.2);
+          ctx.restore();
+        } else {
+          // caisse : cube 3D filaire/ombré qui tourne, éclairé par le dessus
+          const S = R*.62*sc, T = -.5, cT = Math.cos(T), sT = Math.sin(T), cA = Math.cos(ang), sA = Math.sin(ang);
+          const tr = (x,y,z) => { const x1 = x*cA + z*sA, z1 = -x*sA + z*cA, y1 = y*cT - z1*sT, z2 = y*sT + z1*cT; return [x1*S, y1*S, z2]; };
+          const faces = [
+            { n:[0,0,1],  v:[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]] }, { n:[0,0,-1], v:[[1,-1,-1],[-1,-1,-1],[-1,1,-1],[1,1,-1]] },
+            { n:[1,0,0],  v:[[1,-1,1],[1,-1,-1],[1,1,-1],[1,1,1]] }, { n:[-1,0,0], v:[[-1,-1,-1],[-1,-1,1],[-1,1,1],[-1,1,-1]] },
+            { n:[0,-1,0], v:[[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1]] }, { n:[0,1,0], v:[[-1,1,1],[1,1,1],[1,1,-1],[-1,1,-1]] }
+          ];
+          faces.map(f => ({ f, nz:tr(f.n[0], f.n[1], f.n[2])[2]/S })).filter(o => o.nz > .02).sort((a,b) => a.nz - b.nz).forEach(o => {
+            const pts = o.f.v.map(q => tr(q[0], q[1], q[2])), light = Math.max(0, (o.f.n[1] === -1 ? .95 : .35) * (.6 + .4*o.nz));
+            ctx.beginPath(); pts.forEach((q,k) => k ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath();
+            ctx.globalAlpha = .42 + .3*light; ctx.fill(); ctx.shadowBlur = 0;
+            ctx.fillStyle = '#fff'; ctx.globalAlpha = .26*light; ctx.fill(); ctx.fillStyle = '#000'; ctx.globalAlpha = .26*(1-light); ctx.fill(); ctx.fillStyle = inst.color;
+            ctx.strokeStyle = inst.color; ctx.globalAlpha = .95; ctx.lineWidth = 1.2; ctx.stroke();
+            // planches : cadre intérieur + croix
+            const P = (u,v) => [ (pts[0][0]*(1-u)+pts[1][0]*u)*(1-v) + (pts[3][0]*(1-u)+pts[2][0]*u)*v, (pts[0][1]*(1-u)+pts[1][1]*u)*(1-v) + (pts[3][1]*(1-u)+pts[2][1]*u)*v ];
+            ctx.globalAlpha = .45; ctx.lineWidth = 1; ctx.beginPath(); [[.18,.18],[.82,.18],[.82,.82],[.18,.82],[.18,.18]].forEach((uv,k) => { const q = P(uv[0], uv[1]); k ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); }); ctx.stroke();
+            ctx.beginPath(); let q0 = P(.18,.18), q1 = P(.82,.82), q2 = P(.82,.18), q3 = P(.18,.82); ctx.moveTo(q0[0], q0[1]); ctx.lineTo(q1[0], q1[1]); ctx.moveTo(q2[0], q2[1]); ctx.lineTo(q3[0], q3[1]); ctx.stroke();
+          });
+        }
+        ctx.restore();
       }
     } else if(kind === 'bolts'){
       const act = inst.items.length;
@@ -6708,27 +6757,19 @@ function startPixelScene(layer, kind){
         b.br.forEach(q => { if(q[0][1] <= lim) path(q); });
       }
     } else if(kind === 'ammo'){
-      const its = inst.items;
-      for(let i=its.length-1;i>=0;i--){
-        const b = its[i]; b.age += dt; b.pop = Math.min(1, b.pop + dt*4);
-        b.x += b.vx*dt; b.y += b.vy*dt;
-        if(b.x < b.r){ b.x = b.r; b.vx = Math.abs(b.vx); } if(b.x > W-b.r){ b.x = W-b.r; b.vx = -Math.abs(b.vx); }
-        if(b.y < b.r){ b.y = b.r; b.vy = Math.abs(b.vy); } if(b.y > H-b.r){ b.y = H-b.r; b.vy = -Math.abs(b.vy); }
-      }
-      for(let i=0;i<its.length;i++) for(let j=i+1;j<its.length;j++){
-        const a = its[i], b = its[j]; const dx = b.x-a.x, dy = b.y-a.y, d = Math.hypot(dx,dy) || 1;
-        if(d < a.r + b.r){
-          const nx = dx/d, ny = dy/d, vn = (a.vx-b.vx)*nx + (a.vy-b.vy)*ny;
-          if(vn > 0){ a.vx -= vn*nx; a.vy -= vn*ny; b.vx += vn*nx; b.vy += vn*ny; a.hits++; b.hits++; burst((a.x+b.x)/2, (a.y+b.y)/2, 4, 50, .35); }
-          const ov = (a.r + b.r - d)/2; a.x -= nx*ov; a.y -= ny*ov; b.x += nx*ov; b.y += ny*ov;
-        }
+      const its = inst.items, len = 9*p;
+      if((inst.spawnT -= dt) <= 0 && its.length < 4){
+        inst.spawnT = rnd(.5,1.5); let y = 0, ok = false;
+        for(let k=0;k<8 && !ok;k++){ y = rnd(.08,.92)*H; ok = its.every(b => Math.abs(b.y - y) > p*5 || b.x > W*.35); }
+        if(ok) its.push({ x:-len, y, v:rnd(.5,1.2)*Math.max(110, W*.42), trail:[] });
       }
       for(let i=its.length-1;i>=0;i--){
-        const b = its[i];
-        if(b.age > b.life || (b.hits >= 1 && b.age > 1.2 && Math.random() < dt*1.4)){ burst(b.x, b.y, 16, 95, .8); its.splice(i,1); inst.S.respawn = (inst.S.respawn||[]); inst.S.respawn.push(rnd(.6,1.6)); }
+        const b = its[i]; b.x += b.v*dt; b.trail.push(b.x); if(b.trail.length > 6) b.trail.shift();
+        if(b.x >= W - 3){ burst(W-3, b.y, 20, 120, .85); burst(W-3, b.y, 7, 55, .5); inst.parts.push({ x:W-3, y:b.y, vx:0, vy:0, age:0, life:.35, s:0, type:'ring' }); its.splice(i,1); continue; }
+        ctx.shadowBlur = 6;
+        b.trail.forEach((tx, k) => { ctx.globalAlpha = (k/b.trail.length)*.35; ctx.fillRect(Math.round(tx - len/2 - (b.trail.length-k)*p*1.2), Math.round(b.y - p/2), p*2, p); });
+        ctx.globalAlpha = .88; drawBmp(PX_BMP.bullet, b.x, b.y, p, 1, 1, Math.PI/2);
       }
-      if(inst.S.respawn){ inst.S.respawn = inst.S.respawn.map(t => t - dt).filter(t => { if(t <= 0){ its.push(newBullet()); return false; } return true; }); }
-      its.forEach(b => { ctx.globalAlpha = .8*b.pop; ctx.shadowBlur = 5; drawBmp(PX_BMP.bullet, b.x, b.y, p, 1, 1, Math.atan2(b.vy, b.vx) + Math.PI/2); });
     } else if(kind === 'route'){
       const S = inst.S; S.t += dt; const cyc = S.tDraw + S.tHold + S.tFade;
       if(S.t > cyc){ newRoute(); }
@@ -6788,6 +6829,64 @@ function startPixelScene(layer, kind){
           ctx.restore();
         }
       }
+    } else if(kind === 'stanton'){
+      const S = inst.S, gy = H - 2;
+      S.layers.forEach(L => {
+        // le paysage défile de gauche à droite : on fait apparaître de nouveaux éléments par la gauche
+        L.items.forEach(it => it.x += L.v*dt);
+        L.nx += L.v*dt; if(L.nx > 0){ L.items.push({ x:-40, t:Math.floor(Math.random()*4), h:rnd(L.hmin, L.hmax)*H }); L.nx = -rnd(.14,.4)*W; }
+        L.items = L.items.filter(it => it.x < W + 60);
+        ctx.globalAlpha = L.a; ctx.shadowBlur = 0;
+        ctx.fillRect(0, gy - 1, W, 1);
+        L.items.forEach(it => {
+          const h = Math.min(it.h, 110), u = Math.max(2, Math.round(h/14)), x = it.x, base = gy;
+          const R = (cx, y0, w, hh) => ctx.fillRect(Math.round(x + cx*u), Math.round(base - (y0+hh)*u), Math.round(w*u), Math.round(hh*u));
+          if(it.t === 0){ R(-.5, 0, 1, 2); for(let r=0;r<10;r++){ const w = 1 + 2*Math.floor(r/2); R(-w/2, 2 + (9-r), w, 1); } }                       // sapin
+          else if(it.t === 1){ R(-.5, 0, 1, 5); [4,6,8,8,6,4].forEach((w,r) => R(-w/2, 5 + (5-r), w, 1)); }                                           // arbre feuillu
+          else if(it.t === 2){ R(-1, 0, 2, 14); R(-4, 6, 3, 1); R(-4, 6, 1, 5); R(1, 8, 3, 1); R(3, 8, 1, 5); }                                       // cactus
+          else { R(-3, 0, 6, 2); R(-2, 2, 4, 1); R(-1, 3, 2, 1); }                                                                                  // buisson
+        });
+      });
+    } else if(kind === 'nyx'){
+      const S = inst.S; S.t += dt; const sx = S.sx, sy = S.sy, fl = S.flat;
+      ctx.lineWidth = 1; ctx.shadowBlur = 0;
+      [S.planets[0].r, S.planets[1].r, S.planets[2].r].forEach(r => { ctx.globalAlpha = .12; ctx.beginPath(); ctx.ellipse(sx, sy, r, r*fl, 0, 0, 6.283); ctx.stroke(); });
+      // ceinture d'astéroïdes
+      S.rocks.forEach(a => { const ang = a.ph + S.t*.5*a.sp*(S.R*.5/a.r); const x = sx + Math.cos(ang)*a.r, y = sy + Math.sin(ang)*a.r*fl; ctx.globalAlpha = .55; ctx.fillRect(Math.round(x), Math.round(y), a.sz*p, a.sz*p); });
+      // étoile
+      ctx.shadowBlur = 22; ctx.globalAlpha = .9; ctx.beginPath(); ctx.arc(sx, sy, S.star, 0, 6.283); ctx.fill(); ctx.shadowBlur = 0;
+      ctx.globalAlpha = .25; ctx.beginPath(); ctx.arc(sx, sy, S.star*1.7, 0, 6.283); ctx.fill();
+      // planètes
+      S.planets.forEach(pl => {
+        const ang = pl.ph + S.t*pl.sp*.6, x = sx + Math.cos(ang)*pl.r, y = sy + Math.sin(ang)*pl.r*fl, r = Math.max(2.5, S.star*.5*pl.sz*1.6);
+        ctx.globalAlpha = .85; ctx.shadowBlur = 8; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill(); ctx.shadowBlur = 0;
+        ctx.globalAlpha = .3; ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(x + r*.35, y + r*.2, r*.9, 0, 6.283); ctx.fill(); ctx.fillStyle = inst.color;
+        if(pl.ring){ ctx.globalAlpha = .7; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.ellipse(x, y, r*1.9, r*.6, -.35, 0, 6.283); ctx.stroke(); }
+        if(pl.moon){ const ma = S.t*1.8; ctx.globalAlpha = .8; ctx.beginPath(); ctx.arc(x + Math.cos(ma)*r*2, y + Math.sin(ma)*r*1.2, Math.max(1.2, r*.32), 0, 6.283); ctx.fill(); }
+      });
+      ctx.globalAlpha = 1;
+    } else if(kind === 'glitch'){
+      const S = inst.S; S.t += dt; S.hold -= dt;
+      ctx.shadowBlur = 0; ctx.globalAlpha = .55; ctx.fillRect(0, 0, W, 1); ctx.fillRect(0, H-1, W, 1); ctx.fillRect(0, 0, 1, H); ctx.fillRect(W-1, 0, 1, H);
+      if(S.burst <= 0 && S.t >= S.next){ S.burst = rnd(.25,.5); S.next = S.t + S.burst + rnd(1.1,2.8); S.hold = 0; }
+      if(S.burst > 0){
+        S.burst -= dt;
+        if(S.hold <= 0){ // on ne ré-aléatoirise que ~12 fois par seconde : pas de stroboscope
+          S.hold = .08; S.seg = [];
+          const n = 5 + Math.floor(Math.random()*5);
+          for(let i=0;i<n;i++){
+            const edge = Math.floor(Math.random()*4), th = Math.max(2, Math.round(rnd(1,3))*p/2), off = rnd(-1,1) * Math.max(8, W*.03);
+            if(edge < 2){ const len = rnd(.08,.3)*W, x = rnd(0, W-len); S.seg.push({ x, y: edge ? H - th - rnd(0,6) : rnd(0,6), w:len, h:th, dx:off }); }
+            else { const len = rnd(.08,.25)*H, y = rnd(0, H-len); S.seg.push({ x: edge === 2 ? rnd(0,6) : W - th - rnd(0,6), y, w:th, h:len, dx:off*.5, dy:off*.4 }); }
+          }
+          S.px = Array.from({length:6}, () => ({ x:Math.round(rnd(0,W)/p)*p, y: Math.random() < .5 ? rnd(0,10) : H - rnd(0,10), s:p*rnd(1,2.5) }));
+        }
+        S.seg.forEach(g => {
+          ctx.globalAlpha = .5; ctx.fillRect(Math.round(g.x + g.dx), Math.round(g.y + (g.dy||0)), g.w, g.h);   // segment décalé
+          ctx.globalAlpha = .22; ctx.fillStyle = '#fff'; ctx.fillRect(Math.round(g.x - g.dx*.5), Math.round(g.y), g.w, g.h); ctx.fillStyle = inst.color; // fantôme clair (aberration)
+        });
+        ctx.globalAlpha = .5; S.px.forEach(q => ctx.fillRect(q.x, q.y, q.s, q.s));
+      }
     } else if(kind === 'fifteen'){
       const S = inst.S, q = Math.max(2, p + 1), bw = 7*q, bh = 5*q;
       const cells = []; PX_BMP.d1.forEach((r,y) => [...r].forEach((c,x) => { if(c === '#') cells.push([x,y]); })); PX_BMP.d5.forEach((r,y) => [...r].forEach((c,x) => { if(c === '#') cells.push([x+4,y]); }));
@@ -6805,7 +6904,11 @@ function startPixelScene(layer, kind){
     }
     // particules (éclats de pixels)
     ctx.shadowBlur = 0;
-    for(let i=inst.parts.length-1;i>=0;i--){ const q = inst.parts[i]; q.age += dt; if(q.age >= q.life){ inst.parts.splice(i,1); continue; } q.x += q.vx*dt; q.y += q.vy*dt; q.vx *= .97; q.vy *= .97; ctx.globalAlpha = (1 - q.age/q.life)*.9; ctx.fillRect(Math.round(q.x/inst.p)*inst.p, Math.round(q.y/inst.p)*inst.p, q.s, q.s); }
+    for(let i=inst.parts.length-1;i>=0;i--){ const q = inst.parts[i]; q.age += dt; if(q.age >= q.life){ inst.parts.splice(i,1); continue; } q.x += q.vx*dt; q.y += q.vy*dt; q.vx *= .97; q.vy *= .97; ctx.globalAlpha = (1 - q.age/q.life)*.9; const k = q.age/q.life;
+      if(q.type === 'star'){ ctx.shadowBlur = 6; star4(q.x, q.y, q.s*(1.6-k)*1.2); ctx.shadowBlur = 0; }
+      else if(q.type === 'dot'){ ctx.beginPath(); ctx.arc(q.x, q.y, q.s*.6*(1-k*.5), 0, 6.283); ctx.fill(); }
+      else if(q.type === 'ring'){ ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(q.x, q.y, k*inst.p*9, 0, 6.283); ctx.stroke(); }
+      else ctx.fillRect(Math.round(q.x/inst.p)*inst.p, Math.round(q.y/inst.p)*inst.p, q.s, q.s); }
     ctx.globalAlpha = 1;
   };
   shipTrailInstances.add(inst);
@@ -6846,22 +6949,7 @@ function applyShopFrame(host, key){
     const n = count(7000, 4, 14);
     for(let i=0;i<n;i++){ const e = mk('frm-shield', { left: rnd(2,92)+'%', top: rnd(4,88)+'%', '--dur': rnd(4,8).toFixed(1)+'s', '--del': (-rnd(0,8)).toFixed(1)+'s' }); const sc = rnd(.8,1.3)*f; e.style.width = (18*sc)+'px'; e.style.height = (21*sc)+'px'; }
   } else if(key === 'nyx'){
-    const isLogo = host.matches('.shop-banner-logo, .sd-logo, .company-logo, .shop-frame-swatch') && Math.min(W,H) <= 300;
-    if(isLogo){
-      // sur le logo : poussière d'étoiles qui scintille (plus discret qu'un astéroïde sur une image)
-      const n = count(1800, 8, 22);
-      for(let i=0;i<n;i++){ const e = mk('frm-dust', { left: rnd(4,94)+'%', top: rnd(4,94)+'%', '--dur': rnd(2.5,5.5).toFixed(1)+'s', '--del': (-rnd(0,5)).toFixed(1)+'s' }); const z = Math.random()<.3 ? 5 : 3; e.style.width = e.style.height = z+'px'; }
-    } else {
-      // un gros astéroïde + deux petits, ancrés dans un coin (là où il n'y a pas de contenu), qui lévitent sur place
-      const B = Math.max(20, Math.min(58, Math.min(W,H)*.17));
-      const corners = [{r:false,b:true},{r:true,b:true},{r:false,b:false}];
-      const c = corners[Math.floor(Math.random()*corners.length)];
-      const pos = (dx, dy, w, h) => { const st = {}; st[c.r ? 'right' : 'left'] = (4+dx)+'px'; st[c.b ? 'bottom' : 'top'] = (4+dy)+'px'; return st; };
-      const amp = Math.max(3, B*.18);
-      const big = mk('frm-rock big', Object.assign(pos(0,0), { '--dur': '9s', '--del': '-2s', '--dx': (amp)+'px', '--dy': (-amp)+'px' })); big.style.width = B+'px'; big.style.height = (B*.9)+'px';
-      const s1 = mk('frm-rock small', Object.assign(pos(B*1.15, B*.55), { '--dur': '6s', '--del': '-1s', '--dx': (amp)+'px', '--dy': (amp*.7)+'px' })); s1.style.width = (B*.42)+'px'; s1.style.height = (B*.37)+'px';
-      const s2 = mk('frm-rock small', Object.assign(pos(B*.45, B*1.15), { '--dur': '7.5s', '--del': '-4s', '--dx': (-amp)+'px', '--dy': (amp*.6)+'px' })); s2.style.width = (B*.32)+'px'; s2.style.height = (B*.28)+'px';
-    }
+    if(!reduce) startPixelScene(layer, 'nyx'); // système solaire en arrière-plan
   } else if(key === 'pyro'){
     const n = count(26000, 2, 5);
     for(let i=0;i<n;i++){
@@ -6892,13 +6980,13 @@ function applyShopFrame(host, key){
     }
   } else if(key === 'stanton'){
     const th = Math.max(36, Math.min(96, H*.32)); layer.style.setProperty('--th', th+'px'); layer.style.setProperty('--tw', (th*.8)+'px');
-    mk('frm-tree');
+    if(!reduce) startPixelScene(layer, 'stanton'); // paysage qui défile derrière les infos ; le vent reste devant
     const n = count(14000, 3, 7);
     for(let i=0;i<n;i++) mk('frm-leaf', { top: rnd(15,80)+'%', '--travel': (W+30)+'px', '--drift': rnd(-12,24).toFixed(0)+'px', '--dur': rnd(5,9).toFixed(1)+'s', '--del': (-rnd(0,9)).toFixed(1)+'s' });
     for(let i=0;i<3;i++) mk('frm-streak', { top: rnd(20,85)+'%', '--travel': (W+30)+'px', '--drift': '0px', '--dur': rnd(3,5).toFixed(1)+'s', '--del': (-rnd(0,5)).toFixed(1)+'s' });
   } else if(key === 'trail' && !reduce){
     startShipTrail(layer);
-  } else if(['coins','crates','bolts','ammo','route','flash','forge','hearts','fifteen'].includes(key) && !reduce){
+  } else if(['coins','crates','bolts','ammo','route','flash','forge','hearts','fifteen','glitch'].includes(key) && !reduce){
     startPixelScene(layer, key);
   }
 }
@@ -6935,18 +7023,21 @@ const SHOP_TEXTURE_PRESETS = [
   { key:'scan', cls:'tex-scan', nameKey:'shopTextureScan' },
   { key:'grid', cls:'tex-grid', nameKey:'shopTextureGrid' },
   { key:'diag', cls:'tex-diag', nameKey:'shopTextureDiag' },
-  { key:'circuit', cls:'tex-circuit', nameKey:'shopTextureCircuit' },
   { key:'noise', cls:'tex-noise', nameKey:'shopTextureNoise' },
-  { key:'skull', cls:'tex-skull', nameKey:'shopTextureSkull' },
-  { key:'waves', cls:'tex-waves', nameKey:'shopTextureWaves' },
+  { key:'glow', cls:'tex-glow', nameKey:'shopTextureGlow' },
+  { key:'stars', cls:'tex-stars', nameKey:'shopTextureStars' },
+  { key:'rays', cls:'tex-rays', nameKey:'shopTextureRays' },
 ];
+// Anciennes textures remplacées : les boutiques qui les avaient gardent un équivalent discret.
+const SHOP_TEXTURE_ALIAS = { circuit:'glow', skull:'stars', waves:'rays' };
+const normTex = k => SHOP_TEXTURE_ALIAS[k] || k;
 const SHOP_TEXTURE_CLASSES = SHOP_TEXTURE_PRESETS.map(t => t.cls);
 const DEFAULT_SHOP_TEXTURE = 'dots';
 let selectedShopTexture = DEFAULT_SHOP_TEXTURE;
 function setShopTextureLayerClass(layerEl, textureKey){
   if(!layerEl) return;
   layerEl.classList.remove(...SHOP_TEXTURE_CLASSES);
-  const preset = SHOP_TEXTURE_PRESETS.find(t => t.key === textureKey) || SHOP_TEXTURE_PRESETS[1];
+  const preset = SHOP_TEXTURE_PRESETS.find(t => t.key === normTex(textureKey)) || SHOP_TEXTURE_PRESETS[1];
   layerEl.classList.add(preset.cls);
 }
 function initShopTexturePicker(){
@@ -7093,7 +7184,7 @@ async function openSellerShopEdit(){
   $('shopNameInput').value = shop?.shop_name || '';
   $('shopDescInput').value = shop?.description || '';
   selectedShopColor = normalizeShopColor(shop?.theme_color);
-  selectedShopTexture = (shop && shop.texture) || DEFAULT_SHOP_TEXTURE;
+  selectedShopTexture = normTex((shop && shop.texture) || DEFAULT_SHOP_TEXTURE);
   shopSavedColor = shop && shop.theme_color ? selectedShopColor : null;
   shopSavedTexture = shop && shop.texture ? selectedShopTexture : null;
   shopHasFrameColumn = !!(shop && Object.prototype.hasOwnProperty.call(shop, 'frame'));
@@ -7133,7 +7224,7 @@ function updateShopLivePreview(){
   } else {
     logoBox.innerHTML = roleAnimSvg('seller', 100);
   }
-  applyShopFrame(preview, selectedShopFrame); applyShopFrame(logoBox, selectedShopFrame);
+  applyShopFrame(preview, selectedShopFrame);
   const locName = $('shopLocName') ? $('shopLocName').value.trim() : '';
   const locSystem = $('shopLocSystem') ? $('shopLocSystem').value : '';
   const locTag = $('shopLivePreviewLoc');
@@ -8140,7 +8231,7 @@ async function openSellerShop(sellerId){
   const shopColorHex = normalizeShopColor(shop && shop.theme_color);
   shopEl.style.setProperty('--accent', shopColorHex);
   shopEl.style.setProperty('--accent-dim', shopColorHex + '55');
-  applyShopFrame($('shopHeaderCard'), shop && shop.frame); applyShopFrame($('shopHeroIcon'), shop && shop.frame);
+  applyShopFrame($('shopHeaderCard'), shop && shop.frame);
   const headerTexLayer = document.querySelector('#shopHeaderCard .shop-texture-layer');
   setShopTextureLayerClass(headerTexLayer, (shop && shop.texture) || DEFAULT_SHOP_TEXTURE);
   $('shopPageTitle').textContent = (shop && shop.shop_name) || (p ? displayName(p) : '—');
@@ -8399,7 +8490,7 @@ const SHOP_UPVOTE_FX_CONFIG = {
   scan:    { cls:'shop-upvote-fx-scan', count:9,  spawn:'horizontal', distMin:60, distMax:130 },
   grid:    { cls:'shop-upvote-fx-grid', count:10, spawn:'radial8',  distMin:30, distMax:60 },
   diag:    { cls:'shop-upvote-fx-diag', count:12, spawn:'diagonal', distMin:38, distMax:76 },
-  circuit: { cls:'shop-upvote-fx-node', count:8,  spawn:'radial8',  distMin:26, distMax:56 },
+  glow:    { cls:'shop-upvote-fx-node', count:8,  spawn:'radial8',  distMin:26, distMax:56 },
   noise:   { cls:'shop-upvote-fx-noise', count:18, spawn:'random',  distMin:14, distMax:44 },
 };
 // Animation du bouton upvote sur la page boutique : par défaut (pas de texture choisie) on garde la
@@ -8409,7 +8500,7 @@ const SHOP_UPVOTE_FX_CONFIG = {
 // progression des commandes), avec un rythme/motif propre à la texture de la boutique. Pas de popup.
 const UPV_FX_TIMING = {
   none:{dur:'1.1s'}, dots:{dur:'1.15s'}, scan:{dur:'1s'}, grid:{dur:'1.1s'}, diag:{dur:'1.1s'},
-  circuit:{dur:'1.2s'}, noise:{dur:'1s'}, skull:{dur:'1.15s'}, waves:{dur:'1.2s'}
+  glow:{dur:'1.2s'}, noise:{dur:'1s'}, stars:{dur:'1.15s'}, rays:{dur:'1.2s'}
 };
 const UPV_EASE = 'cubic-bezier(.4,0,.2,1)';
 function upvoteChargeFx(btn){
@@ -8718,7 +8809,6 @@ async function renderCourierCompany(){
   const card = box.querySelector('.company-card');
   setShopTextureLayerClass(card.querySelector('.shop-texture-layer'), (shop && shop.texture) || DEFAULT_SHOP_TEXTURE);
   applyShopFrame(card, shop && shop.frame);
-  applyShopFrame(card.querySelector('.company-logo'), shop && shop.frame);
 }
 async function renderCourierStats(pending, mine){
   const box = $('courierStats'); if(!box) return;
@@ -9197,6 +9287,7 @@ const ACHV_ICONS = {
   pyrolowda: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="5" y="4" width="6" height="6"/><rect x="4" y="6" width="1" height="2"/><rect x="11" y="6" width="1" height="2"/><rect x="6" y="2" width="4" height="2"/><rect x="6" y="10" width="1" height="2"/><rect x="9" y="10" width="1" height="2"/><rect x="5" y="12" width="1" height="2"/><rect x="10" y="12" width="1" height="2"/></g></svg>`,
   keegabelta: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="6" y="6" width="4" height="4"/><rect x="1" y="7" width="4" height="2"/><rect x="11" y="7" width="4" height="2"/><rect x="7" y="1" width="2" height="4"/><rect x="7" y="11" width="2" height="4"/></g></svg>`,
   stantawalla: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="5" y="5" width="6" height="6"/><rect x="1" y="9" width="14" height="1"/><rect x="2" y="11" width="12" height="1"/></g></svg>`,
+  jawas_food: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="6" y="1" width="4" height="2"/><rect x="5" y="3" width="6" height="2"/><rect x="4" y="5" width="8" height="9"/><rect x="6" y="7" width="4" height="1" fill="var(--panel)"/><rect x="6" y="10" width="4" height="1" fill="var(--panel)"/></g></svg>`,
   special_delivery: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="5" width="10" height="8"/><rect x="2" y="4" width="12" height="2"/><rect x="7" y="7" width="2" height="4"/><rect x="11" y="2" width="2" height="2"/><rect x="10" y="3" width="4" height="1"/><rect x="11" y="4" width="2" height="1"/></g></svg>`
 };
 const ACHIEVEMENTS = [
@@ -9212,7 +9303,8 @@ const ACHIEVEMENTS = [
   { key:'pyrolowda', check: s => s.hasPyroRoute },
   { key:'keegabelta', check: s => s.hasNyxRoute },
   { key:'stantawalla', check: s => s.hasStantonRoute },
-  { key:'special_delivery', check: s => s.hasMarketplaceDelivery }
+  { key:'special_delivery', check: s => s.hasMarketplaceDelivery },
+  { key:'jawas_food', check: s => s.hasJawaFood }
 ];
 function isBigOrdnanceItem(name){
   const n = (name||'').toLowerCase();
@@ -9222,6 +9314,24 @@ function isBigOrdnanceItem(name){
     if(m && parseInt(m[1],10) >= 5) return true;
   }
   return false;
+}
+// "Jawa's food" : fuses, Cambio SRT Canister et Cambio-lite SRT Canister (transportés OU vendus).
+function isJawaFoodItem(name){
+  const n = (name||'').toLowerCase();
+  return /\bfuses?\b/.test(n) || (n.includes('cambio') && n.includes('srt'));
+}
+// Le succès existe côté coursier ET côté vendeur, mais il se valide pour les deux dès qu'un des deux est rempli.
+function fetchJawaFoodAny(uid){
+  return memoOnce('jawa:'+uid, async () => {
+    const [rows, soldRes, inqRes] = await Promise.all([
+      fetchCourierDeliveredRows(uid),
+      sb.from('orders').select('items').eq('seller_id', uid).eq('order_type','marketplace').eq('status','delivered'),
+      sb.from('marketplace_inquiries').select('snap_item_name').eq('seller_id', uid).eq('status','completed')
+    ]);
+    const courier = (rows||[]).some(o => (o.items||[]).some(it => isJawaFoodItem(it.name)));
+    const seller = (soldRes.data||[]).some(o => (o.items||[]).some(it => isJawaFoodItem(it.name))) || (inqRes.data||[]).some(r => isJawaFoodItem(r.snap_item_name));
+    return courier || seller;
+  });
 }
 function isMagazineItem(name){
   const n = (name||'').toLowerCase();
@@ -9257,7 +9367,8 @@ async function fetchCourierStats(){
   const hasPyroRoute = rows.some(o => orderSystemsSet(o).has('pyro'));
   const hasNyxRoute = rows.some(o => orderSystemsSet(o).has('nyx'));
   const hasStantonRoute = rows.some(o => orderSystemsSet(o).has('stanton'));
-  return { deliveredCount, hasFastDelivery, hasAllSystemsOrder, hasBigItem, hasPyroDelivery, hasArmyOrder, hasExpensiveOrder, hasPyroRoute, hasNyxRoute, hasStantonRoute, hasMarketplaceDelivery };
+  const hasJawaFood = await fetchJawaFoodAny(session.user.id);
+  return { hasJawaFood, deliveredCount, hasFastDelivery, hasAllSystemsOrder, hasBigItem, hasPyroDelivery, hasArmyOrder, hasExpensiveOrder, hasPyroRoute, hasNyxRoute, hasStantonRoute, hasMarketplaceDelivery };
 }
 async function loadUnlockedAchievements(){
   if(!session) return new Set();
@@ -9960,7 +10071,8 @@ async function fetchSellerShopStatsRaw(sellerId){
     const { data: soldListings } = await sb.from('marketplace_listings').select('id,tags').in('id', soldListingIds);
     hasSoldHighQualityCrafted = (soldListings||[]).some(l => (l.tags||[]).includes('crafted') && ((l.tags||[]).includes('800') || (l.tags||[]).includes('900')));
   }
-  return { salesCount, courierSalesCount: orderRows.length, itemsSold, totalEarned, mostExpensive, upvoteCount, listingsCount, hasBigSale, hasHighQualityCrafted, hasSoldColossusBomb, hasListingNoPhoto, hasAcceptedDesiredItemOffer, blueprintsCount, hasSoldHighQualityCrafted, completedBlueprintSalesCount };
+  const hasJawaFood = (session && sellerId === session.user.id) ? await fetchJawaFoodAny(sellerId) : false;
+  return { hasJawaFood, salesCount, courierSalesCount: orderRows.length, itemsSold, totalEarned, mostExpensive, upvoteCount, listingsCount, hasBigSale, hasHighQualityCrafted, hasSoldColossusBomb, hasListingNoPhoto, hasAcceptedDesiredItemOffer, blueprintsCount, hasSoldHighQualityCrafted, completedBlueprintSalesCount };
 }
 function renderShopStats(box, stats){
   if(!box) return;
@@ -10006,6 +10118,7 @@ function renderShopStats(box, stats){
   `;
 }
 const SELLER_ACHV_ICONS = {
+  jawas_food: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="6" y="1" width="4" height="2"/><rect x="5" y="3" width="6" height="2"/><rect x="4" y="5" width="8" height="9"/><rect x="6" y="7" width="4" height="1" fill="var(--panel)"/><rect x="6" y="10" width="4" height="1" fill="var(--panel)"/></g></svg>`,
   first_sale: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="6" width="10" height="8"/><rect x="5" y="3" width="6" height="3"/><rect x="6" y="1" width="4" height="2"/><rect x="6" y="9" width="4" height="2" fill="var(--panel)"/></g></svg>`,
   first_courier_sale: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="1" y="7" width="6" height="6"/><rect x="0" y="5" width="8" height="2"/><rect x="9" y="9" width="2" height="2"/><rect x="11" y="7" width="2" height="2"/><rect x="13" y="5" width="2" height="2"/></g></svg>`,
   five_sales: `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="10" width="12" height="3"/><rect x="3" y="7" width="10" height="3"/><rect x="4" y="4" width="8" height="3"/></g></svg>`,
@@ -10033,7 +10146,8 @@ const SELLER_ACHIEVEMENTS = [
   { key:'crafterrrrr', check: s => s.blueprintsCount >= 5 },
   { key:'made_with_love', check: s => s.blueprintsCount >= 10 },
   { key:'better_than_wikelo', check: s => s.hasSoldHighQualityCrafted },
-  { key:'masta_thanks', check: s => s.completedBlueprintSalesCount >= 5 }
+  { key:'masta_thanks', check: s => s.completedBlueprintSalesCount >= 5 },
+  { key:'jawas_food', check: s => s.hasJawaFood }
 ];
 function isColossusBomb(name){
   const n = (name||'').toLowerCase();

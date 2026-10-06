@@ -807,6 +807,60 @@
      plus une case "couleur personnalisée" séparée pour le champ hexa libre. */
   .shop-color-presets{display:grid; grid-template-columns:repeat(auto-fill,minmax(74px,1fr)); gap:10px; margin:2px 0 14px;}
   .shop-swatch-item{display:flex; flex-direction:column; align-items:center; gap:5px; background:none; border:1px solid transparent; border-radius:4px; padding:6px 4px; cursor:pointer; transition:border-color .15s, background .15s;}
+
+  /* --- CADRES DE BOUTIQUE (bordure décorative autour de la bannière et du logo) --- */
+  @property --frmAng{syntax:'<angle>'; initial-value:0deg; inherits:false;}
+  .shop-frame-layer{position:absolute; inset:0; pointer-events:none; z-index:4; border-radius:inherit; overflow:hidden;}
+  .shop-frame-layer.frame-drops{inset:0 0 auto 0; height:75%; background:var(--accent);
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22140%22%20height%3D%22110%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%2210%22%20y%3D%225%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2235%22%20y%3D%2240%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2215%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2285%22%20y%3D%2270%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%22110%22%20y%3D%2230%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%22125%22%20y%3D%2290%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2220%22%20y%3D%2280%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%2255%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2248%22%20y%3D%2298%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%22100%22%20y%3D%226%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2210%22%20y%3D%221%22%20width%3D%223%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2211%22%20width%3D%223%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%22110%22%20y%3D%2226%22%20width%3D%223%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2220%22%20y%3D%2276%22%20width%3D%223%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2248%22%20y%3D%2294%22%20width%3D%223%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E"), linear-gradient(#000, transparent); mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22140%22%20height%3D%22110%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%2210%22%20y%3D%225%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2235%22%20y%3D%2240%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2215%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2285%22%20y%3D%2270%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%22110%22%20y%3D%2230%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%22125%22%20y%3D%2290%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2220%22%20y%3D%2280%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%2255%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2248%22%20y%3D%2298%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%22100%22%20y%3D%226%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2210%22%20y%3D%221%22%20width%3D%223%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2211%22%20width%3D%223%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%22110%22%20y%3D%2226%22%20width%3D%223%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2220%22%20y%3D%2276%22%20width%3D%223%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2248%22%20y%3D%2294%22%20width%3D%223%22%20height%3D%222%22%20fill%3D%22%23000%22%2F%3E%3C%2Fsvg%3E"), linear-gradient(#000, transparent);
+    -webkit-mask-size:140px 110px, 100% 100%; mask-size:140px 110px, 100% 100%; -webkit-mask-repeat:repeat, no-repeat; mask-repeat:repeat, no-repeat;
+    -webkit-mask-composite:source-in; mask-composite:intersect; animation:frmDrops 3.2s steps(22) infinite;}
+  @keyframes frmDrops{from{-webkit-mask-position:0 0, 0 0; mask-position:0 0, 0 0;} to{-webkit-mask-position:0 110px, 0 0; mask-position:0 110px, 0 0;}}
+  .shop-frame-layer.frame-orbit{background:
+    linear-gradient(var(--accent),var(--accent)) left 5px top 5px/14px 2px no-repeat, linear-gradient(var(--accent),var(--accent)) left 5px top 5px/2px 14px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) right 5px top 5px/14px 2px no-repeat, linear-gradient(var(--accent),var(--accent)) right 5px top 5px/2px 14px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) left 5px bottom 5px/14px 2px no-repeat, linear-gradient(var(--accent),var(--accent)) left 5px bottom 5px/2px 14px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) right 5px bottom 5px/14px 2px no-repeat, linear-gradient(var(--accent),var(--accent)) right 5px bottom 5px/2px 14px no-repeat;}
+  .shop-frame-layer.frame-orbit::before, .shop-frame-layer.frame-orbit::after{content:""; position:absolute; width:8px; height:8px; background:var(--accent); box-shadow:0 0 8px var(--accent); animation:frmOrbit 6s linear infinite;}
+  .shop-frame-layer.frame-orbit::after{animation-delay:-3s;}
+  @keyframes frmOrbit{0%{top:0; left:0;} 25%{top:0; left:calc(100% - 8px);} 50%{top:calc(100% - 8px); left:calc(100% - 8px);} 75%{top:calc(100% - 8px); left:0;} 100%{top:0; left:0;}}
+  .shop-frame-layer.frame-neon{border:2px solid var(--accent); box-shadow:0 0 8px var(--accent), inset 0 0 14px var(--accent-dim); animation:frmNeon 2.2s ease-in-out infinite alternate;}
+  @keyframes frmNeon{from{opacity:.55; box-shadow:0 0 4px var(--accent), inset 0 0 6px var(--accent-dim);} to{opacity:1; box-shadow:0 0 14px var(--accent), inset 0 0 22px var(--accent-dim);}}
+  .shop-frame-layer.frame-armor{border:7px solid #2b312e; box-shadow:inset 0 0 0 1px var(--accent), inset 0 0 0 7px rgba(255,255,255,.04); background-origin:border-box; background-clip:border-box;
+    background:
+    linear-gradient(#c3ccc7,#c3ccc7) left 2px top 2px/3px 3px no-repeat, linear-gradient(#c3ccc7,#c3ccc7) right 2px top 2px/3px 3px no-repeat,
+    linear-gradient(#c3ccc7,#c3ccc7) left 2px bottom 2px/3px 3px no-repeat, linear-gradient(#c3ccc7,#c3ccc7) right 2px bottom 2px/3px 3px no-repeat,
+    linear-gradient(#c3ccc7,#c3ccc7) center top 2px/3px 3px no-repeat, linear-gradient(#c3ccc7,#c3ccc7) center bottom 2px/3px 3px no-repeat,
+    linear-gradient(#c3ccc7,#c3ccc7) left 2px center/3px 3px no-repeat, linear-gradient(#c3ccc7,#c3ccc7) right 2px center/3px 3px no-repeat;}
+  .shop-frame-layer.frame-pyro{border:1px solid rgba(255,90,30,.55); box-shadow:inset 0 -26px 26px -18px rgba(255,80,20,.55);}
+  .shop-frame-layer.frame-pyro::after{content:""; position:absolute; left:0; right:0; bottom:0; height:26px; background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2228%22%20height%3D%2226%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%220%22%20y%3D%2220%22%20width%3D%2228%22%20height%3D%226%22%20fill%3D%22%23c92a00%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2217%22%20width%3D%2228%22%20height%3D%223%22%20fill%3D%22%23ff3d00%22%2F%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%225%22%20height%3D%2212%22%20fill%3D%22%23ff6a00%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23ffd23a%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%2210%22%20width%3D%223%22%20height%3D%226%22%20fill%3D%22%23ffb01a%22%2F%3E%3Crect%20x%3D%228%22%20y%3D%224%22%20width%3D%225%22%20height%3D%2216%22%20fill%3D%22%23ff6a00%22%2F%3E%3Crect%20x%3D%229%22%20y%3D%221%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23ffd23a%22%2F%3E%3Crect%20x%3D%229%22%20y%3D%226%22%20width%3D%223%22%20height%3D%226%22%20fill%3D%22%23ffb01a%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%2210%22%20width%3D%225%22%20height%3D%2210%22%20fill%3D%22%23ff6a00%22%2F%3E%3Crect%20x%3D%2215%22%20y%3D%227%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23ffd23a%22%2F%3E%3Crect%20x%3D%2215%22%20y%3D%2212%22%20width%3D%223%22%20height%3D%226%22%20fill%3D%22%23ffb01a%22%2F%3E%3Crect%20x%3D%2220%22%20y%3D%226%22%20width%3D%225%22%20height%3D%2214%22%20fill%3D%22%23ff6a00%22%2F%3E%3Crect%20x%3D%2221%22%20y%3D%223%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23ffd23a%22%2F%3E%3Crect%20x%3D%2221%22%20y%3D%228%22%20width%3D%223%22%20height%3D%226%22%20fill%3D%22%23ffb01a%22%2F%3E%3C%2Fsvg%3E") repeat-x left bottom/28px 26px; animation:frmFlame .7s steps(1) infinite;}
+  @keyframes frmFlame{0%{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2228%22%20height%3D%2226%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%220%22%20y%3D%2220%22%20width%3D%2228%22%20height%3D%226%22%20fill%3D%22%23c92a00%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2217%22%20width%3D%2228%22%20height%3D%223%22%20fill%3D%22%23ff3d00%22%2F%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%225%22%20height%3D%2212%22%20fill%3D%22%23ff6a00%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23ffd23a%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%2210%22%20width%3D%223%22%20height%3D%226%22%20fill%3D%22%23ffb01a%22%2F%3E%3Crect%20x%3D%228%22%20y%3D%224%22%20width%3D%225%22%20height%3D%2216%22%20fill%3D%22%23ff6a00%22%2F%3E%3Crect%20x%3D%229%22%20y%3D%221%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23ffd23a%22%2F%3E%3Crect%20x%3D%229%22%20y%3D%226%22%20width%3D%223%22%20height%3D%226%22%20fill%3D%22%23ffb01a%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%2210%22%20width%3D%225%22%20height%3D%2210%22%20fill%3D%22%23ff6a00%22%2F%3E%3Crect%20x%3D%2215%22%20y%3D%227%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23ffd23a%22%2F%3E%3Crect%20x%3D%2215%22%20y%3D%2212%22%20width%3D%223%22%20height%3D%226%22%20fill%3D%22%23ffb01a%22%2F%3E%3Crect%20x%3D%2220%22%20y%3D%226%22%20width%3D%225%22%20height%3D%2214%22%20fill%3D%22%23ff6a00%22%2F%3E%3Crect%20x%3D%2221%22%20y%3D%223%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23ffd23a%22%2F%3E%3Crect%20x%3D%2221%22%20y%3D%228%22%20width%3D%223%22%20height%3D%226%22%20fill%3D%22%23ffb01a%22%2F%3E%3C%2Fsvg%3E");} 50%{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2228%22%20height%3D%2226%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%220%22%20y%3D%2220%22%20width%3D%2228%22%20height%3D%226%22%20fill%3D%22%23c92a00%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2217%22%20width%3D%2228%22%20height%3D%223%22%20fill%3D%22%23ff3d00%22%2F%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%225%22%20height%3D%2214%22%20fill%3D%22%23ff6a00%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23ffd23a%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%228%22%20width%3D%223%22%20height%3D%226%22%20fill%3D%22%23ffb01a%22%2F%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%225%22%20height%3D%2212%22%20fill%3D%22%23ff6a00%22%2F%3E%3Crect%20x%3D%229%22%20y%3D%225%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23ffd23a%22%2F%3E%3Crect%20x%3D%229%22%20y%3D%2210%22%20width%3D%223%22%20height%3D%226%22%20fill%3D%22%23ffb01a%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%226%22%20width%3D%225%22%20height%3D%2214%22%20fill%3D%22%23ff6a00%22%2F%3E%3Crect%20x%3D%2215%22%20y%3D%223%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23ffd23a%22%2F%3E%3Crect%20x%3D%2215%22%20y%3D%228%22%20width%3D%223%22%20height%3D%226%22%20fill%3D%22%23ffb01a%22%2F%3E%3Crect%20x%3D%2220%22%20y%3D%2210%22%20width%3D%225%22%20height%3D%2210%22%20fill%3D%22%23ff6a00%22%2F%3E%3Crect%20x%3D%2221%22%20y%3D%227%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%23ffd23a%22%2F%3E%3Crect%20x%3D%2221%22%20y%3D%2212%22%20width%3D%223%22%20height%3D%226%22%20fill%3D%22%23ffb01a%22%2F%3E%3C%2Fsvg%3E");}}
+  .shop-frame-layer.frame-stanton{border:1px solid rgba(57,255,106,.4); box-shadow:inset 0 0 18px rgba(57,255,106,.12);}
+  .shop-frame-layer.frame-stanton::before, .shop-frame-layer.frame-stanton::after{content:""; position:absolute; left:0; right:0; height:16px; background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2232%22%20height%3D%2216%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2232%22%20height%3D%222%22%20fill%3D%22%232f9e4a%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%222%22%20height%3D%223%22%20fill%3D%22%231f6e32%22%2F%3E%3Crect%20x%3D%222%22%20y%3D%225%22%20width%3D%225%22%20height%3D%223%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%228%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%232f9e4a%22%2F%3E%3Crect%20x%3D%224%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%222%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%2213%22%20y%3D%222%22%20width%3D%222%22%20height%3D%223%22%20fill%3D%22%231f6e32%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%225%22%20width%3D%225%22%20height%3D%223%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%2213%22%20y%3D%228%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%232f9e4a%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%222%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%2223%22%20y%3D%222%22%20width%3D%222%22%20height%3D%223%22%20fill%3D%22%231f6e32%22%2F%3E%3Crect%20x%3D%2222%22%20y%3D%225%22%20width%3D%225%22%20height%3D%223%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%2223%22%20y%3D%228%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%232f9e4a%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%222%22%20fill%3D%22%2339ff6a%22%2F%3E%3C%2Fsvg%3E") repeat-x left top/32px 16px; animation:frmLeaf 2.4s steps(1) infinite;}
+  .shop-frame-layer.frame-stanton::before{top:0;}
+  .shop-frame-layer.frame-stanton::after{bottom:0; transform:scaleY(-1);}
+  @keyframes frmLeaf{0%{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2232%22%20height%3D%2216%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2232%22%20height%3D%222%22%20fill%3D%22%232f9e4a%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%222%22%20height%3D%223%22%20fill%3D%22%231f6e32%22%2F%3E%3Crect%20x%3D%222%22%20y%3D%225%22%20width%3D%225%22%20height%3D%223%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%228%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%232f9e4a%22%2F%3E%3Crect%20x%3D%224%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%222%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%2213%22%20y%3D%222%22%20width%3D%222%22%20height%3D%223%22%20fill%3D%22%231f6e32%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%225%22%20width%3D%225%22%20height%3D%223%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%2213%22%20y%3D%228%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%232f9e4a%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%222%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%2223%22%20y%3D%222%22%20width%3D%222%22%20height%3D%223%22%20fill%3D%22%231f6e32%22%2F%3E%3Crect%20x%3D%2222%22%20y%3D%225%22%20width%3D%225%22%20height%3D%223%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%2223%22%20y%3D%228%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%232f9e4a%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%222%22%20fill%3D%22%2339ff6a%22%2F%3E%3C%2Fsvg%3E");} 50%{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2232%22%20height%3D%2216%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2232%22%20height%3D%222%22%20fill%3D%22%232f9e4a%22%2F%3E%3Crect%20x%3D%224%22%20y%3D%222%22%20width%3D%222%22%20height%3D%223%22%20fill%3D%22%231f6e32%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%225%22%20height%3D%223%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%224%22%20y%3D%228%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%232f9e4a%22%2F%3E%3Crect%20x%3D%225%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%222%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%222%22%20width%3D%222%22%20height%3D%223%22%20fill%3D%22%231f6e32%22%2F%3E%3Crect%20x%3D%2213%22%20y%3D%225%22%20width%3D%225%22%20height%3D%223%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%228%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%232f9e4a%22%2F%3E%3Crect%20x%3D%2215%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%222%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%222%22%20width%3D%222%22%20height%3D%223%22%20fill%3D%22%231f6e32%22%2F%3E%3Crect%20x%3D%2223%22%20y%3D%225%22%20width%3D%225%22%20height%3D%223%22%20fill%3D%22%2339ff6a%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%228%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%232f9e4a%22%2F%3E%3Crect%20x%3D%2225%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%222%22%20fill%3D%22%2339ff6a%22%2F%3E%3C%2Fsvg%3E");}}
+  .shop-frame-layer.frame-trail{padding:3px; background:conic-gradient(from var(--frmAng), transparent 0 62%, var(--accent) 100%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); animation:frmSpin 3.2s linear infinite;}
+  @keyframes frmSpin{to{--frmAng:360deg;}}
+  @media (prefers-reduced-motion:reduce){ .shop-frame-layer, .shop-frame-layer::before, .shop-frame-layer::after{animation:none !important;} }
+  .shop-frame-item{display:flex; flex-direction:column; align-items:center; gap:5px; background:none; border:1px solid var(--border); border-radius:4px; padding:6px 4px; cursor:pointer; width:92px;}
+  .shop-frame-item:hover{border-color:var(--accent);}
+  .shop-frame-item.active{border-color:var(--accent); background:var(--accent-dim);}
+  .shop-frame-item .shop-frame-swatch{width:64px; height:44px; background:var(--bg2); position:relative; overflow:hidden; border-radius:2px;}
+  .shop-frame-item .shop-texture-lbl{font-size:.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:.3px; text-align:center;}
+  .shop-frame-item.active .shop-texture-lbl{color:var(--accent);}
+  .shop-frame-item.locked{opacity:.5; filter:grayscale(.6); cursor:not-allowed;}
+  /* Carte "entreprise de livraison" du coursier : même identité visuelle que le shop */
+  .company-card{display:flex; align-items:center; gap:18px; padding:18px 20px; border:1px solid var(--accent); border-radius:6px; background:linear-gradient(var(--panel),var(--bg2)); box-shadow:0 0 14px var(--accent-dim); flex-wrap:wrap;}
+  .company-card .company-logo{width:84px; height:84px; flex:none; border-radius:8px; background:var(--bg2); border:2px solid var(--accent); color:var(--accent); display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; padding:8px;}
+  .company-card .company-logo svg{width:100%; height:100%;}
+  .company-card .company-logo img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+  .company-card .company-txt{flex:1; min-width:180px; display:flex; flex-direction:column; gap:4px; position:relative; z-index:5;}
+  .company-card .company-name{font-family:'VT323',monospace; font-size:34px; letter-spacing:1px; color:var(--text); line-height:1;}
+  .company-card .company-actions{position:relative; z-index:5;}
+  .shop-swatch-item.locked, .shop-texture-item.locked{opacity:.5; filter:grayscale(.6); cursor:not-allowed;}
+  .shop-lock-req{font-size:.55rem; color:var(--accent); letter-spacing:.3px; text-align:center; line-height:1.15; max-width:76px; pointer-events:none;}
   .shop-swatch-item:hover{background:var(--bg2); border-color:var(--border);}
   .shop-swatch-item.active{border-color:var(--accent); background:var(--accent-dim);}
   .shop-swatch-item .swatch{width:30px; height:30px; flex:none; pointer-events:none;}
@@ -2427,6 +2481,7 @@
         <p data-i18n="notCourier">Ton compte n'a pas encore le rôle coursier. Contacte l'administrateur pour être ajouté.</p>
       </div>
       <div id="courierDash" class="mk-col" style="padding-top:0; gap:30px;" hidden>
+        <div id="courierCompanyCard"></div>
         <div class="tabs">
           <button class="tab-btn active" id="tab-pending" onclick="switchCourierTab('pending')"><span data-i18n="cTabAvail">COMMANDES DISPONIBLES</span><span class="notif-dot" id="dotTabPending"></span></button>
           <button class="tab-btn" id="tab-mine" onclick="switchCourierTab('mine')" data-i18n="cTabMine">MES LIVRAISONS</button>
@@ -2744,9 +2799,9 @@
             <label data-i18n="shopThemeLbl">Couleur de la boutique</label>
             <div class="shop-color-presets" id="shopThemePicker"></div>
             <div class="shop-color-custom-box">
-              <div class="shop-color-custom-lbl" data-i18n="shopCustomColorLbl">Couleur personnalisée</div>
+              <div class="shop-color-custom-lbl"><span data-i18n="shopCustomColorLbl">Couleur personnalisée</span> <span class="shop-lock-req" id="customColorLockNote" style="max-width:none; margin-left:6px;" hidden></span></div>
               <div class="shop-color-picker">
-                <input type="color" id="shopColorWheel" class="shop-color-wheel" value="#ff8c1a" oninput="setShopColor(this.value, true)" aria-label="Color wheel">
+                <input type="color" id="shopColorWheel" class="shop-color-wheel" value="#ff8c1a" oninput="onShopCustomWheel(this.value)" aria-label="Color wheel">
                 <input type="text" id="shopColorHex" class="shop-color-hex" maxlength="7" placeholder="#FF8C1A"
                        autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" inputmode="text"
                        oninput="onShopColorHexInput(this.value)" onchange="onShopColorHexInput(this.value)" onblur="onShopColorHexBlur(this.value)">
@@ -2769,6 +2824,8 @@
             <div id="shopLogoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
             <label data-i18n="shopTextureLbl">Texture de fond</label>
             <div class="shop-texture-presets" id="shopTexturePicker"></div>
+            <label data-i18n="frameLbl">Cadre</label>
+            <div class="shop-texture-presets" id="shopFramePicker"></div>
           </div>
 
           <div class="card shop-edit-section">
@@ -3638,7 +3695,7 @@ const T = {
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NOUVELLE COMMANDE", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
+    homeNewOrder:"+ NOUVELLE COMMANDE", unlockSales:"{n} ventes", frameLbl:"Cadre", frameNone:"Aucun", frameDrops:"Pixels qui tombent", frameOrbit:"Coins orbitaux", frameNeon:"Néon pulsé", frameArmor:"Blindé", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Traînée", unlockRank:"Rang vendeur : ", unlockCAch:"Succès coursier : ", companyTitle:"ENTREPRISE DE LIVRAISON", companyCustomize:"PERSONNALISER", companyCreate:"CRÉER MON ENTREPRISE", companyNoShop:"Donne un nom, un logo et un style à ton entreprise : ils sont partagés avec ton shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Succès : ", lockedTip:"Verrouillé — ", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
     classicOrderNote:"COMMANDE CLASSIQUE : uniquement des objets achetables dans une boutique en jeu — le coursier les achète puis te les livre. Un objet introuvable en boutique (loot, craft, rare…) ? Poste plutôt un desired item.", classicOrderLink:"POSTER UN DESIRED ITEM ▸",
     commodityQualityNote:"Commodities : seules des commodities de qualité 500 peuvent être livrées par commande. Pour une qualité supérieure, passe par la marketplace ou poste un desired item.", commodityQualityShort:"Commodity : qualité 500 uniquement.",
     desiredIntroNote:"DESIRED ITEM : un objet que tu cherches et qui n'est PAS achetable en boutique (loot, craft, qualité supérieure…). N'importe quel joueur peut te proposer de te le fournir ; tu choisis l'offre, puis vous pouvez demander un coursier pour la livraison.", myDesiredTitle:"MES DESIRED ITEMS", noMyDesired:"Tu n'as posté aucun desired item.", postDesiredBtn:"+ POSTER", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"LIVRAISON DESIRED ITEM",
@@ -3814,7 +3871,7 @@ const T = {
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NEW ORDER", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
+    homeNewOrder:"+ NEW ORDER", unlockSales:"{n} sales", frameLbl:"Frame", frameNone:"None", frameDrops:"Falling pixels", frameOrbit:"Orbiting corners", frameNeon:"Pulsing neon", frameArmor:"Armored", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Light trail", unlockRank:"Seller rank: ", unlockCAch:"Courier achievement: ", companyTitle:"DELIVERY COMPANY", companyCustomize:"CUSTOMIZE", companyCreate:"CREATE MY COMPANY", companyNoShop:"Give your company a name, a logo and a style: they are shared with your shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Achievement: ", lockedTip:"Locked — ", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
     classicOrderNote:"CLASSIC ORDER: only items you can buy in an in-game shop — the courier buys them and delivers them to you. Item not sold in shops (loot, crafted, rare…)? Post a desired item instead.", classicOrderLink:"POST A DESIRED ITEM ▸",
     commodityQualityNote:"Commodities: only quality 500 commodities can be delivered through an order. For a higher quality, use the marketplace or post a desired item.", commodityQualityShort:"Commodity: quality 500 only.",
     desiredIntroNote:"DESIRED ITEM: something you're looking for that is NOT sold in shops (loot, crafted, higher quality…). Any player can offer to supply it; you pick an offer, then you can request a courier for the delivery.", myDesiredTitle:"MY DESIRED ITEMS", noMyDesired:"You haven't posted any desired item.", postDesiredBtn:"+ POST", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"DESIRED ITEM DELIVERY",
@@ -6416,6 +6473,98 @@ const DEFAULT_SHOP_COLOR = '#ff8c1a';
 const SHOP_LOC_PIN_ICON = `<svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
   <rect x="6" y="2" width="4" height="2"/><rect x="4" y="4" width="8" height="5"/><rect x="6" y="9" width="4" height="2"/><rect x="7" y="11" width="2" height="3"/>
 </g></svg>`;
+// --- THÈMES DÉBLOQUABLES : certaines couleurs/textures se gagnent par succès, nombre de ventes ou upvotes ---
+// Les valeurs déjà enregistrées sur une boutique existante restent utilisables (rien n'est retiré à personne).
+// Tout ce qui existait avant est libre pour tout le monde. Les NOUVEAUX thèmes/textures/cadres verrouillés se déclarent ici.
+const SHOP_COLOR_UNLOCKS = {};
+const SHOP_TEXTURE_UNLOCKS = {};
+const SHOP_CUSTOM_COLOR_UNLOCK = null;
+const SHOP_FRAMES = [
+  { key:'none', nameKey:'frameNone' },
+  { key:'drops', nameKey:'frameDrops', unlock:{ sales:5 } },
+  { key:'orbit', nameKey:'frameOrbit', unlock:{ sales:15 } },
+  { key:'neon', nameKey:'frameNeon', unlock:{ upvotes:5 } },
+  { key:'armor', nameKey:'frameArmor', unlock:{ ach:'better_than_wikelo' } },
+  { key:'pyro', nameKey:'framePyro', unlock:{ cach:'pyrolowda' } },
+  { key:'stanton', nameKey:'frameStanton', unlock:{ cach:'stantawalla' } },
+  { key:'trail', nameKey:'frameTrail', unlock:{ rank:'trader', sales:5 } },
+];
+let selectedShopFrame = 'none', shopSavedFrame = null, shopHasFrameColumn = false;
+let shopUnlockCtx = { sales:0, upvotes:0, ach:new Set(), cach:new Set(), admin:false };
+let shopSavedColor = null, shopSavedTexture = null;
+function unlockRuleMet(rule){
+  if(!rule || shopUnlockCtx.admin) return true;
+  if(rule.rank || rule.sales) return shopUnlockCtx.sales >= rule.sales;
+  if(rule.upvotes) return shopUnlockCtx.upvotes >= rule.upvotes;
+  if(rule.ach) return shopUnlockCtx.ach.has(rule.ach);
+  if(rule.cach) return shopUnlockCtx.cach.has(rule.cach);
+  return true;
+}
+function unlockRuleText(rule){
+  const d = T[LANG];
+  if(!rule) return '';
+  if(rule.rank) return d.unlockRank + ((d.sellerRankLabels && d.sellerRankLabels[rule.rank]) || rule.rank);
+  if(rule.cach) return d.unlockCAch + ((d.achvLabels && d.achvLabels[rule.cach]) || rule.cach);
+  if(rule.sales) return d.unlockSales.replace('{n}', rule.sales);
+  if(rule.upvotes) return d.unlockUpvotes.replace('{n}', rule.upvotes);
+  if(rule.ach) return d.unlockAch + ((d.sellerAchvLabels && d.sellerAchvLabels[rule.ach]) || rule.ach);
+  return '';
+}
+function presetColorKey(hex){ const c = SHOP_COLOR_PRESETS.find(x => x.hex === hex); return c ? c.key : null; }
+function colorAllowed(hex){
+  hex = (hex||'').toLowerCase();
+  if(hex === shopSavedColor) return true;
+  const key = presetColorKey(hex);
+  if(key) return unlockRuleMet(SHOP_COLOR_UNLOCKS[key]);
+  return unlockRuleMet(SHOP_CUSTOM_COLOR_UNLOCK);
+}
+function frameDef(key){ return SHOP_FRAMES.find(f => f.key === key); }
+function frameAllowed(key){ const f = frameDef(key); return !f || key === 'none' || key === shopSavedFrame || unlockRuleMet(f.unlock); }
+function textureAllowed(key){ return key === shopSavedTexture || unlockRuleMet(SHOP_TEXTURE_UNLOCKS[key]); }
+async function loadShopUnlockCtx(){
+  const ctx = { sales:0, upvotes:0, ach:new Set(), cach:new Set(), admin: !!(profile && profile.role === 'admin') };
+  try{
+    const [stats, ach, cRes] = await Promise.all([fetchSellerShopStats(session.user.id), fetchUnlockedSellerAchievements(session.user.id), sb.from('courier_achievements').select('key').eq('courier_id', session.user.id)]);
+    ctx.cach = new Set(((cRes && cRes.data) || []).map(r => r.key));
+    if(stats){ ctx.sales = stats.salesCount || 0; ctx.upvotes = stats.upvoteCount || 0; }
+    ctx.ach = ach instanceof Set ? ach : new Set(ach || []);
+  }catch(e){}
+  shopUnlockCtx = ctx;
+}
+// Pose (ou retire) la couche de cadre décorative sur une carte ou un logo.
+function applyShopFrame(host, key){
+  if(!host) return;
+  let layer = host.querySelector(':scope > .shop-frame-layer');
+  if(!key || key === 'none'){ if(layer) layer.remove(); return; }
+  if(!layer){ layer = document.createElement('div'); host.appendChild(layer); }
+  layer.className = 'shop-frame-layer frame-' + key;
+}
+function initShopFramePicker(){
+  const picker = $('shopFramePicker'); if(!picker) return;
+  const d = T[LANG];
+  picker.innerHTML = '';
+  SHOP_FRAMES.forEach(f => {
+    const item = document.createElement('button'); item.type='button'; item.className='shop-frame-item'; item.dataset.frame = f.key;
+    const name = d[f.nameKey] || f.key;
+    const sw = document.createElement('div'); sw.className='shop-frame-swatch'; applyShopFrame(sw, f.key);
+    const lbl = document.createElement('span'); lbl.className='shop-texture-lbl'; lbl.textContent = name;
+    item.appendChild(sw); item.appendChild(lbl);
+    if(!frameAllowed(f.key)){
+      const req = unlockRuleText(f.unlock);
+      item.classList.add('locked'); item.title = d.lockedTip + req;
+      const r = document.createElement('span'); r.className='shop-lock-req'; r.textContent = req; item.appendChild(r);
+    }
+    item.addEventListener('click', () => {
+      if(!frameAllowed(f.key)){ toastShow(d.lockedTip + unlockRuleText(f.unlock), true); return; }
+      selectedShopFrame = f.key; syncShopFramePicker(); updateShopLivePreview();
+    });
+    picker.appendChild(item);
+  });
+  syncShopFramePicker();
+}
+function syncShopFramePicker(){
+  document.querySelectorAll('#shopFramePicker .shop-frame-item').forEach(el => el.classList.toggle('active', el.dataset.frame === selectedShopFrame));
+}
 const SHOP_TEXTURE_PRESETS = [
   { key:'none', cls:'tex-none', nameKey:'shopTextureNone' },
   { key:'dots', cls:'tex-dots', nameKey:'shopTextureDots' },
@@ -6450,7 +6599,15 @@ function initShopTexturePicker(){
     swatch.appendChild(layer);
     const lbl = document.createElement('span'); lbl.className='shop-texture-lbl'; lbl.textContent = name;
     item.appendChild(swatch); item.appendChild(lbl);
-    item.addEventListener('click', () => setShopTexture(t.key));
+    if(!textureAllowed(t.key)){
+      const req = unlockRuleText(SHOP_TEXTURE_UNLOCKS[t.key]);
+      item.classList.add('locked'); item.title = d.lockedTip + req;
+      const r = document.createElement('span'); r.className='shop-lock-req'; r.textContent = req; item.appendChild(r);
+    }
+    item.addEventListener('click', () => {
+      if(!textureAllowed(t.key)){ toastShow(d.lockedTip + unlockRuleText(SHOP_TEXTURE_UNLOCKS[t.key]), true); return; }
+      setShopTexture(t.key);
+    });
     picker.appendChild(item);
   });
   syncShopTexturePicker();
@@ -6483,7 +6640,15 @@ function initShopThemePicker(){
     const dot = document.createElement('span'); dot.className='swatch'; dot.style.background = c.hex;
     const lbl = document.createElement('span'); lbl.className='shop-swatch-lbl'; lbl.textContent = name;
     item.appendChild(dot); item.appendChild(lbl);
-    item.addEventListener('click', () => setShopColor(c.hex, true));
+    if(!colorAllowed(c.hex)){
+      const req = unlockRuleText(SHOP_COLOR_UNLOCKS[c.key]);
+      item.classList.add('locked'); item.title = d.lockedTip + req;
+      const r = document.createElement('span'); r.className='shop-lock-req'; r.textContent = req; item.appendChild(r);
+    }
+    item.addEventListener('click', () => {
+      if(!colorAllowed(c.hex)){ toastShow(d.lockedTip + unlockRuleText(SHOP_COLOR_UNLOCKS[c.key]), true); return; }
+      setShopColor(c.hex, true);
+    });
     picker.appendChild(item);
   });
   picker.dataset.built = '1';
@@ -6505,14 +6670,21 @@ function cleanHexInput(v){
   }
   return hex;
 }
+function customColorBlocked(hex){
+  if(colorAllowed(hex)) return false;
+  toastShow(T[LANG].lockedTip + unlockRuleText(SHOP_CUSTOM_COLOR_UNLOCK), true);
+  syncShopColorPicker(true);
+  return true;
+}
+function onShopCustomWheel(v){ if(customColorBlocked(v)) return; setShopColor(v, true); }
 function onShopColorHexInput(v){
   const hex = cleanHexInput(v);
-  if(isValidHexColor(hex)) setShopColor(hex, false);
+  if(isValidHexColor(hex) && !customColorBlocked(hex)) setShopColor(hex, false);
 }
 // Au blur, si le champ ne contient pas un hexa valide, on le rétablit proprement sur la couleur active.
 function onShopColorHexBlur(v){
   const hex = cleanHexInput(v);
-  if(isValidHexColor(hex)) setShopColor(hex, true);
+  if(isValidHexColor(hex) && colorAllowed(hex)) setShopColor(hex, true);
   else syncShopColorPicker(true);
 }
 function syncShopColorPicker(updateHexField){
@@ -6527,7 +6699,11 @@ async function saveShopSettings(){
   const description = $('shopDescInput').value.trim();
   const location_system = $('shopLocSystem') ? $('shopLocSystem').value : null;
   const location_name = $('shopLocName') ? $('shopLocName').value.trim() : '';
+  if(!colorAllowed(selectedShopColor)) selectedShopColor = shopSavedColor || DEFAULT_SHOP_COLOR;
+  if(!textureAllowed(selectedShopTexture)) selectedShopTexture = shopSavedTexture || DEFAULT_SHOP_TEXTURE;
+  if(!frameAllowed(selectedShopFrame)) selectedShopFrame = shopSavedFrame || 'none';
   const payload = { id: session.user.id, shop_name, theme_color: selectedShopColor, texture: selectedShopTexture, description: description || null, location_system, location_name: location_name || null };
+  if(shopHasFrameColumn || selectedShopFrame !== 'none') payload.frame = selectedShopFrame;
   if(pendingShopLogoFile){
     const ext = (pendingShopLogoFile.name.split('.').pop() || 'jpg').toLowerCase();
     const path = `${session.user.id}/logo.${ext}`;
@@ -6554,6 +6730,13 @@ async function openSellerShopEdit(){
   $('shopDescInput').value = shop?.description || '';
   selectedShopColor = normalizeShopColor(shop?.theme_color);
   selectedShopTexture = (shop && shop.texture) || DEFAULT_SHOP_TEXTURE;
+  shopSavedColor = shop && shop.theme_color ? selectedShopColor : null;
+  shopSavedTexture = shop && shop.texture ? selectedShopTexture : null;
+  shopHasFrameColumn = !!(shop && Object.prototype.hasOwnProperty.call(shop, 'frame'));
+  selectedShopFrame = (shop && shop.frame) || 'none';
+  shopSavedFrame = shop && shop.frame ? shop.frame : null;
+  await loadShopUnlockCtx();
+  { const n = $('customColorLockNote'); if(n){ const locked = !unlockRuleMet(SHOP_CUSTOM_COLOR_UNLOCK); n.hidden = !locked; n.textContent = locked ? unlockRuleText(SHOP_CUSTOM_COLOR_UNLOCK) : ''; } }
   pendingShopLogoFile = null;
   $('shopLogoPreviewName').textContent = '';
   const logoPreview = $('shopLogoPreviewImg');
@@ -6563,6 +6746,7 @@ async function openSellerShopEdit(){
   if($('shopLocName')) $('shopLocName').value = shop?.location_name || '';
   initShopThemePicker();
   initShopTexturePicker();
+  initShopFramePicker();
   updateShopLivePreview();
 }
 // Aperçu en direct de la boutique (nom, couleur, logo, localisation, description) pendant la saisie.
@@ -6585,6 +6769,7 @@ function updateShopLivePreview(){
   } else {
     logoBox.innerHTML = roleAnimSvg('seller', 100);
   }
+  applyShopFrame(preview, selectedShopFrame); applyShopFrame(logoBox, selectedShopFrame);
   const locName = $('shopLocName') ? $('shopLocName').value.trim() : '';
   const locSystem = $('shopLocSystem') ? $('shopLocSystem').value : '';
   const locTag = $('shopLivePreviewLoc');
@@ -7605,6 +7790,7 @@ async function openSellerShop(sellerId){
   const shopColorHex = normalizeShopColor(shop && shop.theme_color);
   shopEl.style.setProperty('--accent', shopColorHex);
   shopEl.style.setProperty('--accent-dim', shopColorHex + '55');
+  applyShopFrame($('shopHeaderCard'), shop && shop.frame); applyShopFrame($('shopHeroIcon'), shop && shop.frame);
   const headerTexLayer = document.querySelector('#shopHeaderCard .shop-texture-layer');
   setShopTextureLayerClass(headerTexLayer, (shop && shop.texture) || DEFAULT_SHOP_TEXTURE);
   $('shopPageTitle').textContent = (shop && shop.shop_name) || (p ? displayName(p) : '—');
@@ -8147,6 +8333,7 @@ async function loadCourierData(){
   }
   $('courierBlocked').hidden = true; $('courierDash').hidden = false;
   renderCourierAvailToggle();
+  renderCourierCompany();
   const { data: pending } = await sb.from('orders').select('*').eq('status','pending').order('created_at',{ascending:true});
   const { data: mine, error: mineErr } = await sb.rpc('my_courier_orders');
   if(mineErr) console.error('my_courier_orders:', mineErr);
@@ -8154,6 +8341,34 @@ async function loadCourierData(){
   await renderMyDeliveries(mine || []);
   renderCourierStats(pending || [], mine || []);
   checkAndRenderAchievements();
+}
+// Le shop du joueur est aussi son entreprise de livraison : mêmes nom, logo, couleur, texture et cadre
+// sur sa page coursier. Les stats/succès/carrière coursier et vendeur restent complètement séparés.
+async function renderCourierCompany(){
+  const box = $('courierCompanyCard'); if(!box || !session) return;
+  const d = T[LANG];
+  const dash = $('view-courier-dash');
+  let shop = null;
+  try{ const r = await memoOnce('shopself:'+session.user.id, () => sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle()); shop = r && r.data; }catch(e){}
+  const col = normalizeShopColor(shop && shop.theme_color);
+  if(dash){ dash.style.setProperty('--accent', col); dash.style.setProperty('--accent-dim', col + '55'); }
+  const name = (shop && shop.shop_name) || (profile ? displayName(profile) : '—');
+  const logo = shop && shop.logo_url ? `<img src="${escHtml(shop.logo_url)}" alt="">` : roleAnimSvg('courier', 100);
+  box.innerHTML = `
+    <div class="company-card shop-texture-host">
+      <div class="shop-texture-layer"></div>
+      <div class="company-logo">${logo}</div>
+      <div class="company-txt">
+        <span class="mk-lbl"><span class="sl">//</span> ${d.companyTitle}</span>
+        <span class="company-name">${escHtml(name)}</span>
+        ${shop ? '' : `<span class="muted" style="font-size:.78rem;">${d.companyNoShop}</span>`}
+      </div>
+      <div class="company-actions"><button type="button" class="mk-btn sm ghost" onclick="openSellerShopEdit()">${shop ? d.companyCustomize : d.companyCreate}</button></div>
+    </div>`;
+  const card = box.querySelector('.company-card');
+  setShopTextureLayerClass(card.querySelector('.shop-texture-layer'), (shop && shop.texture) || DEFAULT_SHOP_TEXTURE);
+  applyShopFrame(card, shop && shop.frame);
+  applyShopFrame(card.querySelector('.company-logo'), shop && shop.frame);
 }
 async function renderCourierStats(pending, mine){
   const box = $('courierStats'); if(!box) return;

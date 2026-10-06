@@ -1229,44 +1229,49 @@
   @media (max-width:600px){ .shop-leaderboard-card{padding:16px 14px;} .shops-dir-entry .mk-btn{width:100%;} }
 
   /* ===== MK : profil ===== */
-  #view-profile .profile-header-row{gap:18px; margin-bottom:0;}
-  #view-profile .profile-id-card{flex-direction:row; justify-content:flex-start; text-align:left; gap:24px; padding:24px 28px; border-radius:6px; border:1px solid var(--accent); box-shadow:0 0 18px var(--accent-dim); background:linear-gradient(var(--panel), var(--bg2));}
-  #view-profile .profile-id-card::before, #view-profile .profile-id-card::after{display:none;}
-  #view-profile .profile-hero-rsi{font-size:46px; line-height:1; text-shadow:0 0 8px var(--accent-dim);}
-  #view-profile .profile-hero-discord{font-size:13px; margin-top:8px; letter-spacing:1px;}
-  #view-profile .profile-ship-card{min-height:150px; flex:1 1 320px; border-radius:6px; border:1px solid var(--border);}
-  #view-profile .profile-ship-card::before, #view-profile .profile-ship-card::after{display:none;}
-  #view-profile #profileTabs .tab-btn{padding:14px 22px;}
-  #view-profile .prof-pane{display:flex; flex-direction:column; gap:40px;}
-  #view-profile .prof-pane[hidden]{display:none;}
+  :is(#view-profile,#view-public-profile) .profile-header-row{gap:18px; margin-bottom:0;}
+  :is(#view-profile,#view-public-profile) .profile-id-card{flex-direction:row; justify-content:flex-start; text-align:left; gap:24px; padding:24px 28px; border-radius:6px; border:1px solid var(--accent); box-shadow:0 0 18px var(--accent-dim); background:linear-gradient(var(--panel), var(--bg2));}
+  :is(#view-profile,#view-public-profile) .profile-id-card::before, :is(#view-profile,#view-public-profile) .profile-id-card::after{display:none;}
+  :is(#view-profile,#view-public-profile) .profile-hero-rsi{font-size:46px; line-height:1; text-shadow:0 0 8px var(--accent-dim);}
+  :is(#view-profile,#view-public-profile) .profile-hero-discord{font-size:13px; margin-top:8px; letter-spacing:1px;}
+  :is(#view-profile,#view-public-profile) .profile-ship-card{min-height:150px; flex:1 1 320px; border-radius:6px; border:1px solid var(--border);}
+  :is(#view-profile,#view-public-profile) .profile-ship-card::before, :is(#view-profile,#view-public-profile) .profile-ship-card::after{display:none;}
+  :is(#view-profile,#view-public-profile) #profileTabs .tab-btn{padding:14px 22px;}
+  :is(#view-profile,#view-public-profile) .prof-pane{display:flex; flex-direction:column; gap:40px;}
+  :is(#view-profile,#view-public-profile) .prof-pane[hidden]{display:none;}
   /* APERÇU : sections sans boîtes, libellés "// ..." et grands chiffres, comme les maquettes */
-  #ppane-overview > .card{background:none; border:none; box-shadow:none; padding:0; margin:0; border-radius:0;}
-  #ppane-overview > .card::before, #ppane-overview > .card::after{display:none !important;}
-  #ppane-overview h3{font-family:'Share Tech Mono',monospace !important; font-size:11px !important; font-weight:400 !important; letter-spacing:3px !important; text-transform:uppercase; color:var(--muted) !important; text-shadow:none !important; margin:0 0 14px !important;}
-  #ppane-overview h3::before{content:"// "; color:var(--accent);}
-  #ppane-overview h3 + .rank-track, #ppane-overview .shop-achv-head + .rank-track{margin-top:6px;}
-  #ppane-overview .career-stats-grid{display:flex; flex-wrap:wrap; gap:18px 0; margin:0;}
-  #ppane-overview .career-stat{flex:1 1 200px; min-width:0; border:none; border-left:1px solid var(--border); background:none; box-shadow:none; text-align:left; padding:2px 24px; display:flex; flex-direction:column; gap:2px; transform:none;}
-  #ppane-overview .career-stat .val{font-family:'VT323',monospace; font-size:44px; line-height:1; color:var(--accent); text-shadow:none; white-space:normal;}
-  #ppane-overview .career-stat .val.val-sm{font-size:24px; line-height:1.1;}
-  #ppane-overview .career-stat .lbl{order:-1; font-size:11px; letter-spacing:2px; color:var(--muted); margin:0 0 4px; text-transform:uppercase;}
-  #ppane-overview .career-stat-expensive{flex-basis:340px;}
-  #ppane-overview .achv-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:10px; margin-top:14px;}
-  #ppane-overview .achv-badge{border-radius:4px; padding:12px 6px;}
-  #ppane-overview p.muted{font-size:13px;}
+  :is(#ppane-overview,#pubPaneOv) > .card{background:none; border:none; box-shadow:none; padding:0; margin:0; border-radius:0;}
+  :is(#ppane-overview,#pubPaneOv) > .card::before, :is(#ppane-overview,#pubPaneOv) > .card::after{display:none !important;}
+  :is(#ppane-overview,#pubPaneOv) h3{font-family:'Share Tech Mono',monospace !important; font-size:11px !important; font-weight:400 !important; letter-spacing:3px !important; text-transform:uppercase; color:var(--muted) !important; text-shadow:none !important; margin:0 0 14px !important;}
+  :is(#ppane-overview,#pubPaneOv) h3::before{content:"// "; color:var(--accent);}
+  :is(#ppane-overview,#pubPaneOv) h3 + .rank-track, :is(#ppane-overview,#pubPaneOv) .shop-achv-head + .rank-track{margin-top:6px;}
+  :is(#ppane-overview,#pubPaneOv) .career-stats-grid{display:flex; flex-wrap:wrap; gap:18px 0; margin:0;}
+  :is(#ppane-overview,#pubPaneOv) .career-stat{flex:1 1 200px; min-width:0; border:none; border-left:1px solid var(--border); background:none; box-shadow:none; text-align:left; padding:2px 24px; display:flex; flex-direction:column; gap:2px; transform:none;}
+  :is(#ppane-overview,#pubPaneOv) .career-stat .val{font-family:'VT323',monospace; font-size:44px; line-height:1; color:var(--accent); text-shadow:none; white-space:normal;}
+  :is(#ppane-overview,#pubPaneOv) .career-stat .val.val-sm{font-size:24px; line-height:1.1;}
+  :is(#ppane-overview,#pubPaneOv) .career-stat .lbl{order:-1; font-size:11px; letter-spacing:2px; color:var(--muted); margin:0 0 4px; text-transform:uppercase;}
+  :is(#ppane-overview,#pubPaneOv) .career-stat-expensive{flex-basis:340px;}
+  :is(#ppane-overview,#pubPaneOv) .achv-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:10px; margin-top:14px;}
+  :is(#ppane-overview,#pubPaneOv) .achv-badge{border-radius:4px; padding:12px 6px;}
+  :is(#ppane-overview,#pubPaneOv) p.muted{font-size:13px;}
   /* RÉGLAGES : deux colonnes maçonnées (pas de trous), boîtes panneau, boutons du site */
-  #view-profile .prof-grid{display:block; columns:2; column-gap:18px;}
-  #view-profile .prof-grid > .card{display:block; break-inside:avoid; margin:0 0 18px; padding:22px 24px; background:var(--panel); border:1px solid var(--border); border-radius:4px; box-shadow:none;}
-  #view-profile .prof-grid > .card[hidden]{display:none;}
-  #view-profile .prof-grid > .card::before, #view-profile .prof-grid > .card::after, #ppane-account > .card::before, #ppane-account > .card::after{display:none !important;}
-  #view-profile .prof-grid > .card h3, #ppane-account > .card h3{font-family:'VT323',monospace; font-size:24px; font-weight:400; color:var(--accent); letter-spacing:1px; margin:0 0 12px; text-shadow:none;}
-  #view-profile .prof-grid > .card h3::before, #ppane-account > .card h3::before{content:"// ";}
-  #view-profile .prof-grid label{font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin:14px 0 6px; display:block;}
-  #view-profile .prof-grid .btn-secondary{width:auto !important; margin:16px 0 0 auto !important; padding:11px 24px; background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:2px; font-size:12px; letter-spacing:1px; display:block;}
+  :is(#view-profile,#view-public-profile) .prof-grid{display:block; columns:2; column-gap:18px;}
+  :is(#view-profile,#view-public-profile) .prof-grid > .card{display:block; break-inside:avoid; margin:0 0 18px; padding:22px 24px; background:var(--panel); border:1px solid var(--border); border-radius:4px; box-shadow:none;}
+  :is(#view-profile,#view-public-profile) .prof-grid > .card[hidden]{display:none;}
+  :is(#view-profile,#view-public-profile) .prof-grid > .card::before, :is(#view-profile,#view-public-profile) .prof-grid > .card::after, #ppane-account > .card::before, #ppane-account > .card::after{display:none !important;}
+  :is(#view-profile,#view-public-profile) .prof-grid > .card h3, #ppane-account > .card h3{font-family:'VT323',monospace; font-size:24px; font-weight:400; color:var(--accent); letter-spacing:1px; margin:0 0 12px; text-shadow:none;}
+  :is(#view-profile,#view-public-profile) .prof-grid > .card h3::before, #ppane-account > .card h3::before{content:"// ";}
+  :is(#view-profile,#view-public-profile) .prof-grid label{font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin:14px 0 6px; display:block;}
+  :is(#view-profile,#view-public-profile) .prof-grid .btn-secondary{width:auto !important; margin:16px 0 0 auto !important; padding:11px 24px; background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:2px; font-size:12px; letter-spacing:1px; display:block;}
   #ppane-account{display:flex; flex-direction:column; gap:18px; max-width:760px;}
   #ppane-account > .card{margin:0; padding:22px 24px; background:var(--panel); border:1px solid var(--border); border-radius:4px; box-shadow:none;}
-  @media (max-width:900px){ #view-profile .prof-grid{columns:1;} #ppane-overview .career-stat{flex-basis:45%; padding:2px 16px;} }
-  @media (max-width:600px){ #view-profile .profile-id-card{flex-direction:column; text-align:center; align-items:center; gap:10px;} #view-profile .profile-hero-rsi{font-size:36px;} #view-profile #profileTabs{flex-wrap:nowrap; overflow-x:auto;} #view-profile #profileTabs .tab-btn{padding:14px 12px; font-size:12px;} #view-profile .prof-pane{gap:30px;} }
+  #pubPaneExtra > .card{margin:0; padding:22px 24px; background:var(--panel); border:1px solid var(--border); border-radius:4px; box-shadow:none;}
+  #pubPaneExtra > .card::before, #pubPaneExtra > .card::after{display:none !important;}
+  #pubPaneExtra > .card h3{font-family:'VT323',monospace; font-size:24px; font-weight:400; color:var(--accent); letter-spacing:1px; margin:0; text-shadow:none;}
+  #pubPaneExtra > .card h3::before{content:"// ";}
+  #pubSendMsgBtn{margin:0 0 0 auto;}
+  @media (max-width:900px){ :is(#view-profile,#view-public-profile) .prof-grid{columns:1;} :is(#ppane-overview,#pubPaneOv) .career-stat{flex-basis:45%; padding:2px 16px;} }
+  @media (max-width:600px){ :is(#view-profile,#view-public-profile) .profile-id-card{flex-direction:column; text-align:center; align-items:center; gap:10px;} :is(#view-profile,#view-public-profile) .profile-hero-rsi{font-size:36px;} :is(#view-profile,#view-public-profile) #profileTabs{flex-wrap:nowrap; overflow-x:auto;} :is(#view-profile,#view-public-profile) #profileTabs .tab-btn{padding:14px 12px; font-size:12px;} :is(#view-profile,#view-public-profile) .prof-pane{gap:30px;} }
   /* ===== MK : page shop (G) ===== */
   .shop-banner-card.shop-texture-host{padding:28px; margin-bottom:0; border:1px solid var(--accent); border-radius:6px; box-shadow:0 0 18px var(--accent-dim); background:linear-gradient(var(--panel), var(--bg2));}
   .shop-banner-card.shop-texture-host::before, .shop-banner-card.shop-texture-host::after{display:none;}
@@ -2330,7 +2335,7 @@
     </section>
 
     <!-- PROFIL -->
-    <section id="view-profile" hidden>
+    <section id="view-profile" class="prof-view" hidden>
       <button class="back" id="profileBackBtn" onclick="routeApp()" data-i18n="back">&lt; RETOUR</button>
       <div class="mk-col" style="padding-top:0; gap:26px;">
       <h1 class="page-title-lg" data-i18n="profileTitle">Profil</h1>
@@ -2361,7 +2366,7 @@
         <button class="tab-btn" id="ptab-settings" onclick="switchProfileTab('settings')" data-i18n="pTabSettings">RÉGLAGES</button>
         <button class="tab-btn" id="ptab-account" onclick="switchProfileTab('account')" data-i18n="pTabAccount">COMPTE</button>
       </div>
-      <div id="ppane-overview" class="prof-pane">
+      <div id="ppane-overview" class="prof-pane prof-ov">
       <div class="card" id="careerStatsCard" hidden></div>
       <div class="card" id="profileAchvCard" hidden></div>
       <div class="card" id="shopStatsProfileCard" hidden></div>
@@ -2409,6 +2414,7 @@
       </div>
       </div>
       <div id="ppane-account" class="prof-pane" hidden>
+      <div class="card" id="accountInfoCard"></div>
       <div class="card" id="crewStatusCard" hidden></div>
       <div class="card" id="courierRequestCard"></div>
       <div class="card" id="sellerRequestCard"></div>
@@ -2417,8 +2423,10 @@
     </section>
 
     <!-- PROFIL PUBLIC (vu par un client ou par l'admin) -->
-    <section id="view-public-profile" hidden>
+    <section id="view-public-profile" class="prof-view" hidden>
       <button class="back" onclick="closePublicProfile()" data-i18n="back">&lt; RETOUR</button>
+      <div class="mk-col" style="padding-top:0; gap:26px;">
+      <h1 class="page-title-lg" data-i18n="profileTitle">Profil</h1>
       <div class="profile-header-row">
         <div class="card profile-id-card">
           <div class="avatar-wrap big">
@@ -2442,6 +2450,7 @@
           </div>
         </div>
       </div>
+      <div class="prof-pane prof-ov" id="pubPaneOv">
       <div class="card" id="pubCareerStatsCard" hidden></div>
       <div class="card" id="pubAchvCard" hidden>
         <h3 data-i18n="achvTitle">Succès</h3>
@@ -2449,6 +2458,8 @@
       </div>
       <div class="card" id="pubSellerStatsCard" hidden></div>
       <div class="card" id="pubSellerAchvCard" hidden></div>
+      </div>
+      <div class="prof-pane" id="pubPaneExtra">
       <div class="card" id="pubShopCard" hidden>
         <div class="shop-preview-head">
           <h3 id="pubShopName">Ma boutique</h3>
@@ -2464,6 +2475,8 @@
           <button class="btn-secondary" onclick="adminResetAchievements()" data-i18n="resetAchvBtn">RÉINITIALISER LES SUCCÈS</button>
           <button class="btn-logout" onclick="adminResetRole()" data-i18n="resetRoleBtn">RÉINITIALISER LE RÔLE</button>
         </div>
+      </div>
+          </div>
       </div>
     </section>
 
@@ -3493,7 +3506,7 @@ const T = {
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NOUVELLE COMMANDE", pTabOverview:"APERÇU", pTabSettings:"RÉGLAGES", pTabAccount:"COMPTE", newsTag:"// BETA 04", newsTxt:"Nouveau : annuaire des shops, statut personnalisable sur chaque shop et nouvelle interface.", newsDismiss:"MASQUER ✕", homeHello:"Salut, {name}", homeFresh:"NOUVEAUTÉS SUR LA MARKETPLACE", homeSeeAll:"TOUT VOIR ▸", homeInProgress:"En cours", homeStatOrders:"COMMANDES", homeStatDelivered:"LIVRÉES", homeStatSpent:"DÉPENSÉ (aUEC)", homeStatActive:"EN COURS", homeMore:"+{n} DE PLUS ▾", homeLess:"MOINS ▴", homeCargo:"CARGAISON",
+    homeNewOrder:"+ NOUVELLE COMMANDE", pAccTitle:"Mon compte", pAccRole:"Rôle", pTabOverview:"APERÇU", pTabSettings:"RÉGLAGES", pTabAccount:"COMPTE", newsTag:"// BETA 04", newsTxt:"Nouveau : annuaire des shops, statut personnalisable sur chaque shop et nouvelle interface.", newsDismiss:"MASQUER ✕", homeHello:"Salut, {name}", homeFresh:"NOUVEAUTÉS SUR LA MARKETPLACE", homeSeeAll:"TOUT VOIR ▸", homeInProgress:"En cours", homeStatOrders:"COMMANDES", homeStatDelivered:"LIVRÉES", homeStatSpent:"DÉPENSÉ (aUEC)", homeStatActive:"EN COURS", homeMore:"+{n} DE PLUS ▾", homeLess:"MOINS ▴", homeCargo:"CARGAISON",
     hmOrdersIn:"COMMANDES EN COURS ({n})", hmMostAdv:"LES PLUS AVANCÉES D'ABORD", hmViewAll:"VOIR TOUTES LES COMMANDES ▸", hmShowLess:"VOIR MOINS ▴", hmNeedElse:"Besoin d'autre chose ?", hmCtaTitle:"Besoin de quelque chose ? Commande maintenant !", hmCtaSub:"Choisis tes objets et une destination à Stanton, Nyx ou Pyro. Un coursier s'occupe du reste.", hmHow:"COMMENT ÇA MARCHE", hm1t:"Tu commandes", hm1x:"Objets et destination. Le prix est affiché avant de confirmer.", hm2t:"Un coursier achète", hm2x:"Il reçoit un itinéraire d'achat suggéré et livre ta cargaison.", hm3t:"Tu suis", hm3x:"Acheté, en transit, livré. Discute avec ton coursier à tout moment.", hmAgain:"COMMANDER À NOUVEAU", hmFullHist:"HISTORIQUE COMPLET ({n}) ▸", hmReorder:"RECOMMANDER", hmDelivered:"LIVRÉE", hmMessage:"MESSAGE", hmWaiting:"// EN ATTENTE D'UN COURSIER", hmCargo:"LISTE DE LA CARGAISON", hmStDel:"LIVRÉES", hmStAct:"EN COURS", hmStDes:"OBJETS RECHERCHÉS", hmStCour:"COURSIERS EN LIGNE", hmNewOrderBtn:"CRÉER UNE COMMANDE", titleOrders:"Dashboard client", titleMkt:"Marketplace", titleDesired:"Objets recherchés", titleBp:"Blueprints", titleCourier:"Coursier",
     sdTitle:"Shops", sdSub:"Tous les shops ouverts sur Couriers United. Trouve un vendeur, parcours ses annonces et ses blueprints.", sdSearchPh:"Chercher un shop par nom ou spécialité...", sdSortLbl:"TRIER", sdSortedBy:"TRIÉ PAR {x}", sdCount:"{n} SHOPS", sdNone:"Aucun shop ne correspond à ta recherche.", sdSales:"ventes", sdListings:"annonces", sdBp:"bp", sdVisit:"VISITER ▸", sdSinceWeek:"Ouvert cette semaine", sdSinceDays:"Ouvert depuis {n} jours", sdS_newest:"LES PLUS RÉCENTS", sdS_sales:"PLUS DE VENTES (TOTAL)", sdS_blueprints:"PLUS DE BLUEPRINTS", sdS_listings:"PLUS D'ANNONCES", sdS_name:"NOM DE A À Z",
     shStSales:"VENTES (TOTAL)", shStListings:"ANNONCES", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
@@ -3664,7 +3677,7 @@ const T = {
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NEW ORDER", pTabOverview:"OVERVIEW", pTabSettings:"SETTINGS", pTabAccount:"ACCOUNT", newsTag:"// BETA 04", newsTxt:"New: shops directory, custom status on every shop and a refreshed interface.", newsDismiss:"DISMISS ✕", homeHello:"Hello, {name}", homeFresh:"FRESH ON THE MARKETPLACE", homeSeeAll:"SEE ALL ▸", homeInProgress:"In progress", homeStatOrders:"ORDERS", homeStatDelivered:"DELIVERED", homeStatSpent:"SPENT (aUEC)", homeStatActive:"IN PROGRESS", homeMore:"+{n} MORE ▾", homeLess:"LESS ▴", homeCargo:"CARGO",
+    homeNewOrder:"+ NEW ORDER", pAccTitle:"My account", pAccRole:"Role", pTabOverview:"OVERVIEW", pTabSettings:"SETTINGS", pTabAccount:"ACCOUNT", newsTag:"// BETA 04", newsTxt:"New: shops directory, custom status on every shop and a refreshed interface.", newsDismiss:"DISMISS ✕", homeHello:"Hello, {name}", homeFresh:"FRESH ON THE MARKETPLACE", homeSeeAll:"SEE ALL ▸", homeInProgress:"In progress", homeStatOrders:"ORDERS", homeStatDelivered:"DELIVERED", homeStatSpent:"SPENT (aUEC)", homeStatActive:"IN PROGRESS", homeMore:"+{n} MORE ▾", homeLess:"LESS ▴", homeCargo:"CARGO",
     hmOrdersIn:"ORDERS IN PROGRESS ({n})", hmMostAdv:"MOST ADVANCED FIRST", hmViewAll:"VIEW ALL ORDERS ▸", hmShowLess:"SHOW LESS ▴", hmNeedElse:"Need something else?", hmCtaTitle:"Need something? Order now!", hmCtaSub:"Pick your items, choose a destination in Stanton, Nyx or Pyro. A courier takes it from there.", hmHow:"HOW IT WORKS", hm1t:"You order", hm1x:"Items and destination. The price is shown before you confirm.", hm2t:"A courier buys", hm2x:"He gets a suggested shopping route and ships your cargo.", hm3t:"You track it", hm3x:"Bought, in transit, delivered. Chat with your courier any time.", hmAgain:"ORDER AGAIN", hmFullHist:"FULL HISTORY ({n}) ▸", hmReorder:"REORDER", hmDelivered:"DELIVERED", hmMessage:"MESSAGE", hmWaiting:"// WAITING FOR A COURIER", hmCargo:"FULL CARGO LIST", hmStDel:"DELIVERED", hmStAct:"IN PROGRESS", hmStDes:"DESIRED ITEMS", hmStCour:"COURIERS ONLINE", hmNewOrderBtn:"CREATE AN ORDER", titleOrders:"Client dashboard", titleMkt:"Marketplace", titleDesired:"Desired items", titleBp:"Blueprints", titleCourier:"Courier",
     sdTitle:"Shops", sdSub:"Every shop open on Couriers United. Find a seller, browse their listings and blueprints.", sdSearchPh:"Search a shop by name or specialty...", sdSortLbl:"SORT", sdSortedBy:"SORTED BY {x}", sdCount:"{n} SHOPS", sdNone:"No shop matches your search.", sdSales:"sales", sdListings:"listings", sdBp:"bp", sdVisit:"VISIT ▸", sdSinceWeek:"Opened this week", sdSinceDays:"Open for {n} days", sdS_newest:"NEWEST", sdS_sales:"MOST SALES (ALL TIME)", sdS_blueprints:"MOST BLUEPRINTS", sdS_listings:"MOST LISTINGS", sdS_name:"NAME A TO Z",
     shStSales:"SALES (ALL TIME)", shStListings:"LISTINGS", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
@@ -8585,6 +8598,7 @@ function renderProfileView(){
     fetchSellerShopStats(session.user.id).then(stats => renderShopStats($('shopStatsProfileCard'), stats));
     checkAndRenderSellerAchievements('sellerAchvCard');
   }
+  renderAccountInfoCard();
   renderCrewStatusCard();
   renderCourierRequestCard();
   renderSellerRequestCard();
@@ -9039,6 +9053,16 @@ async function saveProfileDefaults(){
 }
 // Message unique récapitulant les équipages déjà rejoints (coursier et/ou vendeur), au lieu de
 // répéter le même "tu fais déjà partie de l'équipage" dans chaque encadré de demande de rôle.
+function renderAccountInfoCard(){
+  const box = $('accountInfoCard'); if(!box || !profile) return;
+  const d = T[LANG];
+  const row = (l, v) => `<div class="li" style="display:flex; justify-content:space-between; gap:12px; padding:11px 0; border-top:1px solid var(--border); font-size:14px;"><span style="color:var(--muted);">${l}</span><span>${escHtml(v)}</span></div>`;
+  box.innerHTML = `<h3>${d.pAccTitle}</h3>
+    ${row('Discord', profile.discord_username ? '@'+profile.discord_username : '—')}
+    ${row('RSI', profile.rsi_handle || '—')}
+    ${row(d.pAccRole, memberRoleLabel(profile))}
+    <div style="display:flex; justify-content:flex-end; padding-top:16px; border-top:1px solid var(--border);"><button type="button" class="mk-btn mute sm" onclick="doLogout()">${d.logout}</button></div>`;
+}
 function renderCrewStatusCard(){
   const box = $('crewStatusCard'); if(!box || !profile) return;
   const d = T[LANG];
@@ -9620,6 +9644,7 @@ async function openPublicProfile(id){
   if(!id) return;
   viewingProfileId = id;
   hideAllViews();
+  $('pageTitle').hidden = true;
   $('view-public-profile').hidden = false;
   const { data: p, error } = await sb.from('profiles').select('*').eq('id', id).single();
   if(error || !p) return;

@@ -2965,7 +2965,7 @@ window.addEventListener('pageshow', (event) => {
   }
 });
 // Le webhook Discord est côté serveur (/api/discord)
-const DISCORD_WEBHOOK_URL = "/api/discord";
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1554227281721958440/yOxynZkztwvQoBkk64NL1qcriIucXI6BCaw8kuj3_41ls2Hjnwy2YaCFKbA88B-2Nn1a";
 // Frais minimum garanti au coursier : sous ce seuil, frais fixes à ce montant ;
 // à partir de ce seuil, le coursier touche ce montant fixe EN PLUS des 15% habituels.
 const MIN_COMMISSION = 50000;
@@ -3194,7 +3194,12 @@ function onLieuBlur(inputEl){
   }, 150);
 }
 // Les appels UEX passent par /api/uex (la clé reste côté serveur)
-const UEX_PROXY = "/api/uex";
+// UEX est derrière Cloudflare : les appels depuis un serveur (Vercel) sont bloqués par un défi anti-bot,
+// seuls ceux faits depuis le navigateur du visiteur passent. L'appel se fait donc côté navigateur.
+// Clé en lecture seule sur des données publiques : en cas d'abus, la régénérer sur uexcorp.space.
+const UEX_API = "https://uexcorp.space/api/2.0/";
+const UEX_SECRET_KEY = "d76d4cc1f06bb9764172dff43406640fb5b79b2c";
+function uexFetch(pathAndQuery){ return fetch(UEX_API + pathAndQuery, { headers: { "secret_key": UEX_SECRET_KEY } }); }
 let uexCommodities = [];
 let uexItems = [];
 const uexItemPriceCache = {};
@@ -4739,7 +4744,7 @@ async function loadUexCatalog(){
   if(uexLoading) return uexLoading;
   uexLoading = (async () => {
     try{
-      const commoRes = await fetch(UEX_PROXY + "?path=commodities");
+      const commoRes = await uexFetch("commodities");
       const commoData = await commoRes.json();
       if(commoData && commoData.data){
         uexCommodities = commoData.data.filter(c => c.is_buyable && c.price_buy > 0).map(c => ({ name: c.name, price_buy: c.price_buy }));
@@ -4748,7 +4753,7 @@ async function loadUexCatalog(){
     try{
       const itemResults = await Promise.all(UEX_ITEM_CATEGORIES.map(async id => {
         try{
-          const res = await fetch(`${UEX_PROXY}?path=items&id_category=${id}`);
+          const res = await uexFetch(`items?id_category=${id}`);
           const data = await res.json();
           return ((data && data.data) ? data.data : []).map(it => ({ ...it, _cat: id }));
         }catch(e){ return []; }
@@ -4800,7 +4805,7 @@ async function findUnbuyableItems(items){
 async function fetchUexItemMinPrice(itemId){
   if(uexItemPriceCache[itemId] !== undefined) return uexItemPriceCache[itemId];
   try{
-    const res = await fetch(`${UEX_PROXY}?path=items_prices&id_item=${itemId}`);
+    const res = await uexFetch(`items_prices?id_item=${itemId}`);
     const data = await res.json();
     let min = null;
     (data?.data || []).forEach(row => { if(row.price_buy && (min === null || row.price_buy < min)) min = row.price_buy; });
@@ -4814,7 +4819,7 @@ const uexItemLocationsCache = {};
 async function fetchUexItemLocations(itemId){
   if(uexItemLocationsCache[itemId] !== undefined) return uexItemLocationsCache[itemId];
   try{
-    const res = await fetch(`${UEX_PROXY}?path=items_prices&id_item=${itemId}`);
+    const res = await uexFetch(`items_prices?id_item=${itemId}`);
     const data = await res.json();
     const rows = (data?.data || []).filter(row => row.price_buy && row.price_buy > 0).sort((a,b) => a.price_buy - b.price_buy);
     uexItemLocationsCache[itemId] = rows;
@@ -4987,7 +4992,7 @@ async function loadUexVehicles(){
   if(uexVehiclesLoading) return uexVehiclesLoading;
   uexVehiclesLoading = (async () => {
     try{
-      const res = await fetch(UEX_PROXY + "?path=vehicles");
+      const res = await uexFetch("vehicles");
       const data = await res.json();
       if(data && data.data){
         const seen = new Set();

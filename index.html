@@ -6733,7 +6733,7 @@ function startPixelScene(layer, kind){
         birds:Array.from({length:3}, (_, i) => ({ p:[rnd(-30,30), rnd(-2,7), rnd(-18,-7)], v:rnd(1.2,2.2), n:5 + (i % 2)*2, ph:rnd(0,6) })),
         stars:Array.from({length:Math.max(40, Math.min(90, Math.round(W*H/2200)))}, () => ({ p:[rnd(-70,70), rnd(-8,38), -95], a:rnd(.2,.6), ph:rnd(0,6.283) })) };
     }
-    if(kind === 'handshake'){ inst.S = { q:Math.max(3, Math.min(4.6, H*.022)), midX:W*.84, ground:Math.round(H*.8), t:0, cyc:13.2 }; }
+    if(kind === 'handshake'){ inst.S = { q:Math.max(3, Math.min(4.6, H*.022)), midX:W*.84, wide:(H >= 150 && W/H > 2.4), ground:Math.round(H*((H >= 150 && W/H > 2.4) ? .4 : .8)), t:0, cyc:13.2 }; }
     if(kind === 'glitch'){ inst.S = { t:0, next:rnd(.6,1.4), burst:0, seg:[], hold:0 }; }
     if(kind === 'forge'){ const u = p, aw = 14*u, right = true; const cx = right ? W - 6 - 19*u : 6 + 7*u; inst.S = { cx, top: H - 6*u - 5, u, t:rnd(0,1), struck:false }; }
     if(kind === 'forge2'){ const u = Math.max(3, Math.min(11, W*.02)); inst.S = { u, ax:W*.8, ay:H*.5, t:0, sparks:[], emb:[], hits:0, heat:1, ring:0, flash:0, last:-1, smoke:[], swing:0 }; }
@@ -7303,10 +7303,10 @@ function startPixelScene(layer, kind){
         ctx.globalAlpha = .5; ctx.fill(); ctx.fillStyle = '#000'; ctx.globalAlpha = .45; ctx.fill(); ctx.fillStyle = inst.color; ctx.globalAlpha = .8; ctx.lineWidth = 1.3; ctx.stroke(); ctx.restore(); });
       ctx.globalAlpha = 1;
     } else if(kind === 'fly'){
-      const S = inst.S, T = 11.2; S.t = (S.t + dt) % T; const t = S.t, K = S.K;
-      const K1 = { x:[[0,-1.2],[3.0,-.5],[3.8,.2],[4.5,4.8],[5.3,28]], y:[[0,0],[3.0,.12],[3.8,0],[4.5,.9],[5.3,4.2]], z:[[0,0],[5.3,0]], pitch:[[0,0],[3.0,.02],[3.7,-.02],[4.3,.34],[5.3,.46]], roll:[[0,0],[3.4,.0],[4.2,-.35],[5.3,-.1]], yaw:[[0,0],[5.3,0]], fl:[[0,.35],[3.5,.35],[3.9,2.2],[5.3,2.5]] };
-      const PI = Math.PI, K2 = { x:[[6.0,-26],[6.9,-9],[7.6,-2.4],[8.4,2.2],[9.2,2.8],[10.0,.2],[10.7,-.9],[11.2,-1.2]], y:[[6.0,-5.2],[6.9,-3],[7.6,-1.2],[8.4,.5],[9.2,.7],[10.0,.2],[11.2,0]], z:[[6.0,4],[7.2,2.2],[8.6,.6],[11.2,0]],
-        pitch:[[6.0,.4],[7.0,.2],[7.5,0],[7.9,0],[8.9,PI],[9.8,PI],[10.9,2*PI],[11.2,2*PI]], roll:[[6.0,0],[7.3,2*PI],[7.9,2*PI],[8.9,3*PI],[9.8,3*PI],[10.9,4*PI],[11.2,4*PI]], yaw:[[6.0,.25],[7.4,.12],[8.6,0],[11.2,0]], fl:[[6.0,2.2],[7.3,1.6],[8.0,.15],[8.8,.4],[9.0,1.9],[9.9,1.9],[10.3,.35],[11.2,.35]] };
+      const S = inst.S, T = 11.2; S.t = (S.t + dt) % T; const t = S.t, K = S.K, far = (W*.8 + 160)/K + 9; if(!S.msl){ S.msl = []; S.fired = [0,0]; S.lt = 0; } if(t < S.lt){ S.fired = [0,0]; } S.lt = t;
+      const K1 = { x:[[0,-1.2],[3.0,-.5],[3.8,.2],[4.5,4.8],[5.3,far]], y:[[0,0],[3.0,.12],[3.8,0],[4.5,.9],[5.3,4.2]], z:[[0,0],[5.3,0]], pitch:[[0,0],[3.0,.02],[3.7,-.02],[4.3,.34],[5.3,.46]], roll:[[0,0],[3.4,.0],[4.2,-.35],[5.3,-.1]], yaw:[[0,0],[5.3,0]], fl:[[0,.35],[3.5,.35],[3.9,2.2],[5.3,2.5]] };
+      const PI = Math.PI, K2 = { x:[[6.0,-far],[7.0,-5],[7.8,-1.9],[9.6,.4],[10.5,-.6],[11.2,-1.2]], y:[[6.0,-1.2],[7.0,-.3],[8.0,.3],[9.5,.2],[11.2,0]], z:[[6.0,3],[7.5,1.2],[9.0,0],[11.2,0]],
+        pitch:[[6.0,.25],[7.4,.05],[11.2,0]], roll:[[6.0,0],[7.4,0],[8.5,-2*PI],[8.9,-2*PI],[10.0,0],[11.2,0]], yaw:[[6.0,.25],[7.4,.1],[11.2,0]], fl:[[6.0,2.2],[7.4,1.4],[8.0,.8],[9.0,.8],[9.9,1.6],[10.4,.4],[11.2,.35]] };
       const seg = t < 5.4 ? K1 : t >= 6.0 ? K2 : null, vis = !!seg;
       let pos = [0,0,0], pose = null;
       if(seg){ pos = [hm(seg.x, t), hm(seg.y, t), hm(seg.z, t)]; pose = { pos, roll:hm(seg.roll, t), pitch:hm(seg.pitch, t), yaw:hm(seg.yaw, t) }; }
@@ -7333,11 +7333,16 @@ function startPixelScene(layer, kind){
         S.trL.push(tipL); S.trR.push(tipR); if(S.trL.length > 30){ S.trL.shift(); S.trR.shift(); }
       } else { S.trL.length = 0; S.trR.length = 0; }
       [S.trL, S.trR].forEach(tr => { for(let i=1;i<tr.length;i++){ const a = cm.proj(tr[i-1]), b = cm.proj(tr[i]); if(!a || !b) continue; ctx.globalAlpha = (i/tr.length)*.38; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); } });
+      if(vis && t > 6){ [[7.55,-1],[9.1,1]].forEach((m, i) => { if(t >= m[0] && !S.fired[i]){ S.fired[i] = 1; const o = v3.add(rotShip([-.2, -.12, m[1]*2.0], pose.roll, pose.pitch, pose.yaw), pos), dir = rotShip([1,0,0], pose.roll, pose.pitch, pose.yaw); S.msl.push({ p:o, v:[dir[0]*10 + 3, dir[1]*10, dir[2]*10 - m[1]*1.5], a:0, tr:[], fl:1 }); } }); }
       if(vis) ship3(list, cm, pose, { fl, door:0, gear:0, A:.95 });
       S.bgs.forEach(b => { b.x += b.v*dt; if(b.x > 32) b.x = -32; ship3(list, cm, { pos:[b.x, b.y, b.z], roll:0, pitch:.02, yaw:0 }, { fl:1.1, scale:.3, A:.6 }); });
       if(vis && fl > .3){ const back = rotShip([-1, 0, 0], pose.roll, pose.pitch, pose.yaw); [-1,1].forEach(sd => { const nz = v3.add(rotShip([-2.5, .05, sd*1.225], pose.roll, pose.pitch, pose.yaw), pos); for(let k=0;k<2;k++) S.exh.push({ p:nz.slice(), v:[back[0]*rnd(2,6) + rnd(-.3,.3), back[1]*rnd(2,6) + rnd(-.3,.3), back[2]*rnd(2,6) + rnd(-.3,.3)], a:0, life:rnd(.5,.9) }); }); }
       for(let i=S.exh.length-1;i>=0;i--){ const e = S.exh[i]; e.a += dt; if(e.a > e.life){ S.exh.splice(i,1); continue; } e.p = v3.add(e.p, [e.v[0]*dt, e.v[1]*dt, e.v[2]*dt]); const q = cm.proj(e.p); if(q){ const k = e.a/e.life, sz = Math.max(1.2, q[3]*.14*(1 - k)); list.push({ d:q[2], f:() => { ctx.globalAlpha = (1 - k)*.7; ctx.fillRect(q[0] - sz/2, q[1] - sz/2, sz, sz); } }); } }
-      flush(list); ctx.globalAlpha = 1;
+      flush(list);
+      for(let i=S.msl.length-1;i>=0;i--){ const m = S.msl[i]; m.a += dt; m.fl = Math.max(0, m.fl - dt*3); if(m.a > 3){ S.msl.splice(i,1); continue; } m.v[0] += 16*dt*Math.min(1, m.a); m.p = v3.add(m.p, [m.v[0]*dt, m.v[1]*dt, m.v[2]*dt]); m.tr.push(m.p.slice()); if(m.tr.length > 18) m.tr.shift();
+        for(let k=1;k<m.tr.length;k++){ const a1 = cm.proj(m.tr[k-1]), b1 = cm.proj(m.tr[k]); if(!a1 || !b1) continue; ctx.globalAlpha = (k/m.tr.length)*.55; ctx.lineWidth = 1 + 2.2*(k/m.tr.length); ctx.beginPath(); ctx.moveTo(a1[0], a1[1]); ctx.lineTo(b1[0], b1[1]); ctx.stroke(); }
+        const h = cm.proj(m.p), tl = cm.proj(m.tr[Math.max(0, m.tr.length - 3)]), o0 = cm.proj(m.tr[0]); if(h && tl){ ctx.globalAlpha = .95; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(tl[0], tl[1]); ctx.lineTo(h[0], h[1]); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(h[0], h[1], 1.7, 0, 6.283); ctx.fill(); ctx.fillStyle = inst.color; if(m.fl > 0 && o0){ ctx.globalAlpha = m.fl*.7; ctx.beginPath(); ctx.arc(o0[0], o0[1], 7*m.fl + 2, 0, 6.283); ctx.fill(); } } }
+      ctx.globalAlpha = 1;
     } else if(kind === 'alien'){
       const S = inst.S; S.t += dt; S.shake = Math.max(0, S.shake - dt); S.hit = Math.max(0, S.hit - dt*2.2);
       const Z = S.size, ox = (S.shake > 0 ? rnd(-1,1)*S.shake*10 : 0), flick = S.shake > 0 ? .55 + .3*Math.random() : .88 + .06*Math.sin(S.t*9);
@@ -7486,11 +7491,11 @@ function startPixelScene(layer, kind){
       let gL = G, gR = G, walking = false;
       if(t < 4.2){ const k = t/4.2; gL = G + (dL - G)*(1 - k); gR = G + (dR - G)*(1 - k); walking = true; }
       else if(t >= 9.2){ const k = (t - 9.2)/4; gL = G + (dL - G)*k; gR = G + (dR - G)*k; walking = true; }
-      const z = 1 + .55*(t < 8.2 ? sm((t - 4.2)/1) : 1 - sm((t - 8.2)/1));
+      const ZM = S.wide ? .2 : .55, z = 1 + ZM*(t < 8.2 ? sm((t - 4.2)/1) : 1 - sm((t - 8.2)/1));
       const shaking = t > 5.2 && t < 8.2, pump = shaking ? Math.sin((t - 5.2)*Math.PI*2*1.4)*Math.min(1, (8.2 - t)/.5, (t - 5.2)/.3) : 0, my = my0 + pump*q*.8;
       const extL = Math.min(1, Math.max(0, (G + 6 - gL)/6)), extR = Math.min(1, Math.max(0, (G + 6 - gR)/6)), clasp = extL > .97 && extR > .97;
-      const pf = (z - 1)/.55;
-      ctx.save(); ctx.translate(mx + (W*.74 - mx)*pf, my0 + (H*.56 - my0)*pf); ctx.scale(z, z); ctx.translate(-mx, -my0);
+      const pf = (z - 1)/ZM;
+      ctx.save(); ctx.translate(mx + (W*.74 - mx)*pf, my0 + ((S.wide ? my0 : H*.56) - my0)*pf); ctx.scale(z, z); ctx.translate(-mx, -my0);
       ctx.shadowColor = inst.color; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
       const seg = (a, b, w, al) => { ctx.globalAlpha = al; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); };
       const ik = (S0, T, l1, l2) => { const dx = T[0] - S0[0], dy = T[1] - S0[1], d = Math.hypot(dx, dy) || 1, dm = Math.min(d, l1 + l2 - .01), aa = (l1*l1 - l2*l2 + dm*dm)/(2*dm), hh = Math.sqrt(Math.max(0, l1*l1 - aa*aa)), ux = dx/d, uy = dy/d;

@@ -6659,12 +6659,20 @@ function startPixelScene(layer, kind){
     if(kind === 'route') newRoute();
     if(kind === 'stanton'){
       const sc = Math.max(.7, Math.min(1.4, H/260));
-      const mk = (v, a, hmin, hmax, wmin, wmax, win) => ({ v:v*Math.max(.6, W/420), a, hmin, hmax, wmin, wmax, win, items:[], left:0 });
-      inst.S = { t:0, shipT:rnd(.8,2), ships:[], sc, layers:[ mk(9, .07, .26, .46, .05, .09, false), mk(20, .115, .36, .58, .06, .11, true), mk(38, .17, .46, .72, .08, .13, true) ] };
-      const build = (L, x) => { const w = Math.max(10, Math.round(rnd(L.wmin, L.wmax)*W)), h = rnd(L.hmin, L.hmax)*H, cols = Math.max(0, Math.floor((w-4)/5)), rows = Math.max(0, Math.floor((h-8)/8)), seed = Math.floor(Math.random()*1000);
-        return { x, w, h, kind:Math.floor(Math.random()*4), seed, cols, rows, neon:Math.random() < .45, sign:Math.random() < .2, lit:Array.from({length:cols*rows}, () => Math.random() < .28) }; };
+      // 3 plans : GRANDS bâtiments au fond (lents), MOYENS au milieu, PETITS au premier plan (rapides)
+      const mk = (v, a, hmin, hmax, wmin, wmax, kinds, win, gap) => ({ v:v*Math.max(.6, W/420), a, hmin, hmax, wmin, wmax, kinds, win, gap, items:[], left:0 });
+      inst.S = { t:0, shipT:rnd(.8,2), ships:[], sc, layers:[
+        mk(8,  .075, .55, .92, .09, .17, [0,1,3,7,8,9,10], true,  [1,6]),
+        mk(19, .12,  .30, .52, .06, .11, [0,2,4,5,6,8,9],  true,  [3,14]),
+        mk(36, .2, .1, .3, .04, .09, [1,2,4,5,6,7],    false, [6,30])
+      ] };
+      const build = (L, x) => { let w = Math.max(10, Math.round(rnd(L.wmin, L.wmax)*W)), h = rnd(L.hmin, L.hmax)*H*.8;
+        const k = L.kinds[Math.floor(Math.random()*L.kinds.length)];
+        if(k === 5){ w = Math.max(7, Math.round(w*.4)); h *= 1.05; } if(k === 6){ w = Math.round(w*1.5); h *= .55; } if(k === 4){ h *= .7; } if(k === 10){ w = Math.max(9, Math.round(w*.5)); } if(k === 7){ w = Math.round(w*1.2); }
+        const cols = Math.max(0, Math.floor((w-4)/5)), rows = Math.max(0, Math.floor((h-8)/8));
+        return { x, w, h, kind:k, seed:Math.floor(Math.random()*1000), cols, rows, neon:Math.random() < .45, sign:Math.random() < .25, lit:Array.from({length:cols*rows}, () => Math.random() < .28) }; };
       inst.S.build = build;
-      inst.S.layers.forEach(L => { let cur = W + 50; while(cur > -60){ const b = build(L, 0); b.x = cur - b.w; L.items.push(b); cur = b.x - rnd(2, 8); L.left = b.x; } });
+      inst.S.layers.forEach(L => { let cur = W + 50; while(cur > -80){ const b = build(L, 0); b.x = cur - b.w; L.items.push(b); cur = b.x - rnd(L.gap[0], L.gap[1]); L.left = b.x; } });
     }
     if(kind === 'nyx'){
       // placement fixe : étoile à droite, orbites qui s'étalent vers la gauche (les infos de la carte restent devant)
@@ -6678,12 +6686,12 @@ function startPixelScene(layer, kind){
       inst.S = { sx:W*.8, sy:H*.46, R, t:0, next:4.2, wave:-1, boost:0, arcs:[], arcT:0,
         rocks:Array.from({length:9}, (_, i) => ({ a:i*.7 + .3, r:R*(1.5 + (i%4)*.55), sz:R*(.2 + (i%3)*.12), rot:i, vr:(i%2 ? 1 : -1)*(.3 + (i%3)*.2), drift:.04 + (i%3)*.015, seed:i })) };
     }
-    if(kind === 'fly'){ const sz = Math.max(10, Math.min(30, Math.min(W,H)*.1)); inst.S = { s:sz, ph:'idle', t:0, dur:rnd(2.5,3.8), idleX:W*.3, baseY:H*.4, x:W*.3, y:H*.4, v:0, sl:Array.from({length:9}, () => ({ o:rnd(-1,1), l:rnd(.6,1.4) })) }; }
-    if(kind === 'alien'){ inst.S = { ax:W*.8, ay:H*.58, size:Math.max(30, Math.min(H*.5, W*.34)), t:0, ship:null, shots:[], shake:0, next:1, sz:Math.max(8, Math.min(18, H*.05)) }; }
-    if(kind === 'army'){ const u = Math.max(1.6, Math.min(3, Math.min(W,H)/90)); inst.S = { u, sc:Math.max(.7, W/420), plat:[], veh:[], nextP:0, nextV:rnd(2,4), t:0, lanes:[H*.2, H*.46], roadY:H*.84 }; }
+    if(kind === 'fly'){ const sz = Math.max(10, Math.min(30, Math.min(W,H)*.1)); inst.S = { s:sz, ph:'cruise', t:0, dur:rnd(2.2,3.2), baseX:W*.34, baseY:H*.4, x:W*.34, y:H*.4, v:0, ang:0, roll:0, fl:.5, scl:1, shake:0, bgv:55, vmax:0, stars:Array.from({length:Math.max(24, Math.min(90, Math.round(W*H/2200)))}, () => ({ x:rnd(0,W), y:rnd(0,H), z:rnd(.3,1) })), sl:Array.from({length:9}, () => ({ o:rnd(-1,1), l:rnd(.6,1.4) })) }; }
+    if(kind === 'alien'){ inst.S = { ax:W*.8, ay:H*.58, size:Math.max(34, Math.min(H*.5, W*.34)), t:0, ship:null, shots:[], shake:0, hit:0, next:1, sz:Math.max(9, Math.min(22, H*.055)), sc:Math.max(.7, Math.min(1.6, H/300)) }; }
+    if(kind === 'army'){ const u = Math.max(1.6, Math.min(3, Math.min(W,H)/90)); inst.S = { u, sc:Math.max(.7, W/420), plat:[], veh:[], nextP:0, nextV:rnd(.8,2), t:0, lanes:(H < 160 ? [H*.14, H*.4] : [H*.1, H*.26, H*.42, H*.58]), roadY:H*.86 }; }
     if(kind === 'warp'){ inst.S = { cx:W*.55, cy:H*.45, ph:'idle', t:0, w:.05, flash:0, R:Math.hypot(W,H)*.55, stars:Array.from({length:Math.max(40, Math.min(110, Math.round(W*H/2500)))}, () => ({ a:rnd(0,6.283), r:rnd(.02,1), sp:rnd(.6,1.4) })) }; }
-    if(kind === 'dropoff'){ const sz = Math.max(10, Math.min(26, Math.min(W,H)*.085)); inst.S = { s:sz, ph:0, t:0, padX:W*.72, ground:Math.round(H*.74), x:-sz*4, y:H*.22, crates:[], ramp:0, calpha:1 }; }
-    if(kind === 'handshake'){ inst.S = { q:Math.max(3, Math.min(6, H*.02)), midX:W*.78, ground:Math.round(H*.74), t:0, cyc:9 }; }
+    if(kind === 'dropoff'){ const sz = Math.max(9, Math.min(26, Math.min(W*.055, H*.075))), R = Math.max(12, Math.min(W*.11, H*.15)); inst.S = { s:sz, R, ph:0, t:0, padX:W*.72, gnd:H*.58, x:-sz*5, y:H*.14, ang:0, ramp:0, z:1, aS:1, aR:0, zr:.55, lg:0, nl:0, cfade:1, rcx:W*.76, rcy:H*.46, fl:.5, v:0, land:[0,0,0], dust:0 }; }
+    if(kind === 'handshake'){ inst.S = { q:Math.max(3, Math.min(6, H*.02)), midX:W*.7, ground:Math.round(H*.74), t:0, cyc:13.2 }; }
     if(kind === 'glitch'){ inst.S = { t:0, next:rnd(.6,1.4), burst:0, seg:[], hold:0 }; }
     if(kind === 'forge'){ const u = p, aw = 14*u, right = true; const cx = right ? W - 6 - 19*u : 6 + 7*u; inst.S = { cx, top: H - 6*u - 5, u, t:rnd(0,1), struck:false }; }
     if(kind === 'fifteen'){ inst.S = { x:rnd(.2,.7)*W, y:rnd(.2,.7)*H, ang:rnd(0,6.283), state:'live', t:0, pop:0 }; }
@@ -6705,13 +6713,104 @@ function startPixelScene(layer, kind){
     }
     inst.S = { nodes, pts, total, nodeAt, t:0, tDraw:4.4, tHold:1.5, tFade:.7 };
   };
-  // vaisseau vu de côté (nez à droite) ; fl = longueur de la flamme du réacteur
-  const drawFlyShip = (x, y, sz, fl) => {
-    ctx.save(); ctx.translate(x, y);
-    ctx.beginPath(); ctx.moveTo(sz*2.2, 0); ctx.lineTo(sz*.8, -sz*.42); ctx.lineTo(-sz*1.3, -sz*.38); ctx.lineTo(-sz*1.8, -sz*.95); ctx.lineTo(-sz*2, -sz*.95); ctx.lineTo(-sz*1.9, 0); ctx.lineTo(-sz*1.3, sz*.42); ctx.lineTo(sz*.8, sz*.42); ctx.closePath(); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(sz*.2, sz*.2); ctx.lineTo(-sz*1, sz*.2); ctx.lineTo(-sz*1.4, sz*1.05); ctx.lineTo(-sz*.5, sz*.8); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.globalAlpha *= .8; ctx.beginPath(); ctx.moveTo(sz*1.2, -sz*.3); ctx.lineTo(sz*.6, -sz*.3); ctx.lineTo(sz*.7, -sz*.05); ctx.lineTo(sz*1.4, -sz*.05); ctx.closePath(); ctx.fill(); ctx.fillStyle = inst.color; ctx.globalAlpha /= .8;
-    if(fl > 0){ ctx.globalAlpha *= .85; ctx.beginPath(); ctx.moveTo(-sz*1.9, -sz*.25); ctx.lineTo(-sz*(1.9 + 1.4*fl), 0); ctx.lineTo(-sz*1.9, sz*.25); ctx.closePath(); ctx.fill(); }
+  // vaisseau vu de côté (nez à droite), plus détaillé ; o = { ang, roll, fl (flamme), gear (train 0..1) }
+  const drawShipSide = (x, y, sz, o) => {
+    o = o || {}; const a = ctx.globalAlpha, fl = o.fl || 0;
+    ctx.save(); ctx.translate(x, y); if(o.ang) ctx.rotate(o.ang); if(o.roll) ctx.scale(1, Math.cos(o.roll) || .05);
+    const P = pts => { ctx.beginPath(); pts.forEach((q,i) => i ? ctx.lineTo(q[0]*sz, q[1]*sz) : ctx.moveTo(q[0]*sz, q[1]*sz)); ctx.closePath(); ctx.fill(); };
+    if(fl > 0){ ctx.globalAlpha = a*.8; P([[-2.2,-.1],[-2.2-1.9*fl,.08],[-2.2,.26]]); ctx.fillStyle = '#fff'; ctx.globalAlpha = a*.7; P([[-2.2,0],[-2.2-.9*fl,.08],[-2.2,.17]]); ctx.fillStyle = inst.color; ctx.globalAlpha = a; }
+    if(o.gear > 0){ const g = o.gear; ctx.strokeStyle = inst.color; ctx.lineWidth = Math.max(1.5, sz*.1); ctx.globalAlpha = a*.8; ctx.beginPath(); ctx.moveTo(1.1*sz, .38*sz); ctx.lineTo(1.15*sz, (.38 + .6*g)*sz); ctx.moveTo(-1.2*sz, .42*sz); ctx.lineTo(-1.25*sz, (.42 + .56*g)*sz); ctx.stroke(); ctx.fillRect(.95*sz, (.38 + .6*g)*sz, .45*sz, 2); ctx.fillRect(-1.45*sz, (.42 + .56*g)*sz, .45*sz, 2); ctx.globalAlpha = a; }
+    P([[-1.1,-.4],[-1.8,-1.15],[-2.15,-1.15],[-1.95,-.35]]);                                                                              // dérive dorsale
+    P([[2.5,.08],[1.7,-.26],[.7,-.42],[-.9,-.42],[-1.7,-.32],[-2.05,-.12],[-2.05,.3],[-1.0,.42],[.9,.36],[1.8,.22]]);                       // fuselage
+    ctx.globalAlpha = a*.92; P([[.5,.12],[-1.3,.18],[-2.0,1.0],[-1.2,1.0],[.2,.4]]);                                                        // aile
+    ctx.fillStyle = '#000'; ctx.globalAlpha = a*.3; P([[1.8,.22],[.9,.36],[-1.0,.42],[-2.05,.3],[-2.05,.12],[-.5,.14],[1.2,.12]]); P([[.3,.2],[-1.0,.24],[-1.7,1.0],[-1.3,1.0]]);   // ombres
+    ctx.globalAlpha = a*.45; ctx.strokeStyle = '#000'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-.3*sz, -.4*sz); ctx.lineTo(-.4*sz, .38*sz); ctx.moveTo(-1.3*sz, -.36*sz); ctx.lineTo(-1.4*sz, .36*sz); ctx.moveTo(1.1*sz, -.3*sz); ctx.lineTo(1.0*sz, .3*sz); ctx.stroke();   // panneaux
+    ctx.fillStyle = inst.color; ctx.globalAlpha = a; P([[-1.6,-.16],[-2.3,-.1],[-2.3,.3],[-1.6,.34]]);                                      // nacelle moteur
+    ctx.fillStyle = '#000'; ctx.globalAlpha = a*.6; ctx.fillRect(-2.3*sz, -.06*sz, .12*sz, .28*sz);
+    ctx.fillStyle = '#fff'; ctx.globalAlpha = a*.8; P([[1.9,-.12],[1.2,-.36],[.7,-.36],[.95,-.06]]);                                         // cockpit
+    ctx.restore();
+  };
+  const drawFlyShip = (x, y, sz, fl) => drawShipSide(x, y, sz*.9, { fl });
+  // grosse explosion : flash, boules de feu, ondes de choc, éclats, étincelles
+  const boom = (x, y, sc) => {
+    const P = inst.parts, p = inst.p;
+    P.push({ x, y, vx:0, vy:0, age:0, life:.22, s:0, r:26*sc, type:'flash' });
+    for(let i=0;i<8;i++){ const a = rnd(0, 6.283), d = rnd(0, 14)*sc; P.push({ x:x+Math.cos(a)*d, y:y+Math.sin(a)*d, vx:Math.cos(a)*rnd(8,40)*sc, vy:Math.sin(a)*rnd(8,40)*sc - 10, age:0, life:rnd(.5,1.0), s:0, r:rnd(9,19)*sc, type:'fire' }); }
+    P.push({ x, y, vx:0, vy:0, age:0, life:.55, s:0, r:85*sc, type:'bring' }); P.push({ x, y, vx:0, vy:0, age:0, life:.35, s:0, r:50*sc, type:'bring' });
+    for(let i=0;i<28;i++){ const a = rnd(0, 6.283), v = rnd(.3,1)*260*sc; P.push({ x, y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, age:0, life:rnd(.6,1.2), s:Math.random() < .4 ? p*1.6 : p, type:'px' }); }
+    for(let i=0;i<12;i++){ const a = rnd(0, 6.283), v = rnd(.5,1)*320*sc; P.push({ x, y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, age:0, life:rnd(.35,.7), s:p, type:'ember' }); }
+    for(let i=0;i<5;i++){ const a = rnd(0, 6.283), v = rnd(.3,.8)*130*sc; P.push({ x, y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, age:0, life:rnd(.5,.9), s:p*1.3, type:'star' }); }
+  };
+  // un bâtiment de la ville industrielle futuriste (11 silhouettes)
+  const drawBld = (b, L, li, t) => {
+    const H = Math.round(inst.H*.8), x = Math.round(b.x), w = b.w, h = b.h, top = H - h, k = b.kind, cx = x + w/2, a = L.a;
+    ctx.globalAlpha = a; ctx.fillStyle = inst.color; ctx.shadowBlur = 0;
+    const poly = pts => { ctx.beginPath(); pts.forEach((q,i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath(); ctx.fill(); };
+    if(k === 0){ ctx.fillRect(x, top + h*.18, w, h*.82); ctx.fillRect(x + w*.15, top + h*.06, w*.7, h*.14); ctx.fillRect(x + w*.32, top, w*.36, h*.08); ctx.fillRect(cx - 1, top - h*.1, 2, h*.1); }
+    else if(k === 1){ ctx.fillRect(x, top + h*.12, w, h*.88); ctx.fillRect(cx - 1, top - h*.1, 2, h*.24); if(Math.sin(t*3 + b.seed) > .5){ ctx.globalAlpha = .6; ctx.fillRect(cx - 1.5, top - h*.1 - 3, 3, 3); ctx.globalAlpha = a; } }
+    else if(k === 2){ poly([[x, H],[x, top + w*.55],[x + w, top],[x + w, H]]); }
+    else if(k === 3){ poly([[x + w*.05, H],[x + w*.3, top + h*.55],[x + w*.2, top],[x + w*.8, top],[x + w*.7, top + h*.55],[x + w*.95, H]]);
+      for(let j=0;j<3;j++){ const u = (t*.25 + j/3 + b.seed*.013) % 1, r = 2 + u*w*.25; ctx.globalAlpha = a*1.4*(1-u); ctx.fillRect(cx - r/2 + Math.sin(t + j + b.seed)*3, top - u*h*.25 - r, r, r); } }
+    else if(k === 4){ ctx.fillRect(x, top + w*.45, w, h - w*.45); ctx.beginPath(); ctx.ellipse(cx, top + w*.45, w/2, w*.45, 0, Math.PI, 0); ctx.fill(); ctx.globalAlpha = Math.min(.5, a*1.8); ctx.fillRect(x, top + h*.55, w, 1); }
+    else if(k === 5){ ctx.fillRect(x + w*.15, top, w*.7, h); ctx.globalAlpha = Math.min(.5, a*1.8); ctx.fillRect(x + w*.15, top + h*.15, w*.7, 1); ctx.fillRect(x + w*.15, top + h*.4, w*.7, 1);
+      if(li > 0){ const f = .65 + .35*Math.sin(t*9 + b.seed); ctx.shadowBlur = 8; ctx.shadowColor = inst.color; ctx.globalAlpha = .5*f; poly([[cx - w*.3, top],[cx, top - w*1.2*f - 3],[cx + w*.3, top]]); ctx.shadowBlur = 0; } }
+    else if(k === 6){ ctx.fillRect(x, top + h*.35, w, h*.65); const n = Math.max(2, Math.round(w/14)); for(let i=0;i<n;i++){ const sx = x + i*w/n; poly([[sx, top + h*.35],[sx, top],[sx + w/n, top + h*.35]]); } ctx.fillRect(x + w*.85, top - h*.45, Math.max(2, w*.07), h*.5); }
+    else if(k === 7){ ctx.fillRect(x + w*.1, top, Math.max(2, w*.12), h); ctx.fillRect(x + w*.1, top + h*.08, w*.9, Math.max(2, h*.05)); ctx.fillRect(x, H - h*.16, w*.5, h*.16); ctx.globalAlpha = Math.min(.5, a*1.6); ctx.fillRect(x + w*.9, top + h*.08, 1, h*.3); ctx.fillRect(x + w*.84, top + h*.38, w*.12, Math.max(2, h*.05)); }
+    else if(k === 8){ const cw = w*.3; ctx.fillRect(x, top, cw, h); ctx.fillRect(x + w - cw, top + h*.1, cw, h*.9); ctx.fillRect(x + cw, top + h*.45, w - 2*cw, Math.max(2, h*.05)); ctx.globalAlpha = Math.min(.5, a*1.6); ctx.fillRect(x + cw, top + h*.45 + 3, w - 2*cw, 1); }
+    else if(k === 9){ poly([[x, H],[x + w*.12, top + h*.5],[x + w*.28, top + h*.5],[x + w*.34, top],[x + w*.66, top],[x + w*.72, top + h*.5],[x + w*.88, top + h*.5],[x + w, H]]); }
+    else { ctx.fillRect(cx - 1.5, top + h*.12, 3, h*.88); ctx.fillRect(x + w*.3, H - h*.12, w*.4, h*.12); ctx.lineWidth = 2; ctx.globalAlpha = Math.min(.55, a*1.8); ctx.beginPath(); ctx.ellipse(cx, top + h*.1, w*.6, w*.18, 0, 0, 6.283); ctx.stroke(); ctx.globalAlpha = a; ctx.fillRect(cx - 3, top + h*.06, 6, 5); }
+    if(k <= 2){
+      ctx.globalAlpha = Math.min(.5, a*2.2); ctx.fillRect(x, top + (k === 0 ? h*.18 : k === 1 ? h*.12 : w*.5), 1, h);
+      if(L.win){ ctx.globalAlpha = Math.min(.45, a*2.4); const y0 = top + (k === 0 ? h*.2 : h*.14) + 6;
+        for(let j=0;j<b.rows;j++) for(let i=0;i<b.cols;i++){ const wy = y0 + j*8; if(wy > H - 4) continue; if(k === 2 && wy < top + w*.55*(1 - (i*5 + 3)/w) + 4) continue; if(b.lit[j*b.cols + i]) ctx.fillRect(x + 3 + i*5, wy, 2, 3); } }
+    }
+    if(b.neon && li > 0 && k !== 3 && k !== 5){ ctx.shadowBlur = 8; ctx.shadowColor = inst.color; ctx.globalAlpha = .4 + .12*Math.sin(t*2 + b.seed); ctx.fillRect(x + w - 2, top + h*.2, 2, h*.4); ctx.shadowBlur = 0; }
+    if(b.sign && li === 0 && (k === 0 || k === 1 || k === 8 || k === 9)){ ctx.shadowBlur = 10; ctx.shadowColor = inst.color; ctx.globalAlpha = .3 + .15*Math.sin(t*3 + b.seed); ctx.fillRect(x + w*.2, top + h*.3, w*.6, Math.max(4, h*.04)); ctx.shadowBlur = 0; }
+  };
+  // vue 3/4 arrière du cargo : soute ouverte, rampe, caisses déposées (point de vue à gauche de l'axe du vaisseau)
+  const drawRear = (S, aM) => {
+    const W = inst.W, R = S.R, cx = S.rcx, cy = S.rcy, gy = cy + .9*R, top = cy - .95*R, bot = cy + .5*R, hw = R, ct = S.ph === 2 ? S.t : (S.ph >= 3 ? 99 : -1);
+    const e3 = k => 1 - Math.pow(1 - Math.min(1, Math.max(0, k)), 3);
+    const P = pts => { ctx.beginPath(); pts.forEach((q,i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath(); ctx.fill(); };
+    ctx.save(); ctx.translate(cx, cy + .2*R); ctx.scale(S.zr, S.zr); ctx.translate(-cx, -(cy + .2*R)); ctx.shadowColor = inst.color; ctx.shadowBlur = 6; ctx.fillStyle = inst.color; ctx.strokeStyle = inst.color;
+    // sol en perspective
+    ctx.globalAlpha = .13*aM; ctx.fillRect(0, gy, W, 1); ctx.fillRect(0, gy + R*.16, W, 1); ctx.fillRect(0, gy + R*.4, W, 1);
+    ctx.globalAlpha = .07*aM; ctx.lineWidth = 1; ctx.beginPath(); for(let i=0;i<4;i++){ ctx.moveTo(cx - 4*R, cy + .3*R); ctx.lineTo(W, gy + i*R*.4); } ctx.stroke();
+    // flanc gauche (fuit vers la gauche)
+    ctx.globalAlpha = .38*aM; P([[cx-hw, top],[cx-1.9*R, top + .3*R],[cx-1.9*R, bot - .2*R],[cx-hw, bot]]);
+    ctx.fillStyle = '#000'; ctx.globalAlpha = .28*aM; P([[cx-hw, top],[cx-1.9*R, top + .3*R],[cx-1.9*R, bot - .2*R],[cx-hw, bot]]); ctx.fillStyle = inst.color;
+    ctx.globalAlpha = .55*aM; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx-hw, cy - .3*R); ctx.lineTo(cx-1.9*R, cy - .2*R); ctx.moveTo(cx-hw, cy + .1*R); ctx.lineTo(cx-1.9*R, cy + .05*R); ctx.stroke();
+    // dérive + face arrière
+    ctx.globalAlpha = .5*aM; P([[cx - .2*R, top],[cx - .1*R, top - .42*R],[cx + .1*R, top - .42*R],[cx + .2*R, top]]);
+    ctx.globalAlpha = .62*aM; P([[cx-hw, top + .2*R],[cx-hw + .2*R, top],[cx+hw - .2*R, top],[cx+hw, top + .2*R],[cx+hw, bot],[cx-hw, bot]]);
+    // jambes du train
+    ctx.lineWidth = Math.max(2.5, R*.07); ctx.globalAlpha = .7*aM; ctx.beginPath(); ctx.moveTo(cx - hw + .12*R, bot); ctx.lineTo(cx - hw - .05*R, gy); ctx.moveTo(cx + hw - .12*R, bot); ctx.lineTo(cx + hw + .05*R, gy); ctx.stroke();
+    ctx.fillRect(cx - hw - .2*R, gy, .3*R, 2); ctx.fillRect(cx + hw - .1*R, gy, .3*R, 2);
+    // moteurs
+    const fk = .8 + .2*Math.sin(S.t*14);
+    [-1,1].forEach(sd => { const ex = cx + sd*.78*R, ey = cy - .62*R; ctx.globalAlpha = .85*aM; ctx.beginPath(); ctx.arc(ex, ey, .17*R, 0, 6.283); ctx.fill(); ctx.fillStyle = '#000'; ctx.globalAlpha = .65*aM; ctx.beginPath(); ctx.arc(ex, ey, .11*R, 0, 6.283); ctx.fill(); ctx.fillStyle = '#fff'; ctx.globalAlpha = .35*aM*fk; ctx.beginPath(); ctx.arc(ex, ey, .06*R, 0, 6.283); ctx.fill(); ctx.fillStyle = inst.color; });
+    // ouverture de la soute
+    const ox0 = cx - .62*R, ox1 = cx + .62*R, oy0 = cy - .4*R, oy1 = cy + .42*R, ix0 = ox0 - .38*R, ix1 = ox1 - .38*R, iy0 = oy0 + .12*R, iy1 = oy1 - .1*R;
+    ctx.fillStyle = '#000'; ctx.globalAlpha = .7*aM; ctx.fillRect(ox0, oy0, ox1 - ox0, oy1 - oy0); ctx.fillStyle = inst.color;
+    ctx.globalAlpha = .2*aM; P([[ox0, oy0],[ox1, oy0],[ix1, iy0],[ix0, iy0]]); P([[ox0, oy1],[ox1, oy1],[ix1, iy1],[ix0, iy1]]); P([[ox0, oy0],[ix0, iy0],[ix0, iy1],[ox0, oy1]]);
+    ctx.globalAlpha = .55*aM; ctx.lineWidth = 1; ctx.beginPath(); for(let j=1;j<=3;j++){ const f = j/4, x = ox0 + (ix0 - ox0)*f; ctx.moveTo(x, oy0 + (iy0 - oy0)*f); ctx.lineTo(x, oy1 + (iy1 - oy1)*f); } ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.globalAlpha = .35*aM; ctx.fillRect(ox0 + 2, oy0 + 3, ox1 - ox0 - 4, 2); ctx.fillStyle = inst.color;
+    ctx.globalAlpha = .85*aM; ctx.lineWidth = 2; ctx.strokeRect(ox0, oy0, ox1 - ox0, oy1 - oy0);
+    // rampe
+    const rp = S.ramp; if(rp > 0.01){ const yE = oy1 + (gy - oy1)*rp, wE = .62*R + .25*R*rp; ctx.globalAlpha = .5*aM; P([[ox0, oy1],[ox1, oy1],[cx + wE, yE],[cx - wE, yE]]);
+      ctx.globalAlpha = .38*aM; ctx.lineWidth = 1; ctx.beginPath(); for(let j=1;j<5;j++){ const f = j/5, y = oy1 + (yE - oy1)*f, hwj = .62*R + (wE - .62*R)*f; ctx.moveTo(cx - hwj, y); ctx.lineTo(cx + hwj, y); } ctx.stroke(); }
+    // caisses
+    const cs = .42*R, spots = [[cx + 1.3*R, gy + .12*R],[cx + 1.74*R, gy + .12*R],[cx + 1.52*R, gy + .12*R - cs*.95]];
+    const cube = (x, y, c, al) => { ctx.globalAlpha = al*.78; ctx.fillRect(x - c/2, y - c/2, c, c);
+      ctx.fillStyle = '#fff'; ctx.globalAlpha = al*.3; P([[x - c/2, y - c/2],[x + c/2, y - c/2],[x + c/2 - c*.3, y - c/2 - c*.25],[x - c/2 - c*.3, y - c/2 - c*.25]]);
+      ctx.fillStyle = '#000'; ctx.globalAlpha = al*.38; P([[x - c/2, y - c/2],[x - c/2 - c*.3, y - c/2 - c*.25],[x - c/2 - c*.3, y + c/2 - c*.25],[x - c/2, y + c/2]]); ctx.fillStyle = inst.color;
+      ctx.globalAlpha = al*.9; ctx.lineWidth = 1; ctx.strokeRect(x - c/2, y - c/2, c, c); ctx.beginPath(); ctx.moveTo(x - c/2, y - c/2); ctx.lineTo(x + c/2, y + c/2); ctx.moveTo(x + c/2, y - c/2); ctx.lineTo(x - c/2, y + c/2); ctx.stroke(); };
+    for(let i=0;i<3;i++){ const u = (ct - (.9 + i*1.15))/1.5; if(u < 0) continue;
+      const xs = spots[i][0], ys = spots[i][1] - cs/2, xb = cx + .05*R, yb = gy - cs*.5, x0 = cx - .15*R, y0 = oy1 - cs*.45; let x, y, c;
+      if(u < .55){ const f = u/.55; x = x0 + (xb - x0)*f; y = y0 + (yb - y0)*Math.pow(f, 1.4); c = cs*(.62 + .38*f); }
+      else { const g = Math.min(1, (u - .55)/.45), eg = e3(g); x = xb + (xs - xb)*eg; y = yb + (ys - yb)*eg - Math.sin(Math.PI*g)*.3*R; c = cs;
+        if(g >= 1 && !S.land[i]){ S.land[i] = 1; burst(xs, ys + cs/2, 9, 55, .6, "dot"); } }
+      cube(x, y, c, aM*S.cfade); }
     ctx.restore();
   };
   inst.step = (dt, now) => {
@@ -6866,21 +6965,9 @@ function startPixelScene(layer, kind){
       const S = inst.S; S.t += dt; ctx.shadowBlur = 0;
       S.layers.forEach((L, li) => {
         L.items.forEach(b => b.x += L.v*dt); L.left += L.v*dt;
-        while(L.left > -6){ const b = S.build(L, 0); b.x = L.left - rnd(2, 8) - b.w; L.items.push(b); L.left = b.x; }
+        while(L.left > -6){ const b = S.build(L, 0); b.x = L.left - rnd(L.gap[0], L.gap[1]) - b.w; L.items.push(b); L.left = b.x; }
         L.items = L.items.filter(b => b.x < W + 60);
-        L.items.forEach(b => {
-          const top = H - b.h, x = Math.round(b.x), w = b.w;
-          ctx.globalAlpha = L.a; ctx.fillStyle = inst.color;
-          if(b.kind === 1){ ctx.fillRect(x, top, w, b.h); ctx.fillRect(x + w*.2, top - b.h*.12, w*.6, b.h*.12 + 1); }               // étagé
-          else if(b.kind === 2){ ctx.beginPath(); ctx.moveTo(x, H); ctx.lineTo(x, top + w*.5); ctx.lineTo(x + w, top); ctx.lineTo(x + w, H); ctx.closePath(); ctx.fill(); } // toit en biais
-          else { ctx.fillRect(x, top, w, b.h); if(b.kind === 3){ ctx.fillRect(x + w*.5 - 1, top - b.h*.14, 2, b.h*.14); } }                // plat / antenne
-          // arête éclairée
-          ctx.globalAlpha = Math.min(.5, L.a*2.2); ctx.fillRect(x, top, 1, b.h);
-          if(L.win){ ctx.globalAlpha = Math.min(.45, L.a*2.4);
-            for(let j=0;j<b.rows;j++) for(let i=0;i<b.cols;i++) if(b.lit[j*b.cols + i] && !(b.kind === 2 && j*8 < (b.w - i*5)*.5 - 4 && false)) ctx.fillRect(x + 3 + i*5, top + 6 + j*8, 2, 3); }
-          if(b.neon && li > 0){ ctx.shadowBlur = 8; ctx.shadowColor = inst.color; ctx.globalAlpha = .4 + .12*Math.sin(S.t*2 + b.seed); ctx.fillRect(x + w - 2, top + b.h*.15, 2, b.h*.5); ctx.shadowBlur = 0; }
-          if(b.sign && li === 2){ ctx.shadowBlur = 10; ctx.shadowColor = inst.color; ctx.globalAlpha = .35 + .2*Math.sin(S.t*3 + b.seed); ctx.fillRect(x + w*.2, top + b.h*.12, w*.6, Math.max(4, b.h*.06)); ctx.shadowBlur = 0; }
-        });
+        L.items.forEach(b => drawBld(b, L, li, S.t));
       });
       // vaisseaux qui passent de temps en temps
       if((S.shipT -= dt) <= 0){ S.shipT = rnd(2.5, 6); const big = Math.random() < .25, dir = Math.random() < .5 ? 1 : -1; S.ships.push({ dir, x: dir > 0 ? -40 : W + 40, y: rnd(.1, big ? .35 : .55)*H, v:(big ? rnd(35,60) : rnd(90,170))*Math.max(.7, W/420), s:(big ? rnd(14,20) : rnd(4,8))*S.sc, big, tr:[] }); }
@@ -6955,72 +7042,119 @@ function startPixelScene(layer, kind){
       });
       ctx.globalAlpha = 1;
     } else if(kind === 'fly'){
-      const S = inst.S, sz = S.s; S.t += dt; let flame = .4, fast = false;
-      if(S.ph === 'idle'){ S.x = S.idleX + Math.sin(S.t*.8)*sz*.2; S.y = S.baseY + Math.sin(S.t*1.3)*sz*.12; if(S.t > S.dur){ S.ph = 'boost'; S.t = 0; S.v = 30; } }
-      else if(S.ph === 'boost'){ S.v += W*7*dt; S.x += S.v*dt; flame = 1.9; fast = true; if(S.x > W + sz*5){ S.ph = 'gone'; S.t = 0; } }
-      else if(S.ph === 'gone'){ if(S.t > .8){ S.ph = 'enter'; S.t = 0; S.x = -sz*5; S.y = S.baseY; S.v = W*2; } }
-      else { const d = S.idleX - S.x; S.v = Math.max(25, d*3.2); S.x += S.v*dt; flame = Math.min(1.9, .4 + S.v/(W*.8)); fast = S.v > W*.5; if(d < 2){ S.ph = 'idle'; S.t = 0; S.dur = rnd(2.5,3.8); } }
-      if(S.ph !== 'gone'){
-        ctx.shadowBlur = 0;
-        if(fast){ S.sl.forEach(l => { ctx.globalAlpha = .22; const len = Math.min(W*.6, S.v*.12*l.l); ctx.fillRect(S.x - len - sz*2, S.y + l.o*H*.3, len, 1); }); for(let k=1;k<=3;k++){ ctx.globalAlpha = .14/k; drawFlyShip(S.x - k*Math.min(40, S.v*.02), S.y, sz, 0); } }
-        ctx.globalAlpha = .8; ctx.shadowBlur = 8; drawFlyShip(S.x, S.y, sz, flame);
+      const S = inst.S, sz = S.s; S.t += dt;
+      const e3 = k => 1 - Math.pow(1 - Math.min(1, Math.max(0, k)), 3), e4 = k => 1 - Math.pow(1 - Math.min(1, Math.max(0, k)), 4), sm = k => { k = Math.min(1, Math.max(0, k)); return k*k*(3-2*k); };
+      S.fl = .5; S.roll = 0; S.ang = 0; S.scl = 1; S.shake = 0; let fast = false;
+      if(S.ph === 'cruise'){ S.x = S.baseX + Math.sin(S.t*.7)*sz*.3; S.y = S.baseY + Math.sin(S.t*1.1)*sz*.15; S.ang = Math.sin(S.t*.9)*.035; S.bgv = 55; if(S.t > S.dur){ S.ph = 'boost'; S.t = 0; S.v = 40; S.y0 = S.y; } }
+      else if(S.ph === 'boost'){ S.v += W*7*dt; S.x += S.v*dt; S.vmax = S.v; S.ang = -.2*sm(S.t/.35); S.scl = 1 + .18*sm(S.t/.7); S.y = S.y0 - sz*1.1*sm(S.t/.8); S.fl = 2.3; S.shake = Math.min(2.4, .5 + S.t*4); S.bgv = Math.max(55, S.v*.7); fast = true; if(S.x > W + sz*5){ S.ph = 'gone'; S.t = 0; } }
+      else if(S.ph === 'gone'){ S.bgv = 55 + Math.max(0, (S.vmax*.7 - 55)*(1 - S.t/.9)); S.shake = Math.max(0, 1.5*(1 - S.t/.5)); if(S.t > .9){ S.ph = 'enter'; S.t = 0; } }
+      else { // retour par l'autre côté : tonneau, retournement, freinage rétro, re-retournement
+        const T = 2.4, k = S.t/T;
+        S.x = -5*sz + (S.baseX + 5*sz)*e4(k); S.y = S.baseY + H*.16*(1 - e3(k));
+        S.roll = k < .4 ? Math.PI*4*sm(k/.4) : 0;
+        S.ang = k < .3 ? 0 : k < .55 ? Math.PI*sm((k - .3)/.25) : k < .78 ? Math.PI : Math.PI + Math.PI*sm((k - .78)/.2);
+        S.fl = k < .3 ? 1.9 : k < .5 ? .25 : k < .78 ? 1.9 : .5;
+        S.shake = k < .35 ? 1.6*(1 - k/.35) : (k >= .5 && k < .78) ? 1.0 : 0;
+        S.bgv = 55 + 380*(1 - e4(k)); fast = k < .5;
+        S.scl = 1 + .1*(1 - e3(k));
+        if(k >= 1){ S.ph = 'cruise'; S.t = 0; S.dur = rnd(2.2,3.2); }
       }
-      ctx.globalAlpha = 1;
+      ctx.save(); if(S.shake > 0) ctx.translate(rnd(-S.shake, S.shake), rnd(-S.shake, S.shake));
+      ctx.shadowBlur = 0;
+      S.stars.forEach(st => { st.x -= S.bgv*st.z*dt; if(st.x < -90){ st.x = W + rnd(0,40); st.y = rnd(0,H); } ctx.globalAlpha = .1 + .22*st.z; ctx.fillRect(st.x, st.y, 2 + S.bgv*st.z*.06, 1); });
+      if(S.ph !== 'gone'){
+        const spd = S.ph === 'boost' ? S.v : S.ph === 'enter' ? S.bgv*3 : 0;
+        if(fast){ S.sl.forEach(l => { ctx.globalAlpha = .2; const len = Math.min(W*.6, spd*.12*l.l); ctx.fillRect(S.x - len - sz*2, S.y + l.o*H*.3, len, 1); }); for(let g=1; g<=3; g++){ ctx.globalAlpha = .13/g; drawShipSide(S.x - g*Math.min(40, spd*.02), S.y, sz*S.scl, { ang:S.ang, fl:0 }); } }
+        ctx.globalAlpha = .85; ctx.shadowBlur = 8; drawShipSide(S.x, S.y, sz*S.scl, { ang:S.ang, roll:S.roll, fl:S.fl });
+      }
+      ctx.restore(); ctx.globalAlpha = 1;
     } else if(kind === 'alien'){
-      const S = inst.S; S.t += dt; S.shake = Math.max(0, S.shake - dt);
-      // l'alien : buste holographique (tête pointue, grands yeux, double anneau néon), façon Wikelo
-      const ox = (S.shake > 0 ? rnd(-1,1)*S.shake*8 : 0), Z = S.size, flick = S.shake > 0 ? .55 + .3*Math.random() : .88 + .06*Math.sin(S.t*9);
+      const S = inst.S; S.t += dt; S.shake = Math.max(0, S.shake - dt); S.hit = Math.max(0, S.hit - dt*2.2);
+      const Z = S.size, ox = (S.shake > 0 ? rnd(-1,1)*S.shake*10 : 0), flick = S.shake > 0 ? .55 + .3*Math.random() : .88 + .06*Math.sin(S.t*9);
+      const seg = [[.1,-.88,.3,-.62,.34,-.36],[.37,-.2,.27,-.08,.13,.02],[.12,.1,.12,.16,.13,.2],[.32,.24,.56,.3,.64,.46],[.67,.5,.68,.5,.68,.52]];
+      const pts0 = [[0,-1]].concat(seg.map(q => [q[4], q[5]]));
+      const outline = () => { ctx.beginPath(); ctx.moveTo(0, -Z); seg.forEach(q => ctx.bezierCurveTo(q[0]*Z, q[1]*Z, q[2]*Z, q[3]*Z, q[4]*Z, q[5]*Z)); ctx.lineTo(-.68*Z, .52*Z);
+        for(let i=seg.length-1;i>=0;i--){ const q = seg[i], p0 = pts0[i]; ctx.bezierCurveTo(-q[2]*Z, q[3]*Z, -q[0]*Z, q[1]*Z, -p0[0]*Z, p0[1]*Z); } ctx.closePath(); };
       ctx.save(); ctx.translate(S.ax + ox, S.ay); ctx.lineJoin = 'round';
+      // double anneau néon (le deuxième tourne en pointillés)
       ctx.shadowColor = inst.color; ctx.shadowBlur = 14; ctx.lineWidth = Math.max(2, Z*.035);
-      ctx.globalAlpha = .38*flick; ctx.beginPath(); ctx.ellipse(0, -Z*.05, Z*.78, Z*.86, 0, 0, 6.283); ctx.stroke();
-      ctx.globalAlpha = .26*flick; ctx.lineWidth = Math.max(1.5, Z*.022); ctx.beginPath(); ctx.ellipse(0, -Z*.05, Z*.6, Z*.68, 0, 0, 6.283); ctx.stroke();
-      ctx.shadowBlur = 6;
-      const P = pts => { ctx.beginPath(); pts.forEach((q,i) => i ? ctx.lineTo(q[0]*Z, q[1]*Z) : ctx.moveTo(q[0]*Z, q[1]*Z)); ctx.closePath(); };
-      ctx.lineWidth = 1.3;
-      P([[-.1,.05],[-.5,.22],[-.62,.5],[.62,.5],[.5,.22],[.1,.05]]); ctx.globalAlpha = .28*flick; ctx.fill(); ctx.globalAlpha = .6*flick; ctx.stroke();           // épaules
-      P([[0,-.98],[-.2,-.72],[-.3,-.38],[-.2,-.04],[0,.03],[.2,-.04],[.3,-.38],[.2,-.72]]); ctx.globalAlpha = .4*flick; ctx.fill(); ctx.globalAlpha = .85*flick; ctx.stroke();   // tête pointue
-      ctx.globalAlpha = .45*flick; ctx.lineWidth = 1; ctx.beginPath(); [[-.06,-.85,-.1,-.6],[.06,-.85,.1,-.6],[0,-.9,0,-.62]].forEach(r => { ctx.moveTo(r[0]*Z, r[1]*Z); ctx.lineTo(r[2]*Z, r[3]*Z); }); ctx.stroke();  // arêtes du front
-      ctx.fillStyle = '#fff'; ctx.shadowBlur = 10; ctx.globalAlpha = .95*flick; [[-.11,-.42],[.11,-.42]].forEach(e => { ctx.beginPath(); ctx.ellipse(e[0]*Z, e[1]*Z, Z*.045, Z*.028, 0, 0, 6.283); ctx.fill(); }); ctx.fillStyle = inst.color;                // yeux
-      ctx.shadowBlur = 0; ctx.globalAlpha = .6*flick; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(-.08*Z, -.17*Z); ctx.quadraticCurveTo(0, -.12*Z, .08*Z, -.17*Z); ctx.stroke();      // bouche
-      ctx.globalAlpha = .1; for(let k=0;k<7;k++){ const yy = ((S.t*.25 + k/7) % 1) * Z*1.5 - Z; ctx.fillRect(-Z*.6, yy, Z*1.2, 1); }   // balayage hologramme
+      ctx.globalAlpha = .45*flick; ctx.beginPath(); ctx.ellipse(0, -Z*.05, Z*.8, Z*.88, 0, 0, 6.283); ctx.stroke();
+      ctx.globalAlpha = .34*flick; ctx.lineWidth = Math.max(1.5, Z*.022); ctx.setLineDash([Z*.05, Z*.06]); ctx.lineDashOffset = -S.t*Z*.25; ctx.beginPath(); ctx.ellipse(0, -Z*.05, Z*.62, Z*.7, 0, 0, 6.283); ctx.stroke(); ctx.setLineDash([]);
+      ctx.shadowBlur = 8;
+      // corps + volume
+      outline(); ctx.globalAlpha = .26*flick; ctx.fill();
+      ctx.save(); outline(); ctx.clip(); ctx.shadowBlur = 0;
+      ctx.globalAlpha = .13*flick; ctx.fillRect(-Z, -Z, Z*2, Z*.7);                                                                       // dessus plus lumineux
+      ctx.globalAlpha = .12*flick; for(let y = -Z; y < Z*.55; y += Z*.045) ctx.fillRect(-Z, y + ((S.t*Z*.05) % (Z*.045)), Z*2, 1);        // trames holographiques
+      const by = ((S.t*.3) % 1.4 - .2)*Z*1.5 - Z; ctx.globalAlpha = .2*flick; ctx.fillRect(-Z, by, Z*2, Z*.07);                           // balayage
+      ctx.globalAlpha = .38*flick; ctx.lineWidth = 1; ctx.beginPath();
+      ctx.moveTo(0, -.97*Z); ctx.lineTo(0, -.6*Z);                                                                                         // arête du front
+      [[-1,.5],[1,.5]].forEach(sd => { ctx.moveTo(sd[0]*.04*Z, -.9*Z); ctx.quadraticCurveTo(sd[0]*.2*Z, -.72*Z, sd[0]*.3*Z, -.44*Z); });  // plis du crâne
+      [[-1],[1]].forEach(sd => { ctx.moveTo(sd[0]*.3*Z, -.3*Z); ctx.quadraticCurveTo(sd[0]*.22*Z, -.12*Z, sd[0]*.1*Z, -.02*Z); });         // pommettes
+      ctx.moveTo(-.11*Z, .12*Z); ctx.lineTo(-.11*Z, .24*Z); ctx.moveTo(.11*Z, .12*Z); ctx.lineTo(.11*Z, .24*Z);                           // cou
+      ctx.moveTo(-.46*Z, .34*Z); ctx.lineTo(-.1*Z, .26*Z); ctx.moveTo(.46*Z, .34*Z); ctx.lineTo(.1*Z, .26*Z); ctx.stroke();               // clavicules
       ctx.restore();
-      // vaisseau qui passe en haut et bombarde
+      ctx.shadowBlur = 10; outline(); ctx.globalAlpha = .88*flick; ctx.lineWidth = Math.max(1.3, Z*.014); ctx.stroke();                     // contour
+      // grands yeux en amande (sans bouche)
+      ctx.shadowBlur = 12; ctx.globalAlpha = .95*flick;
+      [-1,1].forEach(sd => { ctx.beginPath(); ctx.moveTo(sd*.3*Z, -.54*Z); ctx.quadraticCurveTo(sd*.16*Z, -.47*Z, sd*.045*Z, -.31*Z); ctx.quadraticCurveTo(sd*.19*Z, -.33*Z, sd*.3*Z, -.54*Z); ctx.fill(); });
+      ctx.fillStyle = '#fff'; ctx.globalAlpha = .9*flick; [-1,1].forEach(sd => { ctx.beginPath(); ctx.ellipse(sd*.15*Z, -.41*Z, Z*.03, Z*.012, sd*.5, 0, 6.283); ctx.fill(); }); ctx.fillStyle = inst.color;
+      ctx.globalAlpha = .5*flick; ctx.shadowBlur = 0; ctx.fillRect(-.03*Z, -.17*Z, 2, 2); ctx.fillRect(.03*Z - 2, -.17*Z, 2, 2);                // narines
+      if(S.hit > 0){ outline(); ctx.fillStyle = '#fff'; ctx.globalAlpha = S.hit*.45; ctx.fill(); ctx.fillStyle = inst.color; }                 // flash d'impact
+      ctx.restore();
+      // vaisseau de bombardement (plus gros, il s'incline en piqué quand il tire)
       const sz = S.sz;
-      if(!S.ship){ if((S.next -= dt) <= 0){ S.ship = { x:-sz*3, y:H*.13, v:Math.max(70, W*.2), fire:.4 }; } }
+      if(!S.ship){ if((S.next -= dt) <= 0){ S.ship = { x:-sz*3, y:H*.14, v:Math.max(80, W*.22), fire:.5, burst:0, miss:Math.random() < .75, mdone:false, bank:0 }; } }
       else {
         const sh = S.ship; sh.x += sh.v*dt; sh.fire -= dt;
-        if(sh.fire <= 0 && sh.x > W*.12 && sh.x < W*.62){ sh.fire = .5; const tx = S.ax + rnd(-.2,.2)*Z, ty = S.ay + rnd(-.5,.1)*Z, d = Math.hypot(tx-sh.x, ty-sh.y) || 1; S.shots.push({ x:sh.x + sz, y:sh.y + sz*.3, vx:(tx-sh.x)/d*340, vy:(ty-sh.y)/d*340, tx, ty }); }
-        if(sh.x > W + sz*3){ S.ship = null; S.next = rnd(1.5,3); }
-        else { ctx.shadowColor = inst.color; ctx.shadowBlur = 8; ctx.globalAlpha = .85; drawFlyShip(sh.x, sh.y, sz*.8, .8); ctx.shadowBlur = 0; }
+        const inRange = sh.x > W*.1 && sh.x < W*.62;
+        sh.bank += ((inRange ? .12 : 0) - sh.bank)*Math.min(1, dt*4);
+        if(sh.fire <= 0 && inRange){ sh.fire = .14; sh.burst++; if(sh.burst % 4 === 3) sh.fire = .55;
+          const tx = S.ax + rnd(-.25,.25)*Z, ty = S.ay + rnd(-.6,.15)*Z, d = Math.hypot(tx-sh.x, ty-sh.y) || 1; S.shots.push({ x:sh.x + sz*2, y:sh.y + sz*.2, vx:(tx-sh.x)/d*380, vy:(ty-sh.y)/d*380, tx, ty, m:false }); }
+        if(sh.miss && !sh.mdone && sh.x > W*.38){ sh.mdone = true; const tx = S.ax, ty = S.ay - Z*.2, d = Math.hypot(tx-sh.x, ty-sh.y) || 1; S.shots.push({ x:sh.x + sz, y:sh.y + sz*.6, vx:(tx-sh.x)/d*120, vy:(ty-sh.y)/d*120, tx, ty, m:true, acc:300 }); }
+        if(sh.x > W + sz*4){ S.ship = null; S.next = rnd(1.5,3); }
+        else { ctx.shadowColor = inst.color; ctx.shadowBlur = 8; ctx.globalAlpha = .88; drawShipSide(sh.x, sh.y + Math.sin(S.t*2)*sz*.1, sz, { ang:sh.bank, fl:1 }); ctx.shadowBlur = 0; }
       }
       for(let i=S.shots.length-1;i>=0;i--){
-        const b = S.shots[i]; b.x += b.vx*dt; b.y += b.vy*dt;
-        if(Math.hypot(b.tx-b.x, b.ty-b.y) < 8 || b.x > W + 10){ burst(b.tx, b.ty, 12, 90, .6); burst(b.tx, b.ty, 4, 50, .7, 'star'); inst.parts.push({ x:b.tx, y:b.ty, vx:0, vy:0, age:0, life:.35, s:0, type:'ring' }); S.shake = .35; S.shots.splice(i,1); continue; }
-        const L = 14, d = Math.hypot(b.vx, b.vy); ctx.shadowColor = inst.color; ctx.shadowBlur = 8; ctx.globalAlpha = .9; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.x - b.vx/d*L, b.y - b.vy/d*L); ctx.stroke(); ctx.shadowBlur = 0;
+        const b = S.shots[i];
+        if(b.m){ const d = Math.hypot(b.vx, b.vy) || 1; b.vx += b.vx/d*b.acc*dt; b.vy += b.vy/d*b.acc*dt; if(Math.random() < .7) inst.parts.push({ x:b.x, y:b.y, vx:rnd(-12,12), vy:rnd(-12,12), age:0, life:.55, s:inst.p, type:'dot' }); }
+        b.x += b.vx*dt; b.y += b.vy*dt;
+        if(Math.hypot(b.tx-b.x, b.ty-b.y) < (b.m ? 14 : 9) || b.x > W + 10){
+          if(b.m){ boom(b.tx, b.ty, S.sc*1.35); S.shake = .7; S.hit = 1; } else { burst(b.tx, b.ty, 12, 100, .6); burst(b.tx, b.ty, 4, 60, .7, 'star'); inst.parts.push({ x:b.tx, y:b.ty, vx:0, vy:0, age:0, life:.4, s:0, r:34*S.sc, type:'bring' }); inst.parts.push({ x:b.tx, y:b.ty, vx:0, vy:0, age:0, life:.18, s:0, r:12*S.sc, type:'flash' }); for(let f=0;f<3;f++) inst.parts.push({ x:b.tx + rnd(-6,6), y:b.ty + rnd(-6,6), vx:rnd(-20,20), vy:rnd(-20,20), age:0, life:.45, s:0, r:rnd(5,10)*S.sc, type:'fire' }); S.shake = .35; S.hit = .6; }
+          S.shots.splice(i,1); continue; }
+        const d = Math.hypot(b.vx, b.vy) || 1; ctx.shadowColor = inst.color; ctx.shadowBlur = 10; ctx.globalAlpha = .95;
+        if(b.m){ ctx.fillRect(b.x - 5, b.y - 1.5, 10, 3); ctx.fillStyle = '#fff'; ctx.fillRect(b.x + 1, b.y - 1, 4, 2); ctx.fillStyle = inst.color; }
+        else { ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.x - b.vx/d*16, b.y - b.vy/d*16); ctx.stroke(); }
+        ctx.shadowBlur = 0;
       }
       ctx.globalAlpha = 1;
     } else if(kind === 'army'){
       const S = inst.S, u = S.u; S.t += dt; ctx.shadowBlur = 0;
-      // route (pour les véhicules) : deux bordures + pointillés
-      ctx.globalAlpha = .12; ctx.fillRect(0, S.roadY - u*8, W, 1); ctx.fillRect(0, S.roadY + u*8, W, 1);
-      for(let x = -((S.t*30) % 26); x < W; x += 26) ctx.fillRect(x, S.roadY, 11, 1);
-      if((S.nextP -= dt) <= 0){ S.nextP = rnd(1.2,3); const lane = Math.floor(Math.random()*S.lanes.length), cols = 3 + Math.floor(Math.random()*2), rows = 5 + Math.floor(Math.random()*3), sp = u*4.2;
-        if(S.plat.every(pl => pl.lane !== lane || pl.x - pl.rows*pl.sp > 8)) S.plat.push({ lane, x:-4, cols, rows, sp, v:rnd(24,34)*S.sc }); }
-      S.plat = S.plat.filter(pl => pl.x - pl.rows*pl.sp < W + 10);
+      const rd = S.roadY, rw = u*9;
+      ctx.globalAlpha = .12; ctx.fillRect(0, rd - rw, W, 1); ctx.fillRect(0, rd + rw, W, 1);
+      for(let x = -((S.t*30) % 26); x < W; x += 26) ctx.fillRect(x, rd, 11, 1);
+      // pelotons : plus nombreux, dans les deux sens selon la voie
+      if((S.nextP -= dt) <= 0){ S.nextP = rnd(.45,1.3); const lane = Math.floor(Math.random()*S.lanes.length), dir = lane % 2 ? -1 : 1, cols = 3, rows = 5 + Math.floor(Math.random()*5), sp = u*4.4;
+        const x0 = dir > 0 ? -4 : W + 4;
+        if(S.plat.every(pl => pl.lane !== lane || Math.abs(pl.x - x0) > pl.rows*pl.sp + 12)) S.plat.push({ lane, dir, x:x0, cols, rows, sp, v:rnd(24,36)*S.sc }); }
+      S.plat = S.plat.filter(pl => pl.dir > 0 ? pl.x - pl.rows*pl.sp < W + 10 : pl.x + pl.rows*pl.sp > -10);
       S.plat.forEach(pl => {
-        pl.x += pl.v*dt;
-        for(let r=0;r<pl.rows;r++){ const sx = pl.x - r*pl.sp; if(sx < -6 || sx > W + 6) continue;
+        pl.x += pl.dir*pl.v*dt;
+        for(let r=0;r<pl.rows;r++){ const sx = pl.x - pl.dir*r*pl.sp; if(sx < -6 || sx > W + 6) continue;
           for(let c=0;c<pl.cols;c++){ const sy = S.lanes[pl.lane] + (c - (pl.cols-1)/2)*pl.sp*1.1 + Math.sin(S.t*7 + r*1.3 + c)*.7;
-            ctx.globalAlpha = .5; ctx.fillRect(Math.round(sx), Math.round(sy), u*1.6, u*1.6); ctx.globalAlpha = .4; ctx.fillRect(Math.round(sx + u*1.6), Math.round(sy + u*.5), u*1.5, Math.max(1, u*.5)); } }
+            ctx.globalAlpha = .5; ctx.fillRect(Math.round(sx), Math.round(sy), u*1.6, u*1.6); ctx.globalAlpha = .4; ctx.fillRect(Math.round(pl.dir > 0 ? sx + u*1.6 : sx - u*1.5), Math.round(sy + u*.5), u*1.5, Math.max(1, u*.5)); } }
       });
-      // véhicules (sur la route, jamais sur les soldats)
-      if((S.nextV -= dt) <= 0){ S.nextV = rnd(5,9); S.veh.push({ x:-u*14, v:rnd(40,60)*S.sc, truck:Math.random() < .35 }); }
-      S.veh = S.veh.filter(v => v.x < W + u*16);
-      S.veh.forEach(v => { v.x += v.v*dt; const k = u*5, y = S.roadY - k*.1; ctx.shadowBlur = 5; ctx.shadowColor = inst.color;
-        if(!v.truck){ ctx.globalAlpha = .5; ctx.fillRect(v.x - k*1.2, y - k*.55, k*2.4, k*1.1); ctx.fillStyle = '#000'; ctx.globalAlpha = .35; ctx.fillRect(v.x - k*1.2, y - k*.55, k*2.4, k*.2); ctx.fillRect(v.x - k*1.2, y + k*.35, k*2.4, k*.2); ctx.fillStyle = inst.color;
-          ctx.globalAlpha = .75; ctx.beginPath(); ctx.arc(v.x - k*.1, y, k*.38, 0, 6.283); ctx.fill(); ctx.fillRect(v.x, y - 1, k*1.5, 2); }
-        else { ctx.globalAlpha = .5; ctx.fillRect(v.x - k*1.6, y - k*.45, k*2.4, k*.9); ctx.globalAlpha = .7; ctx.fillRect(v.x + k*.8, y - k*.4, k*.8, k*.8); ctx.fillStyle = '#000'; ctx.globalAlpha = .3; ctx.fillRect(v.x - k*1.5, y - k*.2, k*2.1, 1); ctx.fillStyle = inst.color; }
-        ctx.shadowBlur = 0; });
+      // véhicules sur la route (2 voies, 3 types), jamais sur les soldats
+      if((S.nextV -= dt) <= 0){ S.nextV = rnd(1.6,3.6); const lane = Math.random() < .5 ? 0 : 1, dir = lane ? -1 : 1, x0 = dir > 0 ? -u*14 : W + u*14, type = ['tank','truck','jeep','tank'][Math.floor(Math.random()*4)];
+        if(S.veh.every(v => v.lane !== lane || Math.abs(v.x - x0) > u*26)) S.veh.push({ x:x0, lane, dir, type, v:rnd(40,62)*S.sc }); }
+      S.veh = S.veh.filter(v => v.dir > 0 ? v.x < W + u*16 : v.x > -u*16);
+      S.veh.forEach(v => { v.x += v.dir*v.v*dt; const k = u*4.2, y = rd + (v.lane ? 1 : -1)*rw*.5;
+        ctx.save(); ctx.translate(v.x, y); ctx.scale(v.dir, 1); ctx.shadowBlur = 5; ctx.shadowColor = inst.color;
+        if(v.type === 'tank'){ ctx.globalAlpha = .5; ctx.fillRect(-k*1.3, -k*.35, k*2.6, k*.7); ctx.fillStyle = '#000'; ctx.globalAlpha = .35; ctx.fillRect(-k*1.3, -k*.35, k*2.6, k*.16); ctx.fillRect(-k*1.3, k*.19, k*2.6, k*.16); ctx.fillStyle = inst.color;
+          ctx.globalAlpha = .75; ctx.beginPath(); ctx.arc(-k*.1, 0, k*.32, 0, 6.283); ctx.fill(); ctx.fillRect(0, -1, k*1.5, 2); }
+        else if(v.type === 'truck'){ ctx.globalAlpha = .5; ctx.fillRect(-k*1.6, -k*.38, k*2.4, k*.76); ctx.globalAlpha = .72; ctx.fillRect(k*.8, -k*.34, k*.7, k*.68); ctx.fillStyle = '#000'; ctx.globalAlpha = .3; ctx.fillRect(-k*1.5, -k*.15, k*2.1, 1); ctx.fillStyle = inst.color; }
+        else { ctx.globalAlpha = .55; ctx.fillRect(-k*.8, -k*.26, k*1.6, k*.52); ctx.globalAlpha = .75; ctx.fillRect(-k*.1, -k*.4, k*.6, k*.2); ctx.fillRect(k*.4, -k*.5, 1.5, k*.3); }
+        ctx.restore(); ctx.shadowBlur = 0; });
       ctx.globalAlpha = 1;
     } else if(kind === 'warp'){
       const S = inst.S; S.t += dt; ctx.shadowBlur = 0;
@@ -7039,53 +7173,57 @@ function startPixelScene(layer, kind){
       if(S.flash > 0){ ctx.globalAlpha = S.flash*.2; ctx.fillRect(0, 0, W, H); S.flash = Math.max(0, S.flash - dt*2.2); }
       ctx.globalAlpha = 1;
     } else if(kind === 'dropoff'){
-      const S = inst.S, sz = S.s, ease = t => 1 - Math.pow(1 - Math.min(1, Math.max(0, t)), 3); S.t += dt;
-      const hover = H*.35, land = S.ground - sz*.95;
-      if(S.ph === 0){ const k = S.t/2.2; S.x = -sz*4 + (S.padX + sz*4)*ease(k); S.y = H*.22 + (hover - H*.22)*ease(k); if(k >= 1){ S.ph = 1; S.t = 0; } }
-      else if(S.ph === 1){ const k = S.t/1.4; S.x = S.padX; S.y = hover + (land - hover)*ease(k); if(k >= 1){ S.ph = 2; S.t = 0; S.crates = []; } }
-      else if(S.ph === 2){ S.ramp = Math.min(1, S.t/.6); const n = Math.floor((S.t - .8)/.9) + 1; while(S.crates.length < Math.min(3, Math.max(0, n))) S.crates.push({ t0:S.t, i:S.crates.length }); if(S.t > 4.4){ S.ph = 3; S.t = 0; } }
-      else if(S.ph === 3){ S.ramp = Math.max(0, 1 - S.t/.5); const k = S.t/1.4; S.y = land + (hover - land)*ease(k); S.calpha = Math.max(0, 1 - S.t/2.8); if(k >= 1){ S.ph = 4; S.t = 0; S.v = 20; } }
-      else { S.v += W*1.4*dt; S.x += S.v*dt; S.calpha = Math.max(0, S.calpha - dt*.7); if(S.x > W + sz*5){ S.ph = 5; S.t = 0; } }
-      if(S.ph === 5 && S.t > 1){ S.ph = 0; S.t = 0; S.crates = []; S.calpha = 1; S.ramp = 0; }
-      ctx.shadowBlur = 0; ctx.globalAlpha = .14; ctx.fillRect(0, S.ground + 1, W, 1); for(let x = 6; x < W; x += 18) ctx.fillRect(x, S.ground + 4, 8, 1);   // sol
-      const cs = sz*.55; ctx.shadowColor = inst.color;
-      S.crates.forEach(c => { const k = ease((S.t - c.t0 - .1)/.9) , sx = S.padX - sz*1.7 - c.i*cs*1.25 + (c.i === 0 ? 0 : 0), cy = (land + sz*.5) + (S.ground - cs/2 - (land + sz*.5))*k, ca = S.calpha;
-        ctx.globalAlpha = .75*ca; ctx.fillRect(sx - cs/2, cy - cs/2, cs, cs); ctx.fillStyle = '#000'; ctx.globalAlpha = .45*ca; ctx.fillRect(sx - cs/2 + 2, cy - cs/2 + 2, cs - 4, cs - 4); ctx.fillStyle = inst.color; ctx.globalAlpha = .9*ca; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(sx - cs/2, cy - cs/2); ctx.lineTo(sx + cs/2, cy + cs/2); ctx.moveTo(sx + cs/2, cy - cs/2); ctx.lineTo(sx - cs/2, cy + cs/2); ctx.stroke(); });
-      if(S.ph <= 4){
-        ctx.save(); ctx.translate(S.x, S.y); ctx.shadowBlur = 8; ctx.globalAlpha = .85;
-        ctx.beginPath(); ctx.moveTo(sz*2, sz*.15); ctx.lineTo(sz*1.2, -sz*.45); ctx.lineTo(-sz*1.7, -sz*.45); ctx.lineTo(-sz*2, -sz*1.1); ctx.lineTo(-sz*2.2, -sz*1.1); ctx.lineTo(-sz*2.2, sz*.55); ctx.lineTo(sz*1.3, sz*.55); ctx.closePath(); ctx.fill();   // coque cargo
-        ctx.fillStyle = '#fff'; ctx.globalAlpha = .7; ctx.fillRect(sz*.95, -sz*.25, sz*.55, sz*.22); ctx.fillStyle = inst.color; ctx.shadowBlur = 0;                                                             // cockpit
-        ctx.fillStyle = '#000'; ctx.globalAlpha = .3; ctx.fillRect(-sz*1.6, -sz*.2, sz*2.2, 1.5); ctx.fillStyle = inst.color;
-        ctx.globalAlpha = .75; ctx.lineWidth = 1.5;
-        if(S.ph === 2 || (S.ph === 1 && S.t > 1.1)){ ctx.beginPath(); ctx.moveTo(-sz*1.2, sz*.55); ctx.lineTo(-sz*1.2, sz*.95); ctx.moveTo(sz*.8, sz*.55); ctx.lineTo(sz*.8, sz*.95); ctx.stroke(); }   // train d'atterrissage
-        if(S.ramp > 0){ ctx.beginPath(); ctx.moveTo(-sz*2.2, sz*.5); ctx.lineTo(-sz*2.2 - sz*.9*S.ramp, sz*.5 + sz*.45*S.ramp); ctx.stroke(); }
-        if(S.ph !== 2 && S.ph !== 5){ const fl = S.ph === 4 ? 1.6 : .7; ctx.shadowBlur = 8; ctx.globalAlpha = .7; ctx.beginPath(); ctx.moveTo(-sz*2.2, -sz*.1); ctx.lineTo(-sz*(2.2 + fl), sz*.12); ctx.lineTo(-sz*2.2, sz*.35); ctx.closePath(); ctx.fill(); }
+      const S = inst.S, sz = S.s, e3 = k => 1 - Math.pow(1 - Math.min(1, Math.max(0, k)), 3), e4 = k => 1 - Math.pow(1 - Math.min(1, Math.max(0, k)), 4), sm = k => { k = Math.min(1, Math.max(0, k)); return k*k*(3-2*k); };
+      S.t += dt; const landY = S.gnd - sz*.98, tailX = S.padX - 2.2*sz;
+      S.z = 1; S.aS = 1; S.aR = 0; S.zr = 1; S.fl = .4;
+      if(S.ph === 0){ const k = Math.min(1, S.t/2.4); S.x = -5*sz + (S.padX + 5*sz)*e4(k); S.y = H*.14 + (landY - H*.14)*e3((k - .15)/.85); S.ang = .1*(1 - e3(k)); S.fl = k < .8 ? 1 : .3; S.lg = sm((k - .7)/.25);
+        if(k >= 1){ S.ph = 1; S.t = 0; S.ang = 0; burst(S.padX, S.gnd, 12, 70, .7, 'dot'); } }
+      else if(S.ph === 1){ const k = Math.min(1, S.t/1.2); S.x = S.padX; S.y = landY; S.lg = 1; S.fl = 0; S.z = 1 + 1.6*sm(k); S.aS = 1 - sm((k - .35)/.65); S.aR = sm((k - .35)/.65); S.zr = .55 + .45*sm(k); if(S.t >= 1.2){ S.ph = 2; S.t = 0; S.land = [0,0,0]; } }
+      else if(S.ph === 2){ S.aS = 0; S.aR = 1; S.ramp = sm(S.t/.7); if(S.t > 5.4){ S.ph = 3; S.t = 0; S.nl = 3; } }
+      else if(S.ph === 3){ const k = Math.min(1, S.t/1.1); S.ramp = 1 - sm(S.t/.5); S.z = 1 + 1.6*(1 - sm(k)); S.aR = 1 - sm(k/.65); S.aS = sm((k - .3)/.7); S.zr = .55 + .45*(1 - sm(k)); S.fl = 0; if(S.t >= 1.1){ S.ph = 4; S.t = 0; S.sx0 = S.x; } }
+      else if(S.ph === 4){ const k = Math.min(1, S.t/1.5); S.y = landY - H*.38*k*k; S.x = S.padX + W*.04*k*k; S.ang = -.14*k; S.lg = 1 - sm(k*2); S.fl = 1.5*Math.min(1, k*3); if(k >= 1){ S.ph = 5; S.t = 0; S.v = W*.15; } }
+      else if(S.ph === 5){ S.v += W*2.6*dt; S.x += S.v*dt; S.y -= S.v*dt*.16; S.ang = -.2; S.lg = 0; S.fl = 2; if(S.x > W + sz*6 || S.y < -sz*4){ S.ph = 6; S.t = 0; } }
+      else { S.aS = 0; S.cfade = Math.max(0, 1 - S.t/1.2); if(S.t > 1.5){ S.ph = 0; S.t = 0; S.nl = 0; S.cfade = 1; S.ramp = 0; S.x = -5*sz; S.y = H*.14; S.lg = 0; } }
+      // vue de côté (le vaisseau se pose, puis zoom vers l'arrière)
+      const showSide = S.ph <= 5 && S.aS > .01;
+      if(showSide || (S.ph === 6 && S.cfade > 0)){
+        ctx.save(); ctx.translate(tailX, landY); ctx.scale(S.z, S.z); ctx.translate(-tailX, -landY); ctx.shadowBlur = 0;
+        const al = S.ph >= 4 && S.ph <= 5 ? 1 : S.aS;
+        ctx.globalAlpha = .16*(S.ph === 6 ? 1 : al); ctx.fillRect(0, S.gnd, W, 1); for(let x = 6; x < W; x += 18) ctx.fillRect(x, S.gnd + 4, 8, 1);
+        const cw = sz*.5; for(let i=0;i<S.nl;i++){ ctx.globalAlpha = .7*S.cfade*(S.ph === 6 ? 1 : al); ctx.fillRect(tailX - sz*.7 - i*cw*1.25, S.gnd - cw, cw, cw); ctx.fillStyle = '#000'; ctx.globalAlpha = .4*S.cfade*(S.ph === 6 ? 1 : al); ctx.fillRect(tailX - sz*.7 - i*cw*1.25 + 2, S.gnd - cw + 2, cw - 4, cw - 4); ctx.fillStyle = inst.color; }
+        if(S.ph <= 5){ ctx.globalAlpha = .72*al; ctx.shadowColor = inst.color; ctx.shadowBlur = 8; drawShipSide(S.x, S.y, sz, { ang:S.ang, fl:S.fl, gear:S.lg }); }
         ctx.restore();
       }
+      // vue 3/4 arrière sur la soute
+      if(S.aR > .01) drawRear(S, S.aR);
       ctx.globalAlpha = 1;
     } else if(kind === 'handshake'){
-      const S = inst.S, q = S.q; S.t = (S.t + dt) % S.cyc; const t = S.t, ease = k => 1 - Math.pow(1 - Math.min(1, Math.max(0, k)), 3);
-      let gap = 0, pump = 0, clasp = false;
-      if(t < 1.4) gap = 26 - 18.5*ease(t/1.4);
-      else if(t < 5){ gap = 7.5; clasp = true; pump = Math.sin((t - 1.4)*Math.PI*2*1.3)*(t > 4.4 ? Math.max(0, (5 - t)/.6) : 1); }
-      else if(t < 6.2){ gap = 7.5 + 2*ease((t-5)/1.2); }
-      else if(t < 7.6) gap = 9.5 + 17*ease((t - 6.2)/1.4);
-      else gap = 26.5;
-      const a = ctx.globalAlpha; ctx.shadowBlur = 6; ctx.shadowColor = inst.color;
-      const mx = S.midX, gy = S.ground, my = gy - 10.5*q + pump*q*.9;
-      const pilot = (dir) => {
-        const x = mx - dir*gap*q;
-        ctx.globalAlpha = .6; ctx.fillRect(x - 1.5*q, gy - 6*q, 1.3*q, 6*q); ctx.fillRect(x + .2*q, gy - 6*q, 1.3*q, 6*q);          // jambes
-        ctx.fillRect(x - 2*q, gy - 12*q, 4*q, 6*q);                                                                                   // torse
-        ctx.globalAlpha = .45; ctx.fillRect(x - dir*2.2*q - (dir > 0 ? .6*q : 0), gy - 11.5*q, .6*q, 4.5*q);                           // bras libre
-        ctx.globalAlpha = .75; ctx.beginPath(); ctx.arc(x, gy - 14.6*q, 2.5*q, 0, 6.283); ctx.fill();                                  // casque
-        ctx.fillStyle = '#fff'; ctx.globalAlpha = .6; ctx.fillRect(x + dir*.5*q - (dir < 0 ? 1.8*q : 0), gy - 15.2*q, 1.8*q, 1.1*q); ctx.fillStyle = inst.color;   // visière
-        ctx.globalAlpha = .7; ctx.lineWidth = 1.6*q; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x + dir*1.6*q, gy - 11*q); ctx.lineTo(clasp ? mx - dir*.4*q : x + dir*(gap > 15 ? 3 : 5)*q, clasp ? my : gy - 9*q); ctx.stroke(); ctx.lineCap = 'butt';  // bras tendu
+      const S = inst.S, q = S.q; S.t = (S.t + dt) % S.cyc; const t = S.t, sm = k => { k = Math.min(1, Math.max(0, k)); return k*k*(3-2*k); };
+      const mx = S.midX, gy = S.ground, my0 = gy - 10.5*q, G = 7.5, dL = (mx + 7*q)/q, dR = (W - mx + 7*q)/q;
+      // chronologie : marche 0-4.2 · zoom 4.2-5.2 · poignée 5.2-8.2 · dézoom 8.2-9.2 · ils repartent 9.2-13.2
+      let gL = G, gR = G, walking = false;
+      if(t < 4.2){ const k = t/4.2; gL = G + (dL - G)*(1 - k); gR = G + (dR - G)*(1 - k); walking = true; }
+      else if(t >= 9.2){ const k = (t - 9.2)/4; gL = G + (dL - G)*k; gR = G + (dR - G)*k; walking = true; }
+      const z = 1 + 1.3*(t < 8.2 ? sm((t - 4.2)/1) : 1 - sm((t - 8.2)/1));
+      const shaking = t > 5.2 && t < 8.2, pump = shaking ? Math.sin((t - 5.2)*Math.PI*2*1.4)*Math.min(1, (8.2 - t)/.5, (t - 5.2)/.3) : 0, my = my0 + pump*q*.9;
+      const extL = Math.min(1, Math.max(0, (G + 8 - gL)/8)), extR = Math.min(1, Math.max(0, (G + 8 - gR)/8)), clasp = extL > .97 && extR > .97;
+      const pf = (z - 1)/1.3; ctx.save(); ctx.translate(mx + (W*.5 - mx)*pf, my0 + (H*.54 - my0)*pf); ctx.scale(z, z); ctx.translate(-mx, -my0);
+      ctx.shadowBlur = 6; ctx.shadowColor = inst.color; ctx.lineCap = 'butt';
+      const pilot = (x, dir, ext, ph) => {
+        const sw = walking && ext < .5 ? Math.sin(ph) : 0, bob = walking ? Math.abs(Math.sin(ph))*.3*q : 0, sh = gy - 11*q - bob;
+        ctx.globalAlpha = .6; ctx.lineWidth = 1.3*q; ctx.beginPath(); ctx.moveTo(x - .7*q, gy - 6*q - bob); ctx.lineTo(x - .7*q + sw*1.5*q, gy); ctx.moveTo(x + .7*q, gy - 6*q - bob); ctx.lineTo(x + .7*q - sw*1.5*q, gy); ctx.stroke();   // jambes
+        ctx.fillRect(x - 2*q, gy - 12*q - bob, 4*q, 6*q);                                                                                                                // torse
+        ctx.globalAlpha = .4; ctx.fillRect(dir > 0 ? x - 2.9*q : x + 2*q, gy - 11*q - bob, .9*q, 3.6*q);                                                                  // sac à dos
+        ctx.globalAlpha = .45; ctx.lineWidth = 1.2*q; ctx.beginPath(); ctx.moveTo(x - dir*1.6*q, sh); ctx.lineTo(x - dir*(1.6*q + sw*1.2*q), gy - 8.5*q - bob); ctx.stroke();    // bras libre
+        ctx.globalAlpha = .75; ctx.beginPath(); ctx.arc(x, gy - 14.6*q - bob, 2.5*q, 0, 6.283); ctx.fill();                                                               // casque
+        ctx.fillStyle = '#fff'; ctx.globalAlpha = .6; ctx.fillRect(x + dir*.5*q - (dir < 0 ? 1.8*q : 0), gy - 15.2*q - bob, 1.8*q, 1.1*q); ctx.fillStyle = inst.color;
+        const rx = x + dir*(1.6*q + sw*1.2*q), ry = gy - 8.5*q - bob, cxh = mx - dir*.4*q, cyh = my, hx = rx + (cxh - rx)*ext, hy = ry + (cyh - ry)*ext;
+        ctx.globalAlpha = .7; ctx.lineWidth = 1.6*q; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x + dir*1.6*q, sh); ctx.lineTo(hx, hy); ctx.stroke(); ctx.lineCap = 'butt';  // bras tendu
       };
-      pilot(1); pilot(-1);
+      pilot(mx - gL*q, 1, extL, gL*1.15); pilot(mx + gR*q, -1, extR, -gR*1.15);
       if(clasp){ ctx.shadowBlur = 10; ctx.fillStyle = '#fff'; ctx.globalAlpha = .85; ctx.fillRect(mx - .6*q, my - .6*q, 1.2*q, 1.2*q); ctx.fillStyle = inst.color;
-        if(Math.abs(pump) > .95 && !S.spk){ S.spk = true; burst(mx, my - q, 3, 30, .7, 'star'); } if(Math.abs(pump) < .5) S.spk = false; }
-      ctx.shadowBlur = 0; ctx.globalAlpha = .14; ctx.fillRect(0, gy + 1, W, 1); ctx.globalAlpha = 1;
+        if(Math.abs(pump) > .95 && !S.spk){ S.spk = true; burst(mx, my0 - q, 3, 30, .7, 'star'); } if(Math.abs(pump) < .5) S.spk = false; }
+      ctx.shadowBlur = 0; ctx.globalAlpha = .14; ctx.fillRect(-W, gy + 1, W*3, 1); ctx.restore(); ctx.globalAlpha = 1;
     } else if(kind === 'glitch'){
       const S = inst.S; S.t += dt; S.hold -= dt;
       ctx.shadowBlur = 0; ctx.globalAlpha = .55; ctx.fillRect(0, 0, W, 1); ctx.fillRect(0, H-1, W, 1); ctx.fillRect(0, 0, 1, H); ctx.fillRect(W-1, 0, 1, H);
@@ -7129,6 +7267,10 @@ function startPixelScene(layer, kind){
       if(q.type === 'star'){ ctx.shadowBlur = 6; star4(q.x, q.y, q.s*(1.6-k)*1.2); ctx.shadowBlur = 0; }
       else if(q.type === 'dot'){ ctx.beginPath(); ctx.arc(q.x, q.y, q.s*.6*(1-k*.5), 0, 6.283); ctx.fill(); }
       else if(q.type === 'ring'){ ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(q.x, q.y, k*inst.p*9, 0, 6.283); ctx.stroke(); }
+      else if(q.type === 'fire'){ ctx.shadowBlur = 14; ctx.globalAlpha = (1-k)*.7; ctx.beginPath(); ctx.arc(q.x, q.y, q.r*(.45 + k*.85), 0, 6.283); ctx.fill(); ctx.shadowBlur = 0; }
+      else if(q.type === 'flash'){ ctx.fillStyle = '#fff'; ctx.shadowBlur = 20; ctx.shadowColor = inst.color; ctx.globalAlpha = Math.pow(1-k, 2)*.9; ctx.beginPath(); ctx.arc(q.x, q.y, q.r*(1 + k*.6), 0, 6.283); ctx.fill(); ctx.fillStyle = inst.color; ctx.shadowBlur = 0; }
+      else if(q.type === 'bring'){ ctx.lineWidth = 1 + 3*(1-k); ctx.globalAlpha = (1-k)*.85; ctx.beginPath(); ctx.arc(q.x, q.y, q.r*(1 - Math.pow(1-k, 2)), 0, 6.283); ctx.stroke(); }
+      else if(q.type === 'ember'){ ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.lineTo(q.x - q.vx*.04, q.y - q.vy*.04); ctx.stroke(); }
       else ctx.fillRect(Math.round(q.x/inst.p)*inst.p, Math.round(q.y/inst.p)*inst.p, q.s, q.s); }
     ctx.globalAlpha = 1;
   };

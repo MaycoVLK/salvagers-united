@@ -1078,6 +1078,13 @@
   .upv-cta.upv-busy{color:#050606;}
   .cbn-view-btn{white-space:nowrap;}
 
+  /* Infobulle d'aperçu du cadre débloqué (succès / rang) */
+  .frame-prev-pop{position:fixed; z-index:9000; width:280px; padding:12px; background:var(--bg2); border:1px solid var(--accent); border-radius:4px; box-shadow:0 8px 28px rgba(0,0,0,.65), 0 0 14px var(--accent-dim); pointer-events:none; display:flex; flex-direction:column; gap:10px;}
+  .frame-prev-pop .fpp-title{font-size:.62rem; letter-spacing:2px; color:var(--muted); text-transform:uppercase;}
+  .frame-prev-pop .fpp-title .sl{color:var(--accent);}
+  .frame-prev-pop .fpp-swatch{position:relative; width:100%; height:120px; overflow:hidden; border-radius:3px; border:1px solid var(--accent); background:linear-gradient(var(--panel),var(--bg2));}
+  .frame-prev-pop .fpp-name{font-family:'VT323',monospace; font-size:20px; letter-spacing:1px; color:var(--text); margin-top:5px;}
+
   /* Message automatique d'upvote dans la messagerie : barre qui se remplit puis se valide */
   .chat-bubble.upv{border-color:var(--accent); background:linear-gradient(var(--bg2),var(--panel)); animation:upvmBubble 1.6s ease-out 1;}
   .upv-msg{position:relative; display:flex; flex-direction:column; gap:5px; min-width:210px;}
@@ -3775,7 +3782,7 @@ const T = {
     cTabAvail:"COMMANDES DISPONIBLES", cTabMine:"MES LIVRAISONS", cTabAch:"SUCCÈS", cStDel:"LIVRÉES", cStProg:"EN COURS", cStMargin:"MARGE TOTALE", cStOpen:"COMMANDES OUVERTES", cActive:"LIVRAISON ACTIVE", cMsgClient:"MESSAGE AU CLIENT", cClient:"Client :", cDeadline:"// Échéance :", cCargo:"CARGAISON", cOrderTotal:"Total de la commande", cYourMargin:"Ta marge", cRoute:"// ITINÉRAIRE D'ACHAT SUGGÉRÉ", cRelease:"RELÂCHER CETTE COMMANDE", cOthers:"MES AUTRES LIVRAISONS ({n})", cClickRow:"CLIQUE SUR UNE LIGNE POUR L'ACTIVER", cAvailFor:"DISPONIBLE POUR LIVRER", cNextTransit:"MARQUER EN TRANSIT ▸", cNextPurchased:"MARQUER ACHETÉE ▸", cNextDelivered:"MARQUER LIVRÉE ▸", cWaiting:"EN ATTENTE D'UN COURSIER",
     shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille", shopTextureDiag:"Diagonales", shopTextureNoise:"Grain", shopTextureGlow:"Lueur", shopTextureStars:"Étoiles", shopTextureRays:"Faisceaux",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
-    upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.", upvoteCta:"UPVOTER", upvMsgRecv:"{n} a upvoté ton travail", upvMsgSent:"Tu as envoyé un upvote", upvMsgShop:"depuis ta page", upvMsgOrder:"pour une livraison", upvMsgSale:"pour une vente", upvMsgValid:"VALIDÉ", upvMsgPrev:"▲ Upvote", upvoteSellerWho:"vendeur", upvotedLbl:"UPVOTÉ", upvoteCourierTip:"Upvote ton coursier pour mettre en avant son travail", upvoteSellerHint:"Vente terminée ! Un upvote met en avant le travail du vendeur et du coursier :", upvoteDoneToast:"Livraison terminée ! Pense à upvoter ton coursier (Commander à nouveau / Historique).", pubMoreTitle:"STATS & SUCCÈS", pubNoCompany:"Ce joueur n'a ni entreprise de livraison ni shop pour le moment.", viewShopBtn:"VOIR LA BOUTIQUE →", kickerBoth:"SHOP · ENTREPRISE DE LIVRAISON",
+    upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.", upvoteCta:"UPVOTER", rewardFrame:"RÉCOMPENSE · CADRE", rewardFrames:"RÉCOMPENSES · CADRES", upvoteBpHint:"Craft terminé ! Un upvote met en avant le travail du vendeur :", upvMsgBp:"pour un blueprint", upvMsgRecv:"{n} a upvoté ton travail", upvMsgSent:"Tu as envoyé un upvote", upvMsgShop:"depuis ta page", upvMsgOrder:"pour une livraison", upvMsgSale:"pour une vente", upvMsgValid:"VALIDÉ", upvMsgPrev:"▲ Upvote", upvoteSellerWho:"vendeur", upvotedLbl:"UPVOTÉ", upvoteCourierTip:"Upvote ton coursier pour mettre en avant son travail", upvoteSellerHint:"Vente terminée ! Un upvote met en avant le travail du vendeur et du coursier :", upvoteDoneToast:"Livraison terminée ! Pense à upvoter ton coursier (Commander à nouveau / Historique).", pubMoreTitle:"STATS & SUCCÈS", pubNoCompany:"Ce joueur n'a ni entreprise de livraison ni shop pour le moment.", viewShopBtn:"VOIR LA BOUTIQUE →", kickerBoth:"SHOP · ENTREPRISE DE LIVRAISON",
     shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopCraftDelivered:"Crafts livrés", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
     sellerAchvTitle:"Succès vendeur", viewAllAchvBtn:"VOIR TOUT", viewLessAchvBtn:"RÉDUIRE",
     sellerAchvLabels:{jawas_food:"Jawa's food", first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
@@ -3951,7 +3958,7 @@ const T = {
     cTabAvail:"AVAILABLE ORDERS", cTabMine:"MY DELIVERIES", cTabAch:"ACHIEVEMENTS", cStDel:"DELIVERED", cStProg:"IN PROGRESS", cStMargin:"TOTAL MARGIN", cStOpen:"OPEN ORDERS", cActive:"ACTIVE DELIVERY", cMsgClient:"MESSAGE CLIENT", cClient:"Client:", cDeadline:"// Deadline:", cCargo:"CARGO", cOrderTotal:"Order total", cYourMargin:"Your margin", cRoute:"// SUGGESTED SHOPPING ROUTE", cRelease:"RELEASE THIS ORDER", cOthers:"MY OTHER DELIVERIES ({n})", cClickRow:"CLICK A ROW TO MAKE IT ACTIVE", cAvailFor:"AVAILABLE FOR DELIVERY", cNextTransit:"MARK AS IN TRANSIT ▸", cNextPurchased:"MARK AS PURCHASED ▸", cNextDelivered:"MARK AS DELIVERED ▸", cWaiting:"WAITING FOR A COURIER",
     shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid", shopTextureDiag:"Diagonal", shopTextureNoise:"Grain", shopTextureGlow:"Glow", shopTextureStars:"Stars", shopTextureRays:"Rays",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
-    upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.", upvoteCta:"UPVOTE", upvMsgRecv:"{n} upvoted your work", upvMsgSent:"You sent an upvote", upvMsgShop:"from your page", upvMsgOrder:"for a delivery", upvMsgSale:"for a sale", upvMsgValid:"VALIDATED", upvMsgPrev:"▲ Upvote", upvoteSellerWho:"seller", upvotedLbl:"UPVOTED", upvoteCourierTip:"Upvote your courier to highlight their work", upvoteSellerHint:"Sale complete! An upvote highlights the seller's and courier's work:", upvoteDoneToast:"Delivery complete! Remember to upvote your courier (Order again / History).", pubMoreTitle:"STATS & ACHIEVEMENTS", pubNoCompany:"This player has no delivery company or shop yet.", viewShopBtn:"VIEW THE SHOP →", kickerBoth:"SHOP · DELIVERY COMPANY",
+    upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.", upvoteCta:"UPVOTE", rewardFrame:"REWARD · FRAME", rewardFrames:"REWARDS · FRAMES", upvoteBpHint:"Craft complete! An upvote highlights the seller's work:", upvMsgBp:"for a blueprint", upvMsgRecv:"{n} upvoted your work", upvMsgSent:"You sent an upvote", upvMsgShop:"from your page", upvMsgOrder:"for a delivery", upvMsgSale:"for a sale", upvMsgValid:"VALIDATED", upvMsgPrev:"▲ Upvote", upvoteSellerWho:"seller", upvotedLbl:"UPVOTED", upvoteCourierTip:"Upvote your courier to highlight their work", upvoteSellerHint:"Sale complete! An upvote highlights the seller's and courier's work:", upvoteDoneToast:"Delivery complete! Remember to upvote your courier (Order again / History).", pubMoreTitle:"STATS & ACHIEVEMENTS", pubNoCompany:"This player has no delivery company or shop yet.", viewShopBtn:"VIEW THE SHOP →", kickerBoth:"SHOP · DELIVERY COMPANY",
     shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopCraftDelivered:"Crafts delivered", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
     sellerAchvTitle:"Seller achievements", viewAllAchvBtn:"VIEW ALL", viewLessAchvBtn:"COLLAPSE",
     sellerAchvLabels:{jawas_food:"Jawa's food", first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
@@ -4726,7 +4733,7 @@ function parseUpvoteContent(content){
 }
 function upvoteBubbleHtml(u, isMine){
   const d = T[LANG];
-  const where = u.c === 'shop' ? d.upvMsgShop : (u.c === 'sale' ? d.upvMsgSale : d.upvMsgOrder);
+  const where = u.c === 'shop' ? d.upvMsgShop : (u.c === 'sale' ? d.upvMsgSale : u.c === 'blueprint' ? d.upvMsgBp : d.upvMsgOrder);
   const title = isMine ? d.upvMsgSent : d.upvMsgRecv.replace('{n}', escapeHtml(u.n || '—'));
   const sparks = [8,22,38,54,70,86].map((x,i) => `<i class="upv-spark" style="left:${x}%; animation-delay:${(1.05 + i*0.07).toFixed(2)}s"></i>`).join('');
   return `<div class="upv-msg">
@@ -4960,6 +4967,8 @@ function blueprintRequestThreadItemHtml(r, iAmSeller, bp){
     }
   } else if(r.status === 'pending'){
     actions = `<button class="btn-cancel" style="width:100%; margin-top:8px;" onclick="cancelBlueprintRequest('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>`;
+  } else if(r.status === 'completed' && r.seller_id){
+    actions = `<div class="inquiry-meta">${d.upvoteBpHint}</div><div class="inquiry-actions">${upvoteCtaHtml(r.seller_id, d.upvoteBpHint, r.id, d.upvoteSellerWho, 'blueprint')}</div>`;
   }
   return `
     <div class="inquiry-row">
@@ -10015,6 +10024,62 @@ function styleCompanyBanner(card, shop){
   setShopTextureLayerClass(card.querySelector('.shop-texture-layer'), (shop && shop.texture) || DEFAULT_SHOP_TEXTURE);
   applyShopFrame(card, shop && shop.frame);
 }
+// ===== Aperçu des cadres (récompenses) au survol d'un succès ou d'un rang =====
+function framesForReward(kind, key){
+  // kind : 'sach' (succès vendeur), 'cach' (succès coursier), 'srank' (rang vendeur), 'crank' (rang coursier)
+  return SHOP_FRAMES.filter(f => {
+    const u = f.unlock; if(!u) return false;
+    if(kind === 'sach') return u.ach === key;
+    if(kind === 'cach') return u.cach === key || (u.both && u.ach === key);
+    if(kind === 'srank') return u.rank === key;
+    if(kind === 'crank') return u.crank === key;
+    return false;
+  });
+}
+let framePrevEl = null, framePrevFor = null;
+function hideFramePreview(){
+  if(framePrevEl){ framePrevEl.remove(); framePrevEl = null; }
+  framePrevFor = null;
+}
+function showFramePreview(target, frames){
+  if(framePrevFor === target) return;
+  hideFramePreview();
+  if(!frames.length) return;
+  framePrevFor = target;
+  const d = T[LANG];
+  const pop = document.createElement('div');
+  pop.className = 'frame-prev-pop';
+  pop.innerHTML = `<div class="fpp-title"><span class="sl">//</span> ${frames.length > 1 ? d.rewardFrames : d.rewardFrame}</div>` +
+    frames.map(f => `<div class="fpp-item"><div class="fpp-swatch shop-texture-host"><div class="shop-texture-layer"></div></div><div class="fpp-name">${escHtml(d[f.nameKey] || f.key)}</div></div>`).join('');
+  document.body.appendChild(pop);
+  framePrevEl = pop;
+  const tgtRect = target.getBoundingClientRect();
+  const pw = pop.offsetWidth, ph = pop.offsetHeight;
+  let left = tgtRect.left + tgtRect.width/2 - pw/2;
+  left = Math.max(8, Math.min(window.innerWidth - pw - 8, left));
+  let top = tgtRect.bottom + 10;
+  if(top + ph > window.innerHeight - 8) top = Math.max(8, tgtRect.top - ph - 10);
+  pop.style.left = left + 'px'; pop.style.top = top + 'px';
+  const accent = (getComputedStyle(target).getPropertyValue('--accent') || '').trim();
+  if(accent) pop.style.setProperty('--accent', accent);
+  pop.querySelectorAll('.fpp-swatch').forEach((sw, i) => {
+    setShopTextureLayerClass(sw.querySelector('.shop-texture-layer'), DEFAULT_SHOP_TEXTURE);
+    applyShopFrame(sw, frames[i].key);
+  });
+}
+function rewardTargetFrames(el){
+  const sk = el.dataset.skey, ck = el.dataset.key, rk = el.dataset.rk;
+  if(rk){ const [k, key] = rk.split(':'); return framesForReward(k === 'seller' ? 'srank' : 'crank', key); }
+  if(sk) return framesForReward('sach', sk);
+  if(ck) return framesForReward('cach', ck);
+  return [];
+}
+document.addEventListener('mouseover', e => {
+  const t = e.target.closest && e.target.closest('.achv-badge[data-skey], .achv-badge[data-key], .rk-ico[data-rk]');
+  if(!t){ if(framePrevEl && !(e.target.closest && e.target.closest('.frame-prev-pop'))) hideFramePreview(); return; }
+  showFramePreview(t, rewardTargetFrames(t));
+});
+document.addEventListener('scroll', hideFramePreview, true);
 function shadeColor(hex, percent){
   hex = (hex||'#ff8c1a').trim().replace('#','');
   if(hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
@@ -11245,13 +11310,13 @@ function rankBarHtml(o){
   const adv = (typeof o.fromPct === 'number' && o.fromPct < pct);
   return `
     <div class="rk${o.isMax ? ' maxed' : ''}${adv ? ' adv' : ''}" style="--p:${pct}%${adv ? `; --p0:${o.fromPct}%` : ''}">
-      <div class="rk-ico cur" title="${o.curLabel}">${o.curIcon}</div>
+      <div class="rk-ico cur" title="${o.curLabel}"${o.kind ? ` data-rk="${o.kind}:${o.curKey}"` : ''}>${o.curIcon}</div>
       <div class="rk-mid">
         <div class="rk-top"><span class="rk-cur"><b>//</b> ${o.curLabel}</span><span class="rk-pct">${o.isMax ? 'MAX' : pct + '%'}</span><span class="rk-next">${o.nextLabel}</span></div>
         <div class="rk-bar"><div class="rk-fill"><i class="rk-head"></i></div><div class="rk-ticks"></div></div>
         <div class="rk-bot">${o.midText}</div>
       </div>
-      <div class="rk-ico nxt" title="${o.nextLabel}">${o.nextIcon}</div>
+      <div class="rk-ico nxt" title="${o.nextLabel}"${o.kind ? ` data-rk="${o.kind}:${o.nextKey}"` : ''}>${o.nextIcon}</div>
     </div>`;
 }
 function rankProgressHtml(deliveredCount, prevCount){
@@ -11274,7 +11339,7 @@ function rankProgressHtml(deliveredCount, prevCount){
   if(typeof prevCount === 'number' && prevCount < count && !isMax && getRank(prevCount).key === r.key){
     fromPct = Math.min(100, Math.max(0, Math.round(((prevCount - r.min)/span)*100)));
   }
-  return rankBarHtml({ pct, isMax, curLabel, nextLabel, midText, curIcon: RANK_ICONS[r.key], nextIcon: RANK_ICONS[next.key], fromPct });
+  return rankBarHtml({ pct, isMax, curLabel, nextLabel, midText, curIcon: RANK_ICONS[r.key], nextIcon: RANK_ICONS[next.key], fromPct, kind:'courier', curKey:r.key, nextKey:next.key });
 }
 // Grosse mise en avant du rang (page de profil, profil public) : à la manière d'une médaille.
 function rankShowcaseHtml(deliveredCount){
@@ -11549,7 +11614,7 @@ function sellerRankProgressHtml(salesCount){
   const curLabel = d.sellerRankLabels[r.key];
   const nextLabel = isMax ? curLabel : d.sellerRankLabels[next.key];
   const midText = isMax ? d.rankMaxed : d.rankToNextSales.replace('{n}', remaining).replace('{rank}', nextLabel);
-  return rankBarHtml({ pct, isMax, curLabel, nextLabel, midText, curIcon: SELLER_RANK_ICONS[r.key], nextIcon: SELLER_RANK_ICONS[next.key] });
+  return rankBarHtml({ pct, isMax, curLabel, nextLabel, midText, curIcon: SELLER_RANK_ICONS[r.key], nextIcon: SELLER_RANK_ICONS[next.key], kind:'seller', curKey:r.key, nextKey:next.key });
 }
 function sellerRankShowcaseHtml(salesCount){
   const r = getSellerRank(salesCount || 0);
@@ -12481,7 +12546,7 @@ async function openPublicProfile(id){
     achvGrid.innerHTML = `
       ${rankProgressHtml(stats ? stats.deliveries : 0)}
       <div class="achv-grid">${ACHIEVEMENTS.map(a => `
-      <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-tip="${d.achvDesc[a.key]}">${ACHV_ICONS[a.key]}<span>${d.achvLabels[a.key]}</span></div>
+      <div class="achv-badge ${unlockedSet.has(a.key)?'unlocked':'locked'}" data-key="${a.key}" data-tip="${d.achvDesc[a.key]}">${ACHV_ICONS[a.key]}<span>${d.achvLabels[a.key]}</span></div>
     `).join('')}</div>`;
     setHeroPhoto('pub', p);
     renderCareerStats($('pubCareerStatsCard'), stats);

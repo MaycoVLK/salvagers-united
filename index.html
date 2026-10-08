@@ -1673,7 +1673,11 @@
   #shopListingsGrid .mkt-card:hover, #shopListingsGridFull .mkt-card:hover{border-color:var(--accent); transform:translateY(-3px);
     box-shadow:0 14px 30px -16px rgba(0,0,0,.6), 0 0 0 1px var(--accent-dim);}
   #shopListingsGrid .mkt-photo-wrap, #shopListingsGridFull .mkt-photo-wrap{aspect-ratio:4/3;}
-  #shopListingsGrid .mkt-item-name, #shopListingsGridFull .mkt-item-name{font-size:1rem; min-height:0;}
+  #shopListingsGrid .mkt-item-name, #shopListingsGridFull .mkt-item-name{font-size:1rem; min-height:2.5em;}
+  /* Cartes de blueprint : zones de hauteur fixe (description, matériaux, prix) pour que prix, boutique et boutons soient alignés d'une carte à l'autre */
+  .blueprint-card .bp-description{min-height:2.7em; -webkit-line-clamp:2; margin:0;}
+  .blueprint-card .bp-materials{min-height:2.6em; margin:0;}
+  .blueprint-card .bp-price-rows{min-height:5.6rem; justify-content:flex-start;}
   #shopListingsGrid .mkt-price, #shopListingsGridFull .mkt-price{font-size:1.15rem; text-shadow:0 0 10px var(--accent-dim);}
 
   /* --- VERSION MOBILE DE LA PAGE BOUTIQUE : inspirée des profils type réseau social (bannière compacte,

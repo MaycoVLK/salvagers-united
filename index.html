@@ -1064,6 +1064,20 @@
   .shop-upvote-btn.upvoted{background:var(--accent); box-shadow:0 0 14px var(--accent-dim);}
   .shop-upvote-btn.upvoted .icon, .shop-upvote-btn.upvoted .shop-upvote-label, .shop-upvote-btn.upvoted .shop-upvote-count{color:#03130a;}
   .shop-upvote-btn[hidden]{display:none;}
+
+  /* Bannière entreprise/shop réutilisable (profil public + dashboard coursier) + boutons upvote en liste */
+  .upv-cta{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--accent,var(--border)); color:var(--accent,var(--text)); background:transparent; cursor:pointer; font-family:inherit; letter-spacing:1px; transition:background .2s, color .2s, box-shadow .2s;}
+  .upv-cta:hover{background:color-mix(in srgb, var(--accent,#3dff7a) 22%, transparent);}
+  .upv-cta.upvoted{background:var(--accent,#3dff7a); color:#050606; box-shadow:0 0 10px var(--accent-dim,transparent);}
+  .upv-cta.upv-busy{pointer-events:none;}
+  .cbn-view-btn{white-space:nowrap;}
+  .pub-more{margin-top:6px;}
+  .pub-more-sum{list-style:none; cursor:pointer; font-family:'VT323',monospace; font-size:24px; letter-spacing:2px; color:var(--text); padding:12px 0; border-top:1px solid var(--border); display:flex; align-items:center; gap:8px; user-select:none;}
+  .pub-more-sum::-webkit-details-marker{display:none;}
+  .pub-more-sum .sl{color:var(--accent);}
+  .pub-more-chev{margin-left:auto; color:var(--muted); transition:transform .2s;}
+  .pub-more[open] .pub-more-chev{transform:rotate(180deg);}
+  .cbn-rank-multi{display:flex; flex-direction:column; gap:14px;}
   /* --- FLAMME 8-BIT (upvote, texture "aucune") --- */
   .pixel-flame-particle{position:fixed; width:6px; height:6px; pointer-events:none; z-index:9999; image-rendering:pixelated; animation:pixelFlame .65s steps(5) forwards;}
   @keyframes pixelFlame{
@@ -2661,16 +2675,7 @@
           </div>
         </div>
       </div>
-      <div class="prof-pane prof-ov" id="pubPaneOv">
-      <div class="card" id="pubCareerStatsCard" hidden></div>
-      <div class="card" id="pubAchvCard" hidden>
-        <h3 data-i18n="achvTitle">Succès</h3>
-        <div id="pubAchvGrid"></div>
-      </div>
-      <div class="card" id="pubSellerStatsCard" hidden></div>
-      <div class="card" id="pubSellerAchvCard" hidden></div>
-      </div>
-      <div class="prof-pane" id="pubPaneExtra">
+      <div class="prof-pane" id="pubCompanyBox"></div>
       <div class="card" id="pubShopCard" hidden>
         <div class="shop-preview-head">
           <h3 id="pubShopName">Ma boutique</h3>
@@ -2680,6 +2685,18 @@
         </div>
         <div class="shop-preview-grid" id="pubShopPreviewGrid"></div>
       </div>
+      <details class="pub-more" id="pubMore">
+        <summary class="pub-more-sum"><span class="sl">//</span> <span data-i18n="pubMoreTitle">STATS &amp; SUCCÈS</span> <span class="pub-more-chev">▾</span></summary>
+        <div class="prof-pane prof-ov" id="pubPaneOv" style="margin-top:22px;">
+          <div class="card" id="pubCareerStatsCard" hidden></div>
+          <div class="card" id="pubAchvCard" hidden>
+            <h3 data-i18n="achvTitle">Succès</h3>
+            <div id="pubAchvGrid"></div>
+          </div>
+          <div class="card" id="pubSellerStatsCard" hidden></div>
+          <div class="card" id="pubSellerAchvCard" hidden></div>
+        </div>
+      </details>
       <div class="card" id="pubAdminActions" hidden>
         <h3 data-i18n="adminActionsTitle">Actions admin</h3>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -2687,7 +2704,6 @@
           <button class="btn-logout" onclick="adminResetRole()" data-i18n="resetRoleBtn">RÉINITIALISER LE RÔLE</button>
         </div>
       </div>
-          </div>
       </div>
     </section>
 
@@ -3737,7 +3753,7 @@ const T = {
     cTabAvail:"COMMANDES DISPONIBLES", cTabMine:"MES LIVRAISONS", cTabAch:"SUCCÈS", cStDel:"LIVRÉES", cStProg:"EN COURS", cStMargin:"MARGE TOTALE", cStOpen:"COMMANDES OUVERTES", cActive:"LIVRAISON ACTIVE", cMsgClient:"MESSAGE AU CLIENT", cClient:"Client :", cDeadline:"// Échéance :", cCargo:"CARGAISON", cOrderTotal:"Total de la commande", cYourMargin:"Ta marge", cRoute:"// ITINÉRAIRE D'ACHAT SUGGÉRÉ", cRelease:"RELÂCHER CETTE COMMANDE", cOthers:"MES AUTRES LIVRAISONS ({n})", cClickRow:"CLIQUE SUR UNE LIGNE POUR L'ACTIVER", cAvailFor:"DISPONIBLE POUR LIVRER", cNextTransit:"MARQUER EN TRANSIT ▸", cNextPurchased:"MARQUER ACHETÉE ▸", cNextDelivered:"MARQUER LIVRÉE ▸", cWaiting:"EN ATTENTE D'UN COURSIER",
     shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille", shopTextureDiag:"Diagonales", shopTextureNoise:"Grain", shopTextureGlow:"Lueur", shopTextureStars:"Étoiles", shopTextureRays:"Faisceaux",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
-    upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.",
+    upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.", upvoteCta:"UPVOTER", upvotedLbl:"UPVOTÉ", upvoteCourierTip:"Upvote ton coursier pour mettre en avant son travail", upvoteSellerHint:"Vente terminée ! Un upvote met en avant le travail du vendeur :", upvoteDoneToast:"Livraison terminée ! Pense à upvoter ton coursier (Commander à nouveau / Historique).", pubMoreTitle:"STATS & SUCCÈS", pubNoCompany:"Ce joueur n'a ni entreprise de livraison ni shop pour le moment.", viewShopBtn:"VOIR LA BOUTIQUE →", kickerBoth:"SHOP · ENTREPRISE DE LIVRAISON",
     shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopCraftDelivered:"Crafts livrés", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
     sellerAchvTitle:"Succès vendeur", viewAllAchvBtn:"VOIR TOUT", viewLessAchvBtn:"RÉDUIRE",
     sellerAchvLabels:{jawas_food:"Jawa's food", first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
@@ -3913,7 +3929,7 @@ const T = {
     cTabAvail:"AVAILABLE ORDERS", cTabMine:"MY DELIVERIES", cTabAch:"ACHIEVEMENTS", cStDel:"DELIVERED", cStProg:"IN PROGRESS", cStMargin:"TOTAL MARGIN", cStOpen:"OPEN ORDERS", cActive:"ACTIVE DELIVERY", cMsgClient:"MESSAGE CLIENT", cClient:"Client:", cDeadline:"// Deadline:", cCargo:"CARGO", cOrderTotal:"Order total", cYourMargin:"Your margin", cRoute:"// SUGGESTED SHOPPING ROUTE", cRelease:"RELEASE THIS ORDER", cOthers:"MY OTHER DELIVERIES ({n})", cClickRow:"CLICK A ROW TO MAKE IT ACTIVE", cAvailFor:"AVAILABLE FOR DELIVERY", cNextTransit:"MARK AS IN TRANSIT ▸", cNextPurchased:"MARK AS PURCHASED ▸", cNextDelivered:"MARK AS DELIVERED ▸", cWaiting:"WAITING FOR A COURIER",
     shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid", shopTextureDiag:"Diagonal", shopTextureNoise:"Grain", shopTextureGlow:"Glow", shopTextureStars:"Stars", shopTextureRays:"Rays",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
-    upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.",
+    upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.", upvoteCta:"UPVOTE", upvotedLbl:"UPVOTED", upvoteCourierTip:"Upvote your courier to highlight their work", upvoteSellerHint:"Sale complete! An upvote highlights the seller's work:", upvoteDoneToast:"Delivery complete! Remember to upvote your courier (Order again / History).", pubMoreTitle:"STATS & ACHIEVEMENTS", pubNoCompany:"This player has no delivery company or shop yet.", viewShopBtn:"VIEW THE SHOP →", kickerBoth:"SHOP · DELIVERY COMPANY",
     shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopCraftDelivered:"Crafts delivered", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
     sellerAchvTitle:"Seller achievements", viewAllAchvBtn:"VIEW ALL", viewLessAchvBtn:"COLLAPSE",
     sellerAchvLabels:{jawas_food:"Jawa's food", first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
@@ -4660,7 +4676,7 @@ async function renderMsgThreadItems(g){
     if(it.__kind === 'bpreq_received' || it.__kind === 'bpreq_sent') return blueprintRequestThreadItemHtml(it, it.__kind === 'bpreq_received', bpMap[it.blueprint_id]);
     return chatBubbleHtml(it, it.__kind === 'chat_sent');
   }).join('') : `<p class="muted">${emptyMsg}</p>`;
-  animateShipTracks(box);
+  animateShipTracks(box); hydrateUpvotes(box);
 }
 function chatBubbleHtml(item, isMine){
   const time = new Date(item.created_at).toLocaleTimeString(LANG==='fr'?'fr-FR':'en-US', { hour:'2-digit', minute:'2-digit' });
@@ -4751,6 +4767,7 @@ function inquiryThreadItemHtml(r, iAmSeller, listing, order, courierMap){
     // (il ne fait que la transporter) : l'acheteur peut donc annuler à tout moment tant que la vente n'a pas
     // été clôturée (récupérée en main propre par le vendeur, ou livrée par le coursier — les deux amènent
     // l'inquiry au statut 'completed'), même si un coursier a déjà été sollicité (order_id présent).
+    if(r.status === 'completed' && r.seller_id) actions = `<div class="inquiry-meta">${d.upvoteSellerHint}</div><div class="inquiry-actions">${upvoteCtaHtml(r.seller_id, d.upvoteSellerHint)}</div>`;
     const canCancel = ['pending','countered','accepted'].includes(r.status);
     if(canCancel) actions += `<button class="btn-cancel" onclick="cancelInquiry('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>`;
   }
@@ -5723,6 +5740,8 @@ async function loadClientDashboard(){
   const { data, error } = ordersRes;
   if(error){ $('clientCurrentOrders').textContent = error.message; return; }
   const orders = (data || []).filter(o => o.order_type !== 'marketplace');
+  { const prevIds = new Set((clientOrdersCache||[]).filter(o => o.status !== 'delivered').map(o => o.id));
+    if(prevIds.size && orders.some(o => o.status === 'delivered' && o.courier_id && prevIds.has(o.id))) toastShow(d.upvoteDoneToast); }
   clientOrdersCache = orders;
   const current = orders.filter(o => !['delivered','cancelled'].includes(o.status))
     .sort((a,b) => stepsFor(b).indexOf(b.status) - stepsFor(a).indexOf(a.status) || new Date(b.created_at) - new Date(a.created_at));
@@ -5795,7 +5814,7 @@ async function loadClientDashboard(){
     again.innerHTML = `<div class="mk-lbl-row" style="margin-bottom:6px;"><span class="mk-lbl"><span class="sl">//</span> ${d.hmAgain}</span><button type="button" class="mk-link" onclick="openFullHistory()">${d.hmFullHist.replace('{n}', history.length)}</button></div>` +
       delivered.slice(0,3).map(o => {
         const its = (o.items||[]); const txt = its.slice(0,2).map(it => `${escHtml(it.name)} ×${it.qty}`).join(', ') + (its.length>2 ? ` +${its.length-2}` : '');
-        return `<div class="mk-again-row"><span class="it">${txt}</span><span class="wh">${escHtml(o.exact_location||'-')} · ${escHtml(o.destination_system||'')}</span><span class="stt">${d.hmDelivered}</span><span class="pr">${fmt(o.total_price)}</span><button type="button" class="mk-btn ghost sm" onclick="reorderFrom('${o.id}')">${d.hmReorder}</button></div>`;
+        return `<div class="mk-again-row"><span class="it">${txt}</span><span class="wh">${escHtml(o.exact_location||'-')} · ${escHtml(o.destination_system||'')}</span><span class="stt">${d.hmDelivered}</span><span class="pr">${fmt(o.total_price)}</span>${o.courier_id ? upvoteCtaHtml(o.courier_id) : ''}<button type="button" class="mk-btn ghost sm" onclick="reorderFrom('${o.id}')">${d.hmReorder}</button></div>`;
       }).join('');
   } else { again.hidden = true; again.innerHTML = ''; }
 
@@ -5820,6 +5839,7 @@ async function loadClientDashboard(){
       <div class="hist-detail" id="hist-detail-${o.id}" hidden>
         <div class="meta">${d.orderSystem}${escHtml(o.destination_system)} — ${d.orderLieu}${escHtml(o.exact_location||'-')}</div>
         ${c ? `<div class="meta">${d.orderCourier}${courierLinkHtml(c)}</div>` : ''}
+        ${(c && o.status==='delivered') ? `<div class="meta">${upvoteCtaHtml(c.id)}</div>` : ''}
         ${shipLine}
         ${o.deadline ? `<div class="meta deadline-meta">${d.orderDeadline}${formatDeadline(o.deadline)}</div>` : ''}
         <ul>${(o.items||[]).map(it=>`<li>${escHtml(it.name)} x${it.qty} — ${fmt(it.price*it.qty)}</li>`).join('')}</ul>
@@ -5828,6 +5848,7 @@ async function loadClientDashboard(){
     </div>`;
   }).join('');
   $('historyCount').textContent = history.length;
+  hydrateUpvotes($('clientOrderAgain')); hydrateUpvotes(histBox);
 }
 function toggleHistoryDetail(id){
   const box = $('hist-detail-'+id);
@@ -9817,6 +9838,99 @@ async function toggleShopUpvote(){
     if(btn){ btn.classList.add('upv-busy'); await upvoteChargeFx(btn).catch(()=>{}); btn.classList.remove('upv-busy'); btn.classList.add('upvoted'); const hc = $('shopHeaderCard'); if(hc) hc.classList.add('upv-lit'); }
   }
 }
+
+// ===== Bannière entreprise / shop réutilisable + upvote générique =====
+function upvoteCtaHtml(targetId, tip){
+  const d = T[LANG];
+  return `<button type="button" class="mk-btn ghost sm upv-cta" data-up="${escHtml(targetId)}" title="${escHtml(tip || d.upvoteCourierTip)}" onclick="event.stopPropagation(); upvoteTarget(this)">▲ <span class="upv-lbl">${d.upvoteCta}</span></button>`;
+}
+async function upvoteTarget(btn){
+  if(!btn) return;
+  const id = btn.dataset.up; if(!id) return;
+  const d = T[LANG];
+  if(!session){ toastShow(d.upvoteLoginNote); return; }
+  if(btn.classList.contains('upv-busy')) return;
+  const was = btn.classList.contains('upvoted');
+  let err = null;
+  if(was){ ({ error: err } = await sb.from('shop_upvotes').delete().eq('seller_id', id).eq('client_id', session.user.id)); }
+  else { ({ error: err } = await sb.from('shop_upvotes').insert({ seller_id: id, client_id: session.user.id })); }
+  if(err){ alert('Erreur : ' + err.message); return; }
+  if(!was){ btn.classList.add('upv-busy'); await upvoteChargeFx(btn).catch(()=>{}); btn.classList.remove('upv-busy'); }
+  document.querySelectorAll('[data-up]').forEach(b => {
+    if(b.dataset.up !== id) return;
+    b.classList.toggle('upvoted', !was);
+    const l = b.querySelector('.upv-lbl'); if(l) l.textContent = was ? d.upvoteCta : d.upvotedLbl;
+    const c = b.querySelector('.shop-upvote-count'); if(c) c.textContent = Math.max(0, (parseInt(c.textContent,10)||0) + (was ? -1 : 1));
+    const card = b.closest('.shop-banner-card'); if(card) card.classList.toggle('upv-lit', !was);
+  });
+}
+async function hydrateUpvotes(root){
+  if(!root) return;
+  const btns = [...root.querySelectorAll('[data-up]')];
+  if(!btns.length) return;
+  const d = T[LANG];
+  const ids = [...new Set(btns.map(b => b.dataset.up))];
+  let mine = new Set();
+  if(session){
+    try{ const { data } = await sb.from('shop_upvotes').select('seller_id').eq('client_id', session.user.id).in('seller_id', ids); mine = new Set((data||[]).map(r => r.seller_id)); }catch(e){}
+  }
+  const counts = {};
+  await Promise.all(ids.filter(id => btns.some(b => b.dataset.up === id && b.querySelector('.shop-upvote-count'))).map(async id => {
+    try{ const r = await sb.from('shop_upvotes').select('*', { count:'exact', head:true }).eq('seller_id', id); counts[id] = r.count || 0; }catch(e){}
+  }));
+  btns.forEach(b => {
+    const on = mine.has(b.dataset.up);
+    b.classList.toggle('upvoted', on);
+    const l = b.querySelector('.upv-lbl'); if(l) l.textContent = on ? d.upvotedLbl : d.upvoteCta;
+    const c = b.querySelector('.shop-upvote-count'); if(c && counts[b.dataset.up] != null) c.textContent = counts[b.dataset.up];
+    const card = b.closest('.shop-banner-card'); if(card && on) card.classList.add('upv-lit');
+  });
+}
+// Même bannière que la page boutique (grand logo, titre, description, rang) mais sans IDs fixes.
+// o = { kind:'courier'|'seller'|'both', shop, p, targetId, isOwner, rankHtml, showShopBtn }
+function companyBannerHtml(o){
+  const d = T[LANG];
+  const shop = o.shop || null, p = o.p || null;
+  const name = (shop && shop.shop_name) || (p ? displayName(p) : '—');
+  const logo = shop && shop.logo_url ? `<img class="shop-hero-logo-img" src="${escHtml(shop.logo_url)}" alt="">` : roleAnimSvg(o.kind === 'seller' ? 'seller' : 'courier', 100);
+  const kicker = o.kind === 'both' ? d.kickerBoth : (o.kind === 'seller' ? 'SHOP' : d.companyTitle);
+  const loc = shop && shop.location_system
+    ? `<div class="shop-loc-tag">${SHOP_LOC_PIN_ICON}${escHtml(shop.location_name ? shop.location_name + ' · ' + shop.location_system : shop.location_system)}</div>` : '';
+  const owner = p ? `<div class="courier-box shop-owner-box" onclick="openPublicProfile('${p.id}')"><div class="courier-box-name">▸ ${escHtml(displayName(p))}</div></div>` : '';
+  const desc = shop && shop.description ? shop.description : (!shop && o.isOwner ? d.companyNoShop : '');
+  const gear = o.isOwner ? `<button type="button" class="gear-btn" onclick="openSellerShopEdit()" aria-label="${escHtml(shop ? d.companyCustomize : d.companyCreate)}" title="${escHtml(shop ? d.companyCustomize : d.companyCreate)}">
+      <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/><rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/><rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/></g></svg></button>` : '';
+  const viewBtn = o.showShopBtn ? `<button type="button" class="btn-secondary cbn-view-btn" onclick="openSellerShop('${o.targetId}')">${d.viewShopBtn}</button>` : '';
+  const upv = o.targetId ? `<button type="button" class="shop-upvote-btn" data-up="${escHtml(o.targetId)}" onclick="upvoteTarget(this)">
+      <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/></g></svg>
+      <span class="shop-upvote-label">${d.upvoteBtn}</span><span class="shop-upvote-count">0</span></button>` : '';
+  return `<div class="shop-banner-card shop-texture-host">
+    <div class="shop-texture-layer"></div>
+    <div class="shop-banner-row">
+      <div class="shop-banner-logo">${logo}</div>
+      <div class="shop-banner-id">
+        <div class="shop-banner-top">
+          <div class="shop-banner-text">
+            <div class="shop-banner-kicker"><span class="sl">//</span> ${kicker}</div>
+            <div class="shop-banner-title-row"><h1>${escHtml(name)}</h1></div>
+            <div class="shop-banner-meta">${loc}${owner}</div>
+          </div>
+          <div class="shop-banner-actions">${viewBtn}${gear}${upv}</div>
+        </div>
+        ${desc ? `<div class="shop-description">${escHtml(desc)}</div>` : ''}
+        ${o.rankHtml ? `<div class="shop-rank-strip">${o.rankHtml}</div>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+function styleCompanyBanner(card, shop){
+  if(!card) return;
+  const col = normalizeShopColor(shop && shop.theme_color);
+  card.style.setProperty('--accent', col);
+  card.style.setProperty('--accent-dim', col + '55');
+  setShopTextureLayerClass(card.querySelector('.shop-texture-layer'), (shop && shop.texture) || DEFAULT_SHOP_TEXTURE);
+  applyShopFrame(card, shop && shop.frame);
+}
 function shadeColor(hex, percent){
   hex = (hex||'#ff8c1a').trim().replace('#','');
   if(hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
@@ -10165,22 +10279,9 @@ async function renderCourierCompany(){
   try{ const r = await memoOnce('shopself:'+session.user.id, () => sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle()); shop = r && r.data; }catch(e){}
   const col = normalizeShopColor(shop && shop.theme_color);
   if(dash){ dash.style.setProperty('--accent', col); dash.style.setProperty('--accent-dim', col + '55'); }
-  const name = (shop && shop.shop_name) || (profile ? displayName(profile) : '—');
-  const logo = shop && shop.logo_url ? `<img src="${escHtml(shop.logo_url)}" alt="">` : roleAnimSvg('courier', 100);
-  box.innerHTML = `
-    <div class="company-card shop-texture-host">
-      <div class="shop-texture-layer"></div>
-      <div class="company-logo">${logo}</div>
-      <div class="company-txt">
-        <span class="mk-lbl"><span class="sl">//</span> ${d.companyTitle}</span>
-        <span class="company-name">${escHtml(name)}</span>
-        ${shop ? '' : `<span class="muted" style="font-size:.78rem;">${d.companyNoShop}</span>`}
-      </div>
-      <div class="company-actions"><button type="button" class="mk-btn sm ghost" onclick="openSellerShopEdit()">${shop ? d.companyCustomize : d.companyCreate}</button></div>
-    </div>`;
-  const card = box.querySelector('.company-card');
-  setShopTextureLayerClass(card.querySelector('.shop-texture-layer'), (shop && shop.texture) || DEFAULT_SHOP_TEXTURE);
-  applyShopFrame(card, shop && shop.frame);
+  box.innerHTML = companyBannerHtml({ kind:'courier', shop, p: profile ? { ...profile, id: session.user.id } : null, targetId: session.user.id, isOwner:true });
+  styleCompanyBanner(box.querySelector('.shop-banner-card'), shop);
+  hydrateUpvotes(box);
 }
 async function renderCourierStats(pending, mine){
   const box = $('courierStats'); if(!box) return;
@@ -12308,7 +12409,11 @@ async function openPublicProfile(id){
   // Le bouton boutique se base sur l'EXISTENCE d'une boutique (pas seulement la casquette) : un admin qui teste
   // la vue vendeur avec son propre compte a une boutique alors qu'il n'a pas forcément is_seller=true.
   const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', id).maybeSingle();
-  if(shop && (p.is_seller || p.role === 'admin')){
+  const isSellerLike = !!(shop && (p.is_seller || p.role === 'admin'));
+  const companyBox = $('pubCompanyBox');
+  companyBox.innerHTML = '';
+  let sellerStats = null, unlockedSellerSet = null;
+  if(isSellerLike){
     $('pubShopName').textContent = shop.shop_name || d.shopSettingsTitle;
     $('pubShopCard').hidden = false;
     const { data: previewListings } = await sb.from('marketplace_listings').select('*').eq('seller_id', id).eq('is_deleted', false).order('created_at',{ascending:false}).limit(3);
@@ -12321,11 +12426,24 @@ async function openPublicProfile(id){
     // La progression/les succès vendeur n'étaient affichés que sur la page boutique (openSellerShop), jamais
     // sur la fiche profil — d'où l'impression qu'une vente complétée "ne donnait rien" alors que le succès
     // était en réalité bien débloqué en base. On réutilise ici exactement la même logique que la boutique.
-    const [sellerStats, unlockedSellerSet] = await Promise.all([fetchSellerShopStats(id), fetchUnlockedSellerAchievements(id)]);
+    [sellerStats, unlockedSellerSet] = await Promise.all([fetchSellerShopStats(id), fetchUnlockedSellerAchievements(id)]);
     renderShopStats($('pubSellerStatsCard'), sellerStats);
     $('pubSellerStatsCard').hidden = false;
     renderSellerAchievements(unlockedSellerSet, sellerStats, 'pubSellerAchvCard');
     if(session && session.user.id === id) checkAndRenderSellerAchievements('pubSellerAchvCard');
+  }
+  // Bannière principale : l'entreprise de livraison et/ou le shop du joueur (même carte que la page boutique).
+  if(isCourierLike || isSellerLike){
+    const kind = (isCourierLike && isSellerLike) ? 'both' : (isSellerLike ? 'seller' : 'courier');
+    const ranks = [];
+    if(isCourierLike){ try{ const cs = await fetchCourierCareerStats(p.id); ranks.push(rankProgressHtml(cs ? cs.deliveries : 0)); }catch(e){} }
+    if(isSellerLike){ ranks.push(sellerRankProgressHtml((sellerStats && sellerStats.salesCount) || 0)); }
+    companyBox.innerHTML = companyBannerHtml({ kind, shop, p, targetId: id, isOwner: !!(session && session.user.id === id), showShopBtn: isSellerLike,
+      rankHtml: ranks.length > 1 ? `<div class="cbn-rank-multi">${ranks.join('')}</div>` : (ranks[0] || '') });
+    styleCompanyBanner(companyBox.querySelector('.shop-banner-card'), shop);
+    hydrateUpvotes(companyBox);
+  } else {
+    companyBox.innerHTML = `<p class="muted">${d.pubNoCompany}</p>`;
   }
   $('pubAdminActions').hidden = !(profile && profile.role === 'admin');
 }

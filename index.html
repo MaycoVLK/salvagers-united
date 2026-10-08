@@ -860,7 +860,7 @@
   .frm-streak{position:absolute; left:0; height:2px; width:26px; background:linear-gradient(90deg, transparent, var(--accent), transparent); opacity:0; animation:frmWind var(--dur,4s) linear var(--del,0s) infinite;}
   /* Vaisseau + traînée lumineuse : canvas, le vaisseau vole librement dans des directions aléatoires */
   .shop-frame-layer.frame-coins, .shop-frame-layer.frame-crates, .shop-frame-layer.frame-bolts, .shop-frame-layer.frame-ammo, .shop-frame-layer.frame-route, .shop-frame-layer.frame-flash, .shop-frame-layer.frame-forge, .shop-frame-layer.frame-hearts, .shop-frame-layer.frame-fifteen, .shop-frame-layer.frame-glitch{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
-  .shop-frame-layer.frame-trail{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
+  .shop-frame-layer.frame-skyline, .shop-frame-layer.frame-trail{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
   .shop-frame-extra{position:absolute; inset:0; pointer-events:none; z-index:5; border-radius:inherit;}
   .shop-frame-back{z-index:-1; overflow:hidden;}
   .frm-ship{position:absolute; left:0; top:0; width:15px; height:15px; margin:-7px 0 0 -7px; background:var(--accent); clip-path:polygon(0 0, 100% 50%, 0 100%); filter:drop-shadow(0 0 5px var(--accent));}
@@ -3715,7 +3715,7 @@ const T = {
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NOUVELLE COMMANDE", unlockSales:"{n} ventes", frameLbl:"Cadre", frameNone:"Aucun", frameDrops:"Pixels qui tombent", frameOrbit:"Coins orbitaux", frameNeon:"Néon pulsé", frameShield:"Bombardement", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Manœuvre", frameCoins:"Poignée de main", frameCrates:"Largage", frameBolts:"Éclairs", frameAmmo:"Armée", frameRoute:"Vitesse lumière", frameFlash:"Flashs", frameForge:"Forge", frameHearts:"Cœurs", frameFifteen:"Poches pleines", frameGlitch:"Glitch", frameShatter:"Éclats", unlockRank:"Rang vendeur : ", unlockCAch:"Succès coursier : ", companyTitle:"ENTREPRISE DE LIVRAISON", companyCustomize:"PERSONNALISER", companyCreate:"CRÉER MON ENTREPRISE", companyNoShop:"Donne un nom, un logo et un style à ton entreprise : ils sont partagés avec ton shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Succès : ", lockedTip:"Pour débloquer : ", unlockedTip:"Condition : ", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
+    homeNewOrder:"+ NOUVELLE COMMANDE", unlockSales:"{n} ventes", frameLbl:"Cadre", frameNone:"Aucun", frameDrops:"Pixels qui tombent", frameOrbit:"Coins orbitaux", frameSkyline:"Vue sur la ville", frameNeon:"Néon pulsé", frameShield:"Bombardement", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Manœuvre", frameCoins:"Poignée de main", frameCrates:"Largage", frameBolts:"Éclairs", frameAmmo:"Armée", frameRoute:"Vitesse lumière", frameFlash:"Flashs", frameForge:"Forge", frameHearts:"Cœurs", frameFifteen:"Poches pleines", frameGlitch:"Glitch", frameShatter:"Éclats", unlockRank:"Rang vendeur : ", unlockCAch:"Succès coursier : ", companyTitle:"ENTREPRISE DE LIVRAISON", companyCustomize:"PERSONNALISER", companyCreate:"CRÉER MON ENTREPRISE", companyNoShop:"Donne un nom, un logo et un style à ton entreprise : ils sont partagés avec ton shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Succès : ", lockedTip:"Pour débloquer : ", unlockedTip:"Condition : ", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
     classicOrderNote:"COMMANDE CLASSIQUE : uniquement des objets achetables dans une boutique en jeu — le coursier les achète puis te les livre. Un objet introuvable en boutique (loot, craft, rare…) ? Poste plutôt un desired item.", classicOrderLink:"POSTER UN DESIRED ITEM ▸",
     commodityQualityNote:"Commodities : seules des commodities de qualité 500 peuvent être livrées par commande. Pour une qualité supérieure, passe par la marketplace ou poste un desired item.", commodityQualityShort:"Commodity : qualité 500 uniquement.",
     desiredIntroNote:"DESIRED ITEM : un objet que tu cherches et qui n'est PAS achetable en boutique (loot, craft, qualité supérieure…). N'importe quel joueur peut te proposer de te le fournir ; tu choisis l'offre, puis vous pouvez demander un coursier pour la livraison.", myDesiredTitle:"MES DESIRED ITEMS", noMyDesired:"Tu n'as posté aucun desired item.", postDesiredBtn:"+ POSTER", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"LIVRAISON DESIRED ITEM",
@@ -3891,7 +3891,7 @@ const T = {
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NEW ORDER", unlockSales:"{n} sales", frameLbl:"Frame", frameNone:"None", frameDrops:"Falling pixels", frameOrbit:"Orbiting corners", frameNeon:"Pulsing neon", frameShield:"Bombardment", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Maneuver", frameCoins:"Handshake", frameCrates:"Airdrop", frameBolts:"Lightning", frameAmmo:"Army", frameRoute:"Lightspeed", frameFlash:"Flashes", frameForge:"Forge", frameHearts:"Hearts", frameFifteen:"Full pockets", frameGlitch:"Glitch", frameShatter:"Shattered", unlockRank:"Seller rank: ", unlockCAch:"Courier achievement: ", companyTitle:"DELIVERY COMPANY", companyCustomize:"CUSTOMIZE", companyCreate:"CREATE MY COMPANY", companyNoShop:"Give your company a name, a logo and a style: they are shared with your shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Achievement: ", lockedTip:"To unlock: ", unlockedTip:"Requirement: ", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
+    homeNewOrder:"+ NEW ORDER", unlockSales:"{n} sales", frameLbl:"Frame", frameNone:"None", frameDrops:"Falling pixels", frameOrbit:"Orbiting corners", frameSkyline:"City window", frameNeon:"Pulsing neon", frameShield:"Bombardment", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Maneuver", frameCoins:"Handshake", frameCrates:"Airdrop", frameBolts:"Lightning", frameAmmo:"Army", frameRoute:"Lightspeed", frameFlash:"Flashes", frameForge:"Forge", frameHearts:"Hearts", frameFifteen:"Full pockets", frameGlitch:"Glitch", frameShatter:"Shattered", unlockRank:"Seller rank: ", unlockCAch:"Courier achievement: ", companyTitle:"DELIVERY COMPANY", companyCustomize:"CUSTOMIZE", companyCreate:"CREATE MY COMPANY", companyNoShop:"Give your company a name, a logo and a style: they are shared with your shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Achievement: ", lockedTip:"To unlock: ", unlockedTip:"Requirement: ", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
     classicOrderNote:"CLASSIC ORDER: only items you can buy in an in-game shop — the courier buys them and delivers them to you. Item not sold in shops (loot, crafted, rare…)? Post a desired item instead.", classicOrderLink:"POST A DESIRED ITEM ▸",
     commodityQualityNote:"Commodities: only quality 500 commodities can be delivered through an order. For a higher quality, use the marketplace or post a desired item.", commodityQualityShort:"Commodity: quality 500 only.",
     desiredIntroNote:"DESIRED ITEM: something you're looking for that is NOT sold in shops (loot, crafted, higher quality…). Any player can offer to supply it; you pick an offer, then you can request a courier for the delivery.", myDesiredTitle:"MY DESIRED ITEMS", noMyDesired:"You haven't posted any desired item.", postDesiredBtn:"+ POST", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"DESIRED ITEM DELIVERY",
@@ -6512,7 +6512,7 @@ const SHOP_FRAMES = [
   // du plus simple au plus détaillé ; pyro / stanton / nyx restent toujours côte à côte
   { key:'none', nameKey:'frameNone' },
   { key:'drops', nameKey:'frameDrops', unlock:{ sales:5 } },
-  { key:'orbit', nameKey:'frameOrbit', unlock:{ sales:15 } },
+  { key:'orbit', nameKey:'frameOrbit', unlock:{ upvotes:2 } },
   { key:'neon', nameKey:'frameNeon', unlock:{ upvotes:5 } },
   { key:'flash', nameKey:'frameFlash', unlock:{ ach:'couldnt_be_bothered' } },
   { key:'bolts', nameKey:'frameBolts', unlock:{ cach:'lightning' } },
@@ -6530,6 +6530,7 @@ const SHOP_FRAMES = [
   { key:'forge', nameKey:'frameForge', unlock:{ ach:'crafter_confirmed' } },
   { key:'crates', nameKey:'frameCrates', unlock:{ cach:'first_delivery' } },
   { key:'trail', nameKey:'frameTrail', unlock:{ rank:'trader', sales:5 } },
+  { key:'skyline', nameKey:'frameSkyline', unlock:{ upvotes:10 } },
 ];
 let selectedShopFrame = 'none', shopSavedFrame = null, shopHasFrameColumn = false;
 let shopUnlockCtx = { sales:0, upvotes:0, ach:new Set(), cach:new Set(), admin:false };
@@ -6667,7 +6668,7 @@ const buildShipMesh = () => {
 function startPixelScene(layer, kind){
   const canvas = document.createElement('canvas'); canvas.style.cssText = 'position:absolute; inset:0; width:100%; height:100%;';
   let mount = layer;
-  if(['stanton','nyx','pyro','fly','alien','army','warp','dropoff','handshake','forge2'].includes(kind)){
+  if(['stanton','nyx','pyro','fly','alien','army','warp','dropoff','handshake','forge2','skyline'].includes(kind)){
     // Décor placé DERRIÈRE le contenu de la carte (z-index négatif dans l'hôte isolé) : le texte passe devant.
     const host = layer.parentElement; const back = document.createElement('div'); back.className = 'shop-frame-extra shop-frame-back';
     host.insertBefore(back, layer); if(getComputedStyle(host).isolation !== 'isolate') host.style.isolation = 'isolate'; mount = back;
@@ -6688,6 +6689,52 @@ function startPixelScene(layer, kind){
   const reset = () => {
     const { W, H, p } = inst; inst.items = []; inst.parts = []; inst.spawnT = 0; inst.S = {};
     if(kind === 'route') newRoute();
+    if(kind === 'skyline'){
+      // composition calquée sur la photo (2000x837) : tout est dessiné en coordonnées « image » puis cadré (cover) dans la carte
+      const IW = 2000, IH = 837, sc = Math.max(W/IW, H/IH), vw = W/sc, vh = H/sc;
+      const cxI = Math.max(vw/2, Math.min(IW - vw/2, 800)), cyI = Math.max(vh/2, Math.min(IH - vh/2, 440));
+      inst.S = { t:0, s:sc, cxI, cyI, vl:cxI - vw/2, vr:cxI + vw/2, col:null, c:null, ships:[], shipT:rnd(.5, 1.5), bigT:rnd(7, 11), dots:[], dotT:0, smoke:[], smokeT:0, lookX:900, glitch:[], glitchT:0,
+        clouds:Array.from({length:6}, () => ({ x:rnd(300, 1600), y:rnd(30, 250), w:rnd(120, 260), v:rnd(3, 8) })),
+        blink:Array.from({length:60}, () => ({ x:rnd(480, 1520), y:rnd(250, 700), ph:rnd(0, 6.28), sp:rnd(.6, 2.2) })) };
+      const S = inst.S;
+      S.render = () => {
+        const dpr = window.devicePixelRatio || 1, col = inst.color;
+        const mk = () => { const cv = document.createElement('canvas'); cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); const g = cv.getContext('2d'); g.setTransform(dpr*sc, 0, 0, dpr*sc, dpr*(W/2 - cxI*sc), dpr*(H/2 - cyI*sc)); g.fillStyle = col; g.strokeStyle = col; return { cv, g }; };
+        let seed = 5; const rs = () => (seed = (seed*16807) % 2147483647)/2147483647;
+        // tour en perspective : face avant + face latérale dans l'ombre, étages, ailerons, fenêtres, néons, balcons
+        const tw = (g, b) => { const base = 770, sw = b.sw === undefined ? Math.min(34, b.w*.2) : b.sw, a = b.a, tl = b.top, tr = b.tr === undefined ? b.top : b.tr;
+          g.fillStyle = col; g.globalAlpha = a; g.beginPath(); g.moveTo(b.x, tl); g.lineTo(b.x + b.w, tr); g.lineTo(b.x + b.w, base); g.lineTo(b.x, base); g.closePath(); g.fill();
+          g.fillStyle = '#000'; g.globalAlpha = .4; g.beginPath(); g.moveTo(b.x + b.w, tr); g.lineTo(b.x + b.w + sw, tr + sw*.3); g.lineTo(b.x + b.w + sw, base); g.lineTo(b.x + b.w, base); g.closePath(); g.fill();
+          g.fillStyle = col; g.globalAlpha = a*.6; g.beginPath(); g.moveTo(b.x + b.w, tr); g.lineTo(b.x + b.w + sw, tr + sw*.3); g.lineTo(b.x + b.w + sw, base); g.lineTo(b.x + b.w, base); g.closePath(); g.fill();
+          g.globalAlpha = Math.min(.9, a*2.6); g.fillRect(b.x + b.w - 1, tr, 2, base - tr); g.fillRect(b.x, Math.min(tl, tr), 1.5, base - Math.min(tl, tr)); g.beginPath(); g.moveTo(b.x, tl); g.lineTo(b.x + b.w, tr); g.lineTo(b.x + b.w + sw, tr + sw*.3); g.lineWidth = 1.6; g.stroke();
+          if(b.fl !== 0){ g.globalAlpha = Math.min(.5, a*1.2); for(let y = Math.max(tl, tr) + 24; y < base; y += (b.fl || 22)) g.fillRect(b.x, y, b.w + sw, 1.2);
+            g.globalAlpha = Math.min(.45, a*1.0); for(let x = b.x + b.w/5; x < b.x + b.w - 4; x += b.w/5) g.fillRect(x, Math.max(tl, tr), 1.5, base - Math.max(tl, tr)); }
+          if(b.win){ g.globalAlpha = Math.min(.7, a*3); g.beginPath(); for(let y = Math.max(tl, tr) + 30; y < base - 20; y += (b.fl || 22)) for(let x = b.x + 8; x < b.x + b.w - 10; x += 16) if(rs() < b.win) g.rect(x, y, 7, 5); g.fill(); }
+          (b.neon || []).forEach(y => { g.globalAlpha = .8; g.fillRect(b.x + 3, y, b.w - 6, 3); g.globalAlpha = .18; g.fillRect(b.x, y - 5, b.w + sw, 13); });
+          (b.ledge || []).forEach(y => { g.globalAlpha = Math.min(.8, a*3.2); g.fillRect(b.x - 10, y, b.w + sw + 20, 6); g.globalAlpha = Math.min(.5, a*2); for(let x = b.x - 8; x < b.x + b.w + sw + 12; x += 12) g.fillRect(x, y + 6, 1.5, 14); });
+          if(b.ladder){ g.globalAlpha = .6; g.fillRect(b.ladder, b.ladderTop, 1.5, 150); g.fillRect(b.ladder + 22, b.ladderTop, 1.5, 150); for(let y = b.ladderTop; y < b.ladderTop + 150; y += 10) g.fillRect(b.ladder, y, 22, 1); }
+          if(b.ant){ g.globalAlpha = .55; g.fillRect(b.x + b.w*.6, Math.min(tl, tr) - b.ant, 2, b.ant); } };
+        // fenêtre : lueur du ciel
+        const far = mk(), mid = mk(), near = mk();
+        far.g.globalAlpha = .045; far.g.beginPath(); far.g.moveTo(592, 58); far.g.lineTo(1180, 14); far.g.lineTo(2000, 14); far.g.lineTo(2000, 740); far.g.lineTo(980, 716); far.g.lineTo(330, 632); far.g.closePath(); far.g.fill();
+        [[330,70,230],[400,60,140],[445,90,265],[540,70,195],[600,60,300],[1010,50,310],[1355,40,150],[1410,50,215],[1465,60,120],[1500,40,200],[760,60,330],[930,60,340]].forEach(b => tw(far.g, { x:b[0], w:b[1], top:b[2], a:.07, fl:30, sw:12 }));
+        // plan moyen
+        tw(mid.g, { x:490, w:165, top:185, a:.13, win:.22, ant:50, sw:26 });
+        tw(mid.g, { x:655, w:185, top:38, a:.16, win:.12, fl:26, sw:28, ledge:[300] });
+        tw(mid.g, { x:850, w:150, top:395, a:.12, win:.2, sw:22, neon:[470] });
+        tw(mid.g, { x:1000, w:140, top:28, a:.16, win:.1, fl:24, sw:26, ladder:1004, ladderTop:110 });
+        tw(mid.g, { x:1190, w:140, top:60, tr:150, a:.17, win:.1, fl:26, sw:30, ledge:[420, 600] });
+        tw(mid.g, { x:1140, w:285, top:335, a:.14, win:.16, fl:20, sw:30 });
+        tw(mid.g, { x:1425, w:125, top:250, a:.15, win:.14, fl:22, sw:20, ledge:[380, 520] });
+        // plan proche
+        tw(near.g, { x:1550, w:300, top:95, a:.22, win:.07, fl:28, sw:60, ledge:[210, 330, 450, 570, 690] });
+        tw(near.g, { x:335, w:150, top:505, a:.2, win:.12, fl:22, sw:24 });
+        tw(near.g, { x:985, w:170, top:490, a:.2, win:.18, fl:20, sw:22, neon:[505] });
+        tw(near.g, { x:1090, w:210, top:478, a:.2, win:.14, fl:20, sw:26 });
+        near.g.fillStyle = col; near.g.globalAlpha = .75; near.g.fillRect(1030, 378, 110, 3); near.g.fillRect(990, 442, 150, 3); near.g.globalAlpha = .18; near.g.fillRect(1030, 372, 110, 14); near.g.fillRect(990, 436, 150, 14);
+        S.c = { far:far.cv, mid:mid.cv, near:near.cv }; S.col = col;
+      };
+    }
     if(kind === 'stanton'){
       const sc = Math.max(.7, Math.min(1.4, H/260));
       // 3 plans : GRANDS bâtiments au fond (lents), MOYENS au milieu, PETITS au premier plan (rapides)
@@ -7184,6 +7231,100 @@ function startPixelScene(layer, kind){
           ctx.restore();
         }
       }
+    } else if(kind === 'skyline'){
+      const S = inst.S, t = (S.t += dt), KI = 60;
+      if(!S.c || S.col !== inst.color) S.render();
+      const setI = () => ctx.setTransform(dpr*S.s, 0, 0, dpr*S.s, dpr*(W/2 - S.cxI*S.s), dpr*(H/2 - S.cyI*S.s)), setS = () => ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const col = inst.color, blk = a => { ctx.fillStyle = '#000'; ctx.globalAlpha = a; }, tint = a => { ctx.fillStyle = col; ctx.globalAlpha = a; }, wht = a => { ctx.fillStyle = '#fff'; ctx.globalAlpha = a; };
+      ctx.shadowBlur = 0; ctx.lineJoin = 'round';
+      // ----- ciel : nuages qui dérivent dans les trouées -----
+      setI(); S.clouds.forEach(c => { c.x += c.v*dt; if(c.x - c.w > 2100) c.x = -c.w; tint(.07); for(let i=0;i<4;i++){ ctx.beginPath(); ctx.ellipse(c.x + (i - 1.5)*c.w*.3, c.y + Math.sin(i*2)*c.w*.05, c.w*.3, c.w*.11, 0, 0, 6.283); ctx.fill(); } });
+      // ----- trafic aérien lointain (points lumineux) -----
+      S.dotT -= dt; if(S.dotT <= 0){ S.dotT = rnd(.25, .65); const dir = Math.random() < .5 ? 1 : -1, ly = [150, 225, 320, 420][Math.floor(Math.random()*4)] + rnd(-6, 6); S.dots.push({ x:dir > 0 ? S.vl - 80 : S.vr + 80, y:ly, v:dir*rnd(180, 420), tr:[] }); }
+      S.dots = S.dots.filter(d => { d.x += d.v*dt; d.tr.push(d.x); if(d.tr.length > 10) d.tr.shift(); ctx.shadowColor = col; ctx.shadowBlur = 5; d.tr.forEach((x, i) => { tint((i/d.tr.length)*.55); ctx.fillRect(x, d.y, 5, 3); }); ctx.shadowBlur = 0; return d.x > S.vl - 120 && d.x < S.vr + 120; });
+      setS(); ctx.globalAlpha = 1; ctx.drawImage(S.c.far, 0, 0, W, H);
+      // ----- vaisseaux (même modèle 3D que « Manœuvre ») : 3 profondeurs -----
+      S.shipT -= dt; if(S.shipT <= 0){ S.shipT = rnd(2.5, 5.5); const dir = Math.random() < .5 ? 1 : -1, far = Math.random() < .5; S.ships.push({ dir, layer:far ? 0 : 1, x:dir > 0 ? S.vl - 160 : S.vr + 160, y:rnd(110, 480), v:dir*rnd(110, 200)*(far ? .7 : 1), sc:far ? rnd(.14, .22) : rnd(.28, .42), A:far ? .45 : .65 }); }
+      S.bigT -= dt; if(S.bigT <= 0){ S.bigT = rnd(10, 16); const dir = Math.random() < .5 ? 1 : -1; S.ships.push({ dir, layer:2, x:dir > 0 ? S.vl - 380 : S.vr + 380, y:rnd(150, 330), v:dir*rnd(260, 360), sc:rnd(.8, 1.0), A:.9 }); }
+      const cm = mkCam({ tx:0, ty:0, yaw:.3, pitch:.12, d:10 }, 1000, 420, KI);
+      S.ships = S.ships.filter(sh => { sh.x += sh.v*dt; return sh.dir > 0 ? sh.x < S.vr + 420 : sh.x > S.vl - 420; });
+      const drawShips = layer => { const list = []; setI(); S.ships.forEach(sh => { if(sh.layer !== layer) return; ctx.shadowColor = col; ctx.shadowBlur = 6; for(let k=1;k<=7;k++){ tint(.3*(1 - k/8)); ctx.fillRect(sh.x - sh.dir*(sh.sc*95 + k*sh.sc*22), sh.y - 1.5, sh.sc*20, 3); } ctx.shadowBlur = 0;
+          ship3(list, cm, { pos:[(sh.x - 1000)/(KI*.955), (420 - sh.y)/KI, 0], roll:.05*Math.sin(t*.8 + sh.y), pitch:.02, yaw:sh.dir > 0 ? 0 : Math.PI }, { fl:1.3, scale:sh.sc, A:sh.A }); }); flush(list); };
+      drawShips(0);
+      setS(); ctx.globalAlpha = 1; ctx.drawImage(S.c.mid, 0, 0, W, H);
+      drawShips(1);
+      // ----- enseignes et hologrammes (coordonnées image) -----
+      setI();
+      S.blink.forEach(b => { const a = Math.sin(t*b.sp + b.ph); if(a > .6){ tint((a - .55)*1.2); ctx.fillRect(b.x, b.y, 6, 5); } });
+      { const fl = .8 + .2*Math.sin(t*3.1) + (Math.random() < .03 ? -.4 : 0), hx = 890, hy = 340, hw = 115, hh = 200;
+        tint(.14*fl); ctx.fillRect(hx - hw/2, hy - hh/2, hw, hh); ctx.beginPath(); ctx.ellipse(hx, hy - hh/2, hw/2, 14, 0, 0, 6.283); ctx.fill(); ctx.beginPath(); ctx.ellipse(hx, hy + hh/2, hw/2, 14, 0, 0, 6.283); ctx.fill();
+        tint(.55*fl); ctx.fillRect(hx - hw/2, hy - hh/2, 2, hh); ctx.fillRect(hx + hw/2 - 2, hy - hh/2, 2, hh); ctx.fillRect(hx - hw/2, hy - hh/2 - 2, hw, 2);
+        for(let k=0;k<14;k++){ tint(.2*fl); ctx.fillRect(hx - hw/2, hy - hh/2 + ((k/14 + t*.1) % 1)*hh, hw, 2); }
+        // enseigne magenta qui grésille, sous le cylindre
+        S.glitchT -= dt; if(S.glitchT <= 0){ S.glitchT = .12; S.glitch = Array.from({length:24}, () => Math.random() < .55); }
+        const gx = 785, gy = 535, gw = 190, gh = 58, off = Math.random() < .06 ? rnd(-5, 5) : 0; tint(.1); ctx.fillRect(gx + off, gy, gw, gh);
+        S.glitch.forEach((on, i) => { if(on){ tint(.65*fl); ctx.fillRect(gx + off + 8 + (i % 8)*gw/8.4, gy + 7 + Math.floor(i/8)*gh/3.3, gw/11, gh/6); } });
+        // grande enseigne dorée sur l'immeuble du fond (aucun texte : barres lumineuses)
+        const bx = 1148, by = 288, bw = 168, bh = 36; tint(.16); ctx.fillRect(bx, by, bw, bh); tint(.65); ctx.lineWidth = 2; ctx.strokeRect(bx, by, bw, bh);
+        for(let k=0;k<8;k++){ tint(.35 + .3*Math.sin(t*2 + k*1.3)); ctx.fillRect(bx + 8 + k*(bw - 16)/8, by + 9, (bw - 16)/11, 18); }
+        // panneau « Astro » à gauche
+        tint(.12); ctx.fillRect(488, 372, 125, 85); wht(.28 + .15*Math.sin(t*1.3)); for(let k=0;k<5;k++) ctx.fillRect(500 + ((t*30 + k*37) % 90), 385 + k*14, 25 + k*6, 3); tint(.55); ctx.lineWidth = 1.5; ctx.strokeRect(488, 372, 125, 85);
+        // néon rouge vertical sur la tour
+        tint((.4 + .25*Math.sin(t*5))*(Math.random() < .02 ? .2 : 1)); ctx.fillRect(738, 55, 6, 200); tint(.12); ctx.fillRect(728, 55, 26, 200);
+        // enseigne en haut à droite + œil holographique
+        tint(.14); ctx.fillRect(1520, 18, 120, 74); tint(.5 + .2*Math.sin(t*2.2)); ctx.strokeRect(1520, 18, 120, 74); for(let k=0;k<3;k++){ tint(.4 + .25*Math.sin(t*3 + k*2)); ctx.fillRect(1534, 34 + k*20, 92 - k*14, 8); }
+        tint(.35 + .2*Math.sin(t*1.5)); ctx.beginPath(); ctx.ellipse(1475, 266, 14, 8, 0, 0, 6.283); ctx.stroke(); ctx.beginPath(); ctx.arc(1475, 266, 3.5, 0, 6.283); ctx.fill();
+      }
+      // fumées des cheminées
+      S.smokeT -= dt; if(S.smokeT <= 0){ S.smokeT = .3; [1186, 1138].forEach(x => S.smoke.push({ x:x + rnd(-2, 2), y:262, a:0, life:rnd(3.5, 5.5), v:rnd(10, 18), dx:rnd(3, 10), r:6 })); }
+      S.smoke = S.smoke.filter(q => { q.a += dt; if(q.a > q.life) return false; q.y -= q.v*dt; q.x += q.dx*dt; const k = q.a/q.life; tint(.2*(1 - k)); ctx.beginPath(); ctx.arc(q.x, q.y, q.r*(1 + k*3.2), 0, 6.283); ctx.fill(); return true; });
+      setS(); ctx.globalAlpha = 1; ctx.drawImage(S.c.near, 0, 0, W, H);
+      drawShips(2);
+      // ----- premier plan (coordonnées image) -----
+      setI();
+      let look = null, ld = 1e9; S.ships.forEach(sh => { const d = Math.abs(sh.x - 900)/(sh.layer === 2 ? 3 : 1); if(sh.x > S.vl && sh.x < S.vr && d < ld){ ld = d; look = sh.x; } });
+      S.lookX += (((look === null) ? 1000 : look) - S.lookX)*(1 - Math.exp(-1.4*dt));
+      // reflet de la vitre
+      wht(.035); const gxs = 700 + 150*Math.sin(t*.15); ctx.beginPath(); ctx.moveTo(gxs, 30); ctx.lineTo(gxs + 150, 30); ctx.lineTo(gxs - 20, 700); ctx.lineTo(gxs - 170, 700); ctx.closePath(); ctx.fill();
+      // cadre : grand pan incliné à gauche, bandeau haut, rebord
+      blk(.78); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(600, 0); ctx.lineTo(592, 58); ctx.lineTo(330, 632); ctx.lineTo(190, 712); ctx.lineTo(0, 712); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(592, 0); ctx.lineTo(2000, 0); ctx.lineTo(2000, 14); ctx.lineTo(1180, 12); ctx.lineTo(592, 58); ctx.closePath(); ctx.fill();
+      tint(.1); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(600, 0); ctx.lineTo(592, 58); ctx.lineTo(330, 632); ctx.lineTo(190, 712); ctx.lineTo(0, 712); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = col; ctx.lineWidth = 3; tint(.65); ctx.beginPath(); ctx.moveTo(592, 58); ctx.lineTo(330, 632); ctx.lineTo(980, 716); ctx.stroke(); ctx.moveTo(592, 58); ctx.lineTo(1180, 12); ctx.stroke();
+      ctx.lineWidth = 1.5; tint(.35); ctx.beginPath(); ctx.moveTo(560, 70); ctx.lineTo(300, 640); ctx.stroke();
+      blk(.82); ctx.beginPath(); ctx.moveTo(190, 712); ctx.lineTo(980, 716); ctx.lineTo(1780, 742); ctx.lineTo(2000, 742); ctx.lineTo(2000, 837); ctx.lineTo(0, 837); ctx.lineTo(0, 712); ctx.closePath(); ctx.fill(); tint(.09); ctx.fill(); tint(.55); ctx.fillRect(980, 714, 1020, 3);
+      // lampe cube lumineuse
+      { const pulse = .85 + .1*Math.sin(t*1.7); ctx.shadowColor = col; ctx.shadowBlur = 40; wht(.7*pulse); ctx.fillRect(1188, 652, 86, 138); ctx.shadowBlur = 0; tint(.5); ctx.lineWidth = 2; ctx.strokeStyle = col; ctx.strokeRect(1188, 652, 86, 138); wht(.25); ctx.fillRect(1196, 660, 70, 14); }
+      // plante en pot (pot noir à bandes blanches, grandes feuilles)
+      { [[1390,230,58],[1300,335,52],[1345,262,46],[1535,300,56],[1500,420,50],[1455,350,48],[1292,470,42],[1522,505,40]].forEach((l, i) => { const bx = 1398 + (i - 3.5)*5, by = 650, ex = l[0] + Math.sin(t*.8 + i)*5, ey = l[1], mx = (bx + ex)/2, my = (by + ey)/2, dx = ey - by, dy = bx - ex, nl = Math.hypot(dx, dy) || 1, nx = dx/nl*l[2], ny = dy/nl*l[2];
+          blk(.86); ctx.beginPath(); ctx.moveTo(bx, by); ctx.quadraticCurveTo(mx + nx, my + ny, ex, ey); ctx.quadraticCurveTo(mx - nx, my - ny, bx, by); ctx.fill(); tint(.2); ctx.fill(); ctx.strokeStyle = col; tint(.6); ctx.lineWidth = 1.6; ctx.stroke(); tint(.45); ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(ex, ey); ctx.stroke(); });
+        blk(.9); ctx.beginPath(); ctx.moveTo(1330, 645); ctx.lineTo(1465, 645); ctx.lineTo(1450, 810); ctx.lineTo(1345, 810); ctx.closePath(); ctx.fill(); wht(.7); ctx.fillRect(1330, 645, 135, 14); ctx.fillRect(1346, 770, 103, 14); tint(.5); ctx.strokeRect(1330, 645, 135, 165); }
+      // personnage de dos : sac à dos avec 2 modules à voyants, arme en bandoulière, veste, bras blindé, casque
+      { const br = Math.sin(t*1.1)*1.6, dh = Math.max(-1, Math.min(1, (S.lookX - 700)/700))*8, hx = 703 + dh, hy = 478 + br*.5;
+        const poly = (pts, fa, ea, tn) => { ctx.beginPath(); pts.forEach((q, i) => i ? ctx.lineTo(q[0], q[1] + br) : ctx.moveTo(q[0], q[1] + br)); ctx.closePath(); blk(Math.min(1, fa + .08)); ctx.fill(); tint(tn*.5); ctx.fill(); tint(Math.min(1, ea*1.3)); ctx.strokeStyle = col; ctx.lineWidth = 2.6; ctx.stroke(); };
+        // arme longue en bandoulière (boucle en haut)
+        poly([[432,336],[462,326],[480,430],[492,612],[462,618],[448,440]], .9, .6, .12); tint(.6); ctx.lineWidth = 2.5; ctx.strokeStyle = col; ctx.beginPath(); ctx.ellipse(447, 336 + br, 17, 11, -.2, 0, 6.283); ctx.stroke();
+        // veste (torse) + épaule gauche derrière le sac
+        poly([[575,600],[612,552],[700,545],[805,566],[852,640],[846,837],[585,837]], .88, .55, .2);
+        // col jaune
+        wht(.6); ctx.beginPath(); ctx.moveTo(742, 560 + br); ctx.lineTo(800, 572 + br); ctx.lineTo(798, 598 + br); ctx.lineTo(748, 588 + br); ctx.closePath(); ctx.fill();
+        // sac à dos : corps, deux modules hauts, bidons en bas
+        poly([[482,520],[520,470],[662,476],[694,526],[694,780],[640,802],[498,792],[470,700]], .9, .65, .3);
+        poly([[484,510],[578,492],[580,612],[488,626]], .9, .6, .25); poly([[582,496],[652,494],[664,520],[658,614],[582,614]], .9, .6, .25);
+        tint(.5); ctx.fillRect(484, 640, 210, 3); ctx.fillRect(484, 700, 210, 3); ctx.fillRect(586, 480, 3, 320 + br);
+        [[522,752],[568,752],[614,752]].forEach(c => { poly([[c[0],c[1]],[c[0]+36,c[1]],[c[0]+36,c[1]+50],[c[0],c[1]+50]], .9, .55, .25); });
+        // voyants cyan des deux modules
+        const on = Math.sin(t*3) > -.3; ctx.shadowColor = col; ctx.shadowBlur = 10; wht(on ? .95 : .4); ctx.fillRect(492, 543 + br, 14, 18); ctx.fillRect(540, 545 + br, 14, 18); ctx.shadowBlur = 0;
+        // bras droit blindé : épaulière et plaques argentées
+        poly([[772,572],[838,584],[868,656],[858,742],[804,764],[780,700]], .8, .75, .08); wht(.38); ctx.beginPath(); ctx.moveTo(786, 586 + br); ctx.lineTo(836, 596 + br); ctx.lineTo(856, 650 + br); ctx.lineTo(808, 660 + br); ctx.closePath(); ctx.fill(); wht(.3); ctx.fillRect(796, 690 + br, 56, 46); tint(.6); ctx.strokeRect(796, 690 + br, 56, 46);
+        // cou, appareil noir fixé sur le casque, casque et visière
+        blk(.9); ctx.fillRect(660, 530 + br, 76, 40);
+        poly([[628,430],[700,422],[704,476],[632,484]], .95, .6, .06);
+        ctx.beginPath(); ctx.ellipse(hx, hy + br, 68, 68, 0, 0, 6.283); blk(.97); ctx.fill(); tint(.16); ctx.fill(); tint(.85); ctx.strokeStyle = col; ctx.lineWidth = 2.6; ctx.stroke();
+        tint(.5); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(hx, hy - 68 + br); ctx.lineTo(hx + 4, hy + 60 + br); ctx.stroke(); ctx.beginPath(); ctx.arc(hx, hy + br, 56, .35, 2.8); ctx.stroke();
+        wht(.8); ctx.beginPath(); ctx.ellipse(hx + 28, hy - 34 + br, 22, 8, -.5, 0, 6.283); ctx.fill();
+      }
+      setS(); ctx.globalAlpha = 1; ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.lineJoin = 'miter';
     } else if(kind === 'stanton'){
       const S = inst.S; S.t += dt; ctx.shadowBlur = 0;
       S.layers.forEach((L, li) => {
@@ -7665,6 +7806,8 @@ function applyShopFrame(host, key){
         e.style.width = sz+'px'; e.style.height = sz+'px';
       }
     }
+  } else if(key === 'skyline'){
+    if(!reduce) startPixelScene(layer, 'skyline'); // ville vue à travers une fenêtre, vaisseaux qui passent
   } else if(key === 'stanton'){
     if(!reduce) startPixelScene(layer, 'stanton'); // ville futuriste qui défile derrière les infos, vaisseaux qui passent
   } else if(key === 'trail' && !reduce){

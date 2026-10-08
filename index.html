@@ -1070,7 +1070,30 @@
   .upv-cta:hover{background:color-mix(in srgb, var(--accent,#3dff7a) 22%, transparent);}
   .upv-cta.upvoted{background:var(--accent,#3dff7a); color:#050606; box-shadow:0 0 10px var(--accent-dim,transparent);}
   .upv-cta.upv-busy{pointer-events:none;}
+  .upv-cta{position:relative; overflow:hidden;}
+  .upv-cta > *{position:relative; z-index:1;}
+  .upv-cta .upv-bar{position:absolute; z-index:0; left:0; top:0; bottom:0; width:0; background:var(--accent,#3dff7a); opacity:.85; transition:width .72s steps(14,end);}
+  .upv-cta .upv-bar.go{width:100%;}
+  .upv-cta .upv-bar.done{opacity:0; transition:opacity .16s ease;}
+  .upv-cta.upv-busy{color:#050606;}
   .cbn-view-btn{white-space:nowrap;}
+
+  /* Message automatique d'upvote dans la messagerie : barre qui se remplit puis se valide */
+  .chat-bubble.upv{border-color:var(--accent); background:linear-gradient(var(--bg2),var(--panel)); animation:upvmBubble 1.6s ease-out 1;}
+  .upv-msg{position:relative; display:flex; flex-direction:column; gap:5px; min-width:210px;}
+  .upv-msg-head{font-family:'VT323',monospace; font-size:20px; letter-spacing:1px; color:var(--text); line-height:1.1;}
+  .upv-msg-arrow{color:var(--accent); display:inline-block; animation:upvmArrow 1.1s steps(6,end) 1;}
+  .upv-msg-sub{font-size:.7rem; color:var(--muted); letter-spacing:1px; text-transform:uppercase;}
+  .upv-msg-track{position:relative; height:9px; border:1px solid var(--accent); background:rgba(0,0,0,.35); margin-top:3px;}
+  .upv-msg-fill{display:block; height:100%; width:0; background:var(--accent); animation:upvmFill 1s steps(14,end) .15s forwards;}
+  .upv-spark{position:absolute; bottom:100%; width:3px; height:3px; background:var(--accent); opacity:0; animation:upvmSpark .9s steps(6,end) forwards;}
+  .upv-msg-ok{font-family:'Share Tech Mono',monospace; font-size:.68rem; letter-spacing:2px; color:var(--accent); opacity:0; animation:upvmOk .3s ease 1.15s forwards;}
+  @keyframes upvmFill{to{width:100%;}}
+  @keyframes upvmOk{to{opacity:1;}}
+  @keyframes upvmSpark{0%{opacity:0; transform:translateY(0);} 30%{opacity:1;} 100%{opacity:0; transform:translateY(-18px);}}
+  @keyframes upvmArrow{0%{transform:translateY(5px); opacity:.3;} 100%{transform:translateY(0); opacity:1;}}
+  @keyframes upvmBubble{0%,70%{box-shadow:0 0 0 transparent;} 85%{box-shadow:0 0 14px var(--accent-dim);} 100%{box-shadow:0 0 0 transparent;}}
+  @media (prefers-reduced-motion:reduce){ .upv-msg-fill{animation:none; width:100%;} .upv-msg-ok{animation:none; opacity:1;} .upv-spark{display:none;} .chat-bubble.upv, .upv-msg-arrow{animation:none;} }
   .pub-more{margin-top:6px;}
   .pub-more-sum{list-style:none; cursor:pointer; font-family:'VT323',monospace; font-size:24px; letter-spacing:2px; color:var(--text); padding:12px 0; border-top:1px solid var(--border); display:flex; align-items:center; gap:8px; user-select:none;}
   .pub-more-sum::-webkit-details-marker{display:none;}
@@ -2534,7 +2557,6 @@
           <button class="tab-btn" id="tab-ach" onclick="switchCourierTab('ach')" data-i18n="cTabAch">SUCCÈS</button>
         </div>
         <div class="mk-stats" id="courierStats"></div>
-        <div id="courierRankBar"></div>
         <div class="mk-slim" id="courierAvailCard"></div>
         <div id="courierPendingPane"></div>
         <div id="courierMinePane" hidden></div>
@@ -3747,13 +3769,13 @@ const T = {
     desiredIntroNote:"DESIRED ITEM : un objet que tu cherches et qui n'est PAS achetable en boutique (loot, craft, qualité supérieure…). N'importe quel joueur peut te proposer de te le fournir ; tu choisis l'offre, puis vous pouvez demander un coursier pour la livraison.", myDesiredTitle:"MES DESIRED ITEMS", noMyDesired:"Tu n'as posté aucun desired item.", postDesiredBtn:"+ POSTER", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"LIVRAISON DESIRED ITEM",
     offerMarkDeliveredBtn:"MARK AS DELIVERED", offerRequestCourierBtn:"DEMANDER UN COURIER", offerCourierPending:"Coursier demandé — en attente d'un coursier.", offerCourierAssigned:"Coursier assigné :", offerDeliveredDone:"Marqué comme livré.", offerNeedLocation:"Renseigne un lieu de livraison valide (liste de lieux).", offerDeliveryFeeNote:"Frais coursier (min 50 000 aUEC) ajoutés à la commande.",
  adminRemoveBtn:"RETIRER", adminRemoveTitle:"Retirer cette commande ?", adminRemoveIntro:"La commande sera supprimée et le client verra ce message dans une fenêtre à sa prochaine connexion.", adminRemoveReasonLbl:"Message au client", adminRemoveDefaultReason:"Ta commande a été retirée car elle contient des objets qui ne sont pas achetables en boutique en jeu, ce qui ne respecte pas les conditions d'utilisation du service. Tu peux en passer une nouvelle avec des objets disponibles en boutique.", adminRemoveConfirm:"RETIRER LA COMMANDE", adminRemoveDone:"Commande retirée, le client sera prévenu.", removedOrderTitle:"Commande retirée", removedOrderIntro:"Une de tes commandes a été retirée par un administrateur :", removedOrderMsgLbl:"MESSAGE", removedOrderOk:"COMPRIS", pAccTitle:"Mon compte", pAccRole:"Rôle", pTabOverview:"APERÇU", pTabSettings:"RÉGLAGES", pTabAccount:"COMPTE", newsTag:"// BETA 04", newsTxt:"Nouveau : annuaire des shops, statut personnalisable sur chaque shop et nouvelle interface.", newsDismiss:"MASQUER ✕", homeHello:"Salut, {name}", homeFresh:"NOUVEAUTÉS SUR LA MARKETPLACE", homeSeeAll:"TOUT VOIR ▸", homeInProgress:"En cours", homeStatOrders:"COMMANDES", homeStatDelivered:"LIVRÉES", homeStatSpent:"DÉPENSÉ (aUEC)", homeStatActive:"EN COURS", homeMore:"+{n} DE PLUS ▾", homeLess:"MOINS ▴", homeCargo:"CARGAISON",
-    hmOrdersIn:"COMMANDES EN COURS ({n})", hmMostAdv:"LES PLUS AVANCÉES D'ABORD", hmViewAll:"VOIR TOUTES LES COMMANDES ▸", hmShowLess:"VOIR MOINS ▴", hmNeedElse:"Besoin d'autre chose ?", hmCtaTitle:"Besoin de quelque chose ? Commande maintenant !", hmCtaSub:"Choisis tes objets et une destination à Stanton, Nyx ou Pyro. Un coursier s'occupe du reste.", hmHow:"COMMENT ÇA MARCHE", hm1t:"Tu commandes", hm1x:"Objets et destination. Le prix est affiché avant de confirmer.", hm2t:"Un coursier achète", hm2x:"Il reçoit un itinéraire d'achat suggéré et livre ta cargaison.", hm3t:"Tu suis", hm3x:"Acheté, en transit, livré. Discute avec ton coursier à tout moment.", hmAgain:"COMMANDER À NOUVEAU", hmFullHist:"HISTORIQUE COMPLET ({n}) ▸", hmReorder:"RECOMMANDER", hmDelivered:"LIVRÉE", hmMessage:"MESSAGE", hmWaiting:"// EN ATTENTE D'UN COURSIER", hmCargo:"LISTE DE LA CARGAISON", hmStDel:"LIVRÉES", hmStAct:"EN COURS", hmStDes:"OBJETS RECHERCHÉS", hmStCour:"COURSIERS EN LIGNE", hmNewOrderBtn:"CRÉER UNE COMMANDE", titleOrders:"Dashboard client", titleMkt:"Marketplace", titleDesired:"Objets recherchés", titleBp:"Blueprints", titleCourier:"Coursier",
+    hmOrdersIn:"COMMANDES EN COURS ({n})", hmMostAdv:"LES PLUS AVANCÉES D'ABORD", hmViewAll:"VOIR TOUTES LES COMMANDES ▸", hmShowLess:"VOIR MOINS ▴", hmNeedElse:"Besoin d'autre chose ?", hmCtaTitle:"Besoin de quelque chose ? Commande maintenant !", hmCtaSub:"Choisis tes objets et une destination à Stanton, Nyx ou Pyro. Un coursier s'occupe du reste.", hmHow:"COMMENT ÇA MARCHE", hm1t:"Tu commandes", hm1x:"Objets et destination. Le prix est affiché avant de confirmer.", hm2t:"Un coursier achète", hm2x:"Il reçoit un itinéraire d'achat suggéré et livre ta cargaison.", hm3t:"Tu suis", hm3x:"Acheté, en transit, livré. Discute avec ton coursier à tout moment.", hmAgain:"COMMANDER À NOUVEAU", hmFullHist:"HISTORIQUE COMPLET ({n}) ▸", hmReorder:"RECOMMANDER", hmDelivered:"LIVRÉE", hmMessage:"MESSAGE", hmWaiting:"// EN ATTENTE D'UN COURSIER", hmCargo:"LISTE DE LA CARGAISON", hmStDel:"LIVRÉES", hmStAct:"EN COURS", hmStDes:"OBJETS RECHERCHÉS", hmStCour:"COURSIERS EN LIGNE", hmNewOrderBtn:"CRÉER UNE COMMANDE", titleOrders:"Dashboard client", titleMkt:"Marketplace", titleDesired:"Objets recherchés", titleBp:"Blueprints", titleCourier:"Coursier", titleSeller:"Vendeur",
     sdTitle:"Shops", sdSub:"Tous les shops ouverts sur Couriers United. Trouve un vendeur, parcours ses annonces et ses blueprints.", sdSearchPh:"Chercher un shop par nom ou spécialité...", sdSortLbl:"TRIER", sdSortedBy:"TRIÉ PAR {x}", sdCount:"{n} SHOPS", sdNone:"Aucun shop ne correspond à ta recherche.", sdSales:"ventes", sdListings:"annonces", sdBp:"bp", sdVisit:"VISITER ▸", sdSinceWeek:"Ouvert cette semaine", sdSinceDays:"Ouvert depuis {n} jours", sdS_newest:"LES PLUS RÉCENTS", sdS_sales:"PLUS DE VENTES (TOTAL)", sdS_blueprints:"PLUS DE BLUEPRINTS", sdS_listings:"PLUS D'ANNONCES", sdS_name:"NOM DE A À Z",
     shStSales:"VENTES (TOTAL)", shStListings:"ANNONCES", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
     cTabAvail:"COMMANDES DISPONIBLES", cTabMine:"MES LIVRAISONS", cTabAch:"SUCCÈS", cStDel:"LIVRÉES", cStProg:"EN COURS", cStMargin:"MARGE TOTALE", cStOpen:"COMMANDES OUVERTES", cActive:"LIVRAISON ACTIVE", cMsgClient:"MESSAGE AU CLIENT", cClient:"Client :", cDeadline:"// Échéance :", cCargo:"CARGAISON", cOrderTotal:"Total de la commande", cYourMargin:"Ta marge", cRoute:"// ITINÉRAIRE D'ACHAT SUGGÉRÉ", cRelease:"RELÂCHER CETTE COMMANDE", cOthers:"MES AUTRES LIVRAISONS ({n})", cClickRow:"CLIQUE SUR UNE LIGNE POUR L'ACTIVER", cAvailFor:"DISPONIBLE POUR LIVRER", cNextTransit:"MARQUER EN TRANSIT ▸", cNextPurchased:"MARQUER ACHETÉE ▸", cNextDelivered:"MARQUER LIVRÉE ▸", cWaiting:"EN ATTENTE D'UN COURSIER",
     shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille", shopTextureDiag:"Diagonales", shopTextureNoise:"Grain", shopTextureGlow:"Lueur", shopTextureStars:"Étoiles", shopTextureRays:"Faisceaux",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
-    upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.", upvoteCta:"UPVOTER", upvoteSellerWho:"vendeur", upvotedLbl:"UPVOTÉ", upvoteCourierTip:"Upvote ton coursier pour mettre en avant son travail", upvoteSellerHint:"Vente terminée ! Un upvote met en avant le travail du vendeur et du coursier :", upvoteDoneToast:"Livraison terminée ! Pense à upvoter ton coursier (Commander à nouveau / Historique).", pubMoreTitle:"STATS & SUCCÈS", pubNoCompany:"Ce joueur n'a ni entreprise de livraison ni shop pour le moment.", viewShopBtn:"VOIR LA BOUTIQUE →", kickerBoth:"SHOP · ENTREPRISE DE LIVRAISON",
+    upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.", upvoteCta:"UPVOTER", upvMsgRecv:"{n} a upvoté ton travail", upvMsgSent:"Tu as envoyé un upvote", upvMsgShop:"depuis ta page", upvMsgOrder:"pour une livraison", upvMsgSale:"pour une vente", upvMsgValid:"VALIDÉ", upvMsgPrev:"▲ Upvote", upvoteSellerWho:"vendeur", upvotedLbl:"UPVOTÉ", upvoteCourierTip:"Upvote ton coursier pour mettre en avant son travail", upvoteSellerHint:"Vente terminée ! Un upvote met en avant le travail du vendeur et du coursier :", upvoteDoneToast:"Livraison terminée ! Pense à upvoter ton coursier (Commander à nouveau / Historique).", pubMoreTitle:"STATS & SUCCÈS", pubNoCompany:"Ce joueur n'a ni entreprise de livraison ni shop pour le moment.", viewShopBtn:"VOIR LA BOUTIQUE →", kickerBoth:"SHOP · ENTREPRISE DE LIVRAISON",
     shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopCraftDelivered:"Crafts livrés", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
     sellerAchvTitle:"Succès vendeur", viewAllAchvBtn:"VOIR TOUT", viewLessAchvBtn:"RÉDUIRE",
     sellerAchvLabels:{jawas_food:"Jawa's food", first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
@@ -3923,13 +3945,13 @@ const T = {
     desiredIntroNote:"DESIRED ITEM: something you're looking for that is NOT sold in shops (loot, crafted, higher quality…). Any player can offer to supply it; you pick an offer, then you can request a courier for the delivery.", myDesiredTitle:"MY DESIRED ITEMS", noMyDesired:"You haven't posted any desired item.", postDesiredBtn:"+ POST", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"DESIRED ITEM DELIVERY",
     offerMarkDeliveredBtn:"MARK AS DELIVERED", offerRequestCourierBtn:"REQUEST A COURIER", offerCourierPending:"Courier requested — waiting for a courier.", offerCourierAssigned:"Courier assigned:", offerDeliveredDone:"Marked as delivered.", offerNeedLocation:"Enter a valid delivery location (from the list).", offerDeliveryFeeNote:"Courier fee (min 50,000 aUEC) added to the order.",
  adminRemoveBtn:"REMOVE", adminRemoveTitle:"Remove this order?", adminRemoveIntro:"The order will be deleted and the client will see this message in a pop-up the next time they log in.", adminRemoveReasonLbl:"Message to the client", adminRemoveDefaultReason:"Your order was removed because it contains items that can't be bought in in-game shops, which doesn't comply with the service's terms of use. You can place a new one with items available in shops.", adminRemoveConfirm:"REMOVE ORDER", adminRemoveDone:"Order removed, the client will be notified.", removedOrderTitle:"Order removed", removedOrderIntro:"One of your orders was removed by an administrator:", removedOrderMsgLbl:"MESSAGE", removedOrderOk:"GOT IT", pAccTitle:"My account", pAccRole:"Role", pTabOverview:"OVERVIEW", pTabSettings:"SETTINGS", pTabAccount:"ACCOUNT", newsTag:"// BETA 04", newsTxt:"New: shops directory, custom status on every shop and a refreshed interface.", newsDismiss:"DISMISS ✕", homeHello:"Hello, {name}", homeFresh:"FRESH ON THE MARKETPLACE", homeSeeAll:"SEE ALL ▸", homeInProgress:"In progress", homeStatOrders:"ORDERS", homeStatDelivered:"DELIVERED", homeStatSpent:"SPENT (aUEC)", homeStatActive:"IN PROGRESS", homeMore:"+{n} MORE ▾", homeLess:"LESS ▴", homeCargo:"CARGO",
-    hmOrdersIn:"ORDERS IN PROGRESS ({n})", hmMostAdv:"MOST ADVANCED FIRST", hmViewAll:"VIEW ALL ORDERS ▸", hmShowLess:"SHOW LESS ▴", hmNeedElse:"Need something else?", hmCtaTitle:"Need something? Order now!", hmCtaSub:"Pick your items, choose a destination in Stanton, Nyx or Pyro. A courier takes it from there.", hmHow:"HOW IT WORKS", hm1t:"You order", hm1x:"Items and destination. The price is shown before you confirm.", hm2t:"A courier buys", hm2x:"He gets a suggested shopping route and ships your cargo.", hm3t:"You track it", hm3x:"Bought, in transit, delivered. Chat with your courier any time.", hmAgain:"ORDER AGAIN", hmFullHist:"FULL HISTORY ({n}) ▸", hmReorder:"REORDER", hmDelivered:"DELIVERED", hmMessage:"MESSAGE", hmWaiting:"// WAITING FOR A COURIER", hmCargo:"FULL CARGO LIST", hmStDel:"DELIVERED", hmStAct:"IN PROGRESS", hmStDes:"DESIRED ITEMS", hmStCour:"COURIERS ONLINE", hmNewOrderBtn:"CREATE AN ORDER", titleOrders:"Client dashboard", titleMkt:"Marketplace", titleDesired:"Desired items", titleBp:"Blueprints", titleCourier:"Courier",
+    hmOrdersIn:"ORDERS IN PROGRESS ({n})", hmMostAdv:"MOST ADVANCED FIRST", hmViewAll:"VIEW ALL ORDERS ▸", hmShowLess:"SHOW LESS ▴", hmNeedElse:"Need something else?", hmCtaTitle:"Need something? Order now!", hmCtaSub:"Pick your items, choose a destination in Stanton, Nyx or Pyro. A courier takes it from there.", hmHow:"HOW IT WORKS", hm1t:"You order", hm1x:"Items and destination. The price is shown before you confirm.", hm2t:"A courier buys", hm2x:"He gets a suggested shopping route and ships your cargo.", hm3t:"You track it", hm3x:"Bought, in transit, delivered. Chat with your courier any time.", hmAgain:"ORDER AGAIN", hmFullHist:"FULL HISTORY ({n}) ▸", hmReorder:"REORDER", hmDelivered:"DELIVERED", hmMessage:"MESSAGE", hmWaiting:"// WAITING FOR A COURIER", hmCargo:"FULL CARGO LIST", hmStDel:"DELIVERED", hmStAct:"IN PROGRESS", hmStDes:"DESIRED ITEMS", hmStCour:"COURIERS ONLINE", hmNewOrderBtn:"CREATE AN ORDER", titleOrders:"Client dashboard", titleMkt:"Marketplace", titleDesired:"Desired items", titleBp:"Blueprints", titleCourier:"Courier", titleSeller:"Seller",
     sdTitle:"Shops", sdSub:"Every shop open on Couriers United. Find a seller, browse their listings and blueprints.", sdSearchPh:"Search a shop by name or specialty...", sdSortLbl:"SORT", sdSortedBy:"SORTED BY {x}", sdCount:"{n} SHOPS", sdNone:"No shop matches your search.", sdSales:"sales", sdListings:"listings", sdBp:"bp", sdVisit:"VISIT ▸", sdSinceWeek:"Opened this week", sdSinceDays:"Open for {n} days", sdS_newest:"NEWEST", sdS_sales:"MOST SALES (ALL TIME)", sdS_blueprints:"MOST BLUEPRINTS", sdS_listings:"MOST LISTINGS", sdS_name:"NAME A TO Z",
     shStSales:"SALES (ALL TIME)", shStListings:"LISTINGS", shStBp:"BLUEPRINTS", shStUp:"UPVOTES",
     cTabAvail:"AVAILABLE ORDERS", cTabMine:"MY DELIVERIES", cTabAch:"ACHIEVEMENTS", cStDel:"DELIVERED", cStProg:"IN PROGRESS", cStMargin:"TOTAL MARGIN", cStOpen:"OPEN ORDERS", cActive:"ACTIVE DELIVERY", cMsgClient:"MESSAGE CLIENT", cClient:"Client:", cDeadline:"// Deadline:", cCargo:"CARGO", cOrderTotal:"Order total", cYourMargin:"Your margin", cRoute:"// SUGGESTED SHOPPING ROUTE", cRelease:"RELEASE THIS ORDER", cOthers:"MY OTHER DELIVERIES ({n})", cClickRow:"CLICK A ROW TO MAKE IT ACTIVE", cAvailFor:"AVAILABLE FOR DELIVERY", cNextTransit:"MARK AS IN TRANSIT ▸", cNextPurchased:"MARK AS PURCHASED ▸", cNextDelivered:"MARK AS DELIVERED ▸", cWaiting:"WAITING FOR A COURIER",
     shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid", shopTextureDiag:"Diagonal", shopTextureNoise:"Grain", shopTextureGlow:"Glow", shopTextureStars:"Stars", shopTextureRays:"Rays",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
-    upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.", upvoteCta:"UPVOTE", upvoteSellerWho:"seller", upvotedLbl:"UPVOTED", upvoteCourierTip:"Upvote your courier to highlight their work", upvoteSellerHint:"Sale complete! An upvote highlights the seller's and courier's work:", upvoteDoneToast:"Delivery complete! Remember to upvote your courier (Order again / History).", pubMoreTitle:"STATS & ACHIEVEMENTS", pubNoCompany:"This player has no delivery company or shop yet.", viewShopBtn:"VIEW THE SHOP →", kickerBoth:"SHOP · DELIVERY COMPANY",
+    upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.", upvoteCta:"UPVOTE", upvMsgRecv:"{n} upvoted your work", upvMsgSent:"You sent an upvote", upvMsgShop:"from your page", upvMsgOrder:"for a delivery", upvMsgSale:"for a sale", upvMsgValid:"VALIDATED", upvMsgPrev:"▲ Upvote", upvoteSellerWho:"seller", upvotedLbl:"UPVOTED", upvoteCourierTip:"Upvote your courier to highlight their work", upvoteSellerHint:"Sale complete! An upvote highlights the seller's and courier's work:", upvoteDoneToast:"Delivery complete! Remember to upvote your courier (Order again / History).", pubMoreTitle:"STATS & ACHIEVEMENTS", pubNoCompany:"This player has no delivery company or shop yet.", viewShopBtn:"VIEW THE SHOP →", kickerBoth:"SHOP · DELIVERY COMPANY",
     shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopCraftDelivered:"Crafts delivered", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
     sellerAchvTitle:"Seller achievements", viewAllAchvBtn:"VIEW ALL", viewLessAchvBtn:"COLLAPSE",
     sellerAchvLabels:{jawas_food:"Jawa's food", first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
@@ -4241,8 +4263,8 @@ function updatePageTitle(){
   const d = T[LANG];
   const pt = $('pageTitle');
   const ct = ({deliveries:d.titleOrders, marketplace:d.titleMkt, resources:d.titleDesired, blueprints:d.titleBp})[clientTab] || d.titleOrders;
-  pt.textContent = v==='client' ? ct : v==='courier' ? d.titleCourier : v==='seller' ? d.dashSeller : d.dashAdmin;
-  pt.hidden = (v==='seller');
+  pt.textContent = v==='client' ? ct : v==='courier' ? d.titleCourier : v==='seller' ? d.titleSeller : d.dashAdmin;
+  pt.hidden = false;
 }
 
 function routeApp(){
@@ -4510,7 +4532,7 @@ function msgConvPreviewHtml(latest, uid){
   if(latest.__kind === 'chat_sent' || latest.__kind === 'chat_received'){
     const prefix = latest.__kind === 'chat_sent' ? d.msgYouPrefix : '';
     const bpReq = parseBpRequestContent(latest.content);
-    const snippet = bpReq ? d.bpRequestRecapTitle : escapeHtml((latest.content||'').slice(0,60));
+    const snippet = parseUpvoteContent(latest.content) ? d.upvMsgPrev : bpReq ? d.bpRequestRecapTitle : escapeHtml((latest.content||'').slice(0,60));
     return `${prefix}${snippet}`;
   }
   return `${msgKindLabel(latest.__kind)} — ${inquiryStatusBadge(latest.status)}`;
@@ -4678,15 +4700,52 @@ async function renderMsgThreadItems(g){
   }).join('') : `<p class="muted">${emptyMsg}</p>`;
   animateShipTracks(box); hydrateUpvotes(box);
 }
+// ===== Message automatique "tu as été upvoté" =====
+const UPV_MSG_MARK = '::upvote::';
+async function sendUpvoteMessage(targetId, ctx){
+  if(!session || !targetId) return;
+  if(ctx === 'shop'){
+    // L'upvote gratuit est retirable : on n'envoie qu'un seul message "shop" par client et par destinataire.
+    try{
+      const { data: ex } = await sb.from('direct_messages').select('id').eq('sender_id', session.user.id).eq('recipient_id', targetId).like('content', UPV_MSG_MARK + '{"c":"shop"%').limit(1);
+      if(ex && ex.length) return;
+    }catch(e){}
+  }
+  const n = profile ? displayName(profile) : '';
+  const content = UPV_MSG_MARK + JSON.stringify({ c: ctx, n });
+  const { data, error } = await sb.from('direct_messages').insert({ sender_id: session.user.id, recipient_id: targetId, content }).select().single();
+  if(error || !data) return;
+  pushNotification(targetId, 'direct_message', data.id);
+  const g = msgConversationsCache[targetId];
+  if(g){ g.items.push({ ...data, __kind:'chat_sent' }); g.lastAt = data.created_at;
+    if(currentMsgThreadPartnerId === targetId){ await renderMsgThreadItems(g); scrollMsgThreadToBottom(); } }
+}
+function parseUpvoteContent(content){
+  if(!content || !content.startsWith(UPV_MSG_MARK)) return null;
+  try{ return JSON.parse(content.slice(UPV_MSG_MARK.length)); }catch(e){ return null; }
+}
+function upvoteBubbleHtml(u, isMine){
+  const d = T[LANG];
+  const where = u.c === 'shop' ? d.upvMsgShop : (u.c === 'sale' ? d.upvMsgSale : d.upvMsgOrder);
+  const title = isMine ? d.upvMsgSent : d.upvMsgRecv.replace('{n}', escapeHtml(u.n || '—'));
+  const sparks = [8,22,38,54,70,86].map((x,i) => `<i class="upv-spark" style="left:${x}%; animation-delay:${(1.05 + i*0.07).toFixed(2)}s"></i>`).join('');
+  return `<div class="upv-msg">
+    <div class="upv-msg-head"><span class="upv-msg-arrow">▲</span> ${title}</div>
+    <div class="upv-msg-sub">${where}</div>
+    <div class="upv-msg-track"><i class="upv-msg-fill"></i>${sparks}</div>
+    <div class="upv-msg-ok">✓ ${d.upvMsgValid}</div>
+  </div>`;
+}
 function chatBubbleHtml(item, isMine){
   const time = new Date(item.created_at).toLocaleTimeString(LANG==='fr'?'fr-FR':'en-US', { hour:'2-digit', minute:'2-digit' });
   const bpReq = parseBpRequestContent(item.content);
-  const textHtml = bpReq
+  const upv = parseUpvoteContent(item.content);
+  const textHtml = upv ? upvoteBubbleHtml(upv, isMine) : bpReq
     ? bpRequestRecapHtml(bpReq.recap) + (bpReq.rest ? `<div class="chat-bubble-text bp-request-note">${escapeHtml(bpReq.rest)}</div>` : '')
     : `<div class="chat-bubble-text">${escapeHtml(item.content)}</div>`;
   return `
     <div class="chat-bubble-row ${isMine?'mine':'theirs'}">
-      <div class="chat-bubble">
+      <div class="chat-bubble${upv ? ' upv' : ''}">
         ${textHtml}
         <div class="chat-bubble-time">${time}</div>
       </div>
@@ -4769,7 +4828,7 @@ function inquiryThreadItemHtml(r, iAmSeller, listing, order, courierMap){
     // l'inquiry au statut 'completed'), même si un coursier a déjà été sollicité (order_id présent).
     if(r.status === 'completed' && r.seller_id) {
       const cName = assignedCourier ? (assignedCourier.rsi_handle || assignedCourier.discord_username || '') : '';
-      actions = `<div class="inquiry-meta">${d.upvoteSellerHint}</div><div class="inquiry-actions">${upvoteCtaHtml(r.seller_id, d.upvoteSellerHint, r.id, d.upvoteSellerWho)}${assignedCourier && order ? upvoteCtaHtml(order.courier_id, d.upvoteCourierTip, order.id, cName) : ''}</div>`;
+      actions = `<div class="inquiry-meta">${d.upvoteSellerHint}</div><div class="inquiry-actions">${upvoteCtaHtml(r.seller_id, d.upvoteSellerHint, r.id, d.upvoteSellerWho, 'sale')}${assignedCourier && order ? upvoteCtaHtml(order.courier_id, d.upvoteCourierTip, order.id, cName, 'order') : ''}</div>`;
     }
     const canCancel = ['pending','countered','accepted'].includes(r.status);
     if(canCancel) actions += `<button class="btn-cancel" onclick="cancelInquiry('${r.id}')">${ICON_CLOSE}<span>${d.cancelBtn}</span></button>`;
@@ -9582,7 +9641,7 @@ async function openSellerShop(sellerId){
   shopViewingSellerId = sellerId;
   const isOwner = !!(session && session.user.id === sellerId);
   hideAllViews();
-  $('pageTitle').hidden = true;
+  { const _pt = $('pageTitle'); if(isOwner){ _pt.textContent = T[LANG].titleSeller; _pt.hidden = false; } else _pt.hidden = true; }
   // hideAllViews() ne touche pas aux boutons CRÉER de la topbar (ce ne sont pas des "vues") : sans ça, le
   // bouton CRÉER du client (visible sur l'onglet client) restait affiché en plus de celui du vendeur quand
   // on ouvrait sa propre boutique depuis le leaderboard/une carte marketplace sans repasser par routeApp().
@@ -9837,15 +9896,16 @@ async function toggleShopUpvote(){
     const { error } = await sb.from('shop_upvotes').insert({ seller_id: sellerId, client_id: session.user.id });
     if(error){ alert('Erreur : '+error.message); return; }
     shopUpvoted = true;
+    sendUpvoteMessage(sellerId, 'shop').catch(()=>{});
     if(countEl) countEl.textContent = (parseInt(countEl.textContent,10)||0) + 1;
-    if(btn){ btn.classList.add('upv-busy'); await upvoteChargeFx(btn).catch(()=>{}); btn.classList.remove('upv-busy'); btn.classList.add('upvoted'); const hc = $('shopHeaderCard'); if(hc) hc.classList.add('upv-lit'); }
+    if(btn){ btn.classList.add('upv-busy'); await (btn.classList.contains('upv-cta') ? upvoteBarFx(btn) : upvoteChargeFx(btn)).catch(()=>{}); btn.classList.remove('upv-busy'); btn.classList.add('upvoted'); const hc = $('shopHeaderCard'); if(hc) hc.classList.add('upv-lit'); }
   }
 }
 
 // ===== Bannière entreprise / shop réutilisable + upvote générique =====
-function upvoteCtaHtml(targetId, tip, refId, who){
+function upvoteCtaHtml(targetId, tip, refId, who, ctx){
   const d = T[LANG];
-  return `<button type="button" class="mk-btn ghost sm upv-cta" data-up="${escHtml(targetId)}"${refId ? ` data-ref="${escHtml(refId)}"` : ''} title="${escHtml(tip || d.upvoteCourierTip)}" onclick="event.stopPropagation(); upvoteTarget(this)">▲ <span class="upv-lbl">${d.upvoteCta}</span>${who ? ` <span class="upv-who">· ${escHtml(who)}</span>` : ''}</button>`;
+  return `<button type="button" class="mk-btn ghost sm upv-cta" data-up="${escHtml(targetId)}"${refId ? ` data-ref="${escHtml(refId)}"` : ''}${ctx ? ` data-ctx="${ctx}"` : ''} title="${escHtml(tip || d.upvoteCourierTip)}" onclick="event.stopPropagation(); upvoteTarget(this)">▲ <span class="upv-lbl">${d.upvoteCta}</span>${who ? ` <span class="upv-who">· ${escHtml(who)}</span>` : ''}</button>`;
 }
 // Deux types d'upvote : "gratuit" (page du shop, 1 par joueur, retirable, ref_id vide) et "de fin de commande"
 // (1 par livraison/vente, définitif, ref_id = id de la commande/demande). Le compteur affiché = nombre total de lignes.
@@ -9864,7 +9924,8 @@ async function upvoteTarget(btn){
   else { ({ error: err } = await sb.from('shop_upvotes').insert({ seller_id: id, client_id: session.user.id })); }
   if(err){ alert('Erreur : ' + err.message); return; }
   const delta = was ? -1 : 1;
-  if(!was){ btn.classList.add('upv-busy'); await upvoteChargeFx(btn).catch(()=>{}); btn.classList.remove('upv-busy'); }
+  if(!was) sendUpvoteMessage(id, ref ? (btn.dataset.ctx || 'order') : 'shop').catch(()=>{});
+  if(!was){ btn.classList.add('upv-busy'); await (btn.classList.contains('upv-cta') ? upvoteBarFx(btn) : upvoteChargeFx(btn)).catch(()=>{}); btn.classList.remove('upv-busy'); }
   document.querySelectorAll('[data-up]').forEach(b => {
     if(b.dataset.up !== id) return;
     const c = b.querySelector('.shop-upvote-count'); if(c) c.textContent = Math.max(0, (parseInt(c.textContent,10)||0) + delta);
@@ -9872,6 +9933,18 @@ async function upvoteTarget(btn){
     b.classList.toggle('upvoted', !was);
     const l = b.querySelector('.upv-lbl'); if(l) l.textContent = was ? d.upvoteCta : d.upvotedLbl;
     const card = b.closest('.shop-banner-card'); if(card && !ref) card.classList.toggle('upv-lit', !was);
+  });
+}
+// Animation douce pour les boutons de liste/messagerie : une barre de progression se remplit, puis le bouton se valide.
+function upvoteBarFx(btn){
+  return new Promise(res => {
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    if(reduce){ res(); return; }
+    const bar = document.createElement('span');
+    bar.className = 'upv-bar';
+    btn.appendChild(bar);
+    requestAnimationFrame(() => requestAnimationFrame(() => bar.classList.add('go')));
+    setTimeout(() => { bar.classList.add('done'); setTimeout(() => { bar.remove(); res(); }, 160); }, 760);
   });
 }
 async function hydrateUpvotes(root){
@@ -10290,7 +10363,7 @@ async function renderCourierCompany(){
   try{ const r = await memoOnce('shopself:'+session.user.id, () => sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle()); shop = r && r.data; }catch(e){}
   const col = normalizeShopColor(shop && shop.theme_color);
   if(dash){ dash.style.setProperty('--accent', col); dash.style.setProperty('--accent-dim', col + '55'); }
-  box.innerHTML = companyBannerHtml({ kind:'courier', shop, p: profile ? { ...profile, id: session.user.id } : null, targetId: session.user.id, isOwner:true });
+  box.innerHTML = companyBannerHtml({ kind:'courier', shop, p: profile ? { ...profile, id: session.user.id } : null, targetId: session.user.id, isOwner:true, rankHtml: `<div id="courierRankBar">${window.__lastCourierStats ? rankProgressHtml(window.__lastCourierStats.rankCount) : ''}</div>` });
   styleCompanyBanner(box.querySelector('.shop-banner-card'), shop);
   hydrateUpvotes(box);
 }

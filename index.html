@@ -860,7 +860,7 @@
   .frm-streak{position:absolute; left:0; height:2px; width:26px; background:linear-gradient(90deg, transparent, var(--accent), transparent); opacity:0; animation:frmWind var(--dur,4s) linear var(--del,0s) infinite;}
   /* Vaisseau + traînée lumineuse : canvas, le vaisseau vole librement dans des directions aléatoires */
   .shop-frame-layer.frame-coins, .shop-frame-layer.frame-crates, .shop-frame-layer.frame-bolts, .shop-frame-layer.frame-ammo, .shop-frame-layer.frame-route, .shop-frame-layer.frame-flash, .shop-frame-layer.frame-forge, .shop-frame-layer.frame-hearts, .shop-frame-layer.frame-fifteen, .shop-frame-layer.frame-glitch{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
-  .shop-frame-layer.frame-skyline, .shop-frame-layer.frame-cliff, .shop-frame-layer.frame-trail{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
+  .shop-frame-layer.frame-skyline, .shop-frame-layer.frame-cliff, .shop-frame-layer.frame-cockpit, .shop-frame-layer.frame-godray, .shop-frame-layer.frame-trail{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
   .shop-frame-extra{position:absolute; inset:0; pointer-events:none; z-index:5; border-radius:inherit;}
   .shop-frame-back{z-index:-1; overflow:hidden;}
   .frm-ship{position:absolute; left:0; top:0; width:15px; height:15px; margin:-7px 0 0 -7px; background:var(--accent); clip-path:polygon(0 0, 100% 50%, 0 100%); filter:drop-shadow(0 0 5px var(--accent));}
@@ -885,6 +885,20 @@
   .shop-frame-item[data-tip]::after, .shop-texture-item[data-tip]::after, .shop-swatch-item[data-tip]::after{content:attr(data-tip); position:absolute; bottom:calc(100% + 8px); left:50%; z-index:80; width:150px; padding:7px 9px; border-radius:4px; border:1px solid var(--accent); background:var(--bg2); color:var(--text); font-size:.62rem; line-height:1.4; text-transform:none; text-align:left; letter-spacing:normal; box-shadow:0 6px 16px rgba(0,0,0,.5); opacity:0; pointer-events:none; transform:translate(-50%,4px); transition:opacity .16s ease, transform .16s ease;}
   .shop-frame-item[data-tip]:hover::after, .shop-texture-item[data-tip]:hover::after, .shop-swatch-item[data-tip]:hover::after{opacity:1; transform:translate(-50%,0);}
   .shop-swatch-item.locked, .shop-texture-item.locked{opacity:.5; filter:grayscale(.6); cursor:not-allowed;}
+  /* sélecteurs de cadres / textures plus grands + libellés et infobulles plus lisibles au survol */
+  #shopFramePicker, #shopTexturePicker{gap:12px;}
+  #shopFramePicker .shop-frame-item{width:172px; padding:8px 8px 10px; gap:7px;}
+  #shopFramePicker .shop-frame-item .shop-frame-swatch{width:100%; height:100px;}
+  #shopFramePicker .shop-frame-item .shop-texture-lbl{font-size:.8rem; letter-spacing:.4px; transition:font-size .12s, color .12s;}
+  #shopTexturePicker .shop-texture-item{padding:8px;}
+  #shopTexturePicker .shop-texture-swatch{width:136px; height:88px;}
+  #shopTexturePicker .shop-texture-item .shop-texture-lbl{font-size:.76rem; letter-spacing:.4px; transition:font-size .12s, color .12s;}
+  #shopFramePicker .shop-frame-item:hover .shop-texture-lbl, #shopTexturePicker .shop-texture-item:hover .shop-texture-lbl{font-size:.95rem; color:var(--text);}
+  .shop-swatch-item:hover .shop-swatch-lbl{font-size:.8rem; color:var(--text);}
+  .shop-frame-item[data-tip]::after, .shop-texture-item[data-tip]::after, .shop-swatch-item[data-tip]::after{width:240px !important; font-size:.86rem !important; line-height:1.45 !important; padding:10px 12px !important;}
+  .shop-frame-item:hover, .shop-texture-item:hover{z-index:5;}
+  @media (max-width:560px){ #shopFramePicker .shop-frame-item{width:calc(50% - 6px);} #shopTexturePicker .shop-texture-item{width:calc(50% - 6px);} #shopTexturePicker .shop-texture-swatch{width:100%;} .shop-frame-item[data-tip]::after, .shop-texture-item[data-tip]::after, .shop-swatch-item[data-tip]::after{width:200px !important;} }
+  .shop-lock-req{font-size:.7rem !important; max-width:160px !important;}
   .shop-lock-req{font-size:.55rem; color:var(--accent); letter-spacing:.3px; text-align:center; line-height:1.15; max-width:76px; pointer-events:none;}
   .shop-swatch-item:hover{background:var(--bg2); border-color:var(--border);}
   .shop-swatch-item.active{border-color:var(--accent); background:var(--accent-dim);}
@@ -3715,7 +3729,7 @@ const T = {
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NOUVELLE COMMANDE", unlockSales:"{n} ventes", frameLbl:"Cadre", frameNone:"Aucun", frameDrops:"Pixels qui tombent", frameOrbit:"Coins orbitaux", frameSkyline:"Vue sur la ville", frameCliff:"Falaise glacée", frameNeon:"Néon pulsé", frameShield:"Bombardement", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Manœuvre", frameCoins:"Poignée de main", frameCrates:"Largage", frameBolts:"Éclairs", frameAmmo:"Armée", frameRoute:"Vitesse lumière", frameFlash:"Flashs", frameForge:"Forge", frameHearts:"Cœurs", frameFifteen:"Poches pleines", frameGlitch:"Glitch", frameShatter:"Éclats", unlockRank:"Rang vendeur : ", unlockCAch:"Succès coursier : ", companyTitle:"ENTREPRISE DE LIVRAISON", companyCustomize:"PERSONNALISER", companyCreate:"CRÉER MON ENTREPRISE", companyNoShop:"Donne un nom, un logo et un style à ton entreprise : ils sont partagés avec ton shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Succès : ", lockedTip:"Pour débloquer : ", unlockedTip:"Condition : ", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
+    homeNewOrder:"+ NOUVELLE COMMANDE", unlockSales:"{n} ventes", frameLbl:"Cadre", frameNone:"Aucun", frameDrops:"Pixels qui tombent", frameOrbit:"Coins orbitaux", frameSkyline:"Vue sur la ville", frameCliff:"Falaise glacée", frameCockpit:"Poste de pilotage", frameGodray:"Lumière divine", unlockCRank:"Rang coursier : ", frameNeon:"Néon pulsé", frameShield:"Bombardement", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Manœuvre", frameCoins:"Poignée de main", frameCrates:"Largage", frameBolts:"Éclairs", frameAmmo:"Armée", frameRoute:"Vitesse lumière", frameFlash:"Flashs", frameForge:"Forge", frameHearts:"Cœurs", frameFifteen:"Poches pleines", frameGlitch:"Glitch", frameShatter:"Éclats", unlockRank:"Rang vendeur : ", unlockCAch:"Succès coursier : ", companyTitle:"ENTREPRISE DE LIVRAISON", companyCustomize:"PERSONNALISER", companyCreate:"CRÉER MON ENTREPRISE", companyNoShop:"Donne un nom, un logo et un style à ton entreprise : ils sont partagés avec ton shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Succès : ", lockedTip:"Pour débloquer : ", unlockedTip:"Condition : ", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
     classicOrderNote:"COMMANDE CLASSIQUE : uniquement des objets achetables dans une boutique en jeu — le coursier les achète puis te les livre. Un objet introuvable en boutique (loot, craft, rare…) ? Poste plutôt un desired item.", classicOrderLink:"POSTER UN DESIRED ITEM ▸",
     commodityQualityNote:"Commodities : seules des commodities de qualité 500 peuvent être livrées par commande. Pour une qualité supérieure, passe par la marketplace ou poste un desired item.", commodityQualityShort:"Commodity : qualité 500 uniquement.",
     desiredIntroNote:"DESIRED ITEM : un objet que tu cherches et qui n'est PAS achetable en boutique (loot, craft, qualité supérieure…). N'importe quel joueur peut te proposer de te le fournir ; tu choisis l'offre, puis vous pouvez demander un coursier pour la livraison.", myDesiredTitle:"MES DESIRED ITEMS", noMyDesired:"Tu n'as posté aucun desired item.", postDesiredBtn:"+ POSTER", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"LIVRAISON DESIRED ITEM",
@@ -3891,7 +3905,7 @@ const T = {
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NEW ORDER", unlockSales:"{n} sales", frameLbl:"Frame", frameNone:"None", frameDrops:"Falling pixels", frameOrbit:"Orbiting corners", frameSkyline:"City window", frameCliff:"Frozen cliff", frameNeon:"Pulsing neon", frameShield:"Bombardment", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Maneuver", frameCoins:"Handshake", frameCrates:"Airdrop", frameBolts:"Lightning", frameAmmo:"Army", frameRoute:"Lightspeed", frameFlash:"Flashes", frameForge:"Forge", frameHearts:"Hearts", frameFifteen:"Full pockets", frameGlitch:"Glitch", frameShatter:"Shattered", unlockRank:"Seller rank: ", unlockCAch:"Courier achievement: ", companyTitle:"DELIVERY COMPANY", companyCustomize:"CUSTOMIZE", companyCreate:"CREATE MY COMPANY", companyNoShop:"Give your company a name, a logo and a style: they are shared with your shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Achievement: ", lockedTip:"To unlock: ", unlockedTip:"Requirement: ", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
+    homeNewOrder:"+ NEW ORDER", unlockSales:"{n} sales", frameLbl:"Frame", frameNone:"None", frameDrops:"Falling pixels", frameOrbit:"Orbiting corners", frameSkyline:"City window", frameCliff:"Frozen cliff", frameCockpit:"Cockpit view", frameGodray:"Heaven's light", unlockCRank:"Courier rank: ", frameNeon:"Pulsing neon", frameShield:"Bombardment", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Maneuver", frameCoins:"Handshake", frameCrates:"Airdrop", frameBolts:"Lightning", frameAmmo:"Army", frameRoute:"Lightspeed", frameFlash:"Flashes", frameForge:"Forge", frameHearts:"Hearts", frameFifteen:"Full pockets", frameGlitch:"Glitch", frameShatter:"Shattered", unlockRank:"Seller rank: ", unlockCAch:"Courier achievement: ", companyTitle:"DELIVERY COMPANY", companyCustomize:"CUSTOMIZE", companyCreate:"CREATE MY COMPANY", companyNoShop:"Give your company a name, a logo and a style: they are shared with your shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Achievement: ", lockedTip:"To unlock: ", unlockedTip:"Requirement: ", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
     classicOrderNote:"CLASSIC ORDER: only items you can buy in an in-game shop — the courier buys them and delivers them to you. Item not sold in shops (loot, crafted, rare…)? Post a desired item instead.", classicOrderLink:"POST A DESIRED ITEM ▸",
     commodityQualityNote:"Commodities: only quality 500 commodities can be delivered through an order. For a higher quality, use the marketplace or post a desired item.", commodityQualityShort:"Commodity: quality 500 only.",
     desiredIntroNote:"DESIRED ITEM: something you're looking for that is NOT sold in shops (loot, crafted, higher quality…). Any player can offer to supply it; you pick an offer, then you can request a courier for the delivery.", myDesiredTitle:"MY DESIRED ITEMS", noMyDesired:"You haven't posted any desired item.", postDesiredBtn:"+ POST", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"DESIRED ITEM DELIVERY",
@@ -6531,7 +6545,9 @@ const SHOP_FRAMES = [
   { key:'crates', nameKey:'frameCrates', unlock:{ cach:'first_delivery' } },
   { key:'trail', nameKey:'frameTrail', unlock:{ rank:'trader', sales:5 } },
   { key:'skyline', nameKey:'frameSkyline', unlock:{ upvotes:10 } },
-  { key:'cliff', nameKey:'frameCliff', unlock:{ upvotes:5 } },
+  { key:'cliff', nameKey:'frameCliff', unlock:{ upvotes:8 } },
+  { key:'cockpit', nameKey:'frameCockpit', unlock:{ crank:'junior' } },
+  { key:'godray', nameKey:'frameGodray', unlock:{ cach:'dangerous_deliveries' } },
 ];
 let selectedShopFrame = 'none', shopSavedFrame = null, shopHasFrameColumn = false;
 let shopUnlockCtx = { sales:0, upvotes:0, ach:new Set(), cach:new Set(), admin:false };
@@ -6542,12 +6558,14 @@ function unlockRuleMet(rule){
   if(rule.upvotes) return shopUnlockCtx.upvotes >= rule.upvotes;
   if(rule.ach) return shopUnlockCtx.ach.has(rule.ach) || (!!rule.both && shopUnlockCtx.cach.has(rule.ach));
   if(rule.cach) return shopUnlockCtx.cach.has(rule.cach);
+  if(rule.crank) return shopUnlockCtx.cach.has('five_deliveries') || shopUnlockCtx.cach.has('veteran'); // rang Junior = 5 livraisons terminées
   return true;
 }
 function unlockRuleText(rule){
   const d = T[LANG];
   if(!rule) return '';
   if(rule.rank) return d.unlockRank + ((d.sellerRankLabels && d.sellerRankLabels[rule.rank]) || rule.rank);
+  if(rule.crank) return d.unlockCRank + ((d.rankLabels && d.rankLabels[rule.crank]) || rule.crank);
   if(rule.cach) return d.unlockCAch + ((d.achvLabels && d.achvLabels[rule.cach]) || rule.cach);
   if(rule.sales) return d.unlockSales.replace('{n}', rule.sales);
   if(rule.upvotes) return d.unlockUpvotes.replace('{n}', rule.upvotes);
@@ -6666,10 +6684,13 @@ const buildShipMesh = () => {
   add([[-1.1,.45,0],[-2.1,.45,0],[-2.3,1.4,0],[-1.6,1.4,0]], 'h', true);                                                                          // dérive
   return F;
 };
+const COCKPIT_B64 = 'data:image/png;base64,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';
+let COCKPIT_IMG = null;
+const getCockpitImg = () => { if(!COCKPIT_IMG){ COCKPIT_IMG = new Image(); COCKPIT_IMG.src = COCKPIT_B64; } return COCKPIT_IMG; };
 function startPixelScene(layer, kind){
   const canvas = document.createElement('canvas'); canvas.style.cssText = 'position:absolute; inset:0; width:100%; height:100%;';
   let mount = layer;
-  if(['stanton','nyx','pyro','fly','alien','army','warp','dropoff','handshake','forge2','skyline','cliff'].includes(kind)){
+  if(['stanton','nyx','pyro','fly','alien','army','warp','dropoff','handshake','forge2','skyline','cliff','cockpit','godray'].includes(kind)){
     // Décor placé DERRIÈRE le contenu de la carte (z-index négatif dans l'hôte isolé) : le texte passe devant.
     const host = layer.parentElement; const back = document.createElement('div'); back.className = 'shop-frame-extra shop-frame-back';
     host.insertBefore(back, layer); if(getComputedStyle(host).isolation !== 'isolate') host.style.isolation = 'isolate'; mount = back;
@@ -6806,6 +6827,65 @@ function startPixelScene(layer, kind){
         // vignette
         g.globalAlpha = 1; const vg = g.createRadialGradient(960, 520, 420, 960, 520, 1250); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)'); g.fillStyle = vg; g.fillRect(0, 0, IW, IH);
         S.c = cv; S.col = col;
+      };
+    }
+    if(kind === 'cockpit'){
+      // vue du cockpit (1920x1080) : pilote + habitacle extraits de la capture, ciel qui défile en boucle
+      const IW = 1920, IH = 1080, sc = Math.max(W/IW, H/IH), vw = W/sc, vh = H/sc;
+      const cxI = Math.max(vw/2, Math.min(IW - vw/2, 1360)), cyI = Math.max(vh/2, Math.min(IH - vh/2, 560));
+      const LIFE = 13, mkP = (age) => { const right = Math.random() < .22; return { a: right ? rnd(-.5, .35) : rnd(2.35, 3.55), age: age === undefined ? 0 : age, seed: rnd(0, 6.28), w: rnd(.7, 1.4), da: rnd(-.05, .05) }; };
+      inst.S = { t:0, s:sc, cxI, cyI, vl:cxI - vw/2, vr:cxI + vw/2, col:null, c:null, fgc:null, LIFE, puffs:Array.from({length:46}, () => mkP(rnd(0, LIFE))), mkP, bump:0, bumpT:rnd(3, 6), streaks:Array.from({length:16}, () => ({ a:rnd(2.5, 3.5), ph:rnd(0, 1), w:rnd(1, 3) })), dust:Array.from({length:22}, () => ({ x:rnd(0, 1920), y:rnd(0, 1080), v:rnd(30, 90), r:rnd(1, 2.4), ph:rnd(0, 6.28) })) };
+      const S = inst.S;
+      S.render = () => {
+        const dpr = window.devicePixelRatio || 1, col = inst.color;
+        // sprite de nuage (blanc et teinté), pré-rendu une fois par couleur
+        const mkSpr = (c, a) => { const cv = document.createElement('canvas'); cv.width = cv.height = 192; const g = cv.getContext('2d'); [[96,100,70],[58,112,48],[134,110,52],[80,76,42],[118,80,40],[96,126,46]].forEach(q => { const gr = g.createRadialGradient(q[0], q[1], 2, q[0], q[1], q[2]); gr.addColorStop(0, 'rgba(' + c + ',' + a + ')'); gr.addColorStop(1, 'rgba(' + c + ',0)'); g.fillStyle = gr; g.fillRect(0, 0, 192, 192); }); return cv; };
+        const rgb = hex => { const h = hex.replace('#', ''), n = parseInt(h.length === 3 ? h.split('').map(x => x + x).join('') : h, 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+        const cc = rgb(col); S.sprW = mkSpr('255,255,255', .5); S.sprC = mkSpr(cc.join(','), .6);
+        // habitacle teinté (pixel-art : niveaux de gris → teinte du shop)
+        const img = getCockpitImg();
+        if(img && img.complete && img.naturalWidth){
+          const cv = document.createElement('canvas'); cv.width = img.naturalWidth; cv.height = img.naturalHeight; const g = cv.getContext('2d'); g.drawImage(img, 0, 0);
+          const id = g.getImageData(0, 0, cv.width, cv.height), d = id.data;
+          for(let i = 0; i < d.length; i += 4){ const l = Math.pow(d[i]/255, .8), hi = Math.max(0, l - .8)*1.2*255; d[i] = Math.min(255, cc[0]*l + hi); d[i+1] = Math.min(255, cc[1]*l + hi); d[i+2] = Math.min(255, cc[2]*l + hi); }
+          g.putImageData(id, 0, 0); S.fgc = cv;
+        }
+        S.col = col; S.c = true;
+      };
+    }
+    if(kind === 'godray'){
+      // « lumière divine » (1920x1080) : rayons derrière les montagnes, nuages sombres, vaisseau qui s'éloigne
+      const IW = 1920, IH = 1080, sc = Math.max(W/IW, H/IH), vw = W/sc, vh = H/sc;
+      const cxI = Math.max(vw/2, Math.min(IW - vw/2, 960)), cyI = Math.max(vh/2, Math.min(IH - vh/2, 560));
+      inst.S = { t:0, s:sc, cxI, cyI, vl:cxI - vw/2, vr:cxI + vw/2, col:null, c:null, bg:null, T:10.5, trail:[], dark:Array.from({length:12}, (_, i) => ({ x:rnd(-300, 2100), y:rnd(0, 300), sz:rnd(520, 900), v:rnd(5, 12), a:rnd(.5, .9) })), lite:Array.from({length:8}, () => ({ x:rnd(700, 1900), y:rnd(110, 360), sz:rnd(300, 520), v:rnd(2, 6), a:rnd(.2, .34) })),
+        fog:Array.from({length:9}, () => ({ x:rnd(-200, 2000), y:rnd(620, 1000), w:rnd(500, 900), v:rnd(6, 16), a:rnd(.05, .1) })), motes:Array.from({length:40}, () => ({ x:rnd(300, 1650), y:rnd(520, 1060), v:rnd(6, 20), r:rnd(1, 2.5), ph:rnd(0, 6.28) })) };
+      const S = inst.S;
+      S.render = () => {
+        const dpr = window.devicePixelRatio || 1, col = inst.color;
+        const rgb = hex => { const h = hex.replace('#', ''), n = parseInt(h.length === 3 ? h.split('').map(x => x + x).join('') : h, 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+        const mkSpr = (c, a) => { const cv = document.createElement('canvas'); cv.width = cv.height = 192; const g = cv.getContext('2d'); [[96,100,78],[56,110,52],[136,108,54],[84,74,44],[122,80,44],[98,128,48]].forEach(q => { const gr = g.createRadialGradient(q[0], q[1], 2, q[0], q[1], q[2]); gr.addColorStop(0, 'rgba(' + c + ',' + a + ')'); gr.addColorStop(1, 'rgba(' + c + ',0)'); g.fillStyle = gr; g.fillRect(0, 0, 192, 192); }); return cv; };
+        S.sprD = mkSpr('0,0,0', .85); S.sprW = mkSpr('255,255,255', .6);
+        const cv = document.createElement('canvas'); cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); const g = cv.getContext('2d');
+        g.setTransform(dpr*sc, 0, 0, dpr*sc, dpr*(W/2 - cxI*sc), dpr*(H/2 - cyI*sc)); g.lineJoin = 'round';
+        let seed = 7; const rs = () => (seed = (seed*16807) % 2147483647)/2147483647;
+        const poly = P => { g.beginPath(); P.forEach((a, i) => i ? g.lineTo(a[0], a[1]) : g.moveTo(a[0], a[1])); g.closePath(); };
+        // plaine lointaine + lacs clairs
+        { const pg = g.createLinearGradient(0, 500, 0, 580); pg.addColorStop(0, 'rgba(0,0,0,0)'); pg.addColorStop(1, 'rgba(0,0,0,.6)'); g.fillStyle = pg; g.globalAlpha = 1; g.fillRect(-200, 500, 2400, 80); g.fillStyle = '#000'; g.globalAlpha = .6; g.fillRect(-200, 580, 2400, 640); } g.fillStyle = col; g.globalAlpha = .16; g.fillRect(-200, 540, 2400, 680);
+        g.fillStyle = '#fff'; [[[0,585],[160,568],[330,578],[470,566],[640,575],[700,596],[520,612],[300,606],[120,618],[0,612]],[[400,600],[560,595],[700,620],[560,632],[420,622]],[[1330,632],[1430,624],[1480,640],[1390,648]],[[1440,655],[1530,652],[1500,668],[1450,666]]].forEach(P => { g.globalAlpha = .22; poly(P); g.fill(); });
+        // crêtes lointaines (droite), plus pâles
+        g.fillStyle = '#000'; g.globalAlpha = .45; poly([[1180,575],[1230,552],[1290,540],[1330,552],[1420,590],[1500,572],[1600,598],[1700,596],[1800,602],[1920,590],[1920,640],[1180,640]]); g.fill();
+        g.fillStyle = col; g.globalAlpha = .08; g.fill();
+        // massif central : les pics qui cachent la lumière
+        const PK = [[640,610],[720,570],[790,530],[815,524],[838,526],[868,545],[900,572],[945,548],[985,510],[1012,494],[1028,500],[1050,535],[1075,562],[1108,520],[1124,505],[1142,513],[1175,560],[1250,610]];
+        g.fillStyle = '#000'; g.globalAlpha = .88; poly(PK); g.fill(); g.fillStyle = col; g.globalAlpha = .1; g.fill();
+        // liseré de lumière sur les arêtes
+        g.strokeStyle = '#fff'; g.lineWidth = 2.5; g.globalAlpha = .5; g.beginPath(); g.moveTo(985, 510); g.lineTo(1012, 494); g.lineTo(1028, 500); g.moveTo(1108, 520); g.lineTo(1124, 505); g.lineTo(1142, 513); g.moveTo(790, 530); g.lineTo(815, 524); g.lineTo(838, 526); g.stroke();
+        // vallées au premier plan : ondulations sombres
+        g.fillStyle = '#000'; for(let i=0;i<46;i++){ const x = rs()*2000 - 40, y = 640 + rs()*440, w = 90 + rs()*260, h = 14 + rs()*40; g.globalAlpha = .06 + rs()*.1; g.beginPath(); g.ellipse(x, y, w, h, rs()*.3 - .15, 0, 6.283); g.fill(); }
+        g.fillStyle = '#fff'; for(let i=0;i<30;i++){ const x = rs()*2000 - 40, y = 700 + rs()*380, w = 60 + rs()*170, h = 8 + rs()*22; g.globalAlpha = .025 + rs()*.04; g.beginPath(); g.ellipse(x, y, w, h, rs()*.4 - .2, 0, 6.283); g.fill(); }
+        // vignette
+        g.globalAlpha = 1; const vg = g.createRadialGradient(960, 600, 520, 960, 600, 1350); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)'); g.fillStyle = vg; g.fillRect(-200, 0, 2400, IH);
+        S.bg = cv; S.col = col; S.c = true;
       };
     }
     if(kind === 'stanton'){
@@ -7469,6 +7549,106 @@ function startPixelScene(layer, kind){
         ctx.globalAlpha = Math.min(1, f.age*4)*(1 - f.age/f.life)*(.45 + .4*Math.min(1, gA*1.5)); ctx.lineWidth = f.s;
         ctx.beginPath(); ctx.moveTo(f.x, f.y); ctx.lineTo(f.x - f.vx*.022, f.y - f.vy*.022); ctx.stroke(); return true; });
       setS(); ctx.globalAlpha = 1; ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.lineJoin = 'miter'; ctx.lineCap = 'butt';
+    } else if(kind === 'cockpit'){
+      const S = inst.S, t = (S.t += dt);
+      if(!S.c || S.col !== inst.color || (!S.fgc && getCockpitImg().complete)) S.render();
+      const setI = () => ctx.setTransform(dpr*S.s, 0, 0, dpr*S.s, dpr*(W/2 - S.cxI*S.s), dpr*(H/2 - S.cyI*S.s)), setS = () => ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const col = inst.color, tint = a => { ctx.fillStyle = col; ctx.globalAlpha = a; }, wht = a => { ctx.fillStyle = '#fff'; ctx.globalAlpha = a; };
+      ctx.shadowBlur = 0; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      const VX = 1010, VY = 350;
+      setI();
+      // ----- ciel -----
+      tint(.16); ctx.fillRect(0, 0, 1920, 1080);
+      { const gr = ctx.createLinearGradient(0, 0, 0, 700); gr.addColorStop(0, 'rgba(255,255,255,.16)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); ctx.globalAlpha = 1; ctx.fillStyle = gr; ctx.fillRect(0, 0, 1920, 700); }
+      // sol sombre sous le banc de nuages (en bas à gauche) + stries qui filent vers nous
+      { const gr = ctx.createLinearGradient(0, 560, 0, 1080); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.7)'); ctx.globalAlpha = 1; ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(0, 560); ctx.lineTo(920, 640); ctx.lineTo(0, 1080); ctx.closePath(); ctx.fill(); ctx.fillRect(0, 900, 700, 180); }
+      // soleil + halo + rayons
+      { const sx = 1065, sy = 245, pu = .92 + .08*Math.sin(t*1.3); ctx.save(); ctx.globalCompositeOperation = 'lighter';
+        let gr = ctx.createRadialGradient(sx, sy, 5, sx, sy, 520*pu); gr.addColorStop(0, 'rgba(255,255,255,.55)'); gr.addColorStop(.25, 'rgba(255,255,255,.18)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = gr; ctx.globalAlpha = 1; ctx.fillRect(0, 0, 1920, 900);
+        ctx.strokeStyle = '#fff'; for(let i=0;i<14;i++){ const a = i*.449 + t*.03; ctx.globalAlpha = .022 + .014*Math.sin(t*.9 + i*1.7); ctx.lineWidth = 8 + (i % 3)*6; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + Math.cos(a)*1500, sy + Math.sin(a)*1500); ctx.stroke(); }
+        ctx.restore(); wht(1); ctx.beginPath(); ctx.arc(sx, sy, 46, 0, 6.283); ctx.fill(); }
+      // nuages : ils jaillissent de l'horizon et filent vers nous, de plus en plus gros (boucle sans fin)
+      S.puffs.forEach(p => { p.age += dt; if(p.age >= S.LIFE){ Object.assign(p, S.mkP(0)); }
+        const u = p.age/S.LIFE, r = 30*Math.exp(Math.log(60)*u), ang = p.a + p.da*u, sz = 40 + r*1.15*p.w, x = VX + Math.cos(ang)*r*1.5, y = VY + 40 + Math.sin(ang)*r*.55 + r*.55 + Math.sin(p.seed + t*.4)*6,
+          al = Math.min(1, u*7)*Math.min(1, (1 - u)*6);
+        ctx.globalAlpha = al*.38; ctx.drawImage(S.sprC, x - sz/2, y - sz/2, sz, sz); ctx.globalAlpha = al*.28; ctx.drawImage(S.sprW, x - sz/2, y - sz*.55, sz, sz*.9); });
+      // ----- habitacle + pilote (pixel-art extrait de la capture) -----
+      if(S.fgc){
+        S.bumpT -= dt; if(S.bumpT <= 0){ S.bump = rnd(3, 7); S.bumpT = rnd(3.5, 7); } S.bump *= Math.pow(.25, dt);
+        const sx = Math.sin(t*1.7)*1.1 + Math.sin(t*5.1)*.5 + S.bump*Math.sin(t*23)*.5, sy = Math.sin(t*1.3 + 1)*1.2 + Math.sin(t*4.3)*.6 + S.bump*Math.cos(t*19)*.6;
+        ctx.imageSmoothingEnabled = false; ctx.globalAlpha = 1;
+        ctx.save(); ctx.translate(sx, sy); ctx.drawImage(S.fgc, 0, 0, 1920, 1080);
+        ctx.restore();
+        ctx.save(); ctx.translate(sx + Math.sin(t*.9)*2.6 + S.bump*.3, sy + Math.sin(t*1.4 + 2)*1.8); ctx.beginPath(); [[1565,300],[1920,270],[1920,1080],[1640,1080],[1600,880],[1558,760],[1552,640],[1584,560],[1600,470],[1640,410]].forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath(); ctx.clip(); ctx.drawImage(S.fgc, 0, 0, 1920, 1080); ctx.restore();
+        ctx.imageSmoothingEnabled = true;
+        // ----- écrans et voyants qui vivent -----
+        ctx.save(); ctx.translate(sx, sy); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'butt';
+        // écran gauche : barres, onde, icône du vaisseau
+        for(let k=0;k<3;k++){ const w = 60 + 40*(.5 + .5*Math.sin(t*(1.2 + k*.5) + k*2)); tint(.55); ctx.fillStyle = '#fff'; ctx.globalAlpha = .38; ctx.fillRect(975, 706 + k*14, w, 5); }
+        ctx.strokeStyle = '#fff'; ctx.globalAlpha = .55; ctx.lineWidth = 2.2; ctx.beginPath(); for(let i=0;i<=40;i++){ const x = 1036 + i*1.75, y = 752 + Math.sin(i*.55 - t*4)*9*Math.sin(t*.7 + i*.08); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke();
+        { const gr = ctx.createRadialGradient(1005, 642, 4, 1005, 642, 52); gr.addColorStop(0, 'rgba(255,255,255,' + (.16 + .12*Math.sin(t*2.2)) + ')'); gr.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = gr; ctx.globalAlpha = 1; ctx.fillRect(950, 590, 110, 110); }
+        // écran droit : « NO TARGET » qui clignote, jauge qui tourne
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.globalAlpha = .3 + .25*Math.sin(t*2.6); ctx.beginPath(); ctx.moveTo(1335, 612); ctx.lineTo(1452, 672); ctx.moveTo(1452, 612); ctx.lineTo(1335, 672); ctx.stroke();
+        ctx.globalAlpha = .6; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(1365, 745, 21, t*1.6, t*1.6 + 4.2); ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.globalAlpha = .3 + .3*Math.sin(t*5); ctx.fillRect(1368, 640, 40, 6);
+        ctx.globalAlpha = .12 + .06*Math.sin(t*1.9); ctx.fillRect(1318, 603 + ((t*30) % 80), 154, 3); ctx.fillRect(962, 603 + ((t*26 + 30) % 76), 146, 3);
+        // lumière du dôme central, voyants rouges, rangées de boutons
+        { const gr = ctx.createRadialGradient(1175, 680, 3, 1175, 680, 70); gr.addColorStop(0, 'rgba(255,255,255,' + (.28 + .14*Math.sin(t*2.4)) + ')'); gr.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = gr; ctx.globalAlpha = 1; ctx.fillRect(1100, 620, 150, 130); }
+        ctx.fillStyle = '#ff3a2a'; ctx.shadowColor = '#ff3a2a'; ctx.shadowBlur = 10; [[1062,806],[1074,806],[1086,806]].forEach((q, i) => { ctx.globalAlpha = (Math.sin(t*3 + i*2.1) > .1) ? .85 : .15; ctx.fillRect(q[0], q[1], 8, 10); }); ctx.globalAlpha = (t % 1.6 < .6) ? .8 : .1; ctx.fillRect(1530, 740, 10, 8); ctx.shadowBlur = 0;
+        ctx.fillStyle = '#fff'; for(let i=0;i<5;i++){ ctx.globalAlpha = .25 + .35*Math.max(0, Math.sin(t*2 + i*1.3)); ctx.fillRect(978 + i*24, 571, 14, 8); ctx.globalAlpha = .25 + .35*Math.max(0, Math.sin(t*1.7 + i*1.9)); ctx.fillRect(1308 + i*24, 569, 14, 8); }
+        ctx.restore();
+      }
+      // reflet du soleil sur la verrière et le montant (éblouissement qui pulse)
+      { ctx.save(); ctx.globalCompositeOperation = 'lighter'; const gr = ctx.createRadialGradient(1065, 245, 10, 1065, 245, 360); gr.addColorStop(0, 'rgba(255,255,255,' + (.2 + .06*Math.sin(t*1.1)) + ')'); gr.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = gr; ctx.globalAlpha = 1; ctx.fillRect(700, 0, 800, 600); ctx.restore(); }
+      // poussières en suspension dans la lumière
+      S.dust.forEach(d => { d.x -= d.v*dt; d.y += d.v*.25*dt; if(d.x < -10 || d.y > 1090){ d.x = rnd(1200, 1930); d.y = rnd(0, 700); } wht(.1 + .1*Math.sin(t*1.4 + d.ph)); ctx.fillRect(d.x, d.y, d.r, d.r); });
+      setS(); ctx.globalAlpha = 1; ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.lineJoin = 'miter'; ctx.lineCap = 'butt';
+    } else if(kind === 'godray'){
+      const S = inst.S, t = (S.t += dt);
+      if(!S.c || S.col !== inst.color) S.render();
+      const setI = () => ctx.setTransform(dpr*S.s, 0, 0, dpr*S.s, dpr*(W/2 - S.cxI*S.s), dpr*(H/2 - S.cyI*S.s)), setS = () => ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const col = inst.color, tint = a => { ctx.fillStyle = col; ctx.globalAlpha = a; }, wht = a => { ctx.fillStyle = '#fff'; ctx.globalAlpha = a; };
+      ctx.shadowBlur = 0; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      const SX = 1015, SY = 505;
+      setI();
+      // ----- ciel : teinte + halo doré au ras de l'horizon -----
+      tint(.21); ctx.fillRect(-200, 0, 2400, 1080);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      { const pu = .94 + .06*Math.sin(t*.8); ctx.save(); ctx.translate(SX, SY + 10); ctx.scale(2.5, 1); const gr = ctx.createRadialGradient(0, 0, 4, 0, 0, 440*pu); gr.addColorStop(0, 'rgba(255,255,255,.7)'); gr.addColorStop(.3, 'rgba(255,255,255,.28)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = gr; ctx.globalAlpha = 1; ctx.fillRect(-500, -500, 1000, 1000); ctx.restore(); }
+      { const gr = ctx.createLinearGradient(0, 430, 0, 600); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(.6, 'rgba(255,255,255,.16)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = gr; ctx.globalAlpha = 1; ctx.fillRect(-200, 430, 2400, 170); }
+      ctx.restore();
+      // nuages clairs (à droite) puis gros nuages sombres qui dérivent en haut
+      S.lite.forEach(c => { c.x += c.v*dt; if(c.x - c.sz > 2000) c.x = -c.sz; ctx.globalAlpha = c.a; ctx.drawImage(S.sprW, c.x - c.sz/2, c.y - c.sz*.35, c.sz, c.sz*.7); });
+      S.dark.forEach(c => { c.x += c.v*dt; if(c.x - c.sz > 2100) c.x = -c.sz; ctx.globalAlpha = c.a*.72; ctx.drawImage(S.sprD, c.x - c.sz/2, c.y - c.sz*.4, c.sz, c.sz*.8); });
+      { const gr = ctx.createLinearGradient(0, 0, 0, 470); gr.addColorStop(0, 'rgba(0,0,0,.36)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); ctx.globalAlpha = 1; ctx.fillStyle = gr; ctx.fillRect(-200, 0, 2400, 470); }
+      // ----- rayons du soleil cachés derrière les pics, qui percent les nuages -----
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = '#fff';
+      for(let i=0;i<16;i++){ const a = -Math.PI/2 + (i - 7.5)*.19 + Math.sin(t*.12 + i)*.02, w = .028 + .012*Math.sin(i*2.3), L = 1100; ctx.globalAlpha = .02 + .028*Math.max(0, Math.sin(t*.6 + i*1.9)); ctx.beginPath(); ctx.moveTo(SX, SY); ctx.lineTo(SX + Math.cos(a - w)*L, SY + Math.sin(a - w)*L); ctx.lineTo(SX + Math.cos(a + w)*L, SY + Math.sin(a + w)*L); ctx.closePath(); ctx.fill(); }
+      // faisceaux clairs entre les ombres des montagnes (vers nous)
+      [[-.5,.2],[ -.18,.14],[.14,.12],[.46,.18]].forEach((q, i) => { const sw = Math.sin(t*.35 + i*1.6)*18; ctx.globalAlpha = .05 + .035*Math.sin(t*.7 + i*2.2); ctx.beginPath(); ctx.moveTo(SX - 20, 560); ctx.lineTo(SX + 20, 560); ctx.lineTo(SX + 20 + q[0]*1250 + sw + 260*q[1], 1150); ctx.lineTo(SX - 20 + q[0]*1250 + sw - 260*q[1], 1150); ctx.closePath(); ctx.fill(); });
+      ctx.restore();
+      setS(); ctx.globalAlpha = 1; ctx.drawImage(S.bg, 0, 0, W, H); setI();
+      { ctx.save(); ctx.globalCompositeOperation = 'lighter'; const hg = ctx.createLinearGradient(0, 440, 0, 780); hg.addColorStop(0, 'rgba(255,255,255,0)'); hg.addColorStop(.27, 'rgba(255,255,255,.16)'); hg.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = hg; ctx.globalAlpha = 1; ctx.fillRect(-200, 440, 2400, 340); ctx.restore(); }
+      // ombres géantes des montagnes qui s'étirent vers nous
+      ctx.fillStyle = '#000'; [[[815,562],[872,556],[610,1150],[380,1150]],[[1000,522],[1042,522],[1280,1150],[820,1150]],[[1092,542],[1122,546],[1520,1150],[1380,1150]]].forEach((q, i) => { const sw = Math.sin(t*.4 + i*2.1)*14; [[-26, .16], [0, .3]].forEach(z => { ctx.globalAlpha = z[1] + .04*Math.sin(t*.5 + i*1.3); ctx.beginPath(); ctx.moveTo(q[0][0] + z[0]*.15, q[0][1]); ctx.lineTo(q[1][0] - z[0]*.15, q[1][1]); ctx.lineTo(q[2][0] + sw - z[0], q[2][1]); ctx.lineTo(q[3][0] + sw + z[0], q[3][1]); ctx.closePath(); ctx.fill(); }); });
+      // brume au sol
+      S.fog.forEach(f => { f.x -= f.v*dt; if(f.x + f.w < -100) f.x = 2000 + f.w; wht(f.a*.6); ctx.beginPath(); ctx.ellipse(f.x, f.y, f.w, 26, 0, 0, 6.283); ctx.fill(); });
+      // ----- le vaisseau s'éloigne vers la lumière (vu en oblique arrière), puis un autre arrive -----
+      { const u = (t % S.T)/S.T, vis = Math.min(1, Math.max(0, (u - .03)/.06))*Math.min(1, Math.max(0, (.93 - u)/.1));
+        const e = Math.pow(u, .8), scl = 1.65*Math.pow(1 - e, 1.5) + .1, px = 880 + e*130 + Math.sin(t*.7)*10*(1 - u), py = 1190 - e*610;
+        const cam = mkCam({ tx:0, ty:0, yaw:-1.38, pitch:.42, d:10 }, px, py, 74), roll = Math.sin(t*.9)*.12 + Math.sin(t*2.3)*.03, pose = { roll, pitch:.02, yaw:0 };
+        const eng = sd => { const r = rotShip([-2.55*scl, .05*scl, sd*1.225*scl], roll, pose.pitch, 0); return cam.proj(r); };
+        if(vis > .01){
+          const e1 = eng(-1), e2 = eng(1); S.trail.push({ x:(e1 && e2) ? (e1[0] + e2[0])/2 : px, y:(e1 && e2) ? (e1[1] + e2[1])/2 : py, s:scl, age:0 });
+          const list = []; ship3(list, cam, { pos:[0, 0, 0], roll, pitch:pose.pitch, yaw:0 }, { fl:.5 + .14*Math.sin(t*17), scale:scl, A:vis }); flush(list);
+          [e1, e2].forEach(p => { if(!p) return; ctx.save(); ctx.globalCompositeOperation = 'lighter'; const rr = 70*scl*(.9 + .2*Math.sin(t*14)), gr = ctx.createRadialGradient(p[0], p[1], 1, p[0], p[1], rr); gr.addColorStop(0, 'rgba(255,230,180,.9)'); gr.addColorStop(.4, 'rgba(255,170,80,.35)'); gr.addColorStop(1, 'rgba(255,140,40,0)'); ctx.fillStyle = gr; ctx.globalAlpha = vis; ctx.beginPath(); ctx.arc(p[0], p[1], rr, 0, 6.283); ctx.fill(); ctx.restore(); });
+        }
+        if(vis <= .01 && S.trail.length > 0 && u < .05) S.trail.length = 0;
+        // sillage lumineux qui s'efface derrière lui
+        ctx.save(); ctx.globalCompositeOperation = 'lighter'; S.trail = S.trail.filter(q => { q.age += dt; if(q.age > 1.6) return false; const k = 1 - q.age/1.6; ctx.fillStyle = '#fff'; ctx.globalAlpha = .22*k*vis; ctx.beginPath(); ctx.arc(q.x, q.y + q.age*10, 3 + q.s*9*k, 0, 6.283); ctx.fill(); return true; }); ctx.restore(); }
+      // poussières dorées dans les faisceaux
+      S.motes.forEach(m => { m.y -= m.v*dt; m.x += Math.sin(t*.5 + m.ph)*8*dt; if(m.y < 520){ m.y = 1080; m.x = rnd(300, 1650); } ctx.save(); ctx.globalCompositeOperation = 'lighter'; wht(.14 + .14*Math.sin(t*1.5 + m.ph)); ctx.fillRect(m.x, m.y, m.r, m.r); ctx.restore(); });
+      setS(); ctx.globalAlpha = 1; ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.lineJoin = 'miter'; ctx.lineCap = 'butt';
     } else if(kind === 'stanton'){
       const S = inst.S; S.t += dt; ctx.shadowBlur = 0;
       S.layers.forEach((L, li) => {
@@ -7950,6 +8130,10 @@ function applyShopFrame(host, key){
         e.style.width = sz+'px'; e.style.height = sz+'px';
       }
     }
+  } else if(key === 'godray'){
+    if(!reduce) startPixelScene(layer, 'godray'); // rayons de lumière derrière les montagnes, vaisseau qui s'éloigne
+  } else if(key === 'cockpit'){
+    if(!reduce) startPixelScene(layer, 'cockpit'); // cockpit vu par-dessus l'épaule du pilote, ciel qui défile
   } else if(key === 'cliff'){
     if(!reduce) startPixelScene(layer, 'cliff'); // falaise enneigée, vent et neige en rafales, vaisseau posé
   } else if(key === 'skyline'){

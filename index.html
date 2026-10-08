@@ -6849,28 +6849,60 @@ function startPixelScene(layer, kind){
         const dpr = window.devicePixelRatio || 1, col = inst.color;
         const cv = document.createElement('canvas'); cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); const g = cv.getContext('2d');
         g.setTransform(dpr*sc, 0, 0, dpr*sc, dpr*(W/2 - cxI*sc), dpr*(H/2 - cyI*sc)); g.lineJoin = 'round'; g.lineCap = 'round';
+        const R = pts => pts.map(q => [q[0]*2, q[1]*2]);
         const path = pts => { g.beginPath(); pts.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath(); };
-        const solid = (pts, a, sa, glow) => { path(pts); g.globalAlpha = .96; g.fillStyle = '#07070d'; g.fill(); g.globalAlpha = a; g.fillStyle = col; g.fill(); g.strokeStyle = col; g.globalAlpha = sa; g.lineWidth = 2.2; g.shadowColor = col; g.shadowBlur = glow ? 10 : 0; g.stroke(); g.shadowBlur = 0; };
-        const rim = (a, b, al) => { g.strokeStyle = '#fff'; g.globalAlpha = al; g.lineWidth = 1.6; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); };
-        // flanc gauche du habitacle et planche de bord
-        solid([[948,610],[880,690],[600,850],[320,1090],[1010,1090],[960,800]], .1, .55, true);
-        solid([[960,800],[1490,800],[1740,1090],[1010,1090]], .13, .5, false);
-        solid([[1480,590],[1566,640],[1580,790],[1490,800]], .14, .55, false);
-        solid([[990,540],[1320,540],[1340,572],[972,572]], .2, .8, true);
-        // montant de verrière (gauche) et traverse (droite)
-        solid([[800,-10],[935,-10],[996,545],[964,560]], .12, .7, true); rim([935,-10], [996,545], .45);
-        solid([[1290,566],[1640,418],[1710,408],[1710,444],[1310,592]], .12, .65, true); rim([1290,566], [1640,418], .45);
-        // écrans (cadres), dôme, rangées de boutons, manettes
-        [[950,590,170,198],[1308,590,176,198]].forEach(r => { path([[r[0], r[1]], [r[0] + r[2], r[1]], [r[0] + r[2], r[1] + r[3]], [r[0], r[1] + r[3]]]); g.globalAlpha = .98; g.fillStyle = '#07070d'; g.fill(); g.globalAlpha = .16; g.fillStyle = col; g.fill(); g.strokeStyle = col; g.globalAlpha = .9; g.lineWidth = 2.6; g.shadowColor = col; g.shadowBlur = 12; g.stroke(); g.shadowBlur = 0; });
-        g.beginPath(); g.arc(1180, 678, 46, 0, 6.283); g.globalAlpha = .98; g.fillStyle = '#07070d'; g.fill(); g.globalAlpha = .2; g.fillStyle = col; g.fill(); g.strokeStyle = col; g.globalAlpha = .8; g.lineWidth = 2.4; g.stroke();
-        g.fillStyle = col; [[970,572,140],[1310,572,120]].forEach(r => { for(let i = 0; i < 6; i++){ g.globalAlpha = .35; g.fillRect(r[0] + i*r[2]/6, r[1], r[2]/6 - 6, 12); } });
-        solid([[1090,830],[1290,830],[1300,900],[1100,900]], .1, .5, false);
-        [[1110,845,70],[1200,845,70]].forEach(r => { g.globalAlpha = .4; g.strokeStyle = col; g.lineWidth = 1.5; g.strokeRect(r[0], r[1], r[2], 40); });
-        // manche à balai + main droite
-        solid([[1240,790],[1330,790],[1344,890],[1256,910]], .16, .6, false);
-        g.strokeStyle = col; g.globalAlpha = .9; g.lineWidth = 12; g.beginPath(); g.moveTo(1288, 800); g.lineTo(1280, 735); g.stroke(); g.fillStyle = '#fff'; g.globalAlpha = .75; g.beginPath(); g.arc(1279, 728, 17, 0, 6.283); g.fill();
-        // main gauche (gantée) sur la manette
-        solid([[930,900],[990,880],[1030,930],[1010,990],[944,985]], .26, .8, true);
+        const solid = (pts, a, sa, glow) => { path(R(pts)); g.globalAlpha = .97; g.fillStyle = '#07070d'; g.fill(); g.globalAlpha = a; g.fillStyle = col; g.fill(); g.strokeStyle = col; g.globalAlpha = sa; g.lineWidth = 2.2; g.shadowColor = col; g.shadowBlur = glow ? 10 : 0; g.stroke(); g.shadowBlur = 0; };
+        const line = (a, b, al, w, c) => { g.strokeStyle = c || '#fff'; g.globalAlpha = al; g.lineWidth = w || 1.6; g.beginPath(); g.moveTo(a[0]*2, a[1]*2); g.lineTo(b[0]*2, b[1]*2); g.stroke(); };
+        const screw = (x, y, r) => { r = (r || 2)*2; g.beginPath(); g.arc(x*2, y*2, r, 0, 6.283); g.fillStyle = '#07070d'; g.globalAlpha = .9; g.fill(); g.strokeStyle = '#fff'; g.globalAlpha = .5; g.lineWidth = 1.2; g.stroke(); g.beginPath(); g.moveTo(x*2 - r*.6, y*2 - r*.4); g.lineTo(x*2 + r*.6, y*2 + r*.4); g.globalAlpha = .45; g.stroke(); };
+        const tube = (pts, w) => { const f = () => { g.beginPath(); g.moveTo(pts[0][0]*2, pts[0][1]*2); g.bezierCurveTo(pts[1][0]*2, pts[1][1]*2, pts[2][0]*2, pts[2][1]*2, pts[3][0]*2, pts[3][1]*2); };
+          f(); g.strokeStyle = '#07070d'; g.globalAlpha = .95; g.lineWidth = w + 4; g.stroke(); f(); g.strokeStyle = col; g.globalAlpha = .4; g.lineWidth = w; g.stroke(); f(); g.strokeStyle = '#fff'; g.globalAlpha = .28; g.lineWidth = 1.6; g.setLineDash([]); g.stroke();
+          for(let k = 1; k < 5; k++){ const u = k/5, v = 1 - u, x = v*v*v*pts[0][0] + 3*v*v*u*pts[1][0] + 3*v*u*u*pts[2][0] + u*u*u*pts[3][0], y = v*v*v*pts[0][1] + 3*v*v*u*pts[1][1] + 3*v*u*u*pts[2][1] + u*u*u*pts[3][1]; g.beginPath(); g.arc(x*2, y*2, w*.62, 0, 6.283); g.strokeStyle = '#fff'; g.globalAlpha = .4; g.lineWidth = 1.4; g.stroke(); } };
+        // traverse de verrière (droite) et montant (gauche)
+        solid([[640,276],[800,216],[836,206],[842,217],[650,288]], .12, .65, true); line([640,278], [836,207], .4, 1.6);
+        for(let k = 0; k < 6; k++) screw(668 + k*28, 266 - k*10.2, 1.5);
+        solid([[403,-4],[463,-4],[491,274],[470,284]], .12, .7, true); line([463,0], [491,274], .45, 1.6);
+        [40,100,160,225].forEach(y => screw(436 + (y/274)*27, y, 1.8));
+        solid([[478,208],[498,212],[502,228],[486,226]], .2, .7, false);
+        // carénage gauche : grand flanc sombre + rail strié + conduits
+        solid([[108,544],[224,468],[304,396],[328,386],[434,340],[440,372],[420,420],[380,508],[340,544]], .09, .6, true);
+        solid([[332,384],[436,338],[442,352],[338,398]], .2, .8, true);
+        for(let k = 0; k < 14; k++){ const u = k/14, x = 336 + u*98, y = 392 - u*52; line([x, y], [x + 2, y - 11], .4, 1.2); }
+        solid([[440,340],[454,362],[436,470],[406,544],[380,544],[420,420],[440,372]], .13, .55, false);
+        tube([[330,400],[300,440],[250,470],[190,500]], 7); tube([[350,420],[330,470],[300,500],[270,540]], 6);
+        [[300,446],[360,420],[250,500]].forEach(q => screw(q[0], q[1], 2));
+        // planche de bord (capot, évidement central, flanc droit)
+        solid([[432,334],[480,282],[556,276],[632,270],[636,280],[716,280],[720,296],[760,312],[780,336],[786,364],[756,416],[560,416],[474,418],[440,382]], .1, .6, true);
+        solid([[556,274],[640,272],[646,346],[556,346]], .04, .35, false);
+        solid([[756,416],[838,470],[884,544],[800,544],[744,470]], .1, .5, false);
+        for(let k = 0; k < 5; k++) line([782 + k*10, 428 + k*12], [800 + k*10, 420 + k*12], .4, 1.4);
+        solid([[560,416],[760,416],[838,470],[862,544],[520,544],[498,470]], .1, .5, false);
+        solid([[404,544],[420,420],[474,418],[500,470],[520,544]], .09, .45, false);
+        for(let k = 0; k < 6; k++) line([540 + k*14, 440], [534 + k*14, 470], .25, 1.4);
+        // boîtiers d'écrans + vis + voyants + interrupteurs
+        solid([[470,292],[562,292],[562,416],[470,416]], .15, .75, true); solid([[650,294],[744,294],[760,312],[760,416],[650,416]], .15, .75, true);
+        [[474,296],[558,296],[474,412],[558,412],[654,298],[740,298],[654,412],[754,412]].forEach(q => screw(q[0], q[1], 1.6));
+        [[484,406],[494,406]].forEach(q => { g.beginPath(); g.arc(q[0]*2, q[1]*2, 6, 0, 6.283); g.fillStyle = '#fff'; g.globalAlpha = .45; g.fill(); g.strokeStyle = col; g.globalAlpha = .9; g.lineWidth = 1.6; g.stroke(); });
+        [[674,408],[686,408],[698,408],[710,408],[728,408],[740,408]].forEach(q => { g.beginPath(); g.arc(q[0]*2, q[1]*2, 5, 0, 6.283); g.fillStyle = '#fff'; g.globalAlpha = .35; g.fill(); g.strokeStyle = col; g.globalAlpha = .9; g.lineWidth = 1.5; g.stroke(); });
+        [[756,320],[756,332],[756,344],[756,356]].forEach(q => { g.fillStyle = col; g.globalAlpha = .7; g.fillRect(q[0]*2 - 4, q[1]*2 - 3, 8, 6); });
+        [[780,340],[790,340],[780,352],[790,352],[770,366],[780,366]].forEach(q => { g.beginPath(); g.arc(q[0]*2, q[1]*2, 4, 0, 6.283); g.strokeStyle = col; g.globalAlpha = .8; g.lineWidth = 1.5; g.stroke(); });
+        // rangées de boutons du dessus
+        g.fillStyle = col; [[482,283,68],[658,283,60]].forEach(r => { for(let i = 0; i < 5; i++){ g.globalAlpha = .38; g.fillRect(r[0]*2 + i*r[2]*2/5, r[1]*2, r[2]*2/5 - 6, 14); g.strokeStyle = '#fff'; g.globalAlpha = .25; g.lineWidth = 1; g.strokeRect(r[0]*2 + i*r[2]*2/5, r[1]*2, r[2]*2/5 - 6, 14); } });
+        // soucoupe centrale + pavé de boutons + écran de HUD flottant
+        g.beginPath(); g.ellipse(1176, 676, 46, 17, 0, 0, 6.283); g.globalAlpha = .98; g.fillStyle = '#07070d'; g.fill(); g.globalAlpha = .22; g.fillStyle = col; g.fill(); g.strokeStyle = col; g.globalAlpha = .85; g.lineWidth = 2.4; g.shadowColor = col; g.shadowBlur = 10; g.stroke(); g.shadowBlur = 0;
+        solid([[582,358],[618,358],[618,392],[582,392]], .14, .6, false);
+        for(let i = 0; i < 3; i++) for(let j = 0; j < 3; j++){ g.fillStyle = col; g.globalAlpha = .5; g.fillRect((587 + i*10)*2, (363 + j*10)*2, 12, 12); }
+        g.strokeStyle = col; g.globalAlpha = .45; g.lineWidth = 1.6; [[1150,370,24,60],[1130,420,18,42]].forEach(r => g.strokeRect(r[0], r[1], r[2], r[3]));
+        // volet gauche : siège / manette des gaz
+        solid([[452,470],[480,452],[500,470],[500,544],[452,544]], .1, .5, false);
+        tube([[586,392],[600,440],[640,470],[700,520]], 6);
+        screw(600, 500, 2); screw(700, 516, 2); screw(470, 500, 2);
+        // manche à balai + main droite (tube hydraulique le long du bras)
+        g.fillStyle = '#07070d'; g.globalAlpha = .95; g.fillRect(1216, 740, 56, 54); g.strokeStyle = col; g.globalAlpha = .85; g.lineWidth = 2.2; g.strokeRect(1216, 740, 56, 54); g.fillStyle = col; g.globalAlpha = .45; g.fillRect(1222, 746, 18, 14); g.fillStyle = '#ff3a2a'; g.globalAlpha = .8; g.fillRect(1250, 752, 10, 10);
+        g.strokeStyle = col; g.globalAlpha = .9; g.lineWidth = 14; g.beginPath(); g.moveTo(1246, 796); g.lineTo(1250, 850); g.stroke();
+        solid([[614,414],[652,402],[672,424],[660,452],[626,448]], .24, .8, true); line([626,450], [662,452], .8, 2.4);
+        // main gauche (gantée) + poignet + avant-bras
+        solid([[466,226+224],[494,222+224],[520,236+224],[516,266+224],[474,264+224]], .26, .85, true);
+        solid([[474,488],[516,490],[528,544],[462,544]], .14, .6, false); line([472,490], [518,492], .85, 3);
         g.globalAlpha = 1; g.shadowBlur = 0; S.fg = cv; S.col = col; S.c = true;
       };
     }
@@ -7579,19 +7611,35 @@ function startPixelScene(layer, kind){
       const sx = Math.sin(t*1.7)*1.3 + Math.sin(t*5.1)*.6 + S.bump*Math.sin(t*23)*.5, sy = Math.sin(t*1.3 + 1)*1.4 + Math.sin(t*4.3)*.7 + S.bump*Math.cos(t*19)*.6;
       ctx.globalAlpha = 1; setS(); ctx.drawImage(S.fg, 0, 0, W, H, sx*S.s - 10, sy*S.s - 10, W + 20, H + 20);
       setI(); ctx.translate(sx, sy);
-      // ----- pilote (profil, de face vers la gauche) -----
+      // ----- pilote casqué : on voit le côté du casque, la visière vers l'avant (gauche) -----
       { const hx = Math.sin(t*.9)*3 + S.bump*.3, hy = Math.sin(t*1.4 + 2)*2, P = (pts, a, sa, f) => { ctx.beginPath(); pts.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath(); ctx.globalAlpha = .97; ctx.fillStyle = '#07070d'; ctx.fill(); ctx.globalAlpha = a; ctx.fillStyle = f || col; ctx.fill(); ctx.strokeStyle = col; ctx.globalAlpha = sa; ctx.lineWidth = 2.2; ctx.shadowColor = col; ctx.shadowBlur = 10; ctx.stroke(); ctx.shadowBlur = 0; };
-        P([[1500,1100],[1556,940],[1646,830],[1760,790],[1930,780],[1930,1100]], .14, .6);
-        ctx.strokeStyle = '#fff'; ctx.globalAlpha = .35; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(1646, 830); ctx.lineTo(1700, 900); ctx.lineTo(1760, 850); ctx.stroke();
+        // bras droit qui tient le manche + épaule
+        P([[1930,1100],[1500,1100],[1470,990],[1390,920],[1310,890],[1290,846],[1340,826],[1430,856],[1560,900],[1700,940],[1930,930]], .13, .6);
+        ctx.strokeStyle = '#fff'; ctx.globalAlpha = .35; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(1330, 880); ctx.lineTo(1360, 842); ctx.moveTo(1560, 900); ctx.lineTo(1480, 1000); ctx.stroke();
+        P([[1650,860],[1760,820],[1930,810],[1930,960],[1700,940]], .15, .6);
         ctx.save(); ctx.translate(hx, hy);
-        P([[1930,330],[1790,350],[1700,392],[1642,440],[1620,500],[1600,545],[1626,560],[1613,600],[1618,642],[1652,692],[1704,742],[1764,790],[1930,800]], .16, .8);
-        P([[1930,300],[1770,326],[1694,376],[1736,420],[1812,440],[1930,470]], .3, .6);
-        P([[1618,600],[1652,692],[1704,742],[1764,790],[1760,700],[1700,640]], .12, .35);
-        ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.4; ctx.globalAlpha = .75; ctx.beginPath(); ctx.moveTo(1634, 500); ctx.lineTo(1668, 494); ctx.stroke();
-        ctx.fillStyle = '#fff'; ctx.globalAlpha = .9; ctx.beginPath(); ctx.arc(1650, 512, 4, 0, 6.283); ctx.fill();
-        ctx.strokeStyle = col; ctx.globalAlpha = .9; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.ellipse(1778, 640, 26, 48, .1, 0, 6.283); ctx.stroke(); ctx.globalAlpha = .2; ctx.fillStyle = col; ctx.fill();
-        ctx.strokeStyle = '#fff'; ctx.globalAlpha = .4; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(1760, 600); ctx.quadraticCurveTo(1740, 540, 1700, 520); ctx.stroke();
-        ctx.restore(); }
+        // coque du casque
+        ctx.beginPath(); ctx.moveTo(1930, 300); ctx.bezierCurveTo(1780, 300, 1650, 380, 1620, 520); ctx.bezierCurveTo(1596, 650, 1640, 760, 1740, 800); ctx.lineTo(1930, 820); ctx.closePath();
+        ctx.globalAlpha = .97; ctx.fillStyle = '#07070d'; ctx.fill(); ctx.globalAlpha = .17; ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = col; ctx.globalAlpha = .85; ctx.lineWidth = 2.6; ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.stroke(); ctx.shadowBlur = 0;
+        // reflet sur le dôme + arête centrale
+        ctx.strokeStyle = '#fff'; ctx.globalAlpha = .4; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(1900, 330); ctx.bezierCurveTo(1790, 335, 1700, 390, 1668, 480); ctx.stroke();
+        ctx.strokeStyle = col; ctx.globalAlpha = .5; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(1930, 410); ctx.bezierCurveTo(1820, 420, 1750, 470, 1730, 560); ctx.stroke();
+        // visière : côté de la visière vers l'avant
+        P([[1604,520],[1626,452],[1690,408],[1752,418],[1766,486],[1738,572],[1670,622],[1614,590]], .34, .95, '#6fc7ff'.length ? col : col);
+        ctx.fillStyle = '#fff'; ctx.globalAlpha = .12; ctx.beginPath(); ctx.moveTo(1640, 470); ctx.lineTo(1700, 430); ctx.lineTo(1736, 436); ctx.lineTo(1676, 560); ctx.lineTo(1632, 540); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.globalAlpha = .7; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(1650, 476); ctx.lineTo(1706, 440); ctx.stroke(); ctx.globalAlpha = .35; ctx.beginPath(); ctx.moveTo(1624, 540); ctx.lineTo(1650, 580); ctx.stroke();
+        // joint de visière, vis, pièce buccale et prise d'air
+        ctx.strokeStyle = col; ctx.globalAlpha = .9; ctx.lineWidth = 3.6; ctx.beginPath(); ctx.moveTo(1752, 418); ctx.lineTo(1768, 490); ctx.lineTo(1740, 576); ctx.stroke();
+        P([[1612,596],[1672,626],[1744,580],[1770,660],[1710,720],[1640,690]], .2, .75);
+        for(let k=0;k<4;k++){ ctx.strokeStyle = '#fff'; ctx.globalAlpha = .3; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(1650 + k*12, 646 + k*4); ctx.lineTo(1642 + k*12, 676 + k*4); ctx.stroke(); }
+        [[1764,440],[1778,504],[1752,568]].forEach(q => { ctx.beginPath(); ctx.arc(q[0], q[1], 5, 0, 6.283); ctx.fillStyle = '#07070d'; ctx.globalAlpha = .9; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.globalAlpha = .55; ctx.lineWidth = 1.4; ctx.stroke(); });
+        // oreillette + câble de com
+        ctx.beginPath(); ctx.arc(1830, 620, 52, 0, 6.283); ctx.fillStyle = '#07070d'; ctx.globalAlpha = .95; ctx.fill(); ctx.fillStyle = col; ctx.globalAlpha = .2; ctx.fill(); ctx.strokeStyle = col; ctx.globalAlpha = .9; ctx.lineWidth = 2.6; ctx.stroke();
+        ctx.beginPath(); ctx.arc(1830, 620, 28, 0, 6.283); ctx.strokeStyle = '#fff'; ctx.globalAlpha = .4; ctx.lineWidth = 1.6; ctx.stroke(); ctx.beginPath(); ctx.arc(1830, 620, 8, 0, 6.283); ctx.fillStyle = '#fff'; ctx.globalAlpha = .55; ctx.fill();
+        ctx.strokeStyle = col; ctx.globalAlpha = .6; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(1790, 660); ctx.bezierCurveTo(1760, 740, 1730, 800, 1700, 850); ctx.stroke();
+        ctx.restore();
+        // collier de combinaison
+        ctx.strokeStyle = '#fff'; ctx.globalAlpha = .45; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(1690, 800); ctx.quadraticCurveTo(1820, 860, 1930, 840); ctx.stroke(); ctx.strokeStyle = col; ctx.globalAlpha = .8; ctx.beginPath(); ctx.moveTo(1700, 820); ctx.quadraticCurveTo(1820, 880, 1930, 862); ctx.stroke(); }
       // ----- écrans animés (rectangles qui affichent des infos) -----
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
       { const X = 956, Y = 596, w = 158, h = 186; ctx.save(); ctx.beginPath(); ctx.rect(X, Y, w, h); ctx.clip();
@@ -7614,7 +7662,7 @@ function startPixelScene(layer, kind){
         ctx.globalAlpha = .9; ctx.beginPath(); ctx.moveTo(cx0, cy0 - 12); ctx.lineTo(cx0 + 5, cy0 + 4); ctx.lineTo(cx0 - 5, cy0 + 4); ctx.closePath(); ctx.fillStyle = '#fff'; ctx.fill();
         for(let k=0;k<4;k++){ wht(.28); ctx.fillRect(X + 84, Y + 122 + k*14, 66, 3); wht(.8); ctx.fillRect(X + 84, Y + 122 + k*14, 10 + 56*(.5 + .5*Math.sin(t*(1.3 + k*.3) + k*1.7)), 3); }
         ctx.restore(); }
-      { const cx0 = 1180, cy0 = 678, a = t*1.1; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.globalAlpha = .5; ctx.beginPath(); ctx.arc(cx0, cy0, 32, 0, 6.283); ctx.stroke(); ctx.globalAlpha = .25; ctx.beginPath(); ctx.arc(cx0, cy0, 18, 0, 6.283); ctx.stroke(); ctx.globalAlpha = .85; ctx.beginPath(); ctx.moveTo(cx0, cy0); ctx.lineTo(cx0 + Math.cos(a)*32, cy0 + Math.sin(a)*32); ctx.stroke(); }
+      { const cx0 = 1176, cy0 = 676, a = t*1.1; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.globalAlpha = .5; ctx.beginPath(); ctx.ellipse(cx0, cy0, 32, 11, 0, 0, 6.283); ctx.stroke(); ctx.globalAlpha = .25; ctx.beginPath(); ctx.ellipse(cx0, cy0, 17, 6, 0, 0, 6.283); ctx.stroke(); ctx.globalAlpha = .85; ctx.beginPath(); ctx.moveTo(cx0, cy0); ctx.lineTo(cx0 + Math.cos(a)*32, cy0 + Math.sin(a)*11); ctx.stroke(); }
       ctx.fillStyle = '#fff'; for(let i=0;i<6;i++){ ctx.globalAlpha = .1 + .5*Math.max(0, Math.sin(t*2 + i*1.3)); ctx.fillRect(970 + i*(140/6), 572, 140/6 - 6, 12); ctx.globalAlpha = .1 + .5*Math.max(0, Math.sin(t*1.7 + i*1.9)); ctx.fillRect(1310 + i*20, 572, 14, 12); }
       ctx.restore();
       ctx.fillStyle = '#ff3a2a'; [[1062,806],[1074,806],[1086,806]].forEach((q, i) => { ctx.globalAlpha = (Math.sin(t*3 + i*2.1) > .1) ? .9 : .15; ctx.fillRect(q[0], q[1], 8, 10); });

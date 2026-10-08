@@ -2705,16 +2705,12 @@
             <select id="listingCategory" onchange="updateListingLivePreview()"></select>
             <label for="listingDescription" data-i18n="listingDescriptionLbl">Description détaillée (optionnel)</label>
             <textarea id="listingDescription" data-i18n-ph="phListingDescription" placeholder="ex: État, provenance, détails utiles à l'acheteur..." oninput="updateListingLivePreview()"></textarea>
-            <input type="checkbox" id="listingStockMode" hidden>
-            <div class="tabs listing-mode-tabs">
-              <button type="button" class="tab-btn active" id="listingModeTabSingle" onclick="setListingMode(false, this)"><span data-i18n="listingModeSingleTab">VENTE UNIQUE</span></button>
-              <button type="button" class="tab-btn" id="listingModeTabStock" onclick="setListingMode(true, this)"><span data-i18n="listingModeStockTab">VENTE PAR QUANTITÉ</span></button>
-            </div>
+            <input type="checkbox" id="listingStockMode" hidden checked>
             <div id="listingModeFields">
-              <div class="muted" id="listingStockModeHint" style="font-size:.75rem; margin:8px 0 10px;" data-i18n="listingStockModeHint" hidden>Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.</div>
-              <label for="listingPrice" id="listingPriceLblEl" data-i18n="listingPriceLbl">Prix de vente (aUEC)</label>
+              <div class="muted" id="listingStockModeHint" style="font-size:.75rem; margin:8px 0 10px;" data-i18n="listingStockModeHint">Le prix sera compté à l'unité et l'acheteur choisira la quantité qu'il veut. Le stock diminue automatiquement à chaque vente.</div>
+              <label for="listingPrice" id="listingPriceLblEl" data-i18n="listingPriceUnitLbl">Prix unitaire (aUEC)</label>
               <input id="listingPrice" type="number" min="0" step="1" oninput="updateListingLivePreview()">
-              <label for="listingQty" id="listingQtyLblEl" data-i18n="listingQtyLbl">Quantité</label>
+              <label for="listingQty" id="listingQtyLblEl" data-i18n="listingStockLbl">Stock</label>
               <input id="listingQty" type="number" min="1" step="1" value="1" oninput="updateListingLivePreview()">
             </div>
             <label data-i18n="listingTagsLbl">Tags (optionnel)</label>
@@ -8704,7 +8700,7 @@ function setListingMode(isStock, btnEl){
 }
 function resetListingForm(){
   $('listingItem').value=''; $('listingCategory').value=''; $('listingDescription').value=''; $('listingPrice').value=''; $('listingQty').value='1'; $('listingPhotoInput').value=''; $('listingPhotoPreviewName').textContent=''; pendingListingPhotoFile = null;
-  applyListingMode(false);
+  applyListingMode(true);
   listingTagsState = { crafted:false, q700:false, q800:false, q900:false, negotiable:false };
   renderListingTagButtons();
 }
@@ -8722,7 +8718,7 @@ function openEditListing(id){
   $('listingDescription').value = l.description || '';
   $('listingPrice').value = l.price;
   $('listingQty').value = l.quantity;
-  applyListingMode(!!l.is_stock);
+  applyListingMode(true); // plus de vente unique : tout est vendu à l'unité
   pendingListingPhotoFile = null;
   $('listingPhotoInput').value = '';
   $('listingPhotoPreviewName').textContent = l.photo_url ? d.listingPhotoKeepNote : '';
@@ -8907,7 +8903,7 @@ async function createListing(){
   const description = $('listingDescription').value.trim();
   const price = parseFloat($('listingPrice').value) || 0;
   const quantity = parseInt($('listingQty').value,10) || 1;
-  const is_stock = $('listingStockMode').checked;
+  const is_stock = true; // vente à l'unité uniquement
   if(!item_name || price <= 0){ alert('Erreur : renseigne un objet et un prix valide.'); return; }
   const category_id = parseInt($('listingCategory').value, 10) || null;
   if(!category_id || !ITEM_CATEGORY_BY_ID[category_id]){ alert(d.categoryRequired); $('listingCategory').focus(); return; }
@@ -8992,7 +8988,7 @@ function updateListingLivePreview(){
     description: $('listingDescription').value.trim(),
     price: parseFloat($('listingPrice').value) || 0,
     quantity: parseInt($('listingQty').value,10) || 1,
-    is_stock: $('listingStockMode').checked,
+    is_stock: true,
     tags: listingTagsArray(),
     photo_url: photoUrl
   };

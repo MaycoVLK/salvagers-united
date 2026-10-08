@@ -6759,7 +6759,7 @@ function startPixelScene(layer, kind){
         g.globalAlpha = 1; g.fillStyle = lin(1920, 0, 900, 520, 'rgba(0,0,0,.55)', 'rgba(0,0,0,0)'); g.fillRect(0, 0, IW, 600);
         { const hg = g.createRadialGradient(900, 470, 10, 900, 470, 560); hg.addColorStop(0, 'rgba(255,255,255,.12)'); hg.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = hg; g.fillRect(0, 0, IW, 700); }
         // planète à anneau qui dépasse derrière la montagne
-        g.save(); g.translate(850, 300); g.fillStyle = col; g.globalAlpha = .4; g.beginPath(); g.arc(0, 0, 56, 0, 6.283); g.fill();
+        g.save(); g.beginPath(); g.rect(0, 0, IW, IH); MT.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath(); g.clip('evenodd'); g.translate(850, 300); g.fillStyle = col; g.globalAlpha = .4; g.beginPath(); g.arc(0, 0, 56, 0, 6.283); g.fill();
         g.fillStyle = '#fff'; g.globalAlpha = .12; g.beginPath(); g.arc(-12, -14, 40, 0, 6.283); g.fill();
         g.strokeStyle = '#fff'; g.lineWidth = 3; g.globalAlpha = .4; g.beginPath(); g.ellipse(0, -4, 94, 16, -.08, 0, 6.283); g.stroke(); g.restore();
         // montagne enneigée (haut gauche)
@@ -7435,7 +7435,9 @@ function startPixelScene(layer, kind){
         const pose = { pos:[0, 0, 0], roll:.03, pitch:.08, yaw:0 };
         const shiver = gA*.012*Math.sin(t*38);
         // ombre portée sur la neige
-        ctx.save(); ctx.translate(1396, 528); ctx.rotate(-.06); ctx.scale(1, .17); ctx.fillStyle = '#000'; ctx.globalAlpha = .42; ctx.beginPath(); ctx.arc(0, 0, 175, 0, 6.283); ctx.fill(); ctx.restore();
+        ctx.save(); ctx.beginPath(); S.SL.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath(); ctx.clip(); ctx.fillStyle = '#000';
+        ctx.translate(1372, 576); ctx.rotate(-.04); ctx.scale(1, .2); ctx.globalAlpha = .38; ctx.beginPath(); ctx.arc(0, 0, 215, 0, 6.283); ctx.fill();
+        ctx.globalAlpha = .5; ctx.beginPath(); ctx.arc(-10, 0, 150, 0, 6.283); ctx.fill(); ctx.globalAlpha = .55; ctx.beginPath(); ctx.arc(-14, 0, 95, 0, 6.283); ctx.fill(); ctx.restore();
         // halo des tuyères sur la roche (pulse lent)
         ctx.save(); ctx.globalCompositeOperation = 'lighter'; const pu = .7 + .3*Math.sin(t*2.4); const rg = ctx.createRadialGradient(1440, 478, 4, 1440, 478, 150); rg.addColorStop(0, 'rgba(255,170,90,' + (.28*pu) + ')'); rg.addColorStop(1, 'rgba(255,170,90,0)'); ctx.fillStyle = rg; ctx.globalAlpha = 1; ctx.fillRect(1280, 320, 340, 320); ctx.restore();
         const list = []; ship3(list, cam, { pos:pose.pos, roll:pose.roll + shiver, pitch:pose.pitch, yaw:pose.yaw }, { fl:.1 + .06*Math.sin(t*11) + gA*.04, gear:1, scale:1, A:1 }); flush(list);

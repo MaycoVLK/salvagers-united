@@ -860,7 +860,7 @@
   .frm-streak{position:absolute; left:0; height:2px; width:26px; background:linear-gradient(90deg, transparent, var(--accent), transparent); opacity:0; animation:frmWind var(--dur,4s) linear var(--del,0s) infinite;}
   /* Vaisseau + traînée lumineuse : canvas, le vaisseau vole librement dans des directions aléatoires */
   .shop-frame-layer.frame-coins, .shop-frame-layer.frame-crates, .shop-frame-layer.frame-bolts, .shop-frame-layer.frame-ammo, .shop-frame-layer.frame-route, .shop-frame-layer.frame-flash, .shop-frame-layer.frame-forge, .shop-frame-layer.frame-hearts, .shop-frame-layer.frame-fifteen, .shop-frame-layer.frame-glitch{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
-  .shop-frame-layer.frame-skyline, .shop-frame-layer.frame-trail{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
+  .shop-frame-layer.frame-skyline, .shop-frame-layer.frame-cliff, .shop-frame-layer.frame-trail{border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); box-shadow:inset 0 0 16px var(--accent-dim);}
   .shop-frame-extra{position:absolute; inset:0; pointer-events:none; z-index:5; border-radius:inherit;}
   .shop-frame-back{z-index:-1; overflow:hidden;}
   .frm-ship{position:absolute; left:0; top:0; width:15px; height:15px; margin:-7px 0 0 -7px; background:var(--accent); clip-path:polygon(0 0, 100% 50%, 0 100%); filter:drop-shadow(0 0 5px var(--accent));}
@@ -3715,7 +3715,7 @@ const T = {
     shopPreviewTitle:"Aperçu en direct — à quoi ressemblera ta page boutique", shopPreviewNoName:"Nom de ta boutique", shopPreviewNoDesc:"La description apparaîtra ici…",
     statusPopTitle:"TON STATUT", statusPh:"ex : En vacances jusqu'au 20/10", statusHint:"Texte libre · Entrée pour enregistrer", statusClear:"EFFACER", statusSave:"ENREGISTRER", statusSet:"+ Ajouter un statut", statusSaved:"Statut mis à jour", statusErr:"Impossible d'enregistrer le statut",
     shopsDirTitle:"Tous les shops", shopsDirSearchPh:"Rechercher un shop, un vendeur, un lieu…", shopsDirEntryTxt:"Cherche, trie, trouve ton prochain vendeur.", shopsDirViewAll:"VOIR TOUS LES SHOPS ▸", shopsDirSortNewest:"LES PLUS RÉCENTS", shopsDirSortSales:"PLUS DE VENTES", shopsDirSortBp:"PLUS DE BLUEPRINTS", shopsDirSortListings:"PLUS D'ANNONCES", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"Aucun shop ne correspond.", shopsDirSales:"{n} ventes", shopsDirListings:"{n} annonces", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NOUVELLE COMMANDE", unlockSales:"{n} ventes", frameLbl:"Cadre", frameNone:"Aucun", frameDrops:"Pixels qui tombent", frameOrbit:"Coins orbitaux", frameSkyline:"Vue sur la ville", frameNeon:"Néon pulsé", frameShield:"Bombardement", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Manœuvre", frameCoins:"Poignée de main", frameCrates:"Largage", frameBolts:"Éclairs", frameAmmo:"Armée", frameRoute:"Vitesse lumière", frameFlash:"Flashs", frameForge:"Forge", frameHearts:"Cœurs", frameFifteen:"Poches pleines", frameGlitch:"Glitch", frameShatter:"Éclats", unlockRank:"Rang vendeur : ", unlockCAch:"Succès coursier : ", companyTitle:"ENTREPRISE DE LIVRAISON", companyCustomize:"PERSONNALISER", companyCreate:"CRÉER MON ENTREPRISE", companyNoShop:"Donne un nom, un logo et un style à ton entreprise : ils sont partagés avec ton shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Succès : ", lockedTip:"Pour débloquer : ", unlockedTip:"Condition : ", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
+    homeNewOrder:"+ NOUVELLE COMMANDE", unlockSales:"{n} ventes", frameLbl:"Cadre", frameNone:"Aucun", frameDrops:"Pixels qui tombent", frameOrbit:"Coins orbitaux", frameSkyline:"Vue sur la ville", frameCliff:"Falaise glacée", frameNeon:"Néon pulsé", frameShield:"Bombardement", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Manœuvre", frameCoins:"Poignée de main", frameCrates:"Largage", frameBolts:"Éclairs", frameAmmo:"Armée", frameRoute:"Vitesse lumière", frameFlash:"Flashs", frameForge:"Forge", frameHearts:"Cœurs", frameFifteen:"Poches pleines", frameGlitch:"Glitch", frameShatter:"Éclats", unlockRank:"Rang vendeur : ", unlockCAch:"Succès coursier : ", companyTitle:"ENTREPRISE DE LIVRAISON", companyCustomize:"PERSONNALISER", companyCreate:"CRÉER MON ENTREPRISE", companyNoShop:"Donne un nom, un logo et un style à ton entreprise : ils sont partagés avec ton shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Succès : ", lockedTip:"Pour débloquer : ", unlockedTip:"Condition : ", shopLinkCopied:"Lien de la boutique copié !", shopShareTitle:"Copier le lien de la boutique", loginShopHint:"Connecte-toi pour accéder à la boutique partagée.", offerCancelBtn:"ANNULER", offerCancelConfirm:"Annuler ce desired item ? L'autre joueur sera prévenu.", offerCancelConfirmCourier:"Annuler ? La course sera retirée et le coursier qui l'a prise sera prévenu.", offerCancelled:"Annulé.", cancelledDeliveryTitle:"Livraison annulée", cancelledDeliveryIntro:"Une livraison que tu avais prise a finalement été annulée :", cancelledDeliveryMsg:"Le joueur a annulé cette livraison (desired item). Elle a été retirée de ta liste.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"Nouvelle commande (objets en boutique)", createMenuDesired:"Poster un desired item (introuvable en boutique)",
     classicOrderNote:"COMMANDE CLASSIQUE : uniquement des objets achetables dans une boutique en jeu — le coursier les achète puis te les livre. Un objet introuvable en boutique (loot, craft, rare…) ? Poste plutôt un desired item.", classicOrderLink:"POSTER UN DESIRED ITEM ▸",
     commodityQualityNote:"Commodities : seules des commodities de qualité 500 peuvent être livrées par commande. Pour une qualité supérieure, passe par la marketplace ou poste un desired item.", commodityQualityShort:"Commodity : qualité 500 uniquement.",
     desiredIntroNote:"DESIRED ITEM : un objet que tu cherches et qui n'est PAS achetable en boutique (loot, craft, qualité supérieure…). N'importe quel joueur peut te proposer de te le fournir ; tu choisis l'offre, puis vous pouvez demander un coursier pour la livraison.", myDesiredTitle:"MES DESIRED ITEMS", noMyDesired:"Tu n'as posté aucun desired item.", postDesiredBtn:"+ POSTER", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"LIVRAISON DESIRED ITEM",
@@ -3891,7 +3891,7 @@ const T = {
     shopPreviewTitle:"Live preview — what your shop page will look like", shopPreviewNoName:"Your shop name", shopPreviewNoDesc:"Your description will show up here…",
     statusPopTitle:"YOUR STATUS", statusPh:"e.g. On vacation until Oct 20", statusHint:"Free text · Enter to save", statusClear:"CLEAR", statusSave:"SAVE", statusSet:"+ Set a status", statusSaved:"Status updated", statusErr:"Could not save the status",
     shopsDirTitle:"All shops", shopsDirSearchPh:"Search a shop, a seller, a location…", shopsDirEntryTxt:"Search them, sort them, find your next seller.", shopsDirViewAll:"VIEW ALL SHOPS ▸", shopsDirSortNewest:"NEWEST", shopsDirSortSales:"MOST SALES", shopsDirSortBp:"MOST BLUEPRINTS", shopsDirSortListings:"MOST LISTINGS", shopsDirSortName:"A → Z", shopsDirCount:"{n} SHOPS", shopsDirNone:"No shop matches.", shopsDirSales:"{n} sales", shopsDirListings:"{n} listings", shopsDirBp:"{n} BP",
-    homeNewOrder:"+ NEW ORDER", unlockSales:"{n} sales", frameLbl:"Frame", frameNone:"None", frameDrops:"Falling pixels", frameOrbit:"Orbiting corners", frameSkyline:"City window", frameNeon:"Pulsing neon", frameShield:"Bombardment", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Maneuver", frameCoins:"Handshake", frameCrates:"Airdrop", frameBolts:"Lightning", frameAmmo:"Army", frameRoute:"Lightspeed", frameFlash:"Flashes", frameForge:"Forge", frameHearts:"Hearts", frameFifteen:"Full pockets", frameGlitch:"Glitch", frameShatter:"Shattered", unlockRank:"Seller rank: ", unlockCAch:"Courier achievement: ", companyTitle:"DELIVERY COMPANY", companyCustomize:"CUSTOMIZE", companyCreate:"CREATE MY COMPANY", companyNoShop:"Give your company a name, a logo and a style: they are shared with your shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Achievement: ", lockedTip:"To unlock: ", unlockedTip:"Requirement: ", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
+    homeNewOrder:"+ NEW ORDER", unlockSales:"{n} sales", frameLbl:"Frame", frameNone:"None", frameDrops:"Falling pixels", frameOrbit:"Orbiting corners", frameSkyline:"City window", frameCliff:"Frozen cliff", frameNeon:"Pulsing neon", frameShield:"Bombardment", frameNyx:"Nyx", framePyro:"Pyro", frameStanton:"Stanton", frameTrail:"Maneuver", frameCoins:"Handshake", frameCrates:"Airdrop", frameBolts:"Lightning", frameAmmo:"Army", frameRoute:"Lightspeed", frameFlash:"Flashes", frameForge:"Forge", frameHearts:"Hearts", frameFifteen:"Full pockets", frameGlitch:"Glitch", frameShatter:"Shattered", unlockRank:"Seller rank: ", unlockCAch:"Courier achievement: ", companyTitle:"DELIVERY COMPANY", companyCustomize:"CUSTOMIZE", companyCreate:"CREATE MY COMPANY", companyNoShop:"Give your company a name, a logo and a style: they are shared with your shop.", unlockUpvotes:"{n} upvotes", unlockAch:"Achievement: ", lockedTip:"To unlock: ", unlockedTip:"Requirement: ", shopLinkCopied:"Shop link copied!", shopShareTitle:"Copy shop link", loginShopHint:"Sign in to open the shared shop.", offerCancelBtn:"CANCEL", offerCancelConfirm:"Cancel this desired item? The other player will be notified.", offerCancelConfirmCourier:"Cancel? The delivery will be removed and the courier who took it will be notified.", offerCancelled:"Cancelled.", cancelledDeliveryTitle:"Delivery cancelled", cancelledDeliveryIntro:"A delivery you had taken was finally cancelled:", cancelledDeliveryMsg:"The player cancelled this delivery (desired item). It has been removed from your list.", newDesiredBtn:"+ DESIRED ITEM", createMenuOrder:"New order (shop items)", createMenuDesired:"Post a desired item (not sold in shops)",
     classicOrderNote:"CLASSIC ORDER: only items you can buy in an in-game shop — the courier buys them and delivers them to you. Item not sold in shops (loot, crafted, rare…)? Post a desired item instead.", classicOrderLink:"POST A DESIRED ITEM ▸",
     commodityQualityNote:"Commodities: only quality 500 commodities can be delivered through an order. For a higher quality, use the marketplace or post a desired item.", commodityQualityShort:"Commodity: quality 500 only.",
     desiredIntroNote:"DESIRED ITEM: something you're looking for that is NOT sold in shops (loot, crafted, higher quality…). Any player can offer to supply it; you pick an offer, then you can request a courier for the delivery.", myDesiredTitle:"MY DESIRED ITEMS", noMyDesired:"You haven't posted any desired item.", postDesiredBtn:"+ POST", marketplaceTag:"MARKETPLACE", desiredBadge:"DESIRED ITEM", desiredDeliveryBadge:"DESIRED ITEM DELIVERY",
@@ -6531,6 +6531,7 @@ const SHOP_FRAMES = [
   { key:'crates', nameKey:'frameCrates', unlock:{ cach:'first_delivery' } },
   { key:'trail', nameKey:'frameTrail', unlock:{ rank:'trader', sales:5 } },
   { key:'skyline', nameKey:'frameSkyline', unlock:{ upvotes:10 } },
+  { key:'cliff', nameKey:'frameCliff', unlock:{ upvotes:5 } },
 ];
 let selectedShopFrame = 'none', shopSavedFrame = null, shopHasFrameColumn = false;
 let shopUnlockCtx = { sales:0, upvotes:0, ach:new Set(), cach:new Set(), admin:false };
@@ -6668,7 +6669,7 @@ const buildShipMesh = () => {
 function startPixelScene(layer, kind){
   const canvas = document.createElement('canvas'); canvas.style.cssText = 'position:absolute; inset:0; width:100%; height:100%;';
   let mount = layer;
-  if(['stanton','nyx','pyro','fly','alien','army','warp','dropoff','handshake','forge2','skyline'].includes(kind)){
+  if(['stanton','nyx','pyro','fly','alien','army','warp','dropoff','handshake','forge2','skyline','cliff'].includes(kind)){
     // Décor placé DERRIÈRE le contenu de la carte (z-index négatif dans l'hôte isolé) : le texte passe devant.
     const host = layer.parentElement; const back = document.createElement('div'); back.className = 'shop-frame-extra shop-frame-back';
     host.insertBefore(back, layer); if(getComputedStyle(host).isolation !== 'isolate') host.style.isolation = 'isolate'; mount = back;
@@ -6733,6 +6734,78 @@ function startPixelScene(layer, kind){
         tw(near.g, { x:1090, w:210, top:478, a:.2, win:.14, fl:20, sw:26 });
         near.g.fillStyle = col; near.g.globalAlpha = .75; near.g.fillRect(1030, 378, 110, 3); near.g.fillRect(990, 442, 150, 3); near.g.globalAlpha = .18; near.g.fillRect(1030, 372, 110, 14); near.g.fillRect(990, 436, 150, 14);
         S.c = { far:far.cv, mid:mid.cv, near:near.cv }; S.col = col;
+      };
+    }
+    if(kind === 'cliff'){
+      // composition calquée sur la capture (1920x1080) : décor dessiné en coordonnées « image », cadré (cover) dans la carte
+      const IW = 1920, IH = 1080, sc = Math.max(W/IW, H/IH), vw = W/sc, vh = H/sc;
+      const cxI = Math.max(vw/2, Math.min(IW - vw/2, 1180)), cyI = Math.max(vh/2, Math.min(IH - vh/2, 520));
+      const MT = [[0,0],[330,42],[540,150],[760,270],[1000,375],[1095,420],[1085,525],[860,500],[760,515],[560,540],[440,410],[0,455]];
+      const SL = [[1078,348],[1115,330],[1235,352],[1305,335],[1445,342],[1518,430],[1540,478],[1522,592],[1455,700],[1345,742],[1195,752],[1070,730],[1062,640],[1100,500]];
+      const inPoly = (P, x, y) => { let c = false; for(let i=0,j=P.length-1;i<P.length;j=i++){ if(((P[i][1] > y) !== (P[j][1] > y)) && (x < (P[j][0] - P[i][0])*(y - P[i][1])/(P[j][1] - P[i][1]) + P[i][0])) c = !c; } return c; };
+      const glints = []; for(let n=0;n<2000 && glints.length < 34;n++){ const pl = Math.random() < .55 ? SL : MT, x = rnd(0, 1540), y = rnd(30, 740); if(inPoly(pl, x, y)) glints.push({ x, y, ph:rnd(0, 6.28), sp:rnd(.5, 1.6), r:rnd(5, 11) }); }
+      inst.S = { t:0, s:sc, cxI, cyI, vl:cxI - vw/2, vr:cxI + vw/2, col:null, c:null, MT, SL, glints, flakes:[], fAcc:0, bands:[], gA:0, gT:rnd(1.2, 2.4), gAge:0, gDur:0, gStr:0,
+        stars:Array.from({length:60}, () => ({ x:rnd(700, 1920), y:rnd(0, 330), ph:rnd(0, 6.28), sp:rnd(.5, 2.2), r:rnd(1, 2.2) })) };
+      const S = inst.S;
+      S.render = () => {
+        const dpr = window.devicePixelRatio || 1, col = inst.color;
+        const cv = document.createElement('canvas'); cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); const g = cv.getContext('2d');
+        g.setTransform(dpr*sc, 0, 0, dpr*sc, dpr*(W/2 - cxI*sc), dpr*(H/2 - cyI*sc)); g.lineJoin = 'round'; g.lineCap = 'round';
+        let seed = 11; const rs = () => (seed = (seed*16807) % 2147483647)/2147483647;
+        const poly = P => { g.beginPath(); P.forEach((a, i) => i ? g.lineTo(a[0], a[1]) : g.moveTo(a[0], a[1])); g.closePath(); };
+        const lin = (x0, y0, x1, y1, c0, c1) => { const gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, c0); gr.addColorStop(1, c1); return gr; };
+        // ciel : teinte du shop, halo clair vers l'horizon, ombre en haut à droite
+        g.fillStyle = col; g.globalAlpha = .14; g.fillRect(0, 0, IW, IH);
+        g.globalAlpha = 1; g.fillStyle = lin(1920, 0, 900, 520, 'rgba(0,0,0,.55)', 'rgba(0,0,0,0)'); g.fillRect(0, 0, IW, 600);
+        { const hg = g.createRadialGradient(900, 470, 10, 900, 470, 560); hg.addColorStop(0, 'rgba(255,255,255,.12)'); hg.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = hg; g.fillRect(0, 0, IW, 700); }
+        // planète à anneau qui dépasse derrière la montagne
+        g.save(); g.translate(850, 300); g.fillStyle = col; g.globalAlpha = .4; g.beginPath(); g.arc(0, 0, 56, 0, 6.283); g.fill();
+        g.fillStyle = '#fff'; g.globalAlpha = .12; g.beginPath(); g.arc(-12, -14, 40, 0, 6.283); g.fill();
+        g.strokeStyle = '#fff'; g.lineWidth = 3; g.globalAlpha = .4; g.beginPath(); g.ellipse(0, -4, 94, 16, -.08, 0, 6.283); g.stroke(); g.restore();
+        // montagne enneigée (haut gauche)
+        g.save(); poly(MT); g.clip();
+        g.globalAlpha = 1; g.fillStyle = lin(0, 0, 1000, 480, 'rgba(255,255,255,.62)', 'rgba(255,255,255,.2)'); g.fillRect(0, 0, 1100, 560);
+        g.fillStyle = col; g.globalAlpha = .12; g.fillRect(0, 0, 1100, 560);
+        g.lineWidth = 1.5; for(let i=0;i<230;i++){ const x = rs()*1100, y = rs()*560, l = 20 + rs()*70, a = rs() < .45; g.strokeStyle = a ? '#000' : '#fff'; g.globalAlpha = a ? .14 + rs()*.14 : .1 + rs()*.16; g.beginPath(); g.moveTo(x, y); g.lineTo(x + l*.9, y + l*.45); g.stroke(); }
+        g.fillStyle = '#000'; for(let i=0;i<26;i++){ const x = 40 + rs()*820, y = 60 + rs()*340; g.globalAlpha = .1 + rs()*.12; g.beginPath(); g.ellipse(x, y, 8 + rs()*22, 4 + rs()*9, .45, 0, 6.283); g.fill(); }
+        g.restore();
+        g.strokeStyle = '#fff'; g.lineWidth = 2; g.globalAlpha = .5; g.beginPath(); g.moveTo(0, 6); g.lineTo(330, 44); g.lineTo(540, 152); g.lineTo(760, 272); g.lineTo(1000, 377); g.stroke();
+        // roche sombre au premier plan
+        const D = [[0,455],[440,410],[560,545],[760,515],[860,500],[1085,525],[1065,740],[1190,750],[1340,742],[1450,700],[1540,590],[1545,470],[1640,432],[1760,415],[1920,395],[1920,1080],[0,1080]];
+        g.globalAlpha = .93; g.fillStyle = '#000'; poly(D); g.fill();
+        g.save(); poly(D); g.clip(); g.fillStyle = col; g.globalAlpha = .07; g.fillRect(0, 380, IW, 700);
+        g.fillStyle = lin(0, 450, 0, 1080, 'rgba(255,255,255,.1)', 'rgba(255,255,255,0)'); g.globalAlpha = 1; g.fillRect(0, 380, IW, 700);
+        g.lineWidth = 1.6; for(let i=0;i<340;i++){ const x = rs()*1920, y = 430 + rs()*650, l = 18 + rs()*80, a = rs() < .5, an = -1.25 + rs()*.9; g.strokeStyle = a ? '#fff' : col; g.globalAlpha = a ? .04 + rs()*.09 : .08 + rs()*.12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(an)*l, y + Math.sin(an)*l); g.stroke(); }
+        g.fillStyle = '#fff'; for(let i=0;i<70;i++){ g.globalAlpha = .05 + rs()*.1; g.fillRect(rs()*1920, 520 + rs()*540, 2 + rs()*4, 1.5); }
+        g.restore();
+        // gros névé à gauche + corniches le long de la crête
+        const DR = [[0,455],[200,430],[330,412],[440,405],[520,470],[585,548],[520,562],[425,525],[380,605],[335,690],[235,780],[180,742],[120,655],[60,625],[0,635]];
+        g.fillStyle = lin(0, 400, 0, 790, 'rgba(255,255,255,.62)', 'rgba(255,255,255,.28)'); g.globalAlpha = 1; poly(DR); g.fill(); g.fillStyle = col; g.globalAlpha = .1; g.fill();
+        g.save(); poly(DR); g.clip(); g.strokeStyle = '#fff'; g.lineWidth = 2; for(let i=0;i<90;i++){ const x = rs()*600, y = 400 + rs()*400, l = 14 + rs()*40; g.globalAlpha = .1 + rs()*.16; g.beginPath(); g.moveTo(x, y); g.lineTo(x + l, y + l*.35); g.stroke(); }
+        g.fillStyle = '#000'; for(let i=0;i<22;i++){ g.globalAlpha = .1 + rs()*.1; g.beginPath(); g.ellipse(rs()*500, 420 + rs()*350, 10 + rs()*24, 4 + rs()*8, .3, 0, 6.283); g.fill(); } g.restore();
+        g.strokeStyle = '#fff'; g.lineWidth = 2; g.globalAlpha = .55; g.beginPath(); g.moveTo(0, 455); g.lineTo(200, 430); g.lineTo(330, 412); g.lineTo(440, 405); g.lineTo(520, 470); g.lineTo(585, 548); g.stroke();
+        [[[560,545],[640,530],[760,512],[860,492],[1000,474],[1090,502]], [[1090,502],[1075,540],[860,520],[760,534],[640,548],[585,556]]].forEach((P, k) => { if(k === 0){ g.strokeStyle = '#fff'; g.lineWidth = 3; g.globalAlpha = .6; g.beginPath(); P.forEach((a, i) => i ? g.lineTo(a[0], a[1]) : g.moveTo(a[0], a[1])); g.stroke(); } });
+        g.fillStyle = '#fff'; g.globalAlpha = .32; g.beginPath(); g.moveTo(560, 545); g.lineTo(760, 512); g.lineTo(860, 492); g.lineTo(1000, 474); g.lineTo(1090, 502); g.lineTo(1085, 525); g.lineTo(860, 506); g.lineTo(760, 522); g.lineTo(585, 560); g.closePath(); g.fill();
+        // montagne sombre à droite : plaques de neige
+        g.fillStyle = '#fff'; g.globalAlpha = .26; poly([[1640,440],[1800,418],[1912,402],[1905,560],[1810,705],[1745,642],[1705,520]]); g.fill();
+        g.save(); poly([[1640,440],[1800,418],[1912,402],[1905,560],[1810,705],[1745,642],[1705,520]]); g.clip(); g.fillStyle = '#000'; for(let i=0;i<24;i++){ g.globalAlpha = .12 + rs()*.12; g.beginPath(); g.ellipse(1650 + rs()*270, 430 + rs()*270, 6 + rs()*18, 3 + rs()*10, .6, 0, 6.283); g.fill(); } g.restore();
+        g.fillStyle = '#fff'; g.globalAlpha = .3; poly([[1555,690],[1610,668],[1608,712],[1562,728]]); g.fill();
+        // gros bloc rocheux enneigé qui porte le vaisseau
+        g.fillStyle = '#000'; g.globalAlpha = .6; poly(SL); g.fill();
+        g.fillStyle = lin(1100, 340, 1450, 740, 'rgba(255,255,255,.72)', 'rgba(255,255,255,.34)'); g.globalAlpha = 1; poly(SL); g.fill();
+        g.fillStyle = col; g.globalAlpha = .1; g.fill();
+        g.save(); poly(SL); g.clip();
+        g.fillStyle = '#000'; g.globalAlpha = .55; poly([[1255,478],[1330,470],[1405,498],[1395,545],[1330,550],[1290,520]]); g.fill();
+        g.fillStyle = lin(0, 640, 0, 760, 'rgba(0,0,0,0)', 'rgba(0,0,0,.6)'); g.globalAlpha = 1; g.fillRect(1050, 620, 520, 150);
+        for(let i=0;i<150;i++){ const x = 1070 + rs()*470, y = 335 + rs()*420, a = rs() < .55; g.fillStyle = a ? '#000' : '#fff'; g.globalAlpha = a ? .1 + rs()*.16 : .1 + rs()*.2; g.beginPath(); g.ellipse(x, y, 2 + rs()*7, 1.5 + rs()*4, rs()*3, 0, 6.283); g.fill(); }
+        g.restore();
+        g.strokeStyle = col; g.lineWidth = 2.5; g.globalAlpha = .75; poly(SL); g.stroke(); g.strokeStyle = '#fff'; g.lineWidth = 1.2; g.globalAlpha = .4; g.beginPath(); g.moveTo(1078, 348); g.lineTo(1115, 330); g.lineTo(1235, 352); g.lineTo(1305, 335); g.lineTo(1445, 342); g.lineTo(1518, 430); g.stroke();
+        // coulée de neige sous le bloc
+        g.fillStyle = '#fff'; g.globalAlpha = .4; poly([[1415,660],[1442,654],[1470,830],[1486,942],[1446,952],[1422,820]]); g.fill();
+        g.strokeStyle = '#fff'; g.lineWidth = 1.5; g.globalAlpha = .2; g.beginPath(); g.moveTo(1432, 680); g.lineTo(1452, 880); g.moveTo(1450, 670); g.lineTo(1470, 900); g.stroke();
+        // vignette
+        g.globalAlpha = 1; const vg = g.createRadialGradient(960, 520, 420, 960, 520, 1250); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)'); g.fillStyle = vg; g.fillRect(0, 0, IW, IH);
+        S.c = cv; S.col = col;
       };
     }
     if(kind === 'stanton'){
@@ -7331,6 +7404,69 @@ function startPixelScene(layer, kind){
         S.motes.forEach(m => { m.y -= m.v*dt; m.x += Math.sin(t*.6 + m.ph)*10*dt; if(m.y < 40){ m.y = 700; m.x = rnd(560, 1900); } wht(.2 + .18*Math.sin(t*1.4 + m.ph)); ctx.fillRect(m.x, m.y, m.r, m.r); });
       }
       setS(); ctx.globalAlpha = 1; ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.lineJoin = 'miter';
+    } else if(kind === 'cliff'){
+      const S = inst.S, t = (S.t += dt);
+      if(!S.c || S.col !== inst.color) S.render();
+      const setI = () => ctx.setTransform(dpr*S.s, 0, 0, dpr*S.s, dpr*(W/2 - S.cxI*S.s), dpr*(H/2 - S.cyI*S.s)), setS = () => ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const col = inst.color, tint = a => { ctx.fillStyle = col; ctx.globalAlpha = a; }, wht = a => { ctx.fillStyle = '#fff'; ctx.globalAlpha = a; };
+      ctx.shadowBlur = 0; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      // ----- vent : brise constante + bourrasques qui montent et retombent -----
+      S.gT -= dt;
+      if(S.gT <= 0 && S.gDur <= 0){ S.gDur = rnd(1.8, 3.2); S.gAge = 0; S.gStr = rnd(.65, 1); S.gT = rnd(3.2, 6.5);
+        for(let i=0;i<5;i++) S.bands.push({ x:S.vl - rnd(200, 900), y:rnd(240, 760), len:rnd(320, 760), v:rnd(1500, 2400), h:rnd(8, 26), a:rnd(.05, .11) }); }
+      if(S.gDur > 0){ S.gAge += dt; const u = S.gAge/S.gDur; S.gA = u >= 1 ? 0 : S.gStr*Math.pow(Math.sin(Math.PI*u), 2); if(u >= 1) S.gDur = 0; } else S.gA = 0;
+      const gA = S.gA, wind = 85 + gA*900;
+      setI();
+      // ----- ciel : étoiles qui scintillent -----
+      S.stars.forEach(s => { const a = .25 + .5*Math.max(0, Math.sin(t*s.sp + s.ph)); wht(a); ctx.fillRect(s.x, s.y, s.r, s.r); });
+      setS(); ctx.globalAlpha = .8; ctx.drawImage(S.c, 0, 0, W, H);
+      setI();
+      // ----- lumière rasante qui balaie la neige + éclats -----
+      { const sx = ((t*.1) % 1.5 - .25)*2300; ctx.save(); ctx.globalCompositeOperation = 'lighter';
+        const clipPoly = P => { ctx.beginPath(); P.forEach((a, i) => i ? ctx.lineTo(a[0], a[1]) : ctx.moveTo(a[0], a[1])); ctx.closePath(); };
+        clipPoly(S.MT); clipPoly(S.SL);
+        ctx.beginPath(); S.MT.forEach((a, i) => i ? ctx.lineTo(a[0], a[1]) : ctx.moveTo(a[0], a[1])); ctx.closePath(); S.SL.forEach((a, i) => i ? ctx.lineTo(a[0], a[1]) : ctx.moveTo(a[0], a[1])); ctx.closePath(); ctx.clip();
+        ctx.translate(sx, 0); ctx.transform(1, 0, -.26, 1, 0, 0); const gr = ctx.createLinearGradient(-170, 0, 170, 0); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(.5, 'rgba(255,255,255,.17)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = gr; ctx.globalAlpha = 1; ctx.fillRect(-170, -100, 340, 1300);
+        ctx.restore();
+        S.glints.forEach(g => { const a = Math.sin(t*g.sp + g.ph); if(a > .78){ const k = (a - .78)/.22; wht(.85*k); ctx.beginPath(); ctx.moveTo(g.x, g.y - g.r*k); ctx.lineTo(g.x + 1.4, g.y - 1.4); ctx.lineTo(g.x + g.r*k, g.y); ctx.lineTo(g.x + 1.4, g.y + 1.4); ctx.lineTo(g.x, g.y + g.r*k); ctx.lineTo(g.x - 1.4, g.y + 1.4); ctx.lineTo(g.x - g.r*k, g.y); ctx.lineTo(g.x - 1.4, g.y - 1.4); ctx.closePath(); ctx.fill(); } }); }
+      // ----- le vaisseau (même modèle 3D que « Manœuvre ») posé sur le bloc -----
+      { const cam = mkCam({ tx:0, ty:0, yaw:S.cy === undefined ? -1.85 : S.cy, pitch:S.cp === undefined ? .55 : S.cp, d:10 }, 1383, 408, 78);
+        const pose = { pos:[0, 0, 0], roll:.03, pitch:.08, yaw:0 };
+        const shiver = gA*.012*Math.sin(t*38);
+        // ombre portée sur la neige
+        ctx.save(); ctx.translate(1396, 528); ctx.rotate(-.06); ctx.scale(1, .17); ctx.fillStyle = '#000'; ctx.globalAlpha = .42; ctx.beginPath(); ctx.arc(0, 0, 175, 0, 6.283); ctx.fill(); ctx.restore();
+        // halo des tuyères sur la roche (pulse lent)
+        ctx.save(); ctx.globalCompositeOperation = 'lighter'; const pu = .7 + .3*Math.sin(t*2.4); const rg = ctx.createRadialGradient(1440, 478, 4, 1440, 478, 150); rg.addColorStop(0, 'rgba(255,170,90,' + (.28*pu) + ')'); rg.addColorStop(1, 'rgba(255,170,90,0)'); ctx.fillStyle = rg; ctx.globalAlpha = 1; ctx.fillRect(1280, 320, 340, 320); ctx.restore();
+        const list = []; ship3(list, cam, { pos:pose.pos, roll:pose.roll + shiver, pitch:pose.pitch, yaw:pose.yaw }, { fl:.1 + .06*Math.sin(t*11) + gA*.04, gear:1, scale:1, A:1 }); flush(list);
+        const P3 = v => { const r = rotShip(v, pose.roll, pose.pitch, pose.yaw); return cam.proj(r); };
+        // feux de navigation (rouge à gauche, vert à droite) + strobe blanc + lueur des tuyères
+        const nav = (p, c, a, r) => { if(!p) return; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.shadowColor = c; ctx.shadowBlur = 22; ctx.fillStyle = c; ctx.globalAlpha = a; ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, 6.283); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = '#fff'; ctx.globalAlpha = a*.8; ctx.beginPath(); ctx.arc(p[0], p[1], r*.4, 0, 6.283); ctx.fill(); ctx.restore(); };
+        const blink = (t % 1.4) < .55 ? 1 : .12;
+        nav(P3([-1.75, .14, -2.3]), '#ff2a2a', .95*blink, 5); nav(P3([-1.75, .14, 2.3]), '#22ff66', .95*blink, 5);
+        const st = t % 2.2, sa = (st < .08 || (st > .26 && st < .34)) ? 1 : 0; if(sa) nav(P3([-1.9, .5, 0]), '#ffffff', 1, 7);
+        [-1, 1].forEach(sd => { const p = P3([-2.55, .05, sd*1.225]); if(!p) return; ctx.save(); ctx.globalCompositeOperation = 'lighter'; const rr = 26 + 6*Math.sin(t*9 + sd), gg = ctx.createRadialGradient(p[0], p[1], 1, p[0], p[1], rr); gg.addColorStop(0, 'rgba(255,200,130,.85)'); gg.addColorStop(.4, 'rgba(255,120,40,.35)'); gg.addColorStop(1, 'rgba(255,100,30,0)'); ctx.fillStyle = gg; ctx.globalAlpha = .55 + .25*Math.sin(t*7 + sd*2); ctx.beginPath(); ctx.arc(p[0], p[1], rr, 0, 6.283); ctx.fill(); ctx.restore(); });
+        // reflet qui court sur la verrière et le nez + éclat de lumière sur l'aile
+        const gl = (t*.42) % 1.6; if(gl < 1){ const k = Math.sin(Math.PI*gl), p1 = P3([1.3, .4, 0]), p2 = P3([2.4, .1, 0]); [p1, p2].forEach((p, i) => { if(!p) return; const q = k*(i ? .8 : 1); ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = '#fff'; ctx.globalAlpha = .9*q; const r = 14*q; ctx.beginPath(); ctx.moveTo(p[0], p[1] - r); ctx.lineTo(p[0] + 2, p[1] - 2); ctx.lineTo(p[0] + r, p[1]); ctx.lineTo(p[0] + 2, p[1] + 2); ctx.lineTo(p[0], p[1] + r); ctx.lineTo(p[0] - 2, p[1] + 2); ctx.lineTo(p[0] - r, p[1]); ctx.lineTo(p[0] - 2, p[1] - 2); ctx.closePath(); ctx.fill(); ctx.restore(); }); }
+        // liseré de lumière qui parcourt le bord de l'aile gauche
+        { const f = (t*.55) % 1.3, a = P3([-1.3, .1, -2.3 + 0]), b = P3([-1.3, .1, -.7]); if(a && b && f < 1){ const x = a[0] + (b[0] - a[0])*f, y = a[1] + (b[1] - a[1])*f; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.fillStyle = col; ctx.globalAlpha = .9*Math.sin(Math.PI*f); ctx.beginPath(); ctx.arc(x, y, 3.5, 0, 6.283); ctx.fill(); ctx.restore(); } }
+      }
+      // ----- rafales : bandes de neige soufflée -----
+      S.bands = S.bands.filter(b => { b.x += b.v*dt*(.4 + gA); if(b.x - b.len > S.vr + 100) return false; wht(b.a*Math.min(1, .2 + gA*1.4)); ctx.beginPath(); ctx.ellipse(b.x, b.y, b.len/2, b.h/2, -.04, 0, 6.283); ctx.fill(); return true; });
+      // ----- neige emportée -----
+      S.fAcc += (16 + gA*140)*dt; const SRC = [[0,455],[200,430],[330,412],[440,405],[520,470],[585,548],[760,512],[860,492],[1000,474],[1090,502]], SLT = [[1090,348],[1235,352],[1305,335],[1445,342],[1518,430]];
+      while(S.fAcc >= 1 && S.flakes.length < 340){ S.fAcc -= 1; const r = Math.random(); let x, y;
+        if(r < .5){ const i = Math.floor(Math.random()*(SRC.length - 1)), f = Math.random(); x = SRC[i][0] + (SRC[i+1][0] - SRC[i][0])*f; y = SRC[i][1] + (SRC[i+1][1] - SRC[i][1])*f - rnd(0, 8); }
+        else if(r < .78){ const i = Math.floor(Math.random()*(SLT.length - 1)), f = Math.random(); x = SLT[i][0] + (SLT[i+1][0] - SLT[i][0])*f; y = SLT[i][1] + (SLT[i+1][1] - SLT[i][1])*f - rnd(0, 6); }
+        else { x = rnd(S.vl - 60, 1080); y = rnd(Math.max(0, x*.38 - 20), 460); }
+        S.flakes.push({ x, y, vx:wind*rnd(.3, .8), vy:-rnd(10, 60), s:rnd(1.2, 3.6), age:0, life:rnd(1.6, 3.4), ph:rnd(0, 6.28) }); }
+      ctx.strokeStyle = '#fff'; S.flakes = S.flakes.filter(f => {
+        f.age += dt; if(f.age >= f.life) return false;
+        f.vx += (wind*(.75 + .35*Math.sin(f.ph + t*1.3)) - f.vx)*Math.min(1, dt*1.8); f.vy += ((-35 - gA*170 + Math.sin(t*2.3 + f.ph + f.x*.004)*55) - f.vy)*Math.min(1, dt*1.5);
+        f.x += f.vx*dt; f.y += f.vy*dt; if(f.x > S.vr + 80 || f.y < -40) return false;
+        ctx.globalAlpha = Math.min(1, f.age*4)*(1 - f.age/f.life)*(.45 + .4*Math.min(1, gA*1.5)); ctx.lineWidth = f.s;
+        ctx.beginPath(); ctx.moveTo(f.x, f.y); ctx.lineTo(f.x - f.vx*.022, f.y - f.vy*.022); ctx.stroke(); return true; });
+      setS(); ctx.globalAlpha = 1; ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.lineJoin = 'miter'; ctx.lineCap = 'butt';
     } else if(kind === 'stanton'){
       const S = inst.S; S.t += dt; ctx.shadowBlur = 0;
       S.layers.forEach((L, li) => {
@@ -7812,6 +7948,8 @@ function applyShopFrame(host, key){
         e.style.width = sz+'px'; e.style.height = sz+'px';
       }
     }
+  } else if(key === 'cliff'){
+    if(!reduce) startPixelScene(layer, 'cliff'); // falaise enneigée, vent et neige en rafales, vaisseau posé
   } else if(key === 'skyline'){
     if(!reduce) startPixelScene(layer, 'skyline'); // ville vue à travers une fenêtre, vaisseaux qui passent
   } else if(key === 'stanton'){

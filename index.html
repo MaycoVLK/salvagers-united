@@ -2240,6 +2240,26 @@ body.sw-grabbing, body.sw-grabbing *{cursor:grabbing !important; user-select:non
 .swi-foot .danger:hover{border-color:#ff6b6b;}
 .swi-note{font-size:.78rem; color:var(--muted); line-height:1.45; margin:0 0 10px;}
 @media (max-width:720px){ .shop-layout-bar{display:none !important;} .shop-widget-grid{gap:24px;} .shop-widget-grid .rowx{flex-direction:column; gap:24px;} .shop-widget-grid .colx{flex:1 1 auto !important; width:100%;} }
+
+/* ===== statistiques en presets ===== */
+.sx-grid{display:grid; grid-template-columns:repeat(var(--sc,4),minmax(0,1fr)); gap:18px 0; width:100%;}
+.sx-t{display:flex; flex-direction:column; gap:4px; padding:2px 16px; border-left:1px solid var(--border); min-width:0;}
+.sx-l{font-size:11px; letter-spacing:2px; color:var(--muted); line-height:1.3; min-height:2.6em; display:block; overflow:hidden;}
+.sx-l .sl{color:var(--accent);}
+.sx-v{font-family:'VT323',monospace; font-size:44px; line-height:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; min-height:1em;}
+.sx-v.sm{font-size:30px;}
+.sx-v.accent{color:var(--accent);} .sx-v.green{color:#3dff7a;}
+.sx-s{font-size:11px; color:var(--muted); min-height:1.4em; line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;}
+@media (max-width:720px){ .sx-grid{--sc:2 !important;} .sx-v{font-size:38px;} }
+/* succès : les badges remplissent la hauteur du widget */
+.sw[data-w="ach"][data-fixed="1"] .sw-in{display:flex; flex-direction:column;}
+.sw[data-w="ach"][data-fixed="1"] .sw-in > .shop-stats-achv-row{flex:1 1 auto; display:flex; flex-direction:column; min-height:0;}
+.sw[data-w="ach"][data-fixed="1"] #shopAchvCard{flex:1 1 auto; display:flex; flex-direction:column; min-height:0; margin:0;}
+.sw[data-w="ach"][data-fixed="1"] #shopAchvCard .achv-grid.achv-grid-collapsible{flex:1 1 0; min-height:0; display:grid !important; overflow:hidden; gap:10px; margin-top:12px;}
+.sw[data-w="ach"][data-fixed="1"] #shopAchvCard .achv-badge{flex:none; width:auto; height:auto; min-width:0; padding:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(var(--bs,80)*.06*1px); text-align:center; overflow:hidden;}
+.sw[data-w="ach"][data-fixed="1"] #shopAchvCard .achv-badge svg{width:calc(var(--bs,80)*.34*1px); height:calc(var(--bs,80)*.34*1px); max-width:60px; max-height:60px;}
+.sw[data-w="ach"][data-fixed="1"] #shopAchvCard .achv-badge span{font-size:clamp(8px, calc(var(--bs,80)*.115*1px), 13px); line-height:1.2; overflow-wrap:anywhere;}
+.sw[data-w="ach"][data-fixed="1"] #shopAchvViewAllBtn{display:none !important;}
 </style>
 </head>
 <body>
@@ -10006,6 +10026,7 @@ async function openSellerShop(sellerId){
     if(listingsMoreBtn) listingsMoreBtn.hidden = true;
     if(resMoreBtn) resMoreBtn.hidden = true;
     if(bpSection) bpSection.hidden = true;
+    shopStatsCtx = null;
     renderShopStrip(0, 0, 0);
     loadShopUpvotes(sellerId, isOwner);
     return;
@@ -10045,6 +10066,7 @@ async function openSellerShop(sellerId){
   }
   if(bpMoreBtn) bpMoreBtn.hidden = bpList.length <= bpCap;
   renderShopGrids();
+  shopStatsCtx = { stats, listings: listingsForGrid, bps: bpList, requests: shopResourceRequestsCache, unlocked: unlockedSet, shop };
   renderShopStrip((stats && stats.salesCount) || 0, listingsForGrid.length, bpList.length);
 
   loadShopUpvotes(sellerId, isOwner, stats ? stats.upvoteCount : undefined);
@@ -10137,11 +10159,60 @@ function saveStatus(){
   persistStatus(text, validStatusColor(statusDraftColor));
 }
 function clearStatus(){ persistStatus('', ''); }
+let shopStatsCtx = null;
+function shopStatTiles(sales, listings, bps){
+  const d = T[LANG], c = shopStatsCtx || {}, st = c.stats || null;
+  const L = c.listings || [], R = c.requests || [], dash = '—';
+  const num = x => (x==null || isNaN(x)) ? dash : Math.round(x).toLocaleString(LANG==='fr'?'fr-FR':'en-US').replace(/\u202f/g,' ');
+  const prices = L.map(l=>Number(l.price)).filter(x=>x>0);
+  const stock = L.reduce((a,l)=> a + (Number(l.quantity)||0), 0);
+  const top = L.filter(l=>Number(l.price)>0).sort((a,b)=>b.price-a.price)[0], low = L.filter(l=>Number(l.price)>0).sort((a,b)=>a.price-b.price)[0];
+  const rq = R.map(r=>Number(r.price)).filter(x=>x>0);
+  const salesN = (st && st.salesCount) || sales || 0;
+  const rk = getSellerRank(salesN), ri = SELLER_RANKS.findIndex(x=>x.key===rk.key), nx = SELLER_RANKS[ri+1];
+  const rkLabel = (d.sellerRankLabels && d.sellerRankLabels[rk.key]) || rk.key;
+  const rkSub = nx ? d.rankToNextSales.replace('{n}', Math.max(0, nx.min - salesN)).replace('{rank}', d.sellerRankLabels[nx.key]) : d.rankMaxed;
+  const prevUp = $('shopStripUpvotes') ? $('shopStripUpvotes').textContent : (st ? String(st.upvoteCount||0) : '0');
+  const sh = c.shop || {};
+  let since = dash; try{ if(sh.created_at) since = new Date(sh.created_at).toLocaleDateString(LANG==='fr'?'fr-FR':'en-GB', { month:'short', year:'numeric' }); }catch(e){}
+  const unl = c.unlocked ? c.unlocked.size : null;
+  const T_ = (l, v, sub, o) => Object.assign({ l, v, sub: sub||'', cls:'', sm:false }, o||{});
+  return {
+    sales: T_(d.shStSales, salesN, '', { cls:'green' }),
+    listings: T_(d.shStListings, listings!=null ? listings : L.length),
+    bps: T_(d.shStBp, bps!=null ? bps : (c.bps||[]).length),
+    upv: T_(d.shStUp, prevUp, '', { cls:'accent', vid:'shopStripUpvotes' }),
+    sold: T_(d.sxSold, st ? st.itemsSold : dash),
+    earned: T_(d.sxEarned, st ? num(st.totalEarned) : dash, 'aUEC', { cls:'green' }),
+    avg: T_(d.sxAvg, st && salesN ? num(st.totalEarned/salesN) : dash, 'aUEC'),
+    top: T_(d.sxTop, st && st.mostExpensive ? num(st.mostExpensive.price) : dash, st && st.mostExpensive ? st.mostExpensive.name : ''),
+    courier: T_(d.sxCourier, st ? (st.courierSalesCount||0) : dash),
+    hand: T_(d.sxHand, st ? Math.max(0, salesN - (st.courierSalesCount||0)) : dash),
+    stock: T_(d.sxStock, stock, d.sxUnits),
+    avgp: T_(d.sxAvgP, prices.length ? num(prices.reduce((a,b)=>a+b,0)/prices.length) : dash, 'aUEC'),
+    maxp: T_(d.sxMaxP, top ? num(top.price) : dash, top ? top.item_name : ''),
+    minp: T_(d.sxMinP, low ? num(low.price) : dash, low ? low.item_name : ''),
+    craft: T_(d.sxCraft, st ? (st.completedBlueprintSalesCount||0) : dash),
+    wanted: T_(d.sxWanted, R.length),
+    wantedQty: T_(d.sxWantedQty, R.reduce((a,r)=> a + (Number(r.quantity)||0), 0)),
+    wantedMax: T_(d.sxWantedMax, rq.length ? num(Math.max(...rq)) : dash, 'aUEC'),
+    rank: T_(d.sxRank, rkLabel, rkSub, { sm:true, cls:'accent' }),
+    ach: T_(d.sxAch, unl==null ? dash : unl+' / '+SELLER_ACHIEVEMENTS.length),
+    since: T_(d.sxSince, since, '', { sm:true }),
+    loc: T_(d.sxLoc, sh.location_system || dash, sh.location_name || '', { sm:true })
+  };
+}
 function renderShopStrip(sales, listings, bps){
-  const box = $('shopStatsStrip'); if(!box) return; const d = T[LANG];
-  const prev = $('shopStripUpvotes') ? $('shopStripUpvotes').textContent : '0';
-  box.innerHTML = [[d.shStSales, sales, 'green', ''], [d.shStListings, listings, '', ''], [d.shStBp, bps, '', ''], [d.shStUp, prev, 'accent', 'shopStripUpvotes']]
-    .map(([l,v,c,id]) => `<div class="mk-stat"><span class="mk-stat-l"><span class="sl">//</span> ${l}</span><span class="mk-stat-v ${c}"${id ? ` id="${id}"` : ''}>${v}</span></div>`).join('');
+  const box = $('shopStatsStrip'); if(!box) return;
+  const preset = (swLayout && !swMobile() && swLayout.items.stats && swLayout.items.stats.sp) || 'basic';
+  const ids = SX_PRESETS[preset==='auto' ? 'complete' : preset] || SX_PRESETS.basic;
+  const tiles = shopStatTiles(sales, listings, bps);
+  box.innerHTML = '<div class="sx-grid">' + ids.map(id=>{
+    const t = tiles[id]; const v = String(t.v);
+    const sm = t.sm || v.length > 8;
+    return `<div class="sx-t"><span class="sx-l"><span class="sl">//</span> ${escHtml(t.l)}</span><span class="sx-v ${t.cls}${sm?' sm':''}"${t.vid?` id="${t.vid}"`:''} title="${escHtml(v)}">${escHtml(v)}</span><span class="sx-s" title="${escHtml(t.sub)}">${escHtml(t.sub)}</span></div>`;
+  }).join('') + '</div>';
+  swFitSoon();
 }
 let shopUpvoted = false;
 async function loadShopUpvotes(sellerId, isOwner, knownCount){
@@ -10687,8 +10758,8 @@ function openShopAllResources(){
 }
 
 // ===== WIDGETS DE BOUTIQUE (v3 : lignes > colonnes > widgets empilés) =====
-Object.assign(T.fr, {layoutBtn:"ÉDITER LES WIDGETS", layoutSave:"ENREGISTRER", layoutCancel:"ANNULER", layoutReset:"RÉINITIALISER", layoutAddNote:"+ NOTE", layoutAddShape:"+ FORME", layoutEditing:"Glisse un widget par sa barre : sur le bord d'un autre pour le mettre à côté, au-dessus ou en dessous. Tire les poignées ⇔ et ═ pour redimensionner. Clique sur un widget pour le régler.", layoutSaved:"Disposition enregistrée.", layoutErr:"Impossible d'enregistrer la disposition (la colonne « layout » existe-t-elle dans Supabase ?).", layoutHiddenLbl:"MASQUÉS :", wStats:"Statistiques", wAch:"Succès & rang", wListings:"Objets en vente", wBlueprints:"Blueprints", wRequests:"Objets recherchés", wNote:"Note", wShape:"Forme", rowLbl:"LIGNE", rowEq:"MÊME HAUTEUR", rowEqW:"LARGEURS ÉGALES", gapHint:"＋ NOUVELLE LIGNE ICI", spacerHint:"Espace vide — dépose un widget ici", swiTitle:"Réglages", swiContent:"Contenu", swiSize:"Taille", swiWidth:"Largeur de la colonne", swiHeight:"Hauteur minimale", swiAuto:"AUTO", swiCards:"Cartes affichées", swiFrame:"Encadré", swiTheme:"Thème", swiColor:"Couleur", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOISIR UNE IMAGE", swiRemove:"RETIRER", swiFill:"REMPLIR", swiContain:"CONTENIR", swiAlign:"Alignement du texte", swiTitleLbl:"TITRE", swiTextLbl:"TEXTE", swiHide:"MASQUER", swiDelete:"SUPPRIMER", swiClose:"FERMER", swiUp:"Envoi de l'image…", swiUpErr:"Envoi de l'image impossible.", swiNone:"Aucune", swiOn:"OUI", swiOff:"NON", swiShopCol:"Couleur de la boutique", swiLeft:"GAUCHE", swiCenter:"CENTRE", swiRight:"DROITE", swiWNote:"Un widget seul sur sa ligne peut être réduit : un espace vide est créé à côté, où tu pourras déposer un autre widget. Tailles : ¼, ½, ¾ ou 1/1.", swiMax:"Maximum atteint (6).", thDefault:"Défaut", thGlass:"Verre", thNeon:"Néon", thTerminal:"Terminal", thPixel:"Pixel", thPaper:"Teinté", swiHTip:"hauteur min.", swiFontSize:"Taille du texte", swiCardsNote:"AUTO : le nombre de cartes s'adapte à la taille du widget."});
-Object.assign(T.en, {layoutBtn:"EDIT WIDGETS", layoutSave:"SAVE", layoutCancel:"CANCEL", layoutReset:"RESET", layoutAddNote:"+ NOTE", layoutAddShape:"+ SHAPE", layoutEditing:"Drag a widget by its bar: onto another one's edge to put it beside, above or below. Pull the ⇔ and ═ handles to resize. Click a widget to adjust it.", layoutSaved:"Layout saved.", layoutErr:"Could not save the layout (does the “layout” column exist in Supabase?).", layoutHiddenLbl:"HIDDEN:", wStats:"Statistics", wAch:"Achievements & rank", wListings:"Items for sale", wBlueprints:"Blueprints", wRequests:"Wanted items", wNote:"Note", wShape:"Shape", rowLbl:"ROW", rowEq:"SAME HEIGHT", rowEqW:"EQUAL WIDTHS", gapHint:"＋ NEW ROW HERE", spacerHint:"Empty space — drop a widget here", swiTitle:"Settings", swiContent:"Content", swiSize:"Size", swiWidth:"Column width", swiHeight:"Minimum height", swiAuto:"AUTO", swiCards:"Cards shown", swiFrame:"Frame", swiTheme:"Theme", swiColor:"Color", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOOSE AN IMAGE", swiRemove:"REMOVE", swiFill:"FILL", swiContain:"FIT", swiAlign:"Text alignment", swiTitleLbl:"TITLE", swiTextLbl:"TEXT", swiHide:"HIDE", swiDelete:"DELETE", swiClose:"CLOSE", swiUp:"Uploading image…", swiUpErr:"Could not upload the image.", swiNone:"None", swiOn:"ON", swiOff:"OFF", swiShopCol:"Shop color", swiLeft:"LEFT", swiCenter:"CENTER", swiRight:"RIGHT", swiWNote:"A widget alone on its row can be narrowed: an empty space is created beside it, where you can drop another widget. Sizes: ¼, ½, ¾ or 1/1.", swiMax:"Maximum reached (6).", thDefault:"Default", thGlass:"Glass", thNeon:"Neon", thTerminal:"Terminal", thPixel:"Pixel", thPaper:"Tinted", swiHTip:"min height", swiFontSize:"Text size", swiCardsNote:"AUTO: the number of cards adapts to the widget size."});
+Object.assign(T.fr, {layoutBtn:"ÉDITER LES WIDGETS", layoutSave:"ENREGISTRER", layoutCancel:"ANNULER", layoutReset:"RÉINITIALISER", layoutAddNote:"+ NOTE", layoutAddShape:"+ FORME", layoutEditing:"Glisse un widget par sa barre : sur le bord d'un autre pour le mettre à côté, au-dessus ou en dessous. Tire les poignées ⇔ et ═ pour redimensionner. Clique sur un widget pour le régler.", layoutSaved:"Disposition enregistrée.", layoutErr:"Impossible d'enregistrer la disposition (la colonne « layout » existe-t-elle dans Supabase ?).", layoutHiddenLbl:"MASQUÉS :", wStats:"Statistiques", wAch:"Succès & rang", wListings:"Objets en vente", wBlueprints:"Blueprints", wRequests:"Objets recherchés", wNote:"Note", wShape:"Forme", rowLbl:"LIGNE", rowEq:"MÊME HAUTEUR", rowEqW:"LARGEURS ÉGALES", gapHint:"＋ NOUVELLE LIGNE ICI", spacerHint:"Espace vide — dépose un widget ici", swiTitle:"Réglages", swiContent:"Contenu", swiSize:"Taille", swiWidth:"Largeur de la colonne", swiHeight:"Hauteur minimale", swiAuto:"AUTO", swiCards:"Cartes affichées", swiFrame:"Encadré", swiTheme:"Thème", swiColor:"Couleur", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOISIR UNE IMAGE", swiRemove:"RETIRER", swiFill:"REMPLIR", swiContain:"CONTENIR", swiAlign:"Alignement du texte", swiTitleLbl:"TITRE", swiTextLbl:"TEXTE", swiHide:"MASQUER", swiDelete:"SUPPRIMER", swiClose:"FERMER", swiUp:"Envoi de l'image…", swiUpErr:"Envoi de l'image impossible.", swiNone:"Aucune", swiOn:"OUI", swiOff:"NON", swiShopCol:"Couleur de la boutique", swiLeft:"GAUCHE", swiCenter:"CENTRE", swiRight:"DROITE", swiWNote:"Un widget seul sur sa ligne peut être réduit : un espace vide est créé à côté, où tu pourras déposer un autre widget. Tailles : ¼, ½, ¾ ou 1/1.", swiMax:"Maximum atteint (6).", thDefault:"Défaut", thGlass:"Verre", thNeon:"Néon", thTerminal:"Terminal", thPixel:"Pixel", thPaper:"Teinté", swiHTip:"hauteur min.", swiStatsPreset:"Statistiques affichées", swiStatsNote:"BASIQUE = les stats de base. MARCHÉ, CATALOGUE, PROFIL, COMPLET = plus d'infos. AUTO affiche plus de stats quand le widget est grand. Si le widget est trop petit, les dernières stats sont masquées.", spAuto:"AUTO", spBasic:"BASIQUE", spMarket:"MARCHÉ", spCatalog:"CATALOGUE", spProfile:"PROFIL", spComplete:"COMPLET", sxSold:"ARTICLES VENDUS", sxEarned:"TOTAL GAGNÉ", sxAvg:"VENTE MOYENNE", sxTop:"PLUS GROSSE VENTE", sxCourier:"VENTES VIA COURSIER", sxHand:"EN MAIN PROPRE", sxStock:"STOCK TOTAL", sxUnits:"unités", sxAvgP:"PRIX MOYEN", sxMaxP:"ANNONCE LA + CHÈRE", sxMinP:"ANNONCE LA - CHÈRE", sxCraft:"CRAFTS LIVRÉS", sxWanted:"OBJETS RECHERCHÉS", sxWantedQty:"QUANTITÉ RECHERCHÉE", sxWantedMax:"OFFRE MAX RECHERCHÉE", sxRank:"RANG VENDEUR", sxAch:"SUCCÈS", sxSince:"EN LIGNE DEPUIS", sxLoc:"BASE", swiFontSize:"Taille du texte", swiCardsNote:"AUTO : le nombre de cartes s'adapte à la taille du widget."});
+Object.assign(T.en, {layoutBtn:"EDIT WIDGETS", layoutSave:"SAVE", layoutCancel:"CANCEL", layoutReset:"RESET", layoutAddNote:"+ NOTE", layoutAddShape:"+ SHAPE", layoutEditing:"Drag a widget by its bar: onto another one's edge to put it beside, above or below. Pull the ⇔ and ═ handles to resize. Click a widget to adjust it.", layoutSaved:"Layout saved.", layoutErr:"Could not save the layout (does the “layout” column exist in Supabase?).", layoutHiddenLbl:"HIDDEN:", wStats:"Statistics", wAch:"Achievements & rank", wListings:"Items for sale", wBlueprints:"Blueprints", wRequests:"Wanted items", wNote:"Note", wShape:"Shape", rowLbl:"ROW", rowEq:"SAME HEIGHT", rowEqW:"EQUAL WIDTHS", gapHint:"＋ NEW ROW HERE", spacerHint:"Empty space — drop a widget here", swiTitle:"Settings", swiContent:"Content", swiSize:"Size", swiWidth:"Column width", swiHeight:"Minimum height", swiAuto:"AUTO", swiCards:"Cards shown", swiFrame:"Frame", swiTheme:"Theme", swiColor:"Color", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOOSE AN IMAGE", swiRemove:"REMOVE", swiFill:"FILL", swiContain:"FIT", swiAlign:"Text alignment", swiTitleLbl:"TITLE", swiTextLbl:"TEXT", swiHide:"HIDE", swiDelete:"DELETE", swiClose:"CLOSE", swiUp:"Uploading image…", swiUpErr:"Could not upload the image.", swiNone:"None", swiOn:"ON", swiOff:"OFF", swiShopCol:"Shop color", swiLeft:"LEFT", swiCenter:"CENTER", swiRight:"RIGHT", swiWNote:"A widget alone on its row can be narrowed: an empty space is created beside it, where you can drop another widget. Sizes: ¼, ½, ¾ or 1/1.", swiMax:"Maximum reached (6).", thDefault:"Default", thGlass:"Glass", thNeon:"Neon", thTerminal:"Terminal", thPixel:"Pixel", thPaper:"Tinted", swiHTip:"min height", swiStatsPreset:"Statistics shown", swiStatsNote:"BASIC = the base stats. MARKET, CATALOG, PROFILE, COMPLETE = more info. AUTO shows more stats when the widget is big. If the widget is too small, the last stats are hidden.", spAuto:"AUTO", spBasic:"BASIC", spMarket:"MARKET", spCatalog:"CATALOG", spProfile:"PROFILE", spComplete:"COMPLETE", sxSold:"ITEMS SOLD", sxEarned:"TOTAL EARNED", sxAvg:"AVERAGE SALE", sxTop:"BIGGEST SALE", sxCourier:"SALES VIA COURIER", sxHand:"HAND-TO-HAND", sxStock:"TOTAL STOCK", sxUnits:"units", sxAvgP:"AVERAGE PRICE", sxMaxP:"PRICIEST LISTING", sxMinP:"CHEAPEST LISTING", sxCraft:"CRAFTS DELIVERED", sxWanted:"WANTED ITEMS", sxWantedQty:"QUANTITY WANTED", sxWantedMax:"TOP WANTED OFFER", sxRank:"SELLER RANK", sxAch:"ACHIEVEMENTS", sxSince:"ONLINE SINCE", sxLoc:"BASE", swiFontSize:"Text size", swiCardsNote:"AUTO: the number of cards adapts to the widget size."});
 const SW_BUILTIN = ['stats','ach','listings','blueprints','requests'];
 const SW_CARDS = ['listings','blueprints','requests'];
 const SW_TITLE = {stats:'wStats', ach:'wAch', listings:'wListings', blueprints:'wBlueprints', requests:'wRequests'};
@@ -10696,7 +10767,15 @@ const SW_PRESET_W = [[3,'¼'],[6,'½'],[9,'¾'],[12,'1/1']];
 const SW_PRESET_H = [[0,'AUTO'],[240,'S'],[400,'M'],[580,'L'],[800,'XL']];
 const SW_HVALS = [240,400,580,800];
 const SW_TS_T = [1.0,1.3,1.8,2.6,3.6], SW_TS_X = [.8,.95,1.3,1.9,2.8];
-const SW_LIST = { listings:{grid:'shopListingsGrid', more:'shopListingsViewMoreBtn'}, blueprints:{grid:'shopBlueprintsGrid', more:'shopBlueprintsViewMoreBtn'}, requests:{grid:'shopResourceRequestsGrid', more:'shopResourcesViewMoreBtn'}, ach:{grid:null, more:null} };
+const SW_LIST = { listings:{grid:'shopListingsGrid', more:'shopListingsViewMoreBtn'}, blueprints:{grid:'shopBlueprintsGrid', more:'shopBlueprintsViewMoreBtn'}, requests:{grid:'shopResourceRequestsGrid', more:'shopResourcesViewMoreBtn'}, ach:{grid:null, more:null}, stats:{grid:null, more:null} };
+const SX_NAMES = ['auto','basic','market','catalog','profile','complete'];
+const SX_PRESETS = {
+  basic:['sales','listings','bps','upv'],
+  market:['sales','sold','earned','avg','top','courier','hand','upv'],
+  catalog:['listings','stock','avgp','maxp','minp','bps','craft','wanted'],
+  profile:['rank','ach','since','loc','sales','upv','wanted','bps'],
+  complete:['sales','listings','bps','upv','sold','earned','avg','top','stock','avgp','maxp','minp','craft','wanted','wantedQty','wantedMax','courier','hand','rank','ach','since','loc']
+};
 const SW_COUNTS = [0,1,2,3,4,6,8,12];
 const SW_THEMES = ['default','glass','neon','terminal','pixel','paper'];
 const SW_COLORS = ['', '#ffb020', '#4da3ff', '#3dff7a', '#ff4d6d', '#a56bff', '#4dd9c0'];
@@ -10716,6 +10795,7 @@ function swCleanProps(id, p){
   p = p || {};
   const o = { box: p.box?1:0, theme: SW_THEMES.includes(p.theme)?p.theme:'default', color: /^#[0-9a-fA-F]{6}$/.test(p.color||'')?p.color:'', mh: swSnapH(parseInt(p.mh)||0) };
   if(SW_CARDS.includes(id) && p.n) o.n = Math.min(24, Math.max(1, parseInt(p.n)||4));
+  if(id==='stats') o.sp = SX_NAMES.includes(p.sp) ? p.sp : 'basic';
   if(swIsNote(id) || swIsShape(id)){ o.title = String(p.title||'').slice(0,60); o.text = String(p.text||'').slice(0,1200); o.fs = Math.min(5, Math.max(1, parseInt(p.fs)||2)); }
   if(swIsShape(id)){
     o.img = (typeof p.img==='string' && /^https?:\/\//i.test(p.img) && p.img.length<600) ? p.img : '';
@@ -10885,7 +10965,63 @@ function swRender(){
 }
 function swFitSoon(){ if(swRAF) return; swRAF = requestAnimationFrame(()=>{ swRAF = 0; swFit(); }); }
 // Colonnes de cartes d'après la largeur réelle ; nombre de cartes d'après la hauteur ; colonnes vides masquées ; frames des formes recalées
+function swBestCols(maxC, n){
+  let best = 1, bw = 1e9;
+  for(let c=Math.min(maxC,n); c>=1; c--){ const w = (c - n%c)%c; if(w < bw){ bw = w; best = c; } }
+  return best;
+}
+function swFitStats(sw, p){
+  const g = sw.querySelector('.sx-grid'); if(!g) return;
+  const items = [...g.children]; items.forEach(c=>{ c.style.display = ''; });
+  if(!items.length) return;
+  const inn = sw.querySelector('.sw-in'), cs = getComputedStyle(inn);
+  const W = inn.clientWidth - (parseFloat(cs.paddingLeft)||0) - (parseFloat(cs.paddingRight)||0);
+  const maxC = Math.max(1, Math.min(6, Math.floor(W/170)));
+  const fixed = !!(p && p.mh>0 && !swMobile());
+  let want = items.length;
+  if(p && p.sp==='auto' && !fixed) want = Math.min(items.length, W<560 ? 4 : W<900 ? 8 : 12);
+  let sc = maxC, vis = want;
+  if(fixed){
+    g.style.setProperty('--sc', sc);
+    const top = g.getBoundingClientRect().top - inn.getBoundingClientRect().top;
+    const avail = p.mh - top - (parseFloat(cs.paddingBottom)||0) - (p.box?2:0);
+    const gap = parseFloat(getComputedStyle(g).rowGap)||0, h1 = items[0].getBoundingClientRect().height || 1;
+    const rows = Math.max(1, Math.floor((avail+gap)/(h1+gap)));
+    vis = Math.min(want, sc*rows);
+    if(vis===want) sc = swBestCols(maxC, want);
+  } else sc = swBestCols(maxC, want);
+  g.style.setProperty('--sc', sc);
+  items.forEach((c,i)=>{ c.style.display = i<vis ? '' : 'none'; });
+  g.querySelectorAll('.sx-v').forEach(v=>{
+    v.style.fontSize=''; const base = parseFloat(getComputedStyle(v).fontSize)||44; let f = base;
+    while(v.scrollWidth > v.clientWidth+1 && f > 16){ f -= 2; v.style.fontSize = f+'px'; }
+  });
+}
+function swFitAch(sw, p){
+  const g = sw.querySelector('#shopAchvCard .achv-grid'); if(!g) return;
+  const fixed = !!(p && p.mh>0 && !swMobile());
+  const items = [...g.children];
+  if(!fixed){ g.style.gridTemplateColumns = ''; g.style.gridTemplateRows = ''; g.style.removeProperty('--bs'); return; }
+  items.forEach(c=>{ c.style.display = ''; });
+  const W = g.clientWidth, H = g.clientHeight, N = items.length, gap = 10, MIN = 64;
+  if(!W || !H || !N) return;
+  let best = null;
+  for(let c=1; c<=N; c++){
+    let r = Math.ceil(N/c);
+    let th = (H-(r-1)*gap)/r;
+    if(th < MIN){ r = Math.max(1, Math.floor((H+gap)/(MIN+gap))); th = (H-(r-1)*gap)/r; }
+    const tw = (W-(c-1)*gap)/c, vis = Math.min(N, c*r), size = Math.min(tw, th);
+    if(tw < MIN && c>1) continue;
+    if(!best || vis>best.vis || (vis===best.vis && size>best.size)) best = { c, r, vis, size };
+  }
+  g.style.gridTemplateColumns = `repeat(${best.c}, minmax(0,1fr))`;
+  g.style.gridTemplateRows = `repeat(${best.r}, minmax(0,1fr))`;
+  g.style.setProperty('--bs', Math.round(best.size));
+  items.forEach((c,i)=>{ c.style.display = i<best.vis ? '' : 'none'; });
+}
 function swFitItems(sw, id, p){
+  if(id==='stats') return swFitStats(sw, p);
+  if(id==='ach') return swFitAch(sw, p);
   const info = SW_LIST[id]; if(!info) return;
   const g = id==='ach' ? sw.querySelector('#shopAchvCard .achv-grid') : document.getElementById(info.grid); if(!g) return;
   const items = [...g.children].filter(c=> c.tagName!=='P' && !c.classList.contains('muted'));
@@ -10990,6 +11126,7 @@ function swSet(id, key, val, keep){
   p[key] = val;
   swRender();
   if(key==='n' || key==='mh') renderShopGrids();
+  if(key==='sp') renderShopStrip();
   if(!keep) swInspect(id);
 }
 function swSetW(id, w){
@@ -11186,6 +11323,7 @@ function swInspect(id, quiet){
       ${shape?`<div class="swi-h" style="margin-top:16px">${d.swiAlign}</div><div class="swi-row">${opt(p.align==='left',`swSet('${id}','align','left')`,d.swiLeft)}${opt(p.align==='center',`swSet('${id}','align','center')`,d.swiCenter)}${opt(p.align==='right',`swSet('${id}','align','right')`,d.swiRight)}</div>`:''}
     </div>`;
   }
+  if(id==='stats') h += `<div class="swi-sec"><div class="swi-h">${d.swiStatsPreset}</div><div class="swi-row">${SX_NAMES.map(n=>opt((p.sp||'basic')===n, `swSet('${id}','sp','${n}')`, d['sp'+n.charAt(0).toUpperCase()+n.slice(1)])).join('')}</div><p class="swi-note" style="margin-top:10px">${d.swiStatsNote}</p></div>`;
   h += `<div class="swi-sec"><div class="swi-h">${d.swiSize}</div>
     <div class="swi-h" style="font-size:.7rem;margin-bottom:8px;letter-spacing:2px">${d.swiWidth}</div>
     <div class="swi-row">${SW_PRESET_W.map(([w,l])=>opt(colW===w, `swSetW('${id}',${w})`, l)).join('')}</div>
@@ -12876,6 +13014,7 @@ function updateShopAchvViewAllVisibility(){
   const btn = $('shopAchvViewAllBtn');
   if(!grid || !btn) return;
   const badges = Array.from(grid.querySelectorAll('.achv-badge'));
+  { const swx = grid.closest('.sw'); if(swx && swx.dataset.fixed==='1'){ btn.hidden = true; return; } }
   const isMobile = window.matchMedia('(max-width:640px)').matches;
   if(isMobile){
     badges.forEach(b => { b.style.display = ''; });

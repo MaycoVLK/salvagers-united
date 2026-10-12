@@ -1534,7 +1534,6 @@
   #view-seller-shop .seller-section-card::before, #view-seller-shop .seller-section-card::after{display:none;}
   #view-seller-shop .shop-preview-head{margin-bottom:14px;}
   #view-seller-shop .shop-preview-head h3{font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; text-shadow:none; margin:0;}
-  #view-seller-shop .shop-see-more{border:none; background:none; padding:0; color:var(--accent); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:1px; text-transform:none;}
   #view-seller-shop .marketplace-grid{grid-template-columns:repeat(6, minmax(0,1fr)); gap:12px;}
   @media (max-width:1200px){ #view-seller-shop .marketplace-grid{grid-template-columns:repeat(4, minmax(0,1fr));} }
   @media (max-width:900px){ #view-seller-shop .marketplace-grid{grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px;} }
@@ -2127,12 +2126,41 @@
 .sw .shop-preview-head{flex-wrap:wrap; gap:6px 12px;}
 .sw[data-wbox="1"] .sw-in{border:1px solid var(--accent-dim); border-radius:4px; padding:16px; background:var(--panel); box-shadow:0 0 0 1px rgba(0,0,0,.35) inset;}
 .sw[data-wbox="1"] .sw-in > .card{background:transparent; border:none; box-shadow:none; padding:0;}
-.sw[data-wtheme="glass"][data-wbox="1"] .sw-in{background:rgba(255,255,255,.04); backdrop-filter:blur(6px); border-color:rgba(255,255,255,.18);}
 .sw[data-wtheme="neon"][data-wbox="1"] .sw-in{background:rgba(0,0,0,.55); border-color:var(--accent); box-shadow:0 0 14px var(--accent-dim), 0 0 0 1px var(--accent-dim) inset;}
 .sw[data-wtheme="terminal"] .sw-in{font-family:'Share Tech Mono',monospace; --accent:#3dff7a; --accent-dim:#3dff7a66;}
 .sw[data-wtheme="terminal"][data-wbox="1"] .sw-in{background:#020a04; border-color:#3dff7a66; border-radius:0;}
-.sw[data-wtheme="pixel"][data-wbox="1"] .sw-in{border:3px solid var(--accent); border-radius:0; background:var(--bg2); box-shadow:5px 5px 0 var(--accent-dim);}
+.sw[data-wtheme="corners"][data-wbox="1"] .sw-in{border:1px solid color-mix(in srgb,var(--accent) 22%,transparent); border-radius:0; background:
+  linear-gradient(var(--accent),var(--accent)) top left/18px 2px no-repeat, linear-gradient(var(--accent),var(--accent)) top left/2px 18px no-repeat,
+  linear-gradient(var(--accent),var(--accent)) top right/18px 2px no-repeat, linear-gradient(var(--accent),var(--accent)) top right/2px 18px no-repeat,
+  linear-gradient(var(--accent),var(--accent)) bottom left/18px 2px no-repeat, linear-gradient(var(--accent),var(--accent)) bottom left/2px 18px no-repeat,
+  linear-gradient(var(--accent),var(--accent)) bottom right/18px 2px no-repeat, linear-gradient(var(--accent),var(--accent)) bottom right/2px 18px no-repeat, var(--panel);}
+.sw[data-wtheme="scan"][data-wbox="1"] .sw-in{background:repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 1px,transparent 1px 3px), var(--panel); border-color:var(--accent-dim); box-shadow:inset 0 0 36px rgba(0,0,0,.55);}
+.sw[data-wtheme="grid"][data-wbox="1"] .sw-in{background:linear-gradient(color-mix(in srgb,var(--accent) 10%,transparent) 1px,transparent 1px) 0 0/22px 22px, linear-gradient(90deg,color-mix(in srgb,var(--accent) 10%,transparent) 1px,transparent 1px) 0 0/22px 22px, var(--panel); border-color:var(--accent-dim);}
+.sw[data-wtheme="double"][data-wbox="1"] .sw-in{border:4px double var(--accent); border-radius:2px;}
+.sw[data-wtheme="hazard"][data-wbox="1"] .sw-in{border:1px solid var(--accent-dim); border-top:0; border-radius:0; padding-top:24px; background:repeating-linear-gradient(-45deg,var(--accent) 0 8px,#0a0a0a 8px 16px) top/100% 7px no-repeat, var(--panel);}
 .sw[data-wtheme="paper"][data-wbox="1"] .sw-in{background:linear-gradient(160deg,var(--accent-dim),transparent 60%), var(--panel); border-color:var(--accent);}
+/* séparateurs de section */
+.sw[data-kind="div"] .sw-in{display:flex; align-items:center; padding:8px 0; min-height:40px; background:none; border:0; box-shadow:none;}
+.sw-div{display:flex; align-items:center; gap:14px; width:100%; min-width:0;}
+.sw-div .ln{flex:1 1 0; min-width:12px; height:0; border-top:2px solid var(--accent); opacity:.9; box-shadow:0 0 8px var(--accent-dim);}
+.sw-div[data-al="left"] .ln.l{flex:0 0 28px;} .sw-div[data-al="right"] .ln.r{flex:0 0 28px;}
+.sw-div .t{flex:0 1 auto; min-width:0; max-width:75%; color:var(--accent); font-family:'Share Tech Mono',monospace; font-size:calc(var(--tt,1.3rem)*.8); letter-spacing:4px; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow:0 0 10px var(--accent-dim);}
+.sw-div.nt{gap:0;} .sw-div.nt .t, .sw-div.nt .ln.r{display:none;} .sw-div.nt .ln.l{flex:1 1 auto !important;}
+.sw-div[data-ds="thick"] .ln{border-top-width:5px;}
+.sw-div[data-ds="dashed"] .ln{border-top-style:dashed; box-shadow:none;}
+.sw-div[data-ds="dots"] .ln{border-top:4px dotted var(--accent); box-shadow:none;}
+.sw-div[data-ds="double"] .ln{border-top:6px double var(--accent); box-shadow:none;}
+.sw-div[data-ds="pixel"] .ln{border:0; height:6px; background:repeating-linear-gradient(90deg,var(--accent) 0 6px,transparent 6px 12px); box-shadow:none;}
+.sw-div[data-ds="hazard"] .ln{border:0; height:9px; background:repeating-linear-gradient(-45deg,var(--accent) 0 6px,transparent 6px 12px); box-shadow:none;}
+.sw-div[data-ds="fade"] .ln{border:0; height:2px; background:linear-gradient(90deg,transparent,var(--accent)); box-shadow:none;}
+.sw-div[data-ds="fade"] .ln.r{background:linear-gradient(90deg,var(--accent),transparent);}
+.shop-widget-grid.editing .sw[data-kind="div"] .sw-bar{opacity:.5;} .shop-widget-grid.editing .sw[data-kind="div"] .sw-bar:hover{opacity:1;}
+.swi-dsp{height:40px; display:flex; align-items:center;} .swi-dsp .sw-div{gap:8px;} .swi-dsp .sw-div .t{font-size:.7rem; letter-spacing:2px;}
+.swi-none{height:62px; display:flex; align-items:center; justify-content:center; border:1px dashed var(--border); color:var(--muted); font-size:1.1rem;}
+/* "voir plus" : bouton d'appel à l'action discret mais visible */
+.shop-see-more, #view-seller-shop .shop-see-more{display:inline-flex; align-items:center; gap:6px; width:auto; flex:none; padding:6px 14px; border:1px solid var(--accent); border-radius:3px; background:color-mix(in srgb,var(--accent) 14%,transparent); color:var(--accent); font-family:'Share Tech Mono',monospace; font-size:.78rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; white-space:nowrap; cursor:pointer; transition:background .15s, color .15s, box-shadow .15s, transform .15s;}
+.shop-see-more:hover, #view-seller-shop .shop-see-more:hover{background:var(--accent); color:#000; box-shadow:0 0 14px var(--accent-dim); transform:translateY(-1px);}
+.shop-see-more:active{transform:none;}
 /* cartes : --cols est calculé en JS d'après la largeur réelle du widget */
 #view-seller-shop .shop-widget-grid .marketplace-grid, #view-seller-shop .shop-widget-grid .resource-request-grid{grid-template-columns:repeat(var(--cols,2),minmax(0,1fr)); gap:12px;}
 #view-seller-shop .shop-widget-grid .marketplace-grid > p.muted, #view-seller-shop .shop-widget-grid .resource-request-grid > p.muted{grid-column:1/-1;}
@@ -2226,8 +2254,8 @@ body.sw-grabbing, body.sw-grabbing *{cursor:grabbing !important; user-select:non
 .swi-tile .rq{font-size:.64rem; color:var(--muted); line-height:1.25;}
 .swi-tsw{position:relative; height:62px; border:1px solid var(--accent-dim); border-radius:2px; overflow:hidden; background:var(--bg);}
 .swi-tsw .shop-texture-layer{z-index:0;}
-.swi-theme{height:62px; display:flex;}
-.swi-theme .sw{flex:1;} .swi-theme .sw-in{display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:var(--accent); padding:0 !important; min-height:0 !important;}
+.swi-theme{height:62px; display:flex; width:100%; align-self:stretch;}
+.swi-theme .sw{flex:1 1 auto; width:100%; min-width:0;} .swi-theme .sw-in{width:100%; box-sizing:border-box; display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:var(--accent); padding:0 !important; min-height:0 !important;}
 .swi-colors{display:flex; flex-wrap:wrap; gap:10px; align-items:center;}
 .swi-sw{width:36px; height:36px; border-radius:3px; border:2px solid var(--border); cursor:pointer; padding:0; font-size:15px; color:#000; font-family:inherit;}
 .swi-sw.on{border-color:#fff; box-shadow:0 0 0 2px var(--accent);}
@@ -2270,7 +2298,15 @@ body.sw-grabbing, body.sw-grabbing *{cursor:grabbing !important; user-select:non
 .sw[data-w="ach"][data-fixed="1"] #shopAchvCard .achv-badge{flex:none; width:auto; height:auto; min-width:0; padding:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(var(--bs,80)*.06*1px); text-align:center; overflow:hidden;}
 .sw[data-w="ach"][data-fixed="1"] #shopAchvCard .achv-badge svg{width:calc(var(--bs,80)*.34*1px); height:calc(var(--bs,80)*.34*1px); max-width:60px; max-height:60px;}
 .sw[data-w="ach"][data-fixed="1"] #shopAchvCard .achv-badge span{font-size:clamp(8px, calc(var(--bs,80)*.115*1px), 13px); line-height:1.2; overflow-wrap:anywhere;}
-.sw[data-w="ach"][data-fixed="1"] #shopAchvViewAllBtn{display:none !important;}
+.sw[data-w="ach"][data-fixed="1"] #shopAchvViewAllBtn{margin-left:auto;}
+.achv-ov{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:16px;}
+.achv-ov-p{width:min(760px,100%);max-height:86vh;overflow:auto;background:var(--bg-card,#0c1110);border:1px solid var(--accent,#3dff7a);box-shadow:0 0 30px var(--accent-dim,rgba(61,255,122,.25));padding:22px;}
+.achv-ov-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
+.achv-ov-h h3{margin:0;}
+.achv-ov-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+.achv-ov-g .achv-badge{display:flex !important;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 8px;text-align:center;width:auto;height:auto;flex:none;}
+.achv-ov-g .achv-badge span{font-size:.62rem;line-height:1.25;}
+.achv-ov-g .achv-badge svg{width:34px;height:34px;}
 </style>
 </head>
 <body>
@@ -10769,8 +10805,8 @@ function openShopAllResources(){
 }
 
 // ===== WIDGETS DE BOUTIQUE (v3 : lignes > colonnes > widgets empilés) =====
-Object.assign(T.fr, {layoutBtn:"ÉDITER LES WIDGETS", layoutSave:"ENREGISTRER", layoutCancel:"ANNULER", layoutReset:"RÉINITIALISER", layoutAddNote:"+ NOTE", layoutAddShape:"+ FORME", layoutEditing:"Glisse un widget par sa barre : sur le bord d'un autre pour le mettre à côté, au-dessus ou en dessous. Tire les poignées ⇔ et ═ pour redimensionner. Clique sur un widget pour le régler.", layoutSaved:"Disposition enregistrée.", layoutErr:"Impossible d'enregistrer la disposition (la colonne « layout » existe-t-elle dans Supabase ?).", layoutHiddenLbl:"MASQUÉS :", wStats:"Statistiques", wAch:"Succès & rang", wListings:"Objets en vente", wBlueprints:"Blueprints", wRequests:"Objets recherchés", wNote:"Note", wShape:"Forme", rowLbl:"LIGNE", rowEq:"MÊME HAUTEUR", rowEqW:"LARGEURS ÉGALES", gapHint:"＋ NOUVELLE LIGNE ICI", spacerHint:"Espace vide — dépose un widget ici", swiTitle:"Réglages", swiContent:"Contenu", swiSize:"Taille", swiWidth:"Largeur de la colonne", swiHeight:"Hauteur minimale", swiAuto:"AUTO", swiCards:"Cartes affichées", swiFrame:"Encadré", swiTheme:"Thème", swiColor:"Couleur", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOISIR UNE IMAGE", swiRemove:"RETIRER", swiFill:"REMPLIR", swiContain:"CONTENIR", swiAlign:"Alignement du texte", swiTitleLbl:"TITRE", swiTextLbl:"TEXTE", swiHide:"MASQUER", swiDelete:"SUPPRIMER", swiClose:"FERMER", swiUp:"Envoi de l'image…", swiUpErr:"Envoi de l'image impossible.", swiNone:"Aucune", swiOn:"OUI", swiOff:"NON", swiShopCol:"Couleur de la boutique", swiLeft:"GAUCHE", swiCenter:"CENTRE", swiRight:"DROITE", swiWNote:"Un widget seul sur sa ligne peut être réduit : un espace vide est créé à côté, où tu pourras déposer un autre widget. Tailles : ¼, ½, ¾ ou 1/1.", swiMax:"Maximum atteint (6).", thDefault:"Défaut", thGlass:"Verre", thNeon:"Néon", thTerminal:"Terminal", thPixel:"Pixel", thPaper:"Teinté", swiHTip:"hauteur min.", swiStatsPreset:"Statistiques affichées", swiStatsNote:"BASIQUE = les stats de base. MARCHÉ, CATALOGUE, PROFIL, COMPLET = plus d'infos. AUTO affiche plus de stats quand le widget est grand. Si le widget est trop petit, les dernières stats sont masquées.", spAuto:"AUTO", spBasic:"BASIQUE", spMarket:"MARCHÉ", spCatalog:"CATALOGUE", spProfile:"PROFIL", spComplete:"COMPLET", sxSold:"ARTICLES VENDUS", sxEarned:"TOTAL GAGNÉ", sxAvg:"VENTE MOYENNE", sxTop:"PLUS GROSSE VENTE", sxCourier:"VENTES VIA COURSIER", sxHand:"EN MAIN PROPRE", sxStock:"STOCK TOTAL", sxUnits:"unités", sxAvgP:"PRIX MOYEN", sxMaxP:"ANNONCE LA + CHÈRE", sxMinP:"ANNONCE LA - CHÈRE", sxCraft:"CRAFTS LIVRÉS", sxWanted:"OBJETS RECHERCHÉS", sxWantedQty:"QUANTITÉ RECHERCHÉE", sxWantedMax:"OFFRE MAX RECHERCHÉE", sxRank:"RANG VENDEUR", sxAch:"SUCCÈS", sxSince:"EN LIGNE DEPUIS", sxLoc:"BASE", swiFontSize:"Taille du texte", swiCardsNote:"AUTO : le nombre de cartes s'adapte à la taille du widget."});
-Object.assign(T.en, {layoutBtn:"EDIT WIDGETS", layoutSave:"SAVE", layoutCancel:"CANCEL", layoutReset:"RESET", layoutAddNote:"+ NOTE", layoutAddShape:"+ SHAPE", layoutEditing:"Drag a widget by its bar: onto another one's edge to put it beside, above or below. Pull the ⇔ and ═ handles to resize. Click a widget to adjust it.", layoutSaved:"Layout saved.", layoutErr:"Could not save the layout (does the “layout” column exist in Supabase?).", layoutHiddenLbl:"HIDDEN:", wStats:"Statistics", wAch:"Achievements & rank", wListings:"Items for sale", wBlueprints:"Blueprints", wRequests:"Wanted items", wNote:"Note", wShape:"Shape", rowLbl:"ROW", rowEq:"SAME HEIGHT", rowEqW:"EQUAL WIDTHS", gapHint:"＋ NEW ROW HERE", spacerHint:"Empty space — drop a widget here", swiTitle:"Settings", swiContent:"Content", swiSize:"Size", swiWidth:"Column width", swiHeight:"Minimum height", swiAuto:"AUTO", swiCards:"Cards shown", swiFrame:"Frame", swiTheme:"Theme", swiColor:"Color", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOOSE AN IMAGE", swiRemove:"REMOVE", swiFill:"FILL", swiContain:"FIT", swiAlign:"Text alignment", swiTitleLbl:"TITLE", swiTextLbl:"TEXT", swiHide:"HIDE", swiDelete:"DELETE", swiClose:"CLOSE", swiUp:"Uploading image…", swiUpErr:"Could not upload the image.", swiNone:"None", swiOn:"ON", swiOff:"OFF", swiShopCol:"Shop color", swiLeft:"LEFT", swiCenter:"CENTER", swiRight:"RIGHT", swiWNote:"A widget alone on its row can be narrowed: an empty space is created beside it, where you can drop another widget. Sizes: ¼, ½, ¾ or 1/1.", swiMax:"Maximum reached (6).", thDefault:"Default", thGlass:"Glass", thNeon:"Neon", thTerminal:"Terminal", thPixel:"Pixel", thPaper:"Tinted", swiHTip:"min height", swiStatsPreset:"Statistics shown", swiStatsNote:"BASIC = the base stats. MARKET, CATALOG, PROFILE, COMPLETE = more info. AUTO shows more stats when the widget is big. If the widget is too small, the last stats are hidden.", spAuto:"AUTO", spBasic:"BASIC", spMarket:"MARKET", spCatalog:"CATALOG", spProfile:"PROFILE", spComplete:"COMPLETE", sxSold:"ITEMS SOLD", sxEarned:"TOTAL EARNED", sxAvg:"AVERAGE SALE", sxTop:"BIGGEST SALE", sxCourier:"SALES VIA COURIER", sxHand:"HAND-TO-HAND", sxStock:"TOTAL STOCK", sxUnits:"units", sxAvgP:"AVERAGE PRICE", sxMaxP:"PRICIEST LISTING", sxMinP:"CHEAPEST LISTING", sxCraft:"CRAFTS DELIVERED", sxWanted:"WANTED ITEMS", sxWantedQty:"QUANTITY WANTED", sxWantedMax:"TOP WANTED OFFER", sxRank:"SELLER RANK", sxAch:"ACHIEVEMENTS", sxSince:"ONLINE SINCE", sxLoc:"BASE", swiFontSize:"Text size", swiCardsNote:"AUTO: the number of cards adapts to the widget size."});
+Object.assign(T.fr, {layoutBtn:"ÉDITER LES WIDGETS", layoutSave:"ENREGISTRER", layoutCancel:"ANNULER", layoutReset:"RÉINITIALISER", layoutAddNote:"+ NOTE", layoutAddShape:"+ FORME", layoutEditing:"Glisse un widget par sa barre : sur le bord d'un autre pour le mettre à côté, au-dessus ou en dessous. Tire les poignées ⇔ et ═ pour redimensionner. Clique sur un widget pour le régler.", layoutSaved:"Disposition enregistrée.", layoutErr:"Impossible d'enregistrer la disposition (la colonne « layout » existe-t-elle dans Supabase ?).", layoutHiddenLbl:"MASQUÉS :", wStats:"Statistiques", wAch:"Succès & rang", wListings:"Objets en vente", wBlueprints:"Blueprints", wRequests:"Objets recherchés", wNote:"Note", wShape:"Forme", rowLbl:"LIGNE", rowEq:"MÊME HAUTEUR", rowEqW:"LARGEURS ÉGALES", gapHint:"＋ NOUVELLE LIGNE ICI", spacerHint:"Espace vide — dépose un widget ici", swiTitle:"Réglages", swiContent:"Contenu", swiSize:"Taille", swiWidth:"Largeur de la colonne", swiHeight:"Hauteur minimale", swiAuto:"AUTO", swiCards:"Cartes affichées", swiFrame:"Encadré", swiTheme:"Thème", swiColor:"Couleur", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOISIR UNE IMAGE", swiRemove:"RETIRER", swiFill:"REMPLIR", swiContain:"CONTENIR", swiAlign:"Alignement du texte", swiTitleLbl:"TITRE", swiTextLbl:"TEXTE", swiHide:"MASQUER", swiDelete:"SUPPRIMER", swiClose:"FERMER", swiUp:"Envoi de l'image…", swiUpErr:"Envoi de l'image impossible.", swiNone:"Aucune", swiOn:"OUI", swiOff:"NON", swiShopCol:"Couleur de la boutique", swiLeft:"GAUCHE", swiCenter:"CENTRE", swiRight:"DROITE", swiWNote:"Un widget seul sur sa ligne peut être réduit : un espace vide est créé à côté, où tu pourras déposer un autre widget. Tailles : ¼, ½, ¾ ou 1/1.", swiMax:"Maximum atteint (6).", thDefault:"Simple", thNeon:"Néon", thTerminal:"Terminal", thPaper:"Teinté", thCorners:"Coins", thScan:"Scanlines", thGrid:"Grille", thDouble:"Double", thHazard:"Hazard", thNone:"Aucun", swiStyle:"Style du widget", swiDivStyle:"Style du trait", wDiv:"Séparateur", layoutAddDiv:"+ SÉPARATEUR", dsLine:"Ligne", dsThick:"Épaisse", dsDashed:"Tirets", dsDots:"Points", dsDouble:"Double", dsPixel:"Pixel", dsHazard:"Hazard", dsFade:"Dégradé", swiHTip:"hauteur min.", swiStatsPreset:"Statistiques affichées", swiStatsNote:"BASIQUE = les stats de base. MARCHÉ, CATALOGUE, PROFIL, COMPLET = plus d'infos. AUTO affiche plus de stats quand le widget est grand. Si le widget est trop petit, les dernières stats sont masquées.", spAuto:"AUTO", spBasic:"BASIQUE", spMarket:"MARCHÉ", spCatalog:"CATALOGUE", spProfile:"PROFIL", spComplete:"COMPLET", sxSold:"ARTICLES VENDUS", sxEarned:"TOTAL GAGNÉ", sxAvg:"VENTE MOYENNE", sxTop:"PLUS GROSSE VENTE", sxCourier:"VENTES VIA COURSIER", sxHand:"EN MAIN PROPRE", sxStock:"STOCK TOTAL", sxUnits:"unités", sxAvgP:"PRIX MOYEN", sxMaxP:"ANNONCE LA + CHÈRE", sxMinP:"ANNONCE LA - CHÈRE", sxCraft:"CRAFTS LIVRÉS", sxWanted:"OBJETS RECHERCHÉS", sxWantedQty:"QUANTITÉ RECHERCHÉE", sxWantedMax:"OFFRE MAX RECHERCHÉE", sxRank:"RANG VENDEUR", sxAch:"SUCCÈS", sxSince:"EN LIGNE DEPUIS", sxLoc:"BASE", swiFontSize:"Taille du texte", swiCardsNote:"AUTO : le nombre de cartes s'adapte à la taille du widget."});
+Object.assign(T.en, {layoutBtn:"EDIT WIDGETS", layoutSave:"SAVE", layoutCancel:"CANCEL", layoutReset:"RESET", layoutAddNote:"+ NOTE", layoutAddShape:"+ SHAPE", layoutEditing:"Drag a widget by its bar: onto another one's edge to put it beside, above or below. Pull the ⇔ and ═ handles to resize. Click a widget to adjust it.", layoutSaved:"Layout saved.", layoutErr:"Could not save the layout (does the “layout” column exist in Supabase?).", layoutHiddenLbl:"HIDDEN:", wStats:"Statistics", wAch:"Achievements & rank", wListings:"Items for sale", wBlueprints:"Blueprints", wRequests:"Wanted items", wNote:"Note", wShape:"Shape", rowLbl:"ROW", rowEq:"SAME HEIGHT", rowEqW:"EQUAL WIDTHS", gapHint:"＋ NEW ROW HERE", spacerHint:"Empty space — drop a widget here", swiTitle:"Settings", swiContent:"Content", swiSize:"Size", swiWidth:"Column width", swiHeight:"Minimum height", swiAuto:"AUTO", swiCards:"Cards shown", swiFrame:"Frame", swiTheme:"Theme", swiColor:"Color", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOOSE AN IMAGE", swiRemove:"REMOVE", swiFill:"FILL", swiContain:"FIT", swiAlign:"Text alignment", swiTitleLbl:"TITLE", swiTextLbl:"TEXT", swiHide:"HIDE", swiDelete:"DELETE", swiClose:"CLOSE", swiUp:"Uploading image…", swiUpErr:"Could not upload the image.", swiNone:"None", swiOn:"ON", swiOff:"OFF", swiShopCol:"Shop color", swiLeft:"LEFT", swiCenter:"CENTER", swiRight:"RIGHT", swiWNote:"A widget alone on its row can be narrowed: an empty space is created beside it, where you can drop another widget. Sizes: ¼, ½, ¾ or 1/1.", swiMax:"Maximum reached (6).", thDefault:"Simple", thNeon:"Neon", thTerminal:"Terminal", thPaper:"Tinted", thCorners:"Corners", thScan:"Scanlines", thGrid:"Grid", thDouble:"Double", thHazard:"Hazard", thNone:"None", swiStyle:"Widget style", swiDivStyle:"Line style", wDiv:"Divider", layoutAddDiv:"+ DIVIDER", dsLine:"Line", dsThick:"Thick", dsDashed:"Dashed", dsDots:"Dots", dsDouble:"Double", dsPixel:"Pixel", dsHazard:"Hazard", dsFade:"Fade", swiHTip:"min height", swiStatsPreset:"Statistics shown", swiStatsNote:"BASIC = the base stats. MARKET, CATALOG, PROFILE, COMPLETE = more info. AUTO shows more stats when the widget is big. If the widget is too small, the last stats are hidden.", spAuto:"AUTO", spBasic:"BASIC", spMarket:"MARKET", spCatalog:"CATALOG", spProfile:"PROFILE", spComplete:"COMPLETE", sxSold:"ITEMS SOLD", sxEarned:"TOTAL EARNED", sxAvg:"AVERAGE SALE", sxTop:"BIGGEST SALE", sxCourier:"SALES VIA COURIER", sxHand:"HAND-TO-HAND", sxStock:"TOTAL STOCK", sxUnits:"units", sxAvgP:"AVERAGE PRICE", sxMaxP:"PRICIEST LISTING", sxMinP:"CHEAPEST LISTING", sxCraft:"CRAFTS DELIVERED", sxWanted:"WANTED ITEMS", sxWantedQty:"QUANTITY WANTED", sxWantedMax:"TOP WANTED OFFER", sxRank:"SELLER RANK", sxAch:"ACHIEVEMENTS", sxSince:"ONLINE SINCE", sxLoc:"BASE", swiFontSize:"Text size", swiCardsNote:"AUTO: the number of cards adapts to the widget size."});
 const SW_BUILTIN = ['stats','ach','listings','blueprints','requests'];
 const SW_CARDS = ['listings','blueprints','requests'];
 const SW_TITLE = {stats:'wStats', ach:'wAch', listings:'wListings', blueprints:'wBlueprints', requests:'wRequests'};
@@ -10788,7 +10824,8 @@ const SX_PRESETS = {
   complete:['sales','listings','bps','upv','sold','earned','avg','top','stock','avgp','maxp','minp','craft','wanted','wantedQty','wantedMax','courier','hand','rank','ach','since','loc']
 };
 const SW_COUNTS = [0,1,2,3,4,6,8,12];
-const SW_THEMES = ['default','glass','neon','terminal','pixel','paper'];
+const SW_THEMES = ['default','neon','terminal','paper','corners','scan','grid','double','hazard'];
+const SW_DS = ['line','thick','dashed','dots','double','pixel','hazard','fade'];
 const SW_COLORS = ['', '#ffb020', '#4da3ff', '#3dff7a', '#ff4d6d', '#a56bff', '#4dd9c0'];
 const SW_MAXCOLS = 4, SW_MINW = 3, SW_MAXCUSTOM = 6;
 let swLayout = null, swSaved = null, swEditing = false, swOwner = false, swShop = null, swSel = null, swRO = null, swRAF = 0, swDrag = null, swScrollTimer = null, swMobileCache = null;
@@ -10797,7 +10834,8 @@ const swMQ = window.matchMedia ? window.matchMedia('(max-width:720px)') : { matc
 function swMobile(){ return !!swMQ.matches; }
 const swIsNote = id => /^n\d{1,3}$/.test(id);
 const swIsShape = id => /^s\d{1,3}$/.test(id);
-const swIsCustom = id => swIsNote(id) || swIsShape(id);
+const swIsDiv = id => /^d\d{1,3}$/.test(id);
+const swIsCustom = id => swIsNote(id) || swIsShape(id) || swIsDiv(id);
 function swProp0(){ return { box:0, theme:'default', color:'', mh:0 }; }
 function swDefault(){ const items = {}; SW_BUILTIN.forEach(k=>{ items[k] = swProp0(); }); return { v:2, rows: SW_BUILTIN.map(k=>({ eq:0, cols:[{ w:12, ids:[k] }] })), items, off:[] }; }
 function swClone(o){ return JSON.parse(JSON.stringify(o)); }
@@ -10807,7 +10845,11 @@ function swCleanProps(id, p){
   const o = { box: p.box?1:0, theme: SW_THEMES.includes(p.theme)?p.theme:'default', color: /^#[0-9a-fA-F]{6}$/.test(p.color||'')?p.color:'', mh: swSnapH(parseInt(p.mh)||0) };
   if(SW_CARDS.includes(id) && p.n) o.n = Math.min(24, Math.max(1, parseInt(p.n)||4));
   if(id==='stats') o.sp = SX_NAMES.includes(p.sp) ? p.sp : 'basic';
-  if(swIsNote(id) || swIsShape(id)){ o.title = String(p.title||'').slice(0,60); o.text = String(p.text||'').slice(0,1200); o.fs = Math.min(5, Math.max(1, parseInt(p.fs)||2)); }
+  if(swIsNote(id) || swIsShape(id) || swIsDiv(id)){ o.title = String(p.title||'').slice(0,60); o.text = String(p.text||'').slice(0,1200); o.fs = Math.min(5, Math.max(1, parseInt(p.fs)||2)); }
+  if(swIsDiv(id)){
+    o.box = 0; o.mh = 0; o.title = String(p.title||'').slice(0,60); o.text = ''; o.fs = Math.min(5, Math.max(1, parseInt(p.fs)||2));
+    o.ds = SW_DS.includes(p.ds) ? p.ds : 'line'; o.align = ['left','right'].includes(p.align) ? p.align : 'center';
+  }
   if(swIsShape(id)){
     o.img = (typeof p.img==='string' && /^https?:\/\//i.test(p.img) && p.img.length<600) ? p.img : '';
     o.tex = (p.tex && SHOP_TEXTURE_PRESETS.some(t=>t.key===p.tex)) ? p.tex : '';
@@ -10870,7 +10912,7 @@ function swSanitize(L){
   return out;
 }
 function swFind(L, id){ for(const row of L.rows) for(const col of row.cols){ const i = col.ids.indexOf(id); if(i>=0) return { row, col, i }; } return null; }
-function swTitleOf(id){ const d = T[LANG]; if(SW_TITLE[id]) return d[SW_TITLE[id]]; const p = swLayout.items[id] || {}; return p.title || (swIsShape(id) ? d.wShape : d.wNote); }
+function swTitleOf(id){ const d = T[LANG]; if(SW_TITLE[id]) return d[SW_TITLE[id]]; const p = swLayout.items[id] || {}; return p.title || (swIsShape(id) ? d.wShape : swIsDiv(id) ? d.wDiv : d.wNote); }
 function swEff(){ if(swMobile()){ if(!swMobileCache) swMobileCache = swDefault(); return swMobileCache; } return swLayout; }
 // Nombre de cartes affichées pour une section (réglable par widget ; sur mobile : ancien comportement)
 function swCap(kind){
@@ -10884,7 +10926,7 @@ function swEl(id){
   if(SW_BUILTIN.includes(id)) return document.getElementById('sw-'+id);
   let el = swCustom[id];
   if(!el){
-    el = document.createElement('div'); el.className = 'sw'; el.id = 'sw-'+id; el.dataset.w = id; el.dataset.kind = swIsShape(id) ? 'shape' : 'note';
+    el = document.createElement('div'); el.className = 'sw'; el.id = 'sw-'+id; el.dataset.w = id; el.dataset.kind = swIsShape(id) ? 'shape' : swIsDiv(id) ? 'div' : 'note';
     el.innerHTML = '<div class="sw-in"></div>';
     swCustom[id] = el;
   }
@@ -10894,6 +10936,10 @@ function swFillCustom(el, id, p){
   const inn = el.querySelector('.sw-in');
   const fsi = (p.fs||2)-1;
   el.style.setProperty('--tt', SW_TS_T[fsi]+'rem'); el.style.setProperty('--tx', SW_TS_X[fsi]+'rem');
+  if(swIsDiv(id)){
+    inn.innerHTML = `<div class="sw-div${p.title?'':' nt'}" data-ds="${p.ds}" data-al="${p.align}"><span class="ln l"></span><span class="t">${escHtml(p.title)}</span><span class="ln r"></span></div>`;
+    return;
+  }
   const head = p.title ? `<h3 class="sw-note-title">${escHtml(p.title)}</h3>` : '';
   const body = p.text ? `<div class="sw-note-text">${escHtml(p.text)}</div>` : '';
   if(swIsNote(id)){ inn.innerHTML = head + (body || ''); return; }
@@ -11034,7 +11080,9 @@ function swFitAch(sw, p){
   const g = sw.querySelector('#shopAchvCard .achv-grid'); if(!g) return;
   const fixed = !!(p && p.mh>0 && !swMobile());
   const items = [...g.children];
-  if(!fixed){ g.style.gridTemplateColumns = ''; g.style.gridTemplateRows = ''; g.style.removeProperty('--bs'); return; }
+  const vb = sw.querySelector('#shopAchvViewAllBtn');
+  if(!fixed){ g.style.gridTemplateColumns = ''; g.style.gridTemplateRows = ''; g.style.removeProperty('--bs'); if(vb) vb.style.visibility=''; return; }
+  if(vb){ vb.hidden = false; vb.style.visibility = 'hidden'; }
   items.forEach(c=>{ c.style.display = ''; });
   const W = g.clientWidth, H = g.clientHeight, N = items.length, gap = 10, MIN = 64;
   if(!W || !H || !N) return;
@@ -11051,6 +11099,7 @@ function swFitAch(sw, p){
   g.style.gridTemplateRows = `repeat(${best.r}, minmax(0,1fr))`;
   g.style.setProperty('--bs', Math.round(best.size));
   items.forEach((c,i)=>{ c.style.display = i<best.vis ? '' : 'none'; });
+  if(vb) vb.style.visibility = best.vis < N ? 'visible' : 'hidden';
 }
 function swFitItems(sw, id, p){
   if(id==='stats') return swFitStats(sw, p);
@@ -11114,6 +11163,7 @@ function swRenderBar(){
   bar.innerHTML = `<span class="lb-lbl">${d.layoutEditing}</span>${hid?`<span class="lb-lbl" style="margin:0;flex:0 0 auto">${d.layoutHiddenLbl}</span>${hid}`:''}
     <button type="button" class="lb-btn" onclick="swAddCustom('n')">${d.layoutAddNote}</button>
     <button type="button" class="lb-btn" onclick="swAddCustom('s')">${d.layoutAddShape}</button>
+    <button type="button" class="lb-btn" onclick="swAddCustom('d')">${d.layoutAddDiv}</button>
     <button type="button" class="lb-btn" onclick="swReset()">${d.layoutReset}</button>
     <button type="button" class="lb-btn" onclick="swCancel()">${d.layoutCancel}</button>
     <button type="button" class="lb-btn primary" onclick="swSave()">${d.layoutSave}</button>`;
@@ -11141,12 +11191,13 @@ function swHide(id){ swDetach(swLayout, id); swLayout.off.push(id); swCleanup(sw
 function swRestore(id){ swLayout.off = swLayout.off.filter(x=>x!==id); swLayout.rows.push({ eq:0, cols:[{ w:12, ids:[id] }] }); swCleanup(swLayout); swRender(); const el = swEl(id); if(el) el.scrollIntoView({ block:'center', behavior:'smooth' }); }
 function swAddCustom(kind){
   const d = T[LANG];
-  const ids = Object.keys(swLayout.items).filter(i=> kind==='n' ? swIsNote(i) : swIsShape(i));
+  const ids = Object.keys(swLayout.items).filter(i=> kind==='n' ? swIsNote(i) : kind==='d' ? swIsDiv(i) : swIsShape(i));
   if(ids.length >= SW_MAXCUSTOM){ toastShow(d.swiMax); return; }
   let k = 1; while(swLayout.items[kind+k]) k++;
   const id = kind+k;
   swLayout.items[id] = kind==='n'
     ? swCleanProps(id, { box:1, title:d.wNote, text:'' })
+    : kind==='d' ? swCleanProps(id, { title:d.wDiv, ds:'line', align:'center' })
     : swCleanProps(id, { box:1, mh:200, title:'', text:'', tex:'grid', align:'center' });
   swLayout.rows.push({ eq:0, cols:[{ w:12, ids:[id] }] });
   swSel = id; swRender();
@@ -11154,6 +11205,7 @@ function swAddCustom(kind){
   swInspect(id);
 }
 // ---- changement d'une propriété
+function swSetStyle(id, t){ const p = swLayout.items[id]; if(!p) return; if(t==='none') p.box = 0; else { p.box = 1; p.theme = t; } swRender(); swInspect(id); }
 function swSet(id, key, val, keep){
   const p = swLayout.items[id]; if(!p) return;
   p[key] = val;
@@ -11348,26 +11400,29 @@ function swInspect(id, quiet){
   const custom = swIsCustom(id), shape = swIsShape(id), cards = SW_CARDS.includes(id);
   const FS = ['S','M','L','XL','XXL'];
   let h = '';
+  const div = swIsDiv(id);
   if(custom){
     h += `<div class="swi-sec"><div class="swi-h">${d.swiContent}</div>
       <label class="swi-field"><span>${d.swiTitleLbl}</span><input type="text" maxlength="60" value="${escHtml(p.title)}" oninput="swSet('${id}','title',this.value,true)"></label>
-      <label class="swi-field"><span>${d.swiTextLbl}</span><textarea maxlength="1200" oninput="swSet('${id}','text',this.value,true)">${escHtml(p.text)}</textarea></label>
+      ${div?'':`<label class="swi-field"><span>${d.swiTextLbl}</span><textarea maxlength="1200" oninput="swSet('${id}','text',this.value,true)">${escHtml(p.text)}</textarea></label>`}
       <div class="swi-h" style="margin-top:6px">${d.swiFontSize}</div><div class="swi-row">${FS.map((l,i)=>opt((p.fs||2)===i+1,`swSet('${id}','fs',${i+1})`,l)).join('')}</div>
-      ${shape?`<div class="swi-h" style="margin-top:16px">${d.swiAlign}</div><div class="swi-row">${opt(p.align==='left',`swSet('${id}','align','left')`,d.swiLeft)}${opt(p.align==='center',`swSet('${id}','align','center')`,d.swiCenter)}${opt(p.align==='right',`swSet('${id}','align','right')`,d.swiRight)}</div>`:''}
+      ${(shape||div)?`<div class="swi-h" style="margin-top:16px">${d.swiAlign}</div><div class="swi-row">${opt(p.align==='left',`swSet('${id}','align','left')`,d.swiLeft)}${opt(p.align==='center',`swSet('${id}','align','center')`,d.swiCenter)}${opt(p.align==='right',`swSet('${id}','align','right')`,d.swiRight)}</div>`:''}
     </div>`;
   }
+  if(div) h += `<div class="swi-sec"><div class="swi-h">${d.swiDivStyle}</div><div class="swi-tiles">${SW_DS.map(k=>`<button type="button" class="swi-tile ${p.ds===k?'on':''}" onclick="swSet('${id}','ds','${k}')"><div class="swi-dsp"><div class="sw-div" data-ds="${k}" data-al="center"><span class="ln l"></span><span class="t">AA</span><span class="ln r"></span></div></div><span class="nm">${d['ds'+k.charAt(0).toUpperCase()+k.slice(1)]}</span></button>`).join('')}</div></div>`;
   if(id==='stats') h += `<div class="swi-sec"><div class="swi-h">${d.swiStatsPreset}</div><div class="swi-row">${SX_NAMES.map(n=>opt((p.sp||'basic')===n, `swSet('${id}','sp','${n}')`, d['sp'+n.charAt(0).toUpperCase()+n.slice(1)])).join('')}</div><p class="swi-note" style="margin-top:10px">${d.swiStatsNote}</p></div>`;
   h += `<div class="swi-sec"><div class="swi-h">${d.swiSize}</div>
     <div class="swi-h" style="font-size:.7rem;margin-bottom:8px;letter-spacing:2px">${d.swiWidth}</div>
     <div class="swi-row">${SW_PRESET_W.map(([w,l])=>opt(colW===w, `swSetW('${id}',${w})`, l)).join('')}</div>
     <p class="swi-note" style="margin-top:10px">${d.swiWNote}</p>
-    <div class="swi-h" style="font-size:.7rem;margin:14px 0 8px;letter-spacing:2px">${d.swiHeight}</div>
-    <div class="swi-row">${SW_PRESET_H.map(([v,l])=>opt(p.mh===v, `swSet('${id}','mh',${v})`, v?l:d.swiAuto)).join('')}</div>
+    ${div?'':`<div class="swi-h" style="font-size:.7rem;margin:14px 0 8px;letter-spacing:2px">${d.swiHeight}</div>
+    <div class="swi-row">${SW_PRESET_H.map(([v,l])=>opt(p.mh===v, `swSet('${id}','mh',${v})`, v?l:d.swiAuto)).join('')}</div>`}
   </div>`;
   if(cards) h += `<div class="swi-sec"><div class="swi-h">${d.swiCards}</div><div class="swi-row">${SW_COUNTS.map(n=>opt((p.n||0)===n, `swSet('${id}','n',${n})`, n?n:d.swiAuto)).join('')}</div><p class="swi-note" style="margin-top:10px">${d.swiCardsNote}</p></div>`;
-  h += `<div class="swi-sec"><div class="swi-h">${d.swiFrame}</div><div class="swi-row">${opt(!!p.box,`swSet('${id}','box',1)`,d.swiOn)}${opt(!p.box,`swSet('${id}','box',0)`,d.swiOff)}</div></div>
-    <div class="swi-sec"><div class="swi-h">${d.swiTheme}</div><div class="swi-tiles">${SW_THEMES.map(t=>`<button type="button" class="swi-tile ${p.theme===t?'on':''}" onclick="swSet('${id}','theme','${t}')"><div class="swi-theme"><div class="sw" data-wbox="1" data-wtheme="${t}" ${p.color?`style="--accent:${p.color};--accent-dim:${p.color}66"`:''}><div class="sw-in">Aa</div></div></div><span class="nm">${d['th'+t.charAt(0).toUpperCase()+t.slice(1)]}</span></button>`).join('')}</div></div>
-    <div class="swi-sec"><div class="swi-h">${d.swiColor}</div><div class="swi-colors">${SW_COLORS.map(c=>`<button type="button" class="swi-sw ${p.color===c?'on':''}" style="background:${c||'var(--accent)'}" title="${c||d.swiShopCol}" onclick="swSet('${id}','color','${c}')">${c?'':'◎'}</button>`).join('')}<input type="color" value="${p.color||'#ffb020'}" title="${d.swiColor}" onchange="swSet('${id}','color',this.value)"></div></div>`;
+  if(!div) h += `<div class="swi-sec"><div class="swi-h">${d.swiStyle}</div><div class="swi-tiles">
+    <button type="button" class="swi-tile ${!p.box?'on':''}" onclick="swSetStyle('${id}','none')"><div class="swi-none">∅</div><span class="nm">${d.thNone}</span></button>
+    ${SW_THEMES.map(t=>`<button type="button" class="swi-tile ${p.box&&p.theme===t?'on':''}" onclick="swSetStyle('${id}','${t}')"><div class="swi-theme"><div class="sw" data-wbox="1" data-wtheme="${t}" ${p.color?`style="--accent:${p.color};--accent-dim:${p.color}66"`:''}><div class="sw-in">Aa</div></div></div><span class="nm">${d['th'+t.charAt(0).toUpperCase()+t.slice(1)]}</span></button>`).join('')}</div></div>`;
+  h += `<div class="swi-sec"><div class="swi-h">${d.swiColor}</div><div class="swi-colors">${SW_COLORS.map(c=>`<button type="button" class="swi-sw ${p.color===c?'on':''}" style="background:${c||'var(--accent)'}" title="${c||d.swiShopCol}" onclick="swSet('${id}','color','${c}')">${c?'':'◎'}</button>`).join('')}<input type="color" value="${p.color||'#ffb020'}" title="${d.swiColor}" onchange="swSet('${id}','color',this.value)"></div></div>`;
   if(shape){
     h += `<div class="swi-sec"><div class="swi-h">${d.swiImage}</div><div class="swi-img"><div class="th" style="${p.img?`background-image:url('${escHtml(p.img)}')`:''}"></div><div class="swi-row" style="flex:1"><button type="button" class="swi-opt" onclick="document.getElementById('swiFile').click()">${d.swiPick}</button>${p.img?`<button type="button" class="swi-opt" onclick="swSet('${id}','img','')">${d.swiRemove}</button>`:''}</div></div>
       <input type="file" id="swiFile" accept="image/*" hidden onchange="swUploadImg('${id}',this)">
@@ -13047,7 +13102,7 @@ function updateShopAchvViewAllVisibility(){
   const btn = $('shopAchvViewAllBtn');
   if(!grid || !btn) return;
   const badges = Array.from(grid.querySelectorAll('.achv-badge'));
-  { const swx = grid.closest('.sw'); if(swx && swx.dataset.fixed==='1'){ btn.hidden = true; return; } }
+  { const swx = grid.closest('.sw'); if(swx && swx.dataset.fixed==='1'){ return; } }
   const isMobile = window.matchMedia('(max-width:640px)').matches;
   if(isMobile){
     badges.forEach(b => { b.style.display = ''; });
@@ -13073,7 +13128,22 @@ function updateShopAchvViewAllVisibility(){
   badges.forEach((b,i) => { b.style.display = i < fitCount ? '' : 'none'; });
   btn.hidden = !shopAchvHasOverflow;
 }
+function openAchvOverlay(){
+  const d = T[LANG], src = document.querySelectorAll('#shopAchvCard .achv-badge');
+  const ov = document.createElement('div'); ov.className = 'achv-ov';
+  const un = [...src].filter(b=>b.classList.contains('unlocked')).length;
+  ov.innerHTML = `<div class="achv-ov-p"><div class="achv-ov-h"><h3>${d.sellerAchvTitle} · ${un}/${src.length}</h3><button type="button" class="btn-secondary" style="width:auto;padding:6px 12px;">✕</button></div><div class="achv-ov-g"></div></div>`;
+  const g = ov.querySelector('.achv-ov-g');
+  src.forEach(b=>{ const c = b.cloneNode(true); c.style.display=''; g.appendChild(c); });
+  const close = ()=>{ ov.remove(); document.removeEventListener('keydown', esc); };
+  const esc = e=>{ if(e.key==='Escape') close(); };
+  ov.addEventListener('click', e=>{ if(e.target===ov || e.target.closest('button')) close(); });
+  document.addEventListener('keydown', esc);
+  const host = $('view-seller-shop'); if(host){ const a = getComputedStyle(host).getPropertyValue('--accent'); if(a) ov.style.setProperty('--accent', a.trim()); }
+  document.body.appendChild(ov);
+}
 function toggleShopAchvExpanded(){
+  { const sw = document.querySelector('.sw[data-w="ach"]'); if(sw && sw.dataset.fixed==='1'){ openAchvOverlay(); return; } }
   shopAchvExpanded = !shopAchvExpanded;
   const card = $('shopAchvCard');
   if(card) card.classList.toggle('achv-expanded', shopAchvExpanded);

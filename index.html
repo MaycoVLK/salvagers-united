@@ -2109,10 +2109,11 @@
 #swHold{display:none;}
 .shop-widget-grid{display:flex; flex-direction:column; gap:18px; position:relative; width:100%; min-width:0;}
 .shop-widget-grid .rowwrap{min-width:0;}
-.shop-widget-grid .rowx{display:flex; gap:18px; align-items:flex-start; min-width:0;}
-.shop-widget-grid .rowx[data-eq="1"]{align-items:stretch;}
+.shop-widget-grid .rowx{display:flex; gap:18px; align-items:stretch; min-width:0;}
 .shop-widget-grid .colx{display:flex; flex-direction:column; gap:18px; min-width:0; position:relative;}
-.shop-widget-grid .rowx[data-eq="1"] .colx > .sw{flex:1 1 auto;}
+.shop-widget-grid .colx > .sw{flex:1 1 auto;}
+.sw[data-fixed="1"] .sw-in{overflow:hidden;}
+.sw[data-fixed="1"] #shopAchvCard .achv-grid.achv-grid-collapsible{display:grid !important; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); grid-auto-rows:auto; gap:10px; overflow:visible;}
 .sw{position:relative; min-width:0; display:flex; flex-direction:column;}
 .sw[data-w="ach"]:has(#shopAchvCard[hidden]), .sw[data-w="blueprints"]:has(#shopBlueprintsSection[hidden]){display:none;}
 .sw .sw-in{position:relative; min-width:0; box-sizing:border-box; flex:1 1 auto;}
@@ -2136,14 +2137,14 @@
 #view-seller-shop .shop-widget-grid .marketplace-grid, #view-seller-shop .shop-widget-grid .resource-request-grid{grid-template-columns:repeat(var(--cols,2),minmax(0,1fr)); gap:12px;}
 #view-seller-shop .shop-widget-grid .marketplace-grid > p.muted, #view-seller-shop .shop-widget-grid .resource-request-grid > p.muted{grid-column:1/-1;}
 /* notes & formes */
-.sw-note-title{margin:0 0 8px; color:var(--accent); letter-spacing:1px; font-size:1.05rem; overflow-wrap:anywhere;}
-.sw-note-text{white-space:pre-wrap; overflow-wrap:anywhere; color:var(--text); line-height:1.5; font-size:.95rem;}
+.sw-note-title{margin:0 0 8px; color:var(--accent); letter-spacing:1px; font-size:var(--tt,1.05rem); line-height:1.15; overflow-wrap:anywhere;}
+.sw-note-text{white-space:pre-wrap; overflow-wrap:anywhere; color:var(--text); line-height:1.4; font-size:var(--tx,.95rem);}
 .sw[data-w^="s"][data-kind="shape"] .sw-in{min-height:120px; padding:0 !important; overflow:hidden;}
 .sw-shape{position:absolute !important; inset:0; border-radius:inherit; display:flex; flex-direction:column; justify-content:center; padding:16px; box-sizing:border-box;}
 .sw-shape .shop-texture-layer{z-index:1;}
 .sw-shape-img{position:absolute; inset:0; width:100%; height:100%; z-index:0; display:none; pointer-events:none;}
 .sw-shape-txt{position:relative; z-index:3; min-width:0;}
-.sw-shape-txt .sw-note-title{margin-bottom:6px; font-size:1.25rem;}
+.sw-shape-txt .sw-note-title{margin-bottom:6px;}
 /* barre propriétaire */
 .shop-layout-bar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:flex-end; margin-bottom:6px;}
 .shop-layout-bar[hidden]{display:none;}
@@ -2154,11 +2155,10 @@
 .lb-chip{font-size:.74rem; padding:5px 9px;}
 /* mode édition */
 .sw-bar, .sw-hres, .rowbar, .swgap, .colsplit{display:none;}
-.shop-widget-grid.editing .sw .sw-in{padding-top:44px !important; outline:2px dashed var(--accent-dim); outline-offset:0; border-radius:4px; min-height:100px;}
-.shop-widget-grid.editing .sw[data-kind="shape"] .sw-in{padding-top:0 !important; min-height:120px;}
+.shop-widget-grid.editing .sw .sw-in{outline:2px dashed var(--accent-dim); outline-offset:0; border-radius:4px;}
 .shop-widget-grid.editing .sw .sw-in{pointer-events:none; user-select:none;}
 .shop-widget-grid.editing .sw.sel .sw-in{outline:2px solid var(--accent); box-shadow:0 0 16px var(--accent-dim);}
-.shop-widget-grid.editing .sw-bar{display:flex; position:absolute; top:0; left:0; right:0; height:36px; align-items:center; gap:8px; padding:0 6px 0 12px; background:var(--bg2); border:1px solid var(--accent-dim); border-radius:3px 3px 0 0; cursor:grab; touch-action:none; z-index:8; user-select:none; -webkit-user-select:none;}
+.shop-widget-grid.editing .sw-bar{display:flex; position:absolute; top:0; left:0; right:0; height:36px; align-items:center; gap:8px; padding:0 6px 0 12px; background:color-mix(in srgb, var(--bg2) 88%, transparent); backdrop-filter:blur(3px); border:1px solid var(--accent-dim); border-radius:3px 3px 0 0; cursor:grab; touch-action:none; z-index:8; user-select:none; -webkit-user-select:none;}
 .shop-widget-grid.editing .sw.sel .sw-bar{border-color:var(--accent); background:var(--panel);}
 .sw-bar .g{color:var(--accent); font-size:16px; letter-spacing:-2px;}
 .sw-bar .t{flex:1; min-width:0; font-size:.8rem; letter-spacing:1px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
@@ -2185,6 +2185,12 @@
 .shop-widget-grid.editing .sw.dragging{opacity:.3;}
 body.sw-grabbing, body.sw-grabbing *{cursor:grabbing !important; user-select:none !important;}
 .sw-drop{position:absolute; z-index:30; pointer-events:none; border:2px solid var(--accent); background:var(--accent-dim); border-radius:4px; display:none; box-shadow:0 0 12px var(--accent-dim);}
+/* aperçus textures / frames dans le panneau (mêmes composants que les réglages de la boutique) */
+.swi-pick{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px;}
+.swi-pick .shop-frame-item, .swi-pick .shop-texture-item{width:auto; min-width:0; padding:8px 8px 10px; gap:7px; position:relative;}
+.swi-pick .shop-frame-item .shop-frame-swatch{width:100%; height:92px;}
+.swi-pick .shop-texture-item .shop-texture-swatch{width:100%; height:92px;}
+.swi-pick .shop-texture-lbl{font-size:.78rem; letter-spacing:.4px; text-align:center;}
 /* panneau de réglages */
 #swInspector{position:fixed; top:0; right:0; bottom:0; width:min(440px,100vw); z-index:400; background:var(--bg2); border-left:2px solid var(--accent); box-shadow:-10px 0 40px rgba(0,0,0,.65); display:flex; flex-direction:column; transform:translateX(105%); transition:transform .22s ease; font-family:'Share Tech Mono',monospace;}
 #swInspector.open{transform:none;}
@@ -10038,6 +10044,7 @@ async function openSellerShop(sellerId){
       : `<p class="muted">${d.noBlueprintsOwn}</p>`;
   }
   if(bpMoreBtn) bpMoreBtn.hidden = bpList.length <= bpCap;
+  renderShopGrids();
   renderShopStrip((stats && stats.salesCount) || 0, listingsForGrid.length, bpList.length);
 
   loadShopUpvotes(sellerId, isOwner, stats ? stats.upvoteCount : undefined);
@@ -10680,17 +10687,20 @@ function openShopAllResources(){
 }
 
 // ===== WIDGETS DE BOUTIQUE (v3 : lignes > colonnes > widgets empilés) =====
-Object.assign(T.fr, {layoutBtn:"ÉDITER LES WIDGETS", layoutSave:"ENREGISTRER", layoutCancel:"ANNULER", layoutReset:"RÉINITIALISER", layoutAddNote:"+ NOTE", layoutAddShape:"+ FORME", layoutEditing:"Glisse un widget par sa barre : sur le bord d'un autre pour le mettre à côté, au-dessus ou en dessous. Tire les poignées ⇔ et ═ pour redimensionner. Clique sur un widget pour le régler.", layoutSaved:"Disposition enregistrée.", layoutErr:"Impossible d'enregistrer la disposition (la colonne « layout » existe-t-elle dans Supabase ?).", layoutHiddenLbl:"MASQUÉS :", wStats:"Statistiques", wAch:"Succès & rang", wListings:"Objets en vente", wBlueprints:"Blueprints", wRequests:"Objets recherchés", wNote:"Note", wShape:"Forme", rowLbl:"LIGNE", rowEq:"MÊME HAUTEUR", rowEqW:"LARGEURS ÉGALES", gapHint:"＋ NOUVELLE LIGNE ICI", spacerHint:"Espace vide — dépose un widget ici", swiTitle:"Réglages", swiContent:"Contenu", swiSize:"Taille", swiWidth:"Largeur de la colonne", swiHeight:"Hauteur minimale", swiAuto:"AUTO", swiCards:"Cartes affichées", swiFrame:"Encadré", swiTheme:"Thème", swiColor:"Couleur", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOISIR UNE IMAGE", swiRemove:"RETIRER", swiFill:"REMPLIR", swiContain:"CONTENIR", swiAlign:"Alignement du texte", swiTitleLbl:"TITRE", swiTextLbl:"TEXTE", swiHide:"MASQUER", swiDelete:"SUPPRIMER", swiClose:"FERMER", swiUp:"Envoi de l'image…", swiUpErr:"Envoi de l'image impossible.", swiNone:"Aucune", swiOn:"OUI", swiOff:"NON", swiShopCol:"Couleur de la boutique", swiLeft:"GAUCHE", swiCenter:"CENTRE", swiRight:"DROITE", swiWNote:"Un widget seul sur sa ligne peut être réduit : un espace vide est créé à côté, où tu pourras déposer un autre widget.", swiMax:"Maximum atteint (6).", thDefault:"Défaut", thGlass:"Verre", thNeon:"Néon", thTerminal:"Terminal", thPixel:"Pixel", thPaper:"Teinté", swiHTip:"hauteur min."});
-Object.assign(T.en, {layoutBtn:"EDIT WIDGETS", layoutSave:"SAVE", layoutCancel:"CANCEL", layoutReset:"RESET", layoutAddNote:"+ NOTE", layoutAddShape:"+ SHAPE", layoutEditing:"Drag a widget by its bar: onto another one's edge to put it beside, above or below. Pull the ⇔ and ═ handles to resize. Click a widget to adjust it.", layoutSaved:"Layout saved.", layoutErr:"Could not save the layout (does the “layout” column exist in Supabase?).", layoutHiddenLbl:"HIDDEN:", wStats:"Statistics", wAch:"Achievements & rank", wListings:"Items for sale", wBlueprints:"Blueprints", wRequests:"Wanted items", wNote:"Note", wShape:"Shape", rowLbl:"ROW", rowEq:"SAME HEIGHT", rowEqW:"EQUAL WIDTHS", gapHint:"＋ NEW ROW HERE", spacerHint:"Empty space — drop a widget here", swiTitle:"Settings", swiContent:"Content", swiSize:"Size", swiWidth:"Column width", swiHeight:"Minimum height", swiAuto:"AUTO", swiCards:"Cards shown", swiFrame:"Frame", swiTheme:"Theme", swiColor:"Color", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOOSE AN IMAGE", swiRemove:"REMOVE", swiFill:"FILL", swiContain:"FIT", swiAlign:"Text alignment", swiTitleLbl:"TITLE", swiTextLbl:"TEXT", swiHide:"HIDE", swiDelete:"DELETE", swiClose:"CLOSE", swiUp:"Uploading image…", swiUpErr:"Could not upload the image.", swiNone:"None", swiOn:"ON", swiOff:"OFF", swiShopCol:"Shop color", swiLeft:"LEFT", swiCenter:"CENTER", swiRight:"RIGHT", swiWNote:"A widget alone on its row can be narrowed: an empty space is created beside it, where you can drop another widget.", swiMax:"Maximum reached (6).", thDefault:"Default", thGlass:"Glass", thNeon:"Neon", thTerminal:"Terminal", thPixel:"Pixel", thPaper:"Tinted", swiHTip:"min height"});
+Object.assign(T.fr, {layoutBtn:"ÉDITER LES WIDGETS", layoutSave:"ENREGISTRER", layoutCancel:"ANNULER", layoutReset:"RÉINITIALISER", layoutAddNote:"+ NOTE", layoutAddShape:"+ FORME", layoutEditing:"Glisse un widget par sa barre : sur le bord d'un autre pour le mettre à côté, au-dessus ou en dessous. Tire les poignées ⇔ et ═ pour redimensionner. Clique sur un widget pour le régler.", layoutSaved:"Disposition enregistrée.", layoutErr:"Impossible d'enregistrer la disposition (la colonne « layout » existe-t-elle dans Supabase ?).", layoutHiddenLbl:"MASQUÉS :", wStats:"Statistiques", wAch:"Succès & rang", wListings:"Objets en vente", wBlueprints:"Blueprints", wRequests:"Objets recherchés", wNote:"Note", wShape:"Forme", rowLbl:"LIGNE", rowEq:"MÊME HAUTEUR", rowEqW:"LARGEURS ÉGALES", gapHint:"＋ NOUVELLE LIGNE ICI", spacerHint:"Espace vide — dépose un widget ici", swiTitle:"Réglages", swiContent:"Contenu", swiSize:"Taille", swiWidth:"Largeur de la colonne", swiHeight:"Hauteur minimale", swiAuto:"AUTO", swiCards:"Cartes affichées", swiFrame:"Encadré", swiTheme:"Thème", swiColor:"Couleur", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOISIR UNE IMAGE", swiRemove:"RETIRER", swiFill:"REMPLIR", swiContain:"CONTENIR", swiAlign:"Alignement du texte", swiTitleLbl:"TITRE", swiTextLbl:"TEXTE", swiHide:"MASQUER", swiDelete:"SUPPRIMER", swiClose:"FERMER", swiUp:"Envoi de l'image…", swiUpErr:"Envoi de l'image impossible.", swiNone:"Aucune", swiOn:"OUI", swiOff:"NON", swiShopCol:"Couleur de la boutique", swiLeft:"GAUCHE", swiCenter:"CENTRE", swiRight:"DROITE", swiWNote:"Un widget seul sur sa ligne peut être réduit : un espace vide est créé à côté, où tu pourras déposer un autre widget. Tailles : ¼, ½, ¾ ou 1/1.", swiMax:"Maximum atteint (6).", thDefault:"Défaut", thGlass:"Verre", thNeon:"Néon", thTerminal:"Terminal", thPixel:"Pixel", thPaper:"Teinté", swiHTip:"hauteur min.", swiFontSize:"Taille du texte", swiCardsNote:"AUTO : le nombre de cartes s'adapte à la taille du widget."});
+Object.assign(T.en, {layoutBtn:"EDIT WIDGETS", layoutSave:"SAVE", layoutCancel:"CANCEL", layoutReset:"RESET", layoutAddNote:"+ NOTE", layoutAddShape:"+ SHAPE", layoutEditing:"Drag a widget by its bar: onto another one's edge to put it beside, above or below. Pull the ⇔ and ═ handles to resize. Click a widget to adjust it.", layoutSaved:"Layout saved.", layoutErr:"Could not save the layout (does the “layout” column exist in Supabase?).", layoutHiddenLbl:"HIDDEN:", wStats:"Statistics", wAch:"Achievements & rank", wListings:"Items for sale", wBlueprints:"Blueprints", wRequests:"Wanted items", wNote:"Note", wShape:"Shape", rowLbl:"ROW", rowEq:"SAME HEIGHT", rowEqW:"EQUAL WIDTHS", gapHint:"＋ NEW ROW HERE", spacerHint:"Empty space — drop a widget here", swiTitle:"Settings", swiContent:"Content", swiSize:"Size", swiWidth:"Column width", swiHeight:"Minimum height", swiAuto:"AUTO", swiCards:"Cards shown", swiFrame:"Frame", swiTheme:"Theme", swiColor:"Color", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOOSE AN IMAGE", swiRemove:"REMOVE", swiFill:"FILL", swiContain:"FIT", swiAlign:"Text alignment", swiTitleLbl:"TITLE", swiTextLbl:"TEXT", swiHide:"HIDE", swiDelete:"DELETE", swiClose:"CLOSE", swiUp:"Uploading image…", swiUpErr:"Could not upload the image.", swiNone:"None", swiOn:"ON", swiOff:"OFF", swiShopCol:"Shop color", swiLeft:"LEFT", swiCenter:"CENTER", swiRight:"RIGHT", swiWNote:"A widget alone on its row can be narrowed: an empty space is created beside it, where you can drop another widget. Sizes: ¼, ½, ¾ or 1/1.", swiMax:"Maximum reached (6).", thDefault:"Default", thGlass:"Glass", thNeon:"Neon", thTerminal:"Terminal", thPixel:"Pixel", thPaper:"Tinted", swiHTip:"min height", swiFontSize:"Text size", swiCardsNote:"AUTO: the number of cards adapts to the widget size."});
 const SW_BUILTIN = ['stats','ach','listings','blueprints','requests'];
 const SW_CARDS = ['listings','blueprints','requests'];
 const SW_TITLE = {stats:'wStats', ach:'wAch', listings:'wListings', blueprints:'wBlueprints', requests:'wRequests'};
-const SW_PRESET_W = [[3,'¼'],[4,'⅓'],[6,'½'],[8,'⅔'],[9,'¾'],[12,'1/1']];
-const SW_PRESET_H = [[0,'AUTO'],[120,'S'],[200,'M'],[320,'L'],[480,'XL']];
-const SW_COUNTS = [1,2,3,4,6,8,12,16,24];
+const SW_PRESET_W = [[3,'¼'],[6,'½'],[9,'¾'],[12,'1/1']];
+const SW_PRESET_H = [[0,'AUTO'],[240,'S'],[400,'M'],[580,'L'],[800,'XL']];
+const SW_HVALS = [240,400,580,800];
+const SW_TS_T = [1.0,1.3,1.8,2.6,3.6], SW_TS_X = [.8,.95,1.3,1.9,2.8];
+const SW_LIST = { listings:{grid:'shopListingsGrid', more:'shopListingsViewMoreBtn'}, blueprints:{grid:'shopBlueprintsGrid', more:'shopBlueprintsViewMoreBtn'}, requests:{grid:'shopResourceRequestsGrid', more:'shopResourcesViewMoreBtn'}, ach:{grid:null, more:null} };
+const SW_COUNTS = [0,1,2,3,4,6,8,12];
 const SW_THEMES = ['default','glass','neon','terminal','pixel','paper'];
 const SW_COLORS = ['', '#ffb020', '#4da3ff', '#3dff7a', '#ff4d6d', '#a56bff', '#4dd9c0'];
-const SW_MAXCOLS = 4, SW_MINW = 2, SW_MAXCUSTOM = 6;
+const SW_MAXCOLS = 4, SW_MINW = 3, SW_MAXCUSTOM = 6;
 let swLayout = null, swSaved = null, swEditing = false, swOwner = false, swShop = null, swSel = null, swRO = null, swRAF = 0, swDrag = null, swScrollTimer = null, swMobileCache = null;
 const swCustom = {};
 const swMQ = window.matchMedia ? window.matchMedia('(max-width:720px)') : { matches:false, addEventListener(){} };
@@ -10701,11 +10711,12 @@ const swIsCustom = id => swIsNote(id) || swIsShape(id);
 function swProp0(){ return { box:0, theme:'default', color:'', mh:0 }; }
 function swDefault(){ const items = {}; SW_BUILTIN.forEach(k=>{ items[k] = swProp0(); }); return { v:2, rows: SW_BUILTIN.map(k=>({ eq:0, cols:[{ w:12, ids:[k] }] })), items, off:[] }; }
 function swClone(o){ return JSON.parse(JSON.stringify(o)); }
+function swSnapH(h){ if(!h || h<=0) return 0; return SW_HVALS.reduce((a,b)=> Math.abs(b-h)<Math.abs(a-h)?b:a); }
 function swCleanProps(id, p){
   p = p || {};
-  const o = { box: p.box?1:0, theme: SW_THEMES.includes(p.theme)?p.theme:'default', color: /^#[0-9a-fA-F]{6}$/.test(p.color||'')?p.color:'', mh: Math.max(0, Math.min(1200, parseInt(p.mh)||0)) };
+  const o = { box: p.box?1:0, theme: SW_THEMES.includes(p.theme)?p.theme:'default', color: /^#[0-9a-fA-F]{6}$/.test(p.color||'')?p.color:'', mh: swSnapH(parseInt(p.mh)||0) };
   if(SW_CARDS.includes(id) && p.n) o.n = Math.min(24, Math.max(1, parseInt(p.n)||4));
-  if(swIsNote(id) || swIsShape(id)){ o.title = String(p.title||'').slice(0,60); o.text = String(p.text||'').slice(0,1200); }
+  if(swIsNote(id) || swIsShape(id)){ o.title = String(p.title||'').slice(0,60); o.text = String(p.text||'').slice(0,1200); o.fs = Math.min(5, Math.max(1, parseInt(p.fs)||2)); }
   if(swIsShape(id)){
     o.img = (typeof p.img==='string' && /^https?:\/\//i.test(p.img) && p.img.length<600) ? p.img : '';
     o.tex = (p.tex && SHOP_TEXTURE_PRESETS.some(t=>t.key===p.tex)) ? p.tex : '';
@@ -10718,16 +10729,14 @@ function swCleanProps(id, p){
 function swNormW(cols){
   const n = cols.length;
   if(n===1){ cols[0].w = 12; return; }
-  let ws = cols.map(c=>parseInt(c.w)||0);
-  if(ws.some(w=>w<=0)) ws = cols.map((_,k)=> Math.floor(12/n) + (k<12%n?1:0));
-  const sum = ws.reduce((a,b)=>a+b,0);
-  ws = ws.map(w=>Math.max(SW_MINW, Math.round(w*12/sum)));
-  let guard = 40, tot = ws.reduce((a,b)=>a+b,0);
-  while(tot!==12 && guard--){
-    if(tot>12){ const i = ws.indexOf(Math.max(...ws)); if(ws[i]>SW_MINW){ ws[i]--; tot--; } else break; }
-    else { const i = ws.indexOf(Math.max(...ws)); ws[i]++; tot++; }
+  let q = cols.map(c=> Math.max(1, Math.round((parseInt(c.w)||0)/3)));
+  if(cols.some(c=>!(parseInt(c.w)>0))) q = cols.map((_,k)=> Math.floor(4/n) + (k<4%n?1:0));
+  let tot = q.reduce((a,b)=>a+b,0), guard = 20;
+  while(tot!==4 && guard--){
+    const i = q.indexOf(Math.max(...q));
+    if(tot>4){ if(q[i]>1){ q[i]--; tot--; } else break; } else { q[i]++; tot++; }
   }
-  cols.forEach((c,k)=>{ c.w = ws[k]; });
+  cols.forEach((c,k)=>{ c.w = q[k]*3; });
 }
 function swCleanup(L){
   L.rows.forEach(r=>{ r.cols = r.cols.filter(c=> c.ids.length || c.sp); if(!r.cols.some(c=>c.ids.length)) r.cols = []; });
@@ -10776,6 +10785,7 @@ function swEff(){ if(swMobile()){ if(!swMobileCache) swMobileCache = swDefault()
 function swCap(kind){
   const p = (!swMobile() && swLayout) ? swLayout.items[kind] : null;
   if(p && p.n) return p.n;
+  if(p && p.mh>0) return 24;      // hauteur fixe : on rend tout, l'ajustement masque ce qui ne tient pas
   if(kind==='requests') return 3;
   return window.innerWidth <= 640 ? 2 : 4;
 }
@@ -10791,6 +10801,8 @@ function swEl(id){
 }
 function swFillCustom(el, id, p){
   const inn = el.querySelector('.sw-in');
+  const fsi = (p.fs||2)-1;
+  el.style.setProperty('--tt', SW_TS_T[fsi]+'rem'); el.style.setProperty('--tx', SW_TS_X[fsi]+'rem');
   const head = p.title ? `<h3 class="sw-note-title">${escHtml(p.title)}</h3>` : '';
   const body = p.text ? `<div class="sw-note-text">${escHtml(p.text)}</div>` : '';
   if(swIsNote(id)){ inn.innerHTML = head + (body || ''); return; }
@@ -10813,6 +10825,7 @@ function swStyleEl(el, id, p, editing){
   if(p.color){ el.style.setProperty('--accent', p.color); el.style.setProperty('--accent-dim', p.color+'66'); }
   else { el.style.removeProperty('--accent'); el.style.removeProperty('--accent-dim'); }
   el.style.minHeight = p.mh ? p.mh+'px' : '';
+  el.dataset.fixed = (p.mh && !swMobile()) ? '1' : '0';
   if(swIsCustom(id)) swFillCustom(el, id, p);
   el.classList.toggle('sel', editing && swSel===id);
   el.querySelectorAll(':scope > .sw-bar, :scope > .sw-hres').forEach(x=>x.remove());
@@ -10844,16 +10857,6 @@ function swRender(){
   addGap(0);
   L.rows.forEach((row, ri)=>{
     const wrap = document.createElement('div'); wrap.className = 'rowwrap';
-    if(editing && row.cols.length>1){
-      const rb = document.createElement('div'); rb.className = 'rowbar';
-      rb.innerHTML = `<span class="rb-t">${d.rowLbl} ${ri+1}</span>${row.cols.length>1?`<button type="button" class="rb-btn" data-a="ew">⇔ ${d.rowEqW}</button>`:''}<button type="button" class="rb-btn ${row.eq?'on':''}" data-a="eq">⇕ ${d.rowEq}</button>`;
-      rb.querySelectorAll('.rb-btn').forEach(b=> b.addEventListener('click', ()=>{
-        if(b.dataset.a==='eq') row.eq = row.eq ? 0 : 1;
-        else { const n = row.cols.length; row.cols.forEach((c,k)=>{ c.w = Math.floor(12/n) + (k<12%n?1:0); }); }
-        swRender();
-      }));
-      wrap.appendChild(rb);
-    }
     const re = document.createElement('div'); re.className = 'rowx'; re.dataset.eq = row.eq ? '1' : '0';
     row.cols.forEach((col, ci)=>{
       const ce = document.createElement('div'); ce.className = 'colx' + (col.ids.length ? '' : ' spacer'); ce.style.flex = col.w+' 1 0%';
@@ -10881,15 +10884,39 @@ function swRender(){
   swFit();
 }
 function swFitSoon(){ if(swRAF) return; swRAF = requestAnimationFrame(()=>{ swRAF = 0; swFit(); }); }
-// Colonnes de cartes d'après la largeur réelle du widget ; colonnes vides masquées ; frames des formes recalées
+// Colonnes de cartes d'après la largeur réelle ; nombre de cartes d'après la hauteur ; colonnes vides masquées ; frames des formes recalées
+function swFitItems(sw, id, p){
+  const info = SW_LIST[id]; if(!info) return;
+  const g = id==='ach' ? sw.querySelector('#shopAchvCard .achv-grid') : document.getElementById(info.grid); if(!g) return;
+  const items = [...g.children].filter(c=> c.tagName!=='P' && !c.classList.contains('muted'));
+  items.forEach(c=>{ c.style.display = ''; });
+  if(!items.length) return;
+  const fixed = !!(p && p.mh>0 && !swMobile());
+  let vis = items.length;
+  if(fixed){
+    const inn = sw.querySelector('.sw-in'), cs = getComputedStyle(inn), gs = getComputedStyle(g);
+    const top = g.getBoundingClientRect().top - inn.getBoundingClientRect().top;
+    const avail = p.mh - top - (parseFloat(cs.paddingBottom)||0) - (p.box?2:0);
+    const gap = parseFloat(gs.rowGap) || 0;
+    const colsN = (gs.gridTemplateColumns||'').split(' ').filter(Boolean).length || 1;
+    const h1 = items[0].getBoundingClientRect().height || 1;
+    const rows = Math.max(1, Math.floor((avail+gap)/(h1+gap)));
+    vis = Math.min(items.length, colsN*rows);
+  }
+  if(p && p.n) vis = Math.min(vis, p.n);
+  items.forEach((c,i)=>{ c.style.display = i<vis ? '' : 'none'; });
+  if(info.more){ const m = document.getElementById(info.more); if(m){ const total = +g.dataset.total || items.length; m.hidden = total <= vis; } }
+}
 function swFit(){
   const grid = $('shopWidgetGrid'); if(!grid) return;
+  const L = swEff();
   grid.querySelectorAll('.colx').forEach(c=>{
     const sws = [...c.querySelectorAll(':scope > .sw')];
     c.style.display = (sws.length && sws.every(s=> getComputedStyle(s).display==='none')) ? 'none' : '';
   });
   grid.querySelectorAll('.sw').forEach(sw=>{
     const inn = sw.querySelector('.sw-in'); if(!inn || sw.offsetParent===null) return;
+    const id = sw.dataset.w, p = L.items[id];
     const cs = getComputedStyle(inn);
     const W = inn.clientWidth - parseFloat(cs.paddingLeft||0) - parseFloat(cs.paddingRight||0);
     if(W>0){
@@ -10897,13 +10924,13 @@ function swFit(){
       const cols = Math.max(1, Math.min(Math.floor((W+gap)/(min+gap)), Math.round(W/ideal)));
       sw.querySelectorAll('.marketplace-grid, .resource-request-grid').forEach(g=>{ g.style.setProperty('--cols', cols); });
     }
+    if(SW_LIST[id]) swFitItems(sw, id, p);
     const host = sw.querySelector('.sw-shape');
     if(host){
-      const id = sw.dataset.w, p = swLayout.items[id];
-      const w = host.clientWidth, h = host.clientHeight;
-      if(p && p.frame && (Math.abs(w-(+host.dataset.fw||0))>12 || Math.abs(h-(+host.dataset.fh||0))>12)){
+      const w = host.clientWidth, h = host.clientHeight, fp = swLayout.items[id];
+      if(fp && fp.frame && (Math.abs(w-(+host.dataset.fw||0))>12 || Math.abs(h-(+host.dataset.fh||0))>12)){
         host.dataset.fw = w; host.dataset.fh = h;
-        clearTimeout(host.__ft); host.__ft = setTimeout(()=>{ const l = host.querySelector(':scope > .shop-frame-layer'); if(l) delete l.dataset.built; applyShopFrame(host, p.frame); }, 220);
+        clearTimeout(host.__ft); host.__ft = setTimeout(()=>{ const l = host.querySelector(':scope > .shop-frame-layer'); if(l) delete l.dataset.built; applyShopFrame(host, fp.frame); }, 220);
       }
     }
   });
@@ -10962,14 +10989,14 @@ function swSet(id, key, val, keep){
   const p = swLayout.items[id]; if(!p) return;
   p[key] = val;
   swRender();
-  if(key==='n') renderShopGrids();
+  if(key==='n' || key==='mh') renderShopGrids();
   if(!keep) swInspect(id);
 }
 function swSetW(id, w){
   const L = swLayout, f = swFind(L, id); if(!f) return;
   const row = f.row;
-  if(w>=12){ row.cols = row.cols.filter(c=> !c.sp || c===f.col); f.col.w = 12; }
-  if(row.cols.length===1){ if(w<12){ f.col.w = w; row.cols.push({ w:12-w, ids:[], sp:1 }); } }
+  if(w>=12){ row.cols = row.cols.filter(c=> !c.sp || c===f.col); }
+  if(row.cols.length===1){ if(w<12){ f.col.w = w; row.cols.push({ w:12-w, ids:[], sp:1 }); } else f.col.w = 12; }
   else {
     const ci = row.cols.indexOf(f.col);
     const target = Math.max(SW_MINW, Math.min(12 - SW_MINW*(row.cols.length-1), w));
@@ -10992,12 +11019,12 @@ function swSplitStart(e, ri, ci){
   const a = row.cols[ci], b = row.cols[ci+1]; if(!a || !b) return;
   const sp = e.currentTarget, rowEl = sp.closest('.rowx'), cols = rowEl.querySelectorAll(':scope > .colx');
   const ca = cols[ci], cb = cols[ci+1];
-  const unit = rowEl.getBoundingClientRect().width / 12, w1 = a.w, w2 = b.w, x0 = e.clientX;
+  const unit = rowEl.getBoundingClientRect().width / 4, w1 = a.w, w2 = b.w, x0 = e.clientX;
   const tip = document.createElement('span'); tip.className = 'tip'; sp.appendChild(tip);
   try{ sp.setPointerCapture(e.pointerId); }catch(_){}
   document.body.classList.add('sw-grabbing');
   const mv = ev=>{
-    const du = Math.round((ev.clientX - x0) / unit);
+    const du = Math.round((ev.clientX - x0) / unit) * 3;
     const n1 = Math.max(SW_MINW, Math.min(w1+w2-SW_MINW, w1+du));
     a.w = n1; b.w = w1+w2-n1;
     ca.style.flex = a.w+' 1 0%'; cb.style.flex = b.w+' 1 0%';
@@ -11015,10 +11042,10 @@ function swResizeH(e, id){
   try{ hr.setPointerCapture(e.pointerId); }catch(_){}
   document.body.classList.add('sw-grabbing');
   const mv = ev=>{
-    const h = Math.max(60, Math.min(1200, Math.round((h0 + ev.clientY - y0)/10)*10));
+    const h = swSnapH(h0 + ev.clientY - y0 + 1) || SW_HVALS[0];
     p.mh = h; el.style.minHeight = h+'px'; tip.textContent = d.swiHTip+' '+h+' px'; swFitSoon();
   };
-  const up = ()=>{ window.removeEventListener('pointermove', mv); document.body.classList.remove('sw-grabbing'); swRender(); swRefreshInspector(); };
+  const up = ()=>{ window.removeEventListener('pointermove', mv); document.body.classList.remove('sw-grabbing'); swRender(); renderShopGrids(); swRefreshInspector(); };
   window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up, { once:true }); window.addEventListener('pointercancel', up, { once:true });
 }
 // ---- glisser-déposer : on attrape la barre du haut d'un widget ; un simple clic ouvre ses réglages
@@ -11119,10 +11146,14 @@ function swMove(id, t){
     else if(t.type==='above') f.col.ids.splice(f.i, 0, id);
     else if(t.type==='below') f.col.ids.splice(f.i+1, 0, id);
     else {
-      const row = f.row, ci = row.cols.indexOf(f.col), nw = Math.max(SW_MINW, Math.floor(f.col.w/2)), nc = { w:nw, ids:[id] };
+      const row = f.row, ci = row.cols.indexOf(f.col), nc = { w:3, ids:[id] };
       const at = t.side==='left' ? ci : ci+1;
-      if(f.col.w - nw < SW_MINW){ row.cols.splice(at, 0, nc); const n = row.cols.length; row.cols.forEach((c,k)=>{ c.w = Math.floor(12/n) + (k<12%n?1:0); }); }
-      else { f.col.w -= nw; row.cols.splice(at, 0, nc); }
+      let donor = f.col.w >= 6 ? f.col : row.cols.filter(c=>c.w>=6).sort((x,y)=>y.w-x.w)[0];
+      if(f.col.w >= 9) nc.w = f.col.w >= 12 ? 6 : 3;
+      else if(f.col.w === 6) nc.w = 3;
+      if(f.col.w >= 12) { f.col.w -= 6; }
+      else if(donor){ donor.w -= nc.w; }
+      row.cols.splice(at, 0, nc);
     }
   }
   swCleanup(L);
@@ -11145,13 +11176,14 @@ function swInspect(id, quiet){
   const f = swFind(swLayout, id), colW = f ? f.col.w : 12;
   const opt = (on, js, label)=>`<button type="button" class="swi-opt ${on?'on':''}" onclick="${js}">${label}</button>`;
   const custom = swIsCustom(id), shape = swIsShape(id), cards = SW_CARDS.includes(id);
-  const cap = swCap(id);
+  const FS = ['S','M','L','XL','XXL'];
   let h = '';
   if(custom){
     h += `<div class="swi-sec"><div class="swi-h">${d.swiContent}</div>
       <label class="swi-field"><span>${d.swiTitleLbl}</span><input type="text" maxlength="60" value="${escHtml(p.title)}" oninput="swSet('${id}','title',this.value,true)"></label>
       <label class="swi-field"><span>${d.swiTextLbl}</span><textarea maxlength="1200" oninput="swSet('${id}','text',this.value,true)">${escHtml(p.text)}</textarea></label>
-      ${shape?`<div class="swi-h" style="margin-top:6px">${d.swiAlign}</div><div class="swi-row">${opt(p.align==='left',`swSet('${id}','align','left')`,d.swiLeft)}${opt(p.align==='center',`swSet('${id}','align','center')`,d.swiCenter)}${opt(p.align==='right',`swSet('${id}','align','right')`,d.swiRight)}</div>`:''}
+      <div class="swi-h" style="margin-top:6px">${d.swiFontSize}</div><div class="swi-row">${FS.map((l,i)=>opt((p.fs||2)===i+1,`swSet('${id}','fs',${i+1})`,l)).join('')}</div>
+      ${shape?`<div class="swi-h" style="margin-top:16px">${d.swiAlign}</div><div class="swi-row">${opt(p.align==='left',`swSet('${id}','align','left')`,d.swiLeft)}${opt(p.align==='center',`swSet('${id}','align','center')`,d.swiCenter)}${opt(p.align==='right',`swSet('${id}','align','right')`,d.swiRight)}</div>`:''}
     </div>`;
   }
   h += `<div class="swi-sec"><div class="swi-h">${d.swiSize}</div>
@@ -11160,9 +11192,8 @@ function swInspect(id, quiet){
     <p class="swi-note" style="margin-top:10px">${d.swiWNote}</p>
     <div class="swi-h" style="font-size:.7rem;margin:14px 0 8px;letter-spacing:2px">${d.swiHeight}</div>
     <div class="swi-row">${SW_PRESET_H.map(([v,l])=>opt(p.mh===v, `swSet('${id}','mh',${v})`, v?l:d.swiAuto)).join('')}</div>
-    <div class="swi-range"><input type="range" min="0" max="800" step="10" value="${p.mh}" oninput="swSet('${id}','mh',+this.value,true);this.nextElementSibling.textContent=(+this.value?this.value+' px':'${d.swiAuto}')"><b>${p.mh?p.mh+' px':d.swiAuto}</b></div>
   </div>`;
-  if(cards) h += `<div class="swi-sec"><div class="swi-h">${d.swiCards}</div><div class="swi-row">${SW_COUNTS.map(n=>opt(cap===n, `swSet('${id}','n',${n})`, n)).join('')}</div></div>`;
+  if(cards) h += `<div class="swi-sec"><div class="swi-h">${d.swiCards}</div><div class="swi-row">${SW_COUNTS.map(n=>opt((p.n||0)===n, `swSet('${id}','n',${n})`, n?n:d.swiAuto)).join('')}</div><p class="swi-note" style="margin-top:10px">${d.swiCardsNote}</p></div>`;
   h += `<div class="swi-sec"><div class="swi-h">${d.swiFrame}</div><div class="swi-row">${opt(!!p.box,`swSet('${id}','box',1)`,d.swiOn)}${opt(!p.box,`swSet('${id}','box',0)`,d.swiOff)}</div></div>
     <div class="swi-sec"><div class="swi-h">${d.swiTheme}</div><div class="swi-tiles">${SW_THEMES.map(t=>`<button type="button" class="swi-tile ${p.theme===t?'on':''}" onclick="swSet('${id}','theme','${t}')"><div class="swi-theme"><div class="sw" data-wbox="1" data-wtheme="${t}" ${p.color?`style="--accent:${p.color};--accent-dim:${p.color}66"`:''}><div class="sw-in">Aa</div></div></div><span class="nm">${d['th'+t.charAt(0).toUpperCase()+t.slice(1)]}</span></button>`).join('')}</div></div>
     <div class="swi-sec"><div class="swi-h">${d.swiColor}</div><div class="swi-colors">${SW_COLORS.map(c=>`<button type="button" class="swi-sw ${p.color===c?'on':''}" style="background:${c||'var(--accent)'}" title="${c||d.swiShopCol}" onclick="swSet('${id}','color','${c}')">${c?'':'◎'}</button>`).join('')}<input type="color" value="${p.color||'#ffb020'}" title="${d.swiColor}" onchange="swSet('${id}','color',this.value)"></div></div>`;
@@ -11170,31 +11201,36 @@ function swInspect(id, quiet){
     h += `<div class="swi-sec"><div class="swi-h">${d.swiImage}</div><div class="swi-img"><div class="th" style="${p.img?`background-image:url('${escHtml(p.img)}')`:''}"></div><div class="swi-row" style="flex:1"><button type="button" class="swi-opt" onclick="document.getElementById('swiFile').click()">${d.swiPick}</button>${p.img?`<button type="button" class="swi-opt" onclick="swSet('${id}','img','')">${d.swiRemove}</button>`:''}</div></div>
       <input type="file" id="swiFile" accept="image/*" hidden onchange="swUploadImg('${id}',this)">
       ${p.img?`<div class="swi-row" style="margin-top:10px">${opt(p.fit==='cover',`swSet('${id}','fit','cover')`,d.swiFill)}${opt(p.fit==='contain',`swSet('${id}','fit','contain')`,d.swiContain)}</div>`:''}</div>
-      <div class="swi-sec"><div class="swi-h">${d.swiTexture}</div><div class="swi-tiles" id="swiTex"></div></div>
-      <div class="swi-sec"><div class="swi-h">${d.swiFrames}</div><div class="swi-tiles" id="swiFrm"></div></div>`;
+      <div class="swi-sec"><div class="swi-h">${d.swiTexture}</div><div class="swi-pick" id="swiTex"></div></div>
+      <div class="swi-sec"><div class="swi-h">${d.swiFrames}</div><div class="swi-pick" id="swiFrm"></div></div>`;
   }
-  const titleTxt = swTitleOf(id);
-  a.querySelector('.swi-head').innerHTML = `<h3><b>//</b> ${escHtml(titleTxt)}</h3><button type="button" class="swi-x" onclick="swCloseInspector()" aria-label="${d.swiClose}">×</button>`;
+  a.querySelector('.swi-head').innerHTML = `<h3><b>//</b> ${escHtml(swTitleOf(id))}</h3><button type="button" class="swi-x" onclick="swCloseInspector()" aria-label="${d.swiClose}">×</button>`;
   body.innerHTML = h;
   a.querySelector('.swi-foot').innerHTML = `<button type="button" class="swi-opt" onclick="swHide('${id}')">${d.swiHide}</button>${custom?`<button type="button" class="swi-opt danger" onclick="swDeleteCustom('${id}')">${d.swiDelete}</button>`:''}<button type="button" class="swi-opt on" onclick="swCloseInspector()">${d.swiClose}</button>`;
   if(shape){
+    // mêmes composants que le sélecteur de la boutique : aperçus identiques (frames construites avant l'insertion, comme là-bas)
     const tw = body.querySelector('#swiTex');
     SHOP_TEXTURE_PRESETS.forEach(t=>{
-      const ok = textureAllowed(t.key), on = (p.tex||'none')===t.key || (!p.tex && t.key==='none');
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'swi-tile'+(on?' on':'')+(ok?'':' lock');
-      b.innerHTML = `<div class="swi-tsw shop-texture-host"><div class="shop-texture-layer"></div></div><span class="nm">${escHtml(d[t.nameKey]||t.key)}</span>${ok?'':`<span class="rq">🔒 ${escHtml(unlockRuleText(SHOP_TEXTURE_UNLOCKS[t.key]))}</span>`}`;
-      setShopTextureLayerClass(b.querySelector('.shop-texture-layer'), t.key);
-      b.addEventListener('click', ()=>{ if(!ok){ toastShow(d.lockedTip + unlockRuleText(SHOP_TEXTURE_UNLOCKS[t.key]), true); return; } swSet(id, 'tex', t.key==='none'?'':t.key); });
-      tw.appendChild(b);
+      const ok = textureAllowed(t.key), on = (p.tex||'none')===t.key;
+      const item = document.createElement('button'); item.type = 'button'; item.className = 'shop-texture-item'+(on?' active':'')+(ok?'':' locked');
+      const swatch = document.createElement('div'); swatch.className = 'shop-texture-swatch';
+      const layer = document.createElement('div'); layer.className = 'shop-texture-layer'; setShopTextureLayerClass(layer, t.key); swatch.appendChild(layer);
+      const lbl = document.createElement('span'); lbl.className = 'shop-texture-lbl'; lbl.textContent = d[t.nameKey] || t.key;
+      item.appendChild(swatch); item.appendChild(lbl);
+      if(!ok){ const r = document.createElement('span'); r.className = 'shop-lock-req'; r.textContent = unlockRuleText(SHOP_TEXTURE_UNLOCKS[t.key]); item.appendChild(r); }
+      item.addEventListener('click', ()=>{ if(!ok){ toastShow(d.lockedTip + unlockRuleText(SHOP_TEXTURE_UNLOCKS[t.key]), true); return; } swSet(id, 'tex', t.key==='none'?'':t.key); });
+      tw.appendChild(item);
     });
     const fw = body.querySelector('#swiFrm');
     SHOP_FRAMES.forEach(fr=>{
       const ok = frameAllowed(fr.key), on = (p.frame||'none')===fr.key;
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'swi-tile'+(on?' on':'')+(ok?'':' lock');
-      b.innerHTML = `<div class="swi-tsw shop-texture-host"></div><span class="nm">${escHtml(d[fr.nameKey]||fr.key)}</span>${ok?'':`<span class="rq">🔒 ${escHtml(unlockRuleText(fr.unlock))}</span>`}`;
-      b.addEventListener('click', ()=>{ if(!ok){ toastShow(d.lockedTip + unlockRuleText(fr.unlock), true); return; } swSet(id, 'frame', fr.key==='none'?'':fr.key); });
-      fw.appendChild(b);
-      if(ok && fr.key!=='none') applyShopFrame(b.querySelector('.swi-tsw'), fr.key);
+      const item = document.createElement('button'); item.type = 'button'; item.className = 'shop-frame-item'+(on?' active':'')+(ok?'':' locked');
+      const sw = document.createElement('div'); sw.className = 'shop-frame-swatch'; applyShopFrame(sw, fr.key);
+      const lbl = document.createElement('span'); lbl.className = 'shop-texture-lbl'; lbl.textContent = d[fr.nameKey] || fr.key;
+      item.appendChild(sw); item.appendChild(lbl);
+      if(!ok){ const r = document.createElement('span'); r.className = 'shop-lock-req'; r.textContent = unlockRuleText(fr.unlock); item.appendChild(r); }
+      item.addEventListener('click', ()=>{ if(!ok){ toastShow(d.lockedTip + unlockRuleText(fr.unlock), true); return; } swSet(id, 'frame', fr.key==='none'?'':fr.key); });
+      fw.appendChild(item);
     });
   }
   requestAnimationFrame(()=>{ a.classList.add('open'); body.scrollTop = quiet ? st : (a.dataset.last===id ? st : 0); a.dataset.last = id; });
@@ -11243,14 +11279,14 @@ function renderShopGrids(){
   const lcap = shopGridCap('listings'), bcap = shopGridCap('blueprints'), rcap = shopGridCap('requests');
   const L = isOwner ? myListingsCache : shopListingsCache;
   const lcard = isOwner ? myListingCardHtml : (l => mktCardHtml(l, shopSellerMapCache));
-  const g1 = $('shopListingsGrid'); if(g1) g1.innerHTML = L.length ? L.slice(0,lcap).map(lcard).join('') : `<p class="muted">${d.shopPageEmpty}</p>`;
+  const g1 = $('shopListingsGrid'); if(g1){ g1.innerHTML = L.length ? L.slice(0,lcap).map(lcard).join('') : `<p class="muted">${d.shopPageEmpty}</p>`; g1.dataset.total = L.length; }
   const m1 = $('shopListingsViewMoreBtn'); if(m1) m1.hidden = L.length <= lcap;
   const B = isOwner ? myBlueprintsCache : shopBlueprintsCache;
-  const g2 = $('shopBlueprintsGrid'); if(g2) g2.innerHTML = B.length ? B.slice(0,bcap).map(bp => blueprintCardHtml(bp, shopSellerMapCache, isOwner)).join('') : `<p class="muted">${d.noBlueprintsOwn}</p>`;
+  const g2 = $('shopBlueprintsGrid'); if(g2){ g2.innerHTML = B.length ? B.slice(0,bcap).map(bp => blueprintCardHtml(bp, shopSellerMapCache, isOwner)).join('') : `<p class="muted">${d.noBlueprintsOwn}</p>`; g2.dataset.total = B.length; }
   const m2 = $('shopBlueprintsViewMoreBtn'); if(m2) m2.hidden = B.length <= bcap;
   const R = shopResourceRequestsCache || [];
   const rcard = isOwner ? ownResourceRequestCardHtml : visitorResourceRequestCardHtml;
-  const g3 = $('shopResourceRequestsGrid'); if(g3) g3.innerHTML = R.length ? R.slice(0,rcap).map(r => rcard(r)).join('') : `<p class="muted">${d.noResourceRequests}</p>`;
+  const g3 = $('shopResourceRequestsGrid'); if(g3){ g3.innerHTML = R.length ? R.slice(0,rcap).map(r => rcard(r)).join('') : `<p class="muted">${d.noResourceRequests}</p>`; g3.dataset.total = R.length; }
   const m3 = $('shopResourcesViewMoreBtn'); if(m3) m3.hidden = R.length <= rcap;
   swFit();
 }

@@ -2242,6 +2242,17 @@ body.sw-grabbing, body.sw-grabbing *{cursor:grabbing !important; user-select:non
 @media (max-width:720px){ .shop-layout-bar{display:none !important;} .shop-widget-grid{gap:24px;} .shop-widget-grid .rowx{flex-direction:column; gap:24px;} .shop-widget-grid .colx{flex:1 1 auto !important; width:100%;} }
 
 /* ===== statistiques en presets ===== */
+.sx-grid.sx-list{grid-template-columns:minmax(0,1fr);gap:0}
+.sx-grid.sx-list .sx-t{display:flex;flex-direction:row;text-align:left;align-items:center;justify-content:space-between;gap:10px;border-left:0;border-bottom:1px dashed rgba(255,255,255,.12);padding:4px 2px}
+.sx-grid.sx-list .sx-t:last-child{border-bottom:0}
+.sx-grid.sx-list .sx-l{text-align:left;min-height:0;flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sx-grid.sx-list .sx-v,.sx-grid.sx-list .sx-v.sm{font-size:24px;flex:none;line-height:1.1;overflow:visible}
+.sx-grid.sx-list .sx-s{display:none}
+.sx-grid.sx-cmp{gap:8px 0}
+.sx-grid.sx-cmp .sx-t{padding:2px 12px}
+.sx-grid.sx-cmp .sx-l{letter-spacing:.04em;font-size:10px;min-height:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sx-grid.sx-cmp .sx-v{font-size:30px;line-height:1.1}.sx-grid.sx-cmp .sx-v.sm{font-size:22px}
+.sx-grid.sx-cmp .sx-s{display:none}
 .sx-grid{display:grid; grid-template-columns:repeat(var(--sc,4),minmax(0,1fr)); gap:18px 0; width:100%;}
 .sx-t{display:flex; flex-direction:column; gap:4px; padding:2px 16px; border-left:1px solid var(--border); min-width:0;}
 .sx-l{font-size:11px; letter-spacing:2px; color:var(--muted); line-height:1.3; min-height:2.6em; display:block; overflow:hidden;}
@@ -10967,34 +10978,56 @@ function swFitSoon(){ if(swRAF) return; swRAF = requestAnimationFrame(()=>{ swRA
 // Colonnes de cartes d'après la largeur réelle ; nombre de cartes d'après la hauteur ; colonnes vides masquées ; frames des formes recalées
 function swBestCols(maxC, n){
   let best = 1, bw = 1e9;
-  for(let c=Math.min(maxC,n); c>=1; c--){ const w = (c - n%c)%c; if(w < bw){ bw = w; best = c; } }
+  for(let c=Math.min(maxC,n); c>=1; c--){ const w = (c - n%c)%c; if(w <= 2) return c; if(w < bw){ bw = w; best = c; } }
   return best;
 }
 function swFitStats(sw, p){
   const g = sw.querySelector('.sx-grid'); if(!g) return;
   const items = [...g.children]; items.forEach(c=>{ c.style.display = ''; });
+  g.classList.remove('sx-list','sx-cmp'); g.style.height=''; g.style.alignContent=''; g.style.gridTemplateRows='';
   if(!items.length) return;
   const inn = sw.querySelector('.sw-in'), cs = getComputedStyle(inn);
   const W = inn.clientWidth - (parseFloat(cs.paddingLeft)||0) - (parseFloat(cs.paddingRight)||0);
-  const maxC = Math.max(1, Math.min(6, Math.floor(W/170)));
   const fixed = !!(p && p.mh>0 && !swMobile());
   let want = items.length;
-  if(p && p.sp==='auto' && !fixed) want = Math.min(items.length, W<560 ? 4 : W<900 ? 8 : 12);
-  let sc = maxC, vis = want;
-  if(fixed){
-    g.style.setProperty('--sc', sc);
+  if(p && p.sp==='auto' && !fixed) want = Math.min(items.length, W<260 ? 6 : W<560 ? 4 : W<900 ? 8 : 12);
+  let avail = 0, gap = 0;
+  const measure = (mode, maxC)=>{
+    g.classList.remove('sx-list','sx-cmp'); if(mode) g.classList.add('sx-'+mode);
+    const sc = mode==='list' ? 1 : swBestCols(maxC, want);
+    g.style.setProperty('--sc', mode==='list' ? 1 : maxC);
+    if(!fixed) return { mode, sc: mode==='list' ? 1 : swBestCols(maxC, want), vis: want, rows: Math.ceil(want/(mode==='list'?1:swBestCols(maxC,want))) };
     const top = g.getBoundingClientRect().top - inn.getBoundingClientRect().top;
-    const avail = p.mh - top - (parseFloat(cs.paddingBottom)||0) - (p.box?2:0);
-    const gap = parseFloat(getComputedStyle(g).rowGap)||0, h1 = items[0].getBoundingClientRect().height || 1;
+    avail = p.mh - top - (parseFloat(cs.paddingBottom)||0) - (p.box?2:0);
+    gap = parseFloat(getComputedStyle(g).rowGap)||0;
+    const h1 = Math.max.apply(null, items.slice(0,6).map(c=>c.getBoundingClientRect().height)) || 1;
     const rows = Math.max(1, Math.floor((avail+gap)/(h1+gap)));
-    vis = Math.min(want, sc*rows);
-    if(vis===want) sc = swBestCols(maxC, want);
-  } else sc = swBestCols(maxC, want);
-  g.style.setProperty('--sc', sc);
-  items.forEach((c,i)=>{ c.style.display = i<vis ? '' : 'none'; });
+    const cols = mode==='list' ? 1 : maxC;
+    const vis = Math.min(want, cols*rows);
+    return { mode, sc: vis===want && mode!=='list' ? swBestCols(maxC, want) : cols, vis, rows: Math.min(rows, Math.ceil(vis/(vis===want && mode!=='list' ? swBestCols(maxC,want) : cols))) };
+  };
+  let best;
+  if(W < 260) best = measure('list', 1);
+  else {
+    const n = measure('', Math.max(1, Math.min(6, Math.floor(W/170))));
+    best = n;
+    if(fixed && n.vis < want){
+      const c = measure('cmp', Math.max(1, Math.min(5, Math.floor(W/175))));
+      const l = measure('list', 1);
+      [c,l].forEach(m=>{ if(m.vis > best.vis) best = m; });
+    }
+  }
+  g.classList.remove('sx-list','sx-cmp'); if(best.mode) g.classList.add('sx-'+best.mode);
+  g.style.setProperty('--sc', best.sc);
+  items.forEach((c,i)=>{ c.style.display = i<best.vis ? '' : 'none'; });
+  if(fixed && avail > 0){
+    g.style.height = Math.floor(avail)+'px';
+    if(best.mode==='list') g.style.gridTemplateRows = `repeat(${Math.ceil(best.vis/1)},minmax(0,1fr))`;
+    else g.style.alignContent = 'space-evenly';
+  }
   g.querySelectorAll('.sx-v').forEach(v=>{
     v.style.fontSize=''; const base = parseFloat(getComputedStyle(v).fontSize)||44; let f = base;
-    while(v.scrollWidth > v.clientWidth+1 && f > 16){ f -= 2; v.style.fontSize = f+'px'; }
+    while(v.scrollWidth > v.clientWidth+1 && f > 14){ f -= 2; v.style.fontSize = f+'px'; }
   });
 }
 function swFitAch(sw, p){

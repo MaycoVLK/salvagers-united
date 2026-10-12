@@ -1078,6 +1078,23 @@
   .upv-cta.upv-busy{color:#050606;}
   .cbn-view-btn{white-space:nowrap;}
 
+  /* Preview instantané : construction animée de la card (scanner + contour qui se trace + éléments qui apparaissent) */
+  .pv-fx{position:relative;}
+  .pv-fx > .pv-scan{position:absolute; left:0; right:0; top:0; height:3px; z-index:30; pointer-events:none; background:var(--accent,#3dff7a); box-shadow:0 0 14px 3px var(--accent,#3dff7a), 0 0 40px 8px var(--accent-dim,transparent); opacity:0;}
+  .pv-fx > .pv-outline{position:absolute; inset:-2px; z-index:29; pointer-events:none; border:2px solid var(--accent,#3dff7a); border-radius:6px; opacity:0; box-shadow:0 0 16px var(--accent-dim,transparent);}
+  .pv-tick > .pv-scan{animation:pvScan .6s steps(14,end) both;}
+  .pv-tick > .pv-outline{animation:pvPulse .6s ease-out both;}
+  .pv-build > .pv-scan{animation:pvScan 1.1s steps(22,end) .15s both;}
+  .pv-build > .pv-outline{animation:pvTrace 1.2s steps(16,end) both;}
+  .pv-build .pv-el{animation:pvIn .5s steps(6,end) both; animation-delay:calc(var(--pvi,0) * 80ms + 300ms);}
+  .pv-build > :not(.pv-scan):not(.pv-outline):not(.shop-frame-layer):not(.shop-texture-layer):not(.shop-frame-extra){animation:pvWire .5s steps(5,end) both;}
+  @keyframes pvScan{0%{top:0; opacity:1;} 92%{opacity:1;} 100%{top:calc(100% - 3px); opacity:0;}}
+  @keyframes pvPulse{0%{opacity:.9;} 100%{opacity:0;}}
+  @keyframes pvTrace{0%{opacity:1; clip-path:inset(0 100% 100% 0);} 25%{clip-path:inset(0 0 100% 0);} 50%{clip-path:inset(0 0 0 0);} 75%{opacity:1; clip-path:inset(0 0 0 0);} 100%{opacity:0; clip-path:inset(0 0 0 0);}}
+  @keyframes pvIn{0%{opacity:0; transform:translateY(10px); filter:brightness(2.4) saturate(0);} 55%{opacity:1; filter:brightness(1.7) saturate(.4);} 100%{opacity:1; transform:none; filter:none;}}
+  @keyframes pvWire{0%{opacity:.15; filter:grayscale(1) contrast(1.4);} 100%{opacity:1; filter:none;}}
+  @media (prefers-reduced-motion:reduce){ .pv-fx > .pv-scan, .pv-fx > .pv-outline{display:none;} .pv-build .pv-el, .pv-build > *{animation:none !important;} }
+
   /* Infobulle d'aperçu du cadre débloqué (succès / rang) */
   .frame-prev-pop{position:fixed; z-index:9000; width:280px; padding:12px; background:var(--bg2); border:1px solid var(--accent); border-radius:4px; box-shadow:0 8px 28px rgba(0,0,0,.65), 0 0 14px var(--accent-dim); pointer-events:none; display:flex; flex-direction:column; gap:10px;}
   .frame-prev-pop .fpp-title{font-size:.62rem; letter-spacing:2px; color:var(--muted); text-transform:uppercase;}
@@ -2025,6 +2042,67 @@
   .rank-showcase .rank-name{font-family:'VT323',monospace; font-size:1.5rem; color:var(--accent); letter-spacing:1.5px; text-transform:uppercase;}
   .rank-showcase .rank-sub{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
   .deadline-meta{color:var(--accent) !important;}
+
+  /* ===== Statut plus discret (même place) ===== */
+  .status-pill{padding:3px 9px !important; gap:6px !important; font-size:.66rem !important; border-radius:3px !important;}
+  .status-pill .status-dot{width:6px !important; height:6px !important;}
+  .status-pill .status-pen{font-size:.62rem !important;}
+  /* ===== Barre de rang : reflet contenu dans la barre remplie, sans rejouer la croissance à chaque rafraîchissement ===== */
+  .rk-fill{overflow:hidden;}
+  .rk-fill::after{width:34px !important; left:-40px !important; animation:rkShine2 3.6s ease-in-out 1.7s infinite !important;}
+  .rk-head{box-shadow:0 0 8px 1px var(--accent), 0 0 3px #fff !important;}
+  @keyframes rkShine2{0%{left:-40px; opacity:0;} 10%{opacity:1;} 52%{left:100%; opacity:.9;} 60%,100%{left:100%; opacity:0;}}
+  .rk.still .rk-fill{animation:railStripes .9s linear infinite !important;}
+  .rk.still .rk-fill::after{animation-delay:.6s !important;}
+  /* ===== Carte de visite ===== */
+  .biz-ov{position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.72); display:flex; align-items:center; justify-content:center; padding:16px; overflow-y:auto;}
+  .biz-box{width:min(620px,100%); background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:18px; display:flex; flex-direction:column; gap:14px; box-shadow:0 12px 40px #000c;}
+  .biz-head{display:flex; align-items:center; justify-content:space-between; font-family:'VT323',monospace; font-size:24px; letter-spacing:2px; color:var(--text);}
+  .biz-head .sl{color:var(--accent);}
+  .biz-x{background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:4px 8px;}
+  .biz-card{position:relative; display:grid; grid-template-columns:34% 1fr; grid-template-rows:1fr auto; gap:16px 20px; padding:22px; aspect-ratio:1.75/1; border:2px solid var(--accent); border-radius:6px; background:linear-gradient(#0f1412,#050606); box-shadow:0 0 22px var(--accent-dim); overflow:hidden; text-decoration:none; color:inherit; isolation:isolate; transition:transform .2s, box-shadow .2s;}
+  .biz-card:hover{transform:translateY(-2px); box-shadow:0 0 30px var(--accent-dim);}
+  .biz-card > *{position:relative; z-index:2;}
+  .biz-card > .shop-texture-layer{position:absolute; z-index:0;}
+  .biz-card > .shop-frame-layer, .biz-card > .shop-frame-extra{z-index:1;}
+  .biz-logo{grid-row:1; width:100%; aspect-ratio:1/1; align-self:center; border:2px solid var(--accent); background:var(--bg2); color:var(--accent); display:flex; align-items:center; justify-content:center; padding:10px; overflow:hidden; position:relative; border-radius:4px;}
+  .biz-logo svg{width:100%; height:100%;}
+  .biz-logo img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+  .biz-info{grid-row:1; display:flex; flex-direction:column; justify-content:center; gap:5px; min-width:0;}
+  .biz-kicker{font-size:.62rem; letter-spacing:2px; color:var(--muted); text-transform:uppercase;}
+  .biz-kicker .sl{color:var(--accent);}
+  .biz-name{font-family:'VT323',monospace; font-size:clamp(28px,7vw,50px); line-height:.95; color:#e8fff4; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .biz-owner{color:var(--accent); font-size:.85rem;}
+  .biz-loc{color:var(--muted); font-size:.7rem; display:flex; align-items:center; gap:5px;}
+  .biz-loc .icon{width:11px; height:11px;}
+  .biz-foot{grid-column:1/-1; grid-row:2; display:flex; align-items:center; justify-content:space-between; gap:10px; border-top:2px solid var(--accent); padding-top:10px; font-size:.78rem; color:#e8fff4;}
+  .biz-foot b{background:var(--accent); color:#050606; font-weight:400; padding:6px 12px; letter-spacing:1px; font-size:.7rem; white-space:nowrap;}
+  .biz-hint{margin:0; color:var(--muted); font-size:.78rem;}
+  .biz-link-row{display:flex; gap:8px;}
+  .biz-link-row input{flex:1; min-width:0; font-size:.78rem;}
+  .biz-actions{display:flex; gap:8px; flex-wrap:wrap;}
+  .biz-actions button{flex:1 1 auto;}
+  .biz-actions button[hidden]{display:none;}
+  @media (max-width:520px){ .biz-card{padding:14px; gap:10px 14px; grid-template-columns:36% 1fr;} .biz-link-row{flex-direction:column;} .biz-foot{font-size:.68rem;} }
+  /* ===== Bannière shop : mobile plus compact (logo à gauche du titre, titre qui passe à la ligne, actions pleine largeur) ===== */
+  @media (max-width:600px){
+    .shop-banner-card{padding:16px !important;}
+    .shop-banner-card .shop-banner-row{display:grid !important; grid-template-columns:84px 1fr; grid-template-rows:auto auto auto; column-gap:14px !important; row-gap:0 !important; align-items:start !important; text-align:left !important;}
+    .shop-banner-card .shop-banner-id, .shop-banner-card .shop-banner-top, .shop-banner-card .shop-banner-text{display:contents !important;}
+    .shop-banner-card .shop-banner-logo{grid-column:1; grid-row:1 / span 3; width:84px !important; height:84px !important; padding:8px !important; border-radius:8px !important; align-self:start !important; margin:0 !important;}
+    .shop-banner-card .shop-banner-kicker{grid-column:2; grid-row:1; text-align:left !important; margin:2px 0 4px !important; font-size:10px !important; align-self:end;}
+    .shop-banner-card .shop-banner-title-row{grid-column:2; grid-row:2; justify-content:flex-start !important; gap:6px 10px !important; min-width:0;}
+    .shop-banner-card .shop-banner-title-row h1{font-size:30px !important; text-align:left !important; line-height:1 !important; white-space:normal !important; overflow-wrap:anywhere; max-width:100%;}
+    .shop-banner-card .shop-banner-meta{grid-column:1 / -1; grid-row:3; justify-content:flex-start !important; margin-top:12px !important; gap:6px !important;}
+    .shop-banner-card .shop-banner-actions{grid-column:1 / -1; width:100% !important; margin:12px 0 0 !important; justify-content:flex-start !important; gap:8px !important; flex-wrap:wrap;}
+    .shop-banner-card .shop-banner-actions .gear-btn{width:42px !important; height:42px !important;}
+    .shop-banner-card .shop-banner-actions .shop-upvote-btn{flex:1 1 140px !important; justify-content:center; padding:10px 14px !important;}
+    .shop-banner-card .shop-description{grid-column:1 / -1; width:100%; margin:12px 0 0 !important; padding:12px 14px !important; font-size:14px !important;}
+    .shop-banner-card .shop-rank-strip{grid-column:1 / -1; margin-top:14px !important; padding-top:12px !important;}
+    .shop-banner-card .shop-rank-strip .rk{gap:10px; margin:6px 0 4px;}
+    .shop-banner-card .shop-loc-tag, .shop-banner-card .shop-banner-meta .shop-owner-box{font-size:11px !important; padding:4px 9px !important;}
+    .shop-banner-card .status-pop{left:0; right:auto; max-width:calc(100vw - 52px);}
+  }
 </style>
 </head>
 <body>
@@ -3008,6 +3086,12 @@
                       <rect x="5" y="8" width="2" height="2"/><rect x="7" y="9" width="2" height="2"/><rect x="9" y="11" width="2" height="2"/>
                     </g></svg>
                   </button>
+                  <button type="button" class="gear-btn shop-card-btn" id="shopCardBtn" onclick="openShopCard()" aria-label="Carte de visite" data-i18n-title="cardBtnTitle" title="Carte de visite" hidden>
+                    <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
+                      <rect x="1" y="3" width="14" height="2"/><rect x="1" y="11" width="14" height="2"/><rect x="1" y="3" width="2" height="10"/><rect x="13" y="3" width="2" height="10"/>
+                      <rect x="4" y="6" width="3" height="3"/><rect x="9" y="6" width="3" height="1"/><rect x="9" y="8" width="2" height="1"/>
+                    </g></svg>
+                  </button>
                   <button type="button" class="gear-btn shop-edit-gear-btn" id="shopEditGearBtn" onclick="openSellerShopEdit()" aria-label="Modifier la boutique" title="Modifier la boutique" hidden>
                     <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
                       <rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/>
@@ -3639,7 +3723,7 @@ const ALL_VIEWS = ['view-client-dash','view-create','view-courier-dash','view-ad
 // Quitte aussi le mode "page messagerie mobile plein écran" (voir openMobileMessages()) à chaque
 // changement de vue, quel que soit le chemin emprunté pour naviguer ailleurs : on ne veut pas que la
 // barre du haut reste masquée si on quitte la messagerie autrement qu'avec son propre bouton RETOUR.
-function hideAllViews(){ ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); const _pt = $('pageTitle'); if(_pt) _pt.hidden = false; document.body.classList.remove('msg-mobile-open'); }
+function hideAllViews(){ if(!window.__keepFormState) { try{ localStorage.removeItem('su-form-state'); }catch(e){} } ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.hidden = true; }); const _pt = $('pageTitle'); if(_pt) _pt.hidden = false; document.body.classList.remove('msg-mobile-open'); }
 let clientTab = 'deliveries'; // 'deliveries' | 'marketplace' | 'resources' | 'blueprints'
 function setClientTab(tab){
   clientTab = tab;
@@ -3782,7 +3866,7 @@ const T = {
     cTabAvail:"COMMANDES DISPONIBLES", cTabMine:"MES LIVRAISONS", cTabAch:"SUCCÈS", cStDel:"LIVRÉES", cStProg:"EN COURS", cStMargin:"MARGE TOTALE", cStOpen:"COMMANDES OUVERTES", cActive:"LIVRAISON ACTIVE", cMsgClient:"MESSAGE AU CLIENT", cClient:"Client :", cDeadline:"// Échéance :", cCargo:"CARGAISON", cOrderTotal:"Total de la commande", cYourMargin:"Ta marge", cRoute:"// ITINÉRAIRE D'ACHAT SUGGÉRÉ", cRelease:"RELÂCHER CETTE COMMANDE", cOthers:"MES AUTRES LIVRAISONS ({n})", cClickRow:"CLIQUE SUR UNE LIGNE POUR L'ACTIVER", cAvailFor:"DISPONIBLE POUR LIVRER", cNextTransit:"MARQUER EN TRANSIT ▸", cNextPurchased:"MARQUER ACHETÉE ▸", cNextDelivered:"MARQUER LIVRÉE ▸", cWaiting:"EN ATTENTE D'UN COURSIER",
     shopTextureLbl:"Texture de fond", shopTextureNone:"Aucune", shopTextureDots:"Points", shopTextureScan:"Scanlines", shopTextureGrid:"Grille", shopTextureDiag:"Diagonales", shopTextureNoise:"Grain", shopTextureGlow:"Lueur", shopTextureStars:"Étoiles", shopTextureRays:"Faisceaux",
     viewMyShopBtn:"VOIR MA BOUTIQUE", seeMoreBtn:"VOIR PLUS →", shopOwnerLbl:"Tenue par ", shopListingsTitle:"Objets en vente",
-    upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.", upvoteCta:"UPVOTER", rewardFrame:"RÉCOMPENSE · CADRE", rewardFrames:"RÉCOMPENSES · CADRES", upvoteBpHint:"Craft terminé ! Un upvote met en avant le travail du vendeur :", upvMsgBp:"pour un blueprint", upvMsgRecv:"{n} a upvoté ton travail", upvMsgSent:"Tu as envoyé un upvote", upvMsgShop:"depuis ta page", upvMsgOrder:"pour une livraison", upvMsgSale:"pour une vente", upvMsgValid:"VALIDÉ", upvMsgPrev:"▲ Upvote", upvoteSellerWho:"vendeur", upvotedLbl:"UPVOTÉ", upvoteCourierTip:"Upvote ton coursier pour mettre en avant son travail", upvoteSellerHint:"Vente terminée ! Un upvote met en avant le travail du vendeur et du coursier :", upvoteDoneToast:"Livraison terminée ! Pense à upvoter ton coursier (Commander à nouveau / Historique).", pubMoreTitle:"STATS & SUCCÈS", pubNoCompany:"Ce joueur n'a ni entreprise de livraison ni shop pour le moment.", viewShopBtn:"VOIR LA BOUTIQUE →", kickerBoth:"SHOP · ENTREPRISE DE LIVRAISON",
+    upvoteBtn:"UPVOTE", upvoteLoginNote:"Connecte-toi pour upvote cette boutique.", upvoteCta:"UPVOTER", cardBtnTitle:"Carte de visite", cardTitle:"CARTE DE VISITE", cardHint:"Partage cette carte : le lien s'ouvre directement sur ton shop.", cardCopyLink:"COPIER LE LIEN", cardDownload:"TÉLÉCHARGER L'IMAGE", cardCopyImg:"COPIER L'IMAGE", cardShare:"PARTAGER", cardImgCopied:"Image copiée !", cardNeedShop:"Crée d'abord ton shop ou ton entreprise pour avoir une carte de visite.", cardOpen:"OUVRIR LE SHOP ▸", cardClose:"FERMER", rewardFrame:"RÉCOMPENSE · CADRE", rewardFrames:"RÉCOMPENSES · CADRES", upvoteBpHint:"Craft terminé ! Un upvote met en avant le travail du vendeur :", upvMsgBp:"pour un blueprint", upvMsgRecv:"{n} a upvoté ton travail", upvMsgSent:"Tu as envoyé un upvote", upvMsgShop:"depuis ta page", upvMsgOrder:"pour une livraison", upvMsgSale:"pour une vente", upvMsgValid:"VALIDÉ", upvMsgPrev:"▲ Upvote", upvoteSellerWho:"vendeur", upvotedLbl:"UPVOTÉ", upvoteCourierTip:"Upvote ton coursier pour mettre en avant son travail", upvoteSellerHint:"Vente terminée ! Un upvote met en avant le travail du vendeur et du coursier :", upvoteDoneToast:"Livraison terminée ! Pense à upvoter ton coursier (Commander à nouveau / Historique).", pubMoreTitle:"STATS & SUCCÈS", pubNoCompany:"Ce joueur n'a ni entreprise de livraison ni shop pour le moment.", viewShopBtn:"VOIR LA BOUTIQUE →", kickerBoth:"SHOP · ENTREPRISE DE LIVRAISON",
     shopStatsTitle:"Statistiques de la boutique", shopTotalEarned:"aUEC gagnés au total", shopSalesCount:"Ventes conclues", shopItemsSold:"Objets vendus", shopCraftDelivered:"Crafts livrés", shopMostExpensive:"Objet le plus cher vendu", shopUpvotesLbl:"Upvotes reçus", shopStatsNoData:"Pas encore de ventes — ta première vente apparaîtra ici !",
     sellerAchvTitle:"Succès vendeur", viewAllAchvBtn:"VOIR TOUT", viewLessAchvBtn:"RÉDUIRE",
     sellerAchvLabels:{jawas_food:"Jawa's food", first_sale:"Première vente", first_courier_sale:"Première vente via coursier", five_sales:"5 ventes effectuées", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
@@ -3958,7 +4042,7 @@ const T = {
     cTabAvail:"AVAILABLE ORDERS", cTabMine:"MY DELIVERIES", cTabAch:"ACHIEVEMENTS", cStDel:"DELIVERED", cStProg:"IN PROGRESS", cStMargin:"TOTAL MARGIN", cStOpen:"OPEN ORDERS", cActive:"ACTIVE DELIVERY", cMsgClient:"MESSAGE CLIENT", cClient:"Client:", cDeadline:"// Deadline:", cCargo:"CARGO", cOrderTotal:"Order total", cYourMargin:"Your margin", cRoute:"// SUGGESTED SHOPPING ROUTE", cRelease:"RELEASE THIS ORDER", cOthers:"MY OTHER DELIVERIES ({n})", cClickRow:"CLICK A ROW TO MAKE IT ACTIVE", cAvailFor:"AVAILABLE FOR DELIVERY", cNextTransit:"MARK AS IN TRANSIT ▸", cNextPurchased:"MARK AS PURCHASED ▸", cNextDelivered:"MARK AS DELIVERED ▸", cWaiting:"WAITING FOR A COURIER",
     shopTextureLbl:"Background texture", shopTextureNone:"None", shopTextureDots:"Dots", shopTextureScan:"Scanlines", shopTextureGrid:"Grid", shopTextureDiag:"Diagonal", shopTextureNoise:"Grain", shopTextureGlow:"Glow", shopTextureStars:"Stars", shopTextureRays:"Rays",
     viewMyShopBtn:"VIEW MY SHOP", seeMoreBtn:"SEE MORE →", shopOwnerLbl:"Run by ", shopListingsTitle:"Items for sale",
-    upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.", upvoteCta:"UPVOTE", rewardFrame:"REWARD · FRAME", rewardFrames:"REWARDS · FRAMES", upvoteBpHint:"Craft complete! An upvote highlights the seller's work:", upvMsgBp:"for a blueprint", upvMsgRecv:"{n} upvoted your work", upvMsgSent:"You sent an upvote", upvMsgShop:"from your page", upvMsgOrder:"for a delivery", upvMsgSale:"for a sale", upvMsgValid:"VALIDATED", upvMsgPrev:"▲ Upvote", upvoteSellerWho:"seller", upvotedLbl:"UPVOTED", upvoteCourierTip:"Upvote your courier to highlight their work", upvoteSellerHint:"Sale complete! An upvote highlights the seller's and courier's work:", upvoteDoneToast:"Delivery complete! Remember to upvote your courier (Order again / History).", pubMoreTitle:"STATS & ACHIEVEMENTS", pubNoCompany:"This player has no delivery company or shop yet.", viewShopBtn:"VIEW THE SHOP →", kickerBoth:"SHOP · DELIVERY COMPANY",
+    upvoteBtn:"UPVOTE", upvoteLoginNote:"Log in to upvote this shop.", upvoteCta:"UPVOTE", cardBtnTitle:"Business card", cardTitle:"BUSINESS CARD", cardHint:"Share this card: the link opens your shop directly.", cardCopyLink:"COPY LINK", cardDownload:"DOWNLOAD IMAGE", cardCopyImg:"COPY IMAGE", cardShare:"SHARE", cardImgCopied:"Image copied!", cardNeedShop:"Create your shop or company first to get a business card.", cardOpen:"OPEN SHOP ▸", cardClose:"CLOSE", rewardFrame:"REWARD · FRAME", rewardFrames:"REWARDS · FRAMES", upvoteBpHint:"Craft complete! An upvote highlights the seller's work:", upvMsgBp:"for a blueprint", upvMsgRecv:"{n} upvoted your work", upvMsgSent:"You sent an upvote", upvMsgShop:"from your page", upvMsgOrder:"for a delivery", upvMsgSale:"for a sale", upvMsgValid:"VALIDATED", upvMsgPrev:"▲ Upvote", upvoteSellerWho:"seller", upvotedLbl:"UPVOTED", upvoteCourierTip:"Upvote your courier to highlight their work", upvoteSellerHint:"Sale complete! An upvote highlights the seller's and courier's work:", upvoteDoneToast:"Delivery complete! Remember to upvote your courier (Order again / History).", pubMoreTitle:"STATS & ACHIEVEMENTS", pubNoCompany:"This player has no delivery company or shop yet.", viewShopBtn:"VIEW THE SHOP →", kickerBoth:"SHOP · DELIVERY COMPANY",
     shopStatsTitle:"Shop stats", shopTotalEarned:"Total aUEC earned", shopSalesCount:"Sales closed", shopItemsSold:"Items sold", shopCraftDelivered:"Crafts delivered", shopMostExpensive:"Most expensive item sold", shopUpvotesLbl:"Upvotes received", shopStatsNoData:"No sales yet — your first sale will show up here!",
     sellerAchvTitle:"Seller achievements", viewAllAchvBtn:"VIEW ALL", viewLessAchvBtn:"COLLAPSE",
     sellerAchvLabels:{jawas_food:"Jawa's food", first_sale:"First sale", first_courier_sale:"First sale via courier", five_sales:"5 sales made", pockets_full:"You had all that in your pockets?!", good_fences:"Good fences make good neighbors", crafter_confirmed:"Crafter confirmed", not_stolen:"It wasn't stolen, I swear !", couldnt_be_bothered:"I couldn't be bothered", your_wish:"Your wish is my command", crafterrrrr:"Crafterrrrr", made_with_love:"Made with love", better_than_wikelo:"Better than Wikelo", masta_thanks:"Masta Thanks"},
@@ -4221,6 +4305,7 @@ function openSellerCreateOption(kind){
     const btnEl = $('listingSubmitLabel');
     if(btnEl){ btnEl.dataset.i18n = 'addListingBtn'; btnEl.textContent = d.addListingBtn; }
     $('view-seller-create-listing').hidden = false;
+    { const b = $('listingLivePreview'); if(b) b.dataset.had = ''; }
     ensurePreviewShopName();
     updateListingLivePreview();
   } else if(kind === 'blueprint'){
@@ -4233,6 +4318,7 @@ function openSellerCreateOption(kind){
     if(btnEl){ btnEl.dataset.i18n = 'addBlueprintBtn'; btnEl.textContent = d.addBlueprintBtn; }
     $('view-seller-create-blueprint').hidden = false;
     ensurePreviewShopName();
+    { const b = $('blueprintLivePreview'); if(b) b.dataset.had = ''; }
     updateBlueprintLivePreview();
   } else {
     $('view-seller-create-resource').hidden = false;
@@ -4243,7 +4329,7 @@ function loginDiscord(){
   const cleanRedirect = window.location.origin + window.location.pathname;
   sb.auth.signInWithOAuth({ provider:'discord', options:{ redirectTo: cleanRedirect } });
 }
-function doLogout(){ $('settingsPanel').hidden = true; sb.auth.signOut(); }
+function doLogout(){ try{ localStorage.removeItem('su-form-state'); }catch(e){} $('settingsPanel').hidden = true; sb.auth.signOut(); }
 
 function sweep(){ const s=$('sweep'); s.classList.remove('run'); void s.offsetWidth; s.classList.add('run'); }
 
@@ -5177,14 +5263,22 @@ function playBoot(view, done){
   next();
 }
 
+function enterAppRoute(){
+  const snap = loadFormSnapshot();
+  window.__keepFormState = true;
+  routeApp();
+  window.__keepFormState = false;
+  const hadPending = !!getPendingShop();
+  openPendingShop();
+  if(snap && !hadPending) restoreFormState(snap);
+}
 function enterApp(){
   const v = effectiveView();
   if(!hasBooted && v){
     hasBooted = true;
-    playBoot(v, () => { routeApp(); openPendingShop(); });
+    playBoot(v, () => { enterAppRoute(); });
   } else {
-    routeApp();
-    openPendingShop();
+    enterAppRoute();
   }
 }
 // --- LIEN DE PARTAGE D'UNE BOUTIQUE : https://couriers-united.space/?shop=<id> ---
@@ -8666,7 +8760,10 @@ async function openSellerShopEdit(){
   initShopThemePicker();
   initShopTexturePicker();
   initShopFramePicker();
+  window.__shopPvBuilt = false;
   updateShopLivePreview();
+  previewFx($('shopLivePreview'), true, '.shop-banner-logo, .shop-banner-kicker, .shop-banner-title-row, .shop-banner-meta, .shop-description');
+  setTimeout(() => { window.__shopPvBuilt = true; }, 1200);
 }
 // Aperçu en direct de la boutique (nom, couleur, logo, localisation, description) pendant la saisie.
 function updateShopLivePreview(){
@@ -8700,6 +8797,7 @@ function updateShopLivePreview(){
   }
   const ownerEl = $('shopLivePreviewOwner');
   if(ownerEl) ownerEl.textContent = d.shopOwnerLbl + (profile ? displayName(profile) : '—');
+  if(window.__shopPvBuilt) previewTick(preview);
 }
 // Le dashboard vendeur EST la page boutique (plus de page de gestion séparée) : vu par le propriétaire,
 // openSellerShop() affiche en plus les actions d'édition/gestion (gear d'édition, cartes d'annonces avec
@@ -8819,6 +8917,7 @@ function openEditListing(id){
   if(titleEl){ titleEl.dataset.i18n = 'editListingTitle'; titleEl.textContent = d.editListingTitle; }
   const btnEl = $('listingSubmitLabel');
   if(btnEl){ btnEl.dataset.i18n = 'saveListingBtn'; btnEl.textContent = d.saveListingBtn; }
+  { const b = $('listingLivePreview'); if(b) b.dataset.had = ''; }
   ensurePreviewShopName();
   updateListingLivePreview();
 }
@@ -9067,10 +9166,47 @@ function previewSellerMap(){
 function disablePreviewCardInteractions(box){
   box.querySelectorAll('[onclick]').forEach(el => el.removeAttribute('onclick'));
 }
+// ===== Preview instantané : la card se construit en direct =====
+// full = construction complète (ouverture du formulaire, premier objet saisi) ; sinon simple passage de scanner.
+function previewFx(host, full, selector){
+  if(!host) return;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  host.classList.remove('pv-build','pv-tick');
+  host.querySelectorAll(':scope > .pv-scan, :scope > .pv-outline').forEach(e => e.remove());
+  host.querySelectorAll('.pv-el').forEach(e => e.classList.remove('pv-el'));
+  if(reduce) return;
+  clearTimeout(host.__pvT);
+  void host.offsetWidth;
+  host.classList.add('pv-fx', full ? 'pv-build' : 'pv-tick');
+  if(full){
+    const els = selector ? [...host.querySelectorAll(selector)] : (() => {
+      const card = host.firstElementChild; if(!card) return [];
+      return [...card.children].flatMap(c => [c, ...c.children]);
+    })();
+    els.forEach((el, i) => { el.style.setProperty('--pvi', i); el.classList.add('pv-el'); });
+  }
+  const sc = document.createElement('i'); sc.className = 'pv-scan'; host.appendChild(sc);
+  const ou = document.createElement('i'); ou.className = 'pv-outline'; host.appendChild(ou);
+  host.__pvT = setTimeout(() => {
+    host.classList.remove('pv-build','pv-tick');
+    host.querySelectorAll(':scope > .pv-scan, :scope > .pv-outline').forEach(e => e.remove());
+    host.querySelectorAll('.pv-el').forEach(e => e.classList.remove('pv-el'));
+  }, full ? 2600 : 900);
+}
+// Réaction à une saisie : pas plus d'un passage de scanner toutes les 700 ms pour rester discret.
+function previewTick(host){
+  if(!host) return;
+  const now = performance.now();
+  if(host.__pvLast && now - host.__pvLast < 700) return;
+  host.__pvLast = now;
+  if(host.classList.contains('pv-build')) return;
+  previewFx(host, false);
+}
 function updateListingLivePreview(){
   const box = $('listingLivePreview'); if(!box || !session) return;
   const itemName = $('listingItem').value.trim();
-  if(!itemName){ box.innerHTML = `<div class="mkt-live-preview-empty">${T[LANG].livePreviewEmptyHint}</div>`; return; }
+  if(!itemName){ box.innerHTML = `<div class="mkt-live-preview-empty">${T[LANG].livePreviewEmptyHint}</div>`; box.dataset.had = ''; return; }
+  const hadCard = box.dataset.had === '1'; box.dataset.had = '1';
   let photoUrl = null;
   if(pendingListingPhotoFile) photoUrl = URL.createObjectURL(pendingListingPhotoFile);
   else if(editingListingId){ const l = myListingsCache.find(x=>x.id===editingListingId); if(l) photoUrl = l.photo_url; }
@@ -9086,6 +9222,7 @@ function updateListingLivePreview(){
   };
   box.innerHTML = mktCardHtml(fakeListing, previewSellerMap(), null);
   disablePreviewCardInteractions(box);
+  if(hadCard) previewTick(box); else previewFx(box, true);
 }
 // --- BLUEPRINTS (catalogue de craft des vendeurs) ----------------------------------------------------------
 function blueprintPriceRowsHtml(bp){
@@ -9250,7 +9387,8 @@ function renderBlueprintDetailView(entry){
 function updateBlueprintLivePreview(){
   const box = $('blueprintLivePreview'); if(!box || !session) return;
   const itemName = $('blueprintItem').value.trim();
-  if(!itemName){ box.innerHTML = `<div class="mkt-live-preview-empty">${T[LANG].livePreviewEmptyHint}</div>`; return; }
+  if(!itemName){ box.innerHTML = `<div class="mkt-live-preview-empty">${T[LANG].livePreviewEmptyHint}</div>`; box.dataset.had = ''; return; }
+  const hadCard = box.dataset.had === '1'; box.dataset.had = '1';
   let photoUrl = null;
   if(pendingBlueprintPhotoFile) photoUrl = URL.createObjectURL(pendingBlueprintPhotoFile);
   else if(editingBlueprintId){ const bp = myBlueprintsCache.find(x=>x.id===editingBlueprintId); if(bp) photoUrl = bp.photo_url; }
@@ -9265,6 +9403,7 @@ function updateBlueprintLivePreview(){
   };
   box.innerHTML = blueprintCardHtml(fakeBp, previewSellerMap(), false);
   disablePreviewCardInteractions(box);
+  if(hadCard) previewTick(box); else previewFx(box, true);
 }
 let pendingBlueprintPhotoFile = null;
 let editingBlueprintId = null;
@@ -9297,6 +9436,7 @@ function openEditBlueprint(id){
   const btnEl = $('blueprintSubmitLabel');
   if(btnEl){ btnEl.dataset.i18n = 'saveBlueprintBtn'; btnEl.textContent = d.saveBlueprintBtn; }
   ensurePreviewShopName();
+  { const b = $('blueprintLivePreview'); if(b) b.dataset.had = ''; }
   updateBlueprintLivePreview();
 }
 async function createBlueprint(){
@@ -9668,6 +9808,7 @@ async function openSellerShop(sellerId){
   // onglet "vendeur", donc sur la même page. On ne le garde que pour visiter la boutique d'un autre joueur.
   const backBtn = $('shopBackBtn'); if(backBtn) backBtn.hidden = isOwner;
   const editBtn = $('shopEditGearBtn'); if(editBtn) editBtn.hidden = !isOwner;
+  const cardBtn = $('shopCardBtn'); if(cardBtn) cardBtn.hidden = !isOwner;
   const addResourceBtn = $('shopAddResourceBtn'); if(addResourceBtn) addResourceBtn.hidden = !isOwner;
   const descEl = $('shopDescription');
   if(descEl) descEl.hidden = true;
@@ -9993,6 +10134,7 @@ function companyBannerHtml(o){
   const desc = shop && shop.description ? shop.description : (!shop && o.isOwner ? d.companyNoShop : '');
   const gear = o.isOwner ? `<button type="button" class="gear-btn" onclick="openSellerShopEdit()" aria-label="${escHtml(shop ? d.companyCustomize : d.companyCreate)}" title="${escHtml(shop ? d.companyCustomize : d.companyCreate)}">
       <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="9" y="1" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/><rect x="3" y="7" width="2" height="2"/><rect x="1" y="9" width="2" height="2"/><rect x="1" y="11" width="2" height="2"/><rect x="1" y="13" width="4" height="2"/><rect x="11" y="3" width="2" height="2"/></g></svg></button>` : '';
+  const cardBtn = (o.isOwner && shop) ? `<button type="button" class="gear-btn" onclick="openShopCard()" aria-label="${escHtml(d.cardBtnTitle)}" title="${escHtml(d.cardBtnTitle)}"><svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="1" y="3" width="14" height="2"/><rect x="1" y="11" width="14" height="2"/><rect x="1" y="3" width="2" height="10"/><rect x="13" y="3" width="2" height="10"/><rect x="4" y="6" width="3" height="3"/><rect x="9" y="6" width="3" height="1"/><rect x="9" y="8" width="2" height="1"/></g></svg></button>` : '';
   const viewBtn = o.showShopBtn ? `<button type="button" class="btn-secondary cbn-view-btn" onclick="openSellerShop('${o.targetId}')">${d.viewShopBtn}</button>` : '';
   const upv = o.targetId ? `<button type="button" class="shop-upvote-btn" data-up="${escHtml(o.targetId)}" onclick="upvoteTarget(this)">
       <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="7" y="2" width="2" height="2"/><rect x="5" y="4" width="6" height="2"/><rect x="3" y="6" width="10" height="2"/><rect x="7" y="8" width="2" height="6"/></g></svg>
@@ -10008,7 +10150,7 @@ function companyBannerHtml(o){
             <div class="shop-banner-title-row"><h1>${escHtml(name)}</h1></div>
             <div class="shop-banner-meta">${loc}${owner}</div>
           </div>
-          <div class="shop-banner-actions">${viewBtn}${gear}${upv}</div>
+          <div class="shop-banner-actions">${viewBtn}${cardBtn}${gear}${upv}</div>
         </div>
         ${desc ? `<div class="shop-description">${escHtml(desc)}</div>` : ''}
         ${o.rankHtml ? `<div class="shop-rank-strip">${o.rankHtml}</div>` : ''}
@@ -10080,6 +10222,135 @@ document.addEventListener('mouseover', e => {
   showFramePreview(t, rewardTargetFrames(t));
 });
 document.addEventListener('scroll', hideFramePreview, true);
+// ===== Carte de visite partageable (shop / entreprise de livraison) =====
+function bizCardUrl(id){ return window.location.origin + window.location.pathname + '?shop=' + id; }
+async function bizCopyText(txt){
+  try{ await navigator.clipboard.writeText(txt); }
+  catch(e){ const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(_){} ta.remove(); }
+}
+function bizLoadImage(src){
+  return new Promise(res => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
+}
+async function renderBizCardCanvas(c, withLogo){
+  try{ await Promise.all([document.fonts.load('96px VT323'), document.fonts.load('26px "Share Tech Mono"')]); }catch(e){}
+  const W = 1050, H = 600, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const g = cv.getContext('2d'), acc = c.color;
+  const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#0f1412'); bg.addColorStop(1, '#050606');
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  g.fillStyle = acc; g.globalAlpha = .13;
+  for(let y = 20; y < H; y += 24) for(let x = 20; x < W; x += 24) g.fillRect(x, y, 3, 3);
+  g.globalAlpha = 1;
+  const glow = g.createRadialGradient(W*.25, H*.4, 10, W*.25, H*.4, 420); glow.addColorStop(0, acc + '33'); glow.addColorStop(1, 'transparent');
+  g.fillStyle = glow; g.fillRect(0, 0, W, H);
+  g.strokeStyle = acc; g.lineWidth = 6; g.strokeRect(3, 3, W - 6, H - 6);
+  // logo
+  const L = { x: 56, y: 70, s: 300 };
+  g.fillStyle = '#080b0a'; g.fillRect(L.x, L.y, L.s, L.s);
+  const img = withLogo && c.logo ? await bizLoadImage(c.logo) : null;
+  if(img){
+    g.save(); g.beginPath(); g.rect(L.x, L.y, L.s, L.s); g.clip();
+    const r = Math.max(L.s / img.width, L.s / img.height), w = img.width * r, h = img.height * r;
+    g.drawImage(img, L.x + (L.s - w) / 2, L.y + (L.s - h) / 2, w, h); g.restore();
+  } else {
+    g.fillStyle = acc; const u = 18, ox = L.x + 66, oy = L.y + 78;
+    g.fillRect(ox, oy, u * 9, u * 2); g.fillRect(ox + u, oy + u * 2, u * 7, u * 6); g.fillStyle = '#080b0a'; g.fillRect(ox + u * 3.5, oy + u * 4, u * 2, u * 4);
+  }
+  g.strokeStyle = acc; g.lineWidth = 5; g.strokeRect(L.x, L.y, L.s, L.s);
+  // texte
+  const X = 416, maxW = W - X - 56;
+  g.textBaseline = 'alphabetic';
+  g.fillStyle = '#7d8c85'; g.font = '24px "Share Tech Mono", monospace';
+  g.fillText('// ' + c.kicker.toUpperCase(), X, 98);
+  let size = 104; g.font = size + 'px VT323, monospace';
+  const words = String(c.name).split(/\s+/); let lines = [];
+  const wrap = () => { lines = []; let cur = ''; words.forEach(w => { const t = cur ? cur + ' ' + w : w; if(g.measureText(t).width > maxW && cur){ lines.push(cur); cur = w; } else cur = t; }); if(cur) lines.push(cur); };
+  wrap(); while((lines.length > 2 || lines.some(l => g.measureText(l).width > maxW)) && size > 52){ size -= 6; g.font = size + 'px VT323, monospace'; wrap(); }
+  if(lines.length > 2){ lines = lines.slice(0, 2); lines[1] = lines[1].replace(/.{0,2}$/, '…'); }
+  g.fillStyle = '#e8fff4'; let y = 170;
+  lines.forEach(l => { g.fillText(l, X, y); y += size * .92; });
+  y += 10;
+  g.fillStyle = acc; g.font = '30px "Share Tech Mono", monospace';
+  if(c.owner){ g.fillText('▸ ' + c.owner, X, y); y += 46; }
+  if(c.loc){ g.fillStyle = '#7d8c85'; g.font = '24px "Share Tech Mono", monospace'; g.fillText('⌖ ' + c.loc, X, y); }
+  // pied : lien
+  g.fillStyle = acc; g.fillRect(56, H - 96, W - 112, 3);
+  g.font = '28px "Share Tech Mono", monospace'; g.fillStyle = '#e8fff4';
+  g.fillText('couriers-united.space', 56, H - 40);
+  const open = c.openLbl; const ow = g.measureText(open).width + 44;
+  g.fillStyle = acc; g.fillRect(W - 56 - ow, H - 82, ow, 54);
+  g.fillStyle = '#050606'; g.fillText(open, W - 56 - ow + 22, H - 44);
+  return cv;
+}
+function bizCanvasBlob(cv){ return new Promise(res => { try{ cv.toBlob(b => res(b), 'image/png'); }catch(e){ res(null); } }); }
+async function bizCardBlob(c){
+  let cv = await renderBizCardCanvas(c, true);
+  let b = await bizCanvasBlob(cv);
+  if(!b){ cv = await renderBizCardCanvas(c, false); b = await bizCanvasBlob(cv); }
+  return b;
+}
+function closeShopCard(){ const o = $('bizCardOv'); if(o) o.remove(); }
+async function openShopCard(){
+  if(!session) return;
+  const d = T[LANG];
+  const { data: shop } = await sb.from('marketplace_shops').select('*').eq('id', session.user.id).maybeSingle();
+  if(!shop){ toastShow(d.cardNeedShop); return; }
+  closeShopCard();
+  const url = bizCardUrl(session.user.id);
+  const isC = !!(profile && (profile.is_courier || profile.role === 'admin')), isS = !!(profile && (profile.is_seller || profile.role === 'admin'));
+  const kicker = (isC && isS) ? d.kickerBoth : (isC ? d.companyTitle : 'SHOP');
+  const color = normalizeShopColor(shop.theme_color);
+  const c = { color, name: shop.shop_name || (profile ? displayName(profile) : '—'), owner: profile ? displayName(profile) : '', logo: shop.logo_url || '', kicker,
+    loc: shop.location_system ? (shop.location_name ? shop.location_name + ' · ' + shop.location_system : shop.location_system) : '', openLbl: d.cardOpen };
+  const logo = c.logo ? `<img src="${escHtml(c.logo)}" alt="">` : roleAnimSvg(isS ? 'seller' : 'courier', 100);
+  const ov = document.createElement('div'); ov.id = 'bizCardOv'; ov.className = 'biz-ov';
+  ov.innerHTML = `<div class="biz-box" role="dialog" aria-modal="true">
+    <div class="biz-head"><span><span class="sl">//</span> ${d.cardTitle}</span><button type="button" class="biz-x" onclick="closeShopCard()" aria-label="${d.cardClose}">✕</button></div>
+    <a class="biz-card shop-texture-host" href="${escHtml(url)}" target="_blank" rel="noopener" style="--accent:${color}; --accent-dim:${color}55;">
+      <div class="shop-texture-layer"></div>
+      <div class="biz-logo">${logo}</div>
+      <div class="biz-info">
+        <div class="biz-kicker"><span class="sl">//</span> ${escHtml(kicker)}</div>
+        <div class="biz-name">${escHtml(c.name)}</div>
+        ${c.owner ? `<div class="biz-owner">▸ ${escHtml(c.owner)}</div>` : ''}
+        ${c.loc ? `<div class="biz-loc">${SHOP_LOC_PIN_ICON}${escHtml(c.loc)}</div>` : ''}
+      </div>
+      <div class="biz-foot"><span>couriers-united.space</span><b>${d.cardOpen}</b></div>
+    </a>
+    <p class="biz-hint">${d.cardHint}</p>
+    <div class="biz-link-row"><input type="text" readonly value="${escHtml(url)}" onfocus="this.select()"><button type="button" class="btn-secondary" id="bizCopyLink">${d.cardCopyLink}</button></div>
+    <div class="biz-actions">
+      <button type="button" class="btn-primary" id="bizDl">${d.cardDownload}</button>
+      <button type="button" class="btn-secondary" id="bizCopyImg" hidden>${d.cardCopyImg}</button>
+      <button type="button" class="btn-secondary" id="bizShare" hidden>${d.cardShare}</button>
+    </div></div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if(e.target === ov) closeShopCard(); });
+  const card = ov.querySelector('.biz-card');
+  setShopTextureLayerClass(card.querySelector('.shop-texture-layer'), shop.texture || DEFAULT_SHOP_TEXTURE);
+  applyShopFrame(card, shop.frame);
+  $('bizCopyLink').onclick = async () => { await bizCopyText(url); toastShow(d.shopLinkCopied); };
+  $('bizDl').onclick = async () => {
+    const b = await bizCardBlob(c); if(!b) return;
+    const a = document.createElement('a'); a.href = URL.createObjectURL(b);
+    a.download = 'couriers-united-' + (c.name || 'card').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.png';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  };
+  if(navigator.clipboard && window.ClipboardItem){
+    const bt = $('bizCopyImg'); bt.hidden = false;
+    bt.onclick = async () => { try{ const b = await bizCardBlob(c); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); toastShow(d.cardImgCopied); }catch(e){ toastShow('—'); } };
+  }
+  if(navigator.share){
+    const bt = $('bizShare'); bt.hidden = false;
+    bt.onclick = async () => {
+      try{
+        const b = await bizCardBlob(c); const f = b ? new File([b], 'card.png', { type:'image/png' }) : null;
+        if(f && navigator.canShare && navigator.canShare({ files:[f] })) await navigator.share({ files:[f], title: c.name, text: c.name + ' — Couriers United', url });
+        else await navigator.share({ title: c.name, text: c.name + ' — Couriers United', url });
+      }catch(e){}
+    };
+  }
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeShopCard(); });
 function shadeColor(hex, percent){
   hex = (hex||'#ff8c1a').trim().replace('#','');
   if(hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
@@ -11305,11 +11576,14 @@ function rankBadgeHtml(deliveredCount, size){
 }
 // Barre de progression animée (même style visuel que le rail des commandes) vers le rang suivant.
 // Barre de rang commune (coursier + vendeur) : segments façon jauge, remplissage animé, reflet qui balaye.
+window.__rkSeen = window.__rkSeen || {};
 function rankBarHtml(o){
   const pct = o.pct;
+  const seenKey = (o.kind || '') + ':' + (o.curKey || o.curLabel);
+  const still = window.__rkSeen[seenKey] === pct; window.__rkSeen[seenKey] = pct;
   const adv = (typeof o.fromPct === 'number' && o.fromPct < pct);
   return `
-    <div class="rk${o.isMax ? ' maxed' : ''}${adv ? ' adv' : ''}" style="--p:${pct}%${adv ? `; --p0:${o.fromPct}%` : ''}">
+    <div class="rk${o.isMax ? ' maxed' : ''}${adv ? ' adv' : ''}${still && !adv ? ' still' : ''}" style="--p:${pct}%${adv ? `; --p0:${o.fromPct}%` : ''}">
       <div class="rk-ico cur" title="${o.curLabel}"${o.kind ? ` data-rk="${o.kind}:${o.curKey}"` : ''}>${o.curIcon}</div>
       <div class="rk-mid">
         <div class="rk-top"><span class="rk-cur"><b>//</b> ${o.curLabel}</span><span class="rk-pct">${o.isMax ? 'MAX' : pct + '%'}</span><span class="rk-next">${o.nextLabel}</span></div>
@@ -12713,7 +12987,7 @@ async function initAuth(){
     const prevUserId = session && session.user ? session.user.id : null;
     session = s2;
     await loadProfile();
-    if(event === 'SIGNED_OUT'){ hasBooted = false; rsiGateState = 'idle'; $('bootOverlay').hidden = true; $('rsiGateOverlay').hidden = true; unsubscribeProfileChannel(); unsubscribeNotifChannel(); unsubscribePresenceChannel(); unsubscribeDataChannels(); routeApp(); return; }
+    if(event === 'SIGNED_OUT'){ window.__keepFormState = true; setTimeout(() => { window.__keepFormState = false; }, 0); hasBooted = false; rsiGateState = 'idle'; $('bootOverlay').hidden = true; $('rsiGateOverlay').hidden = true; unsubscribeProfileChannel(); unsubscribeNotifChannel(); unsubscribePresenceChannel(); unsubscribeDataChannels(); routeApp(); return; }
     if(event === 'SIGNED_IN' && !wasLoggedIn){
       subscribeProfileChannel();
       subscribeNotifChannel();
@@ -12729,10 +13003,86 @@ async function initAuth(){
     // Même utilisateur déjà connecté (rafraîchissement du jeton, retour sur l'onglet après une photo/appareil
     // photo, etc.) : on ne ré-aiguille PAS la page, sinon le formulaire en cours se ferme et se vide.
     if(prevUserId && s2 && s2.user && s2.user.id === prevUserId && event !== 'USER_UPDATED') return;
-    routeApp();
+    { const snap = captureFormState(); window.__keepFormState = true; routeApp(); window.__keepFormState = false; if(snap) restoreFormState(snap); }
   });
 }
 
+// ===== Sauvegarde des formulaires (annonce, blueprint, desired item, shop) =====
+// Si le navigateur recharge la page ou relance la session quand on change d'onglet/d'application, on revient
+// sur le formulaire en cours, avec ce qui était déjà saisi (hors photo à recadrer, qui ne peut pas être gardée).
+const FORM_VIEWS = { 'view-seller-create-listing':'listing', 'view-seller-create-blueprint':'blueprint', 'view-seller-create-resource':'resource', 'view-seller-shop-edit':'shop-edit' };
+function captureFormState(){
+  if(!session) return null;
+  let sec = null, kind = null;
+  for(const id in FORM_VIEWS){ const el = $(id); if(el && !el.hidden){ sec = el; kind = FORM_VIEWS[id]; break; } }
+  if(!sec) return null;
+  const f = {};
+  sec.querySelectorAll('input, textarea, select').forEach(el => {
+    if(!el.id || el.type === 'file') return;
+    f[el.id] = (el.type === 'checkbox' || el.type === 'radio') ? !!el.checked : el.value;
+  });
+  const st = { uid: session.user.id, ts: Date.now(), k: kind, f };
+  if(kind === 'listing'){ st.edit = editingListingId || null; st.tags = listingTagsState; }
+  if(kind === 'blueprint'){ st.edit = editingBlueprintId || null; }
+  if(kind === 'shop-edit'){ st.color = selectedShopColor; st.tex = selectedShopTexture; st.frame = selectedShopFrame; }
+  return st;
+}
+function saveFormState(){
+  try{ const st = captureFormState(); if(st) localStorage.setItem('su-form-state', JSON.stringify(st)); }catch(e){}
+}
+function loadFormSnapshot(){
+  try{
+    const raw = localStorage.getItem('su-form-state'); if(!raw) return null;
+    const st = JSON.parse(raw);
+    if(!st || !session || st.uid !== session.user.id || Date.now() - st.ts > 12*3600*1000){ localStorage.removeItem('su-form-state'); return null; }
+    return st;
+  }catch(e){ return null; }
+}
+function applyFormFields(st){
+  Object.entries(st.f || {}).forEach(([id, v]) => {
+    const el = $(id); if(!el || el.type === 'file') return;
+    if(el.type === 'checkbox' || el.type === 'radio') el.checked = !!v; else el.value = v;
+  });
+}
+async function restoreFormState(st){
+  if(!st || !session) return;
+  try{
+    if(st.k === 'listing'){
+      if(st.edit){
+        if(!myListingsCache.find(x => x.id === st.edit)){ const { data } = await sb.from('marketplace_listings').select('*').eq('id', st.edit).maybeSingle(); if(!data) return; myListingsCache = [data, ...myListingsCache]; }
+        openEditListing(st.edit);
+      } else openSellerCreateOption('listing');
+      applyFormFields(st);
+      if(st.tags){ listingTagsState = { ...listingTagsState, ...st.tags }; renderListingTagButtons(); }
+      if(typeof onListingStockModeChange === 'function') applyListingMode(true);
+      updateListingLivePreview();
+    } else if(st.k === 'blueprint'){
+      if(st.edit){
+        if(!myBlueprintsCache.find(x => x.id === st.edit)){ const { data } = await sb.from('blueprints').select('*').eq('id', st.edit).maybeSingle(); if(!data) return; myBlueprintsCache = [data, ...myBlueprintsCache]; }
+        openEditBlueprint(st.edit);
+      } else openSellerCreateOption('blueprint');
+      applyFormFields(st);
+      updateBlueprintLivePreview();
+    } else if(st.k === 'resource'){
+      openSellerCreateOption('resource');
+      applyFormFields(st);
+    } else if(st.k === 'shop-edit'){
+      await openSellerShopEdit();
+      applyFormFields(st);
+      if(st.color) selectedShopColor = st.color;
+      if(st.tex) selectedShopTexture = st.tex;
+      if(st.frame && frameAllowed(st.frame)) selectedShopFrame = st.frame;
+      initShopThemePicker(); initShopTexturePicker(); initShopFramePicker(); updateShopLivePreview();
+    }
+  }catch(e){ console.warn('restoreFormState', e); }
+}
+{
+  let t = null;
+  document.addEventListener('input', () => { clearTimeout(t); t = setTimeout(saveFormState, 350); }, true);
+  document.addEventListener('change', () => { clearTimeout(t); t = setTimeout(saveFormState, 350); }, true);
+  document.addEventListener('visibilitychange', () => { if(document.hidden) saveFormState(); });
+  window.addEventListener('pagehide', saveFormState);
+}
 addItem();
 applyLang();
 initNotifSounds();

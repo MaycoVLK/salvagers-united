@@ -1783,9 +1783,6 @@
     /* Succès : bande horizontale défilante façon stories/badges de profil, au lieu d'un pavé qui s'étale
        sur plusieurs lignes et pousse tout le reste de la page plus bas. Le bouton "voir tout" bascule
        vers la grille complète si besoin. */
-    #shopAchvCard .achv-grid.achv-grid-collapsible{gap:8px; padding-bottom:4px; overflow-x:auto; -webkit-overflow-scrolling:touch;}
-    #shopAchvCard .achv-grid.achv-grid-collapsible .achv-badge{flex:0 0 78px; padding:8px 4px;}
-    #shopAchvCard.achv-expanded .achv-grid.achv-grid-collapsible{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));}
     #shopAchvCard .achv-badge svg{width:22px; height:22px;}
     #shopAchvCard .achv-badge span{font-size:.56rem;}
   }
@@ -2267,7 +2264,25 @@ body.sw-grabbing, body.sw-grabbing *{cursor:grabbing !important; user-select:non
 .swi-foot .danger{color:#ff6b6b; border-color:#5a2a2a;}
 .swi-foot .danger:hover{border-color:#ff6b6b;}
 .swi-note{font-size:.78rem; color:var(--muted); line-height:1.45; margin:0 0 10px;}
-@media (max-width:720px){ .shop-layout-bar{display:none !important;} .shop-widget-grid{gap:24px;} .shop-widget-grid .rowx{flex-direction:column; gap:24px;} .shop-widget-grid .colx{flex:1 1 auto !important; width:100%;} }
+/* ===== DISPOSITION MOBILE (réelle sur téléphone, ou aperçu quand on l'édite depuis un PC) ===== */
+@media (max-width:720px){ .shop-widget-grid{gap:14px;} .shop-widget-grid .rowx, .shop-widget-grid .colx{gap:12px;} .shop-layout-bar .lb-state{flex:1 1 100%;} .colsplit{display:none !important;} .shop-widget-grid.editing .sw-hres{display:none !important;}
+  #swInspector{top:auto; left:0; right:0; bottom:0; width:100%; max-height:64vh; border-left:none; border-top:2px solid var(--accent); box-shadow:0 -10px 40px rgba(0,0,0,.65); transform:translateY(105%);}
+  #swInspector.open{transform:none;} }
+.shop-widget-grid.mprev{box-sizing:content-box; width:var(--pw,362px); max-width:100%; margin:10px auto 0; padding:14px; border:2px solid var(--accent-dim); box-shadow:0 0 40px var(--accent-dim); background:var(--bg); gap:14px;}
+.shop-widget-grid.mprev .rowx, .shop-widget-grid.mprev .colx{gap:12px;} .shop-widget-grid.mprev .colsplit{display:none !important;}
+@media (pointer:coarse){ .shop-widget-grid.editing .sw-hres{display:none !important;} .shop-widget-grid.editing .sw-bar{touch-action:auto; height:40px;} .sw-bar .sw-gear{height:32px;} }
+.lb-tabs{display:inline-flex;} .lb-tabs button{font-family:inherit; background:var(--panel); color:var(--muted); border:1px solid var(--accent-dim); padding:9px 16px; cursor:pointer; letter-spacing:2px; font-size:.82rem;} .lb-tabs button.on{background:var(--accent); color:#000; border-color:var(--accent);}
+.lb-state{display:inline-flex; align-items:center; gap:9px; border:1px solid; padding:8px 12px; font-size:.76rem; letter-spacing:1px; line-height:1.35;} .lb-state i{width:10px; height:10px; display:block; flex:0 0 auto;} .lb-state b{font-weight:400; letter-spacing:2px;}
+.lb-state.au{color:#3dff7a; border-color:rgba(61,255,122,.55);} .lb-state.au i{background:#3dff7a;} .lb-state.cu{color:#ffb020; border-color:rgba(255,176,32,.6);} .lb-state.cu i{background:#ffb020;}
+.lb-sp{flex:1 1 12px;} .lb-pw{display:inline-flex; align-items:center; gap:6px; color:var(--muted); font-size:.74rem; letter-spacing:1px;} .lb-pw button{font-family:inherit; background:var(--panel); color:var(--muted); border:1px solid var(--accent-dim); padding:7px 10px; cursor:pointer; font-size:.76rem;} .lb-pw button.on{background:var(--accent); color:#000; border-color:var(--accent);}
+.shop-layout-bar .lb-hint{order:9; flex:1 1 100%; margin:0;}
+#swBottom{position:fixed; left:0; right:0; bottom:0; z-index:350; display:flex; gap:8px; padding:10px 12px calc(10px + env(safe-area-inset-bottom)); background:var(--bg2); border-top:2px solid var(--accent); font-family:'Share Tech Mono',monospace;}
+#swBottom[hidden], #swAddPop[hidden]{display:none;}
+#swBottom button, #swAddPop button{flex:1; min-height:46px; font-family:inherit; background:var(--panel); color:var(--accent); border:1px solid var(--accent-dim); border-radius:2px; letter-spacing:2px; font-size:.86rem; cursor:pointer;} #swBottom button.p{background:var(--accent); color:#000; border-color:var(--accent);}
+#swAddPop{position:fixed; left:12px; right:12px; bottom:78px; z-index:351; display:flex; flex-direction:column; gap:6px; padding:10px; max-height:50vh; overflow:auto; background:var(--bg2); border:2px solid var(--accent); box-shadow:0 0 30px rgba(0,0,0,.7); font-family:'Share Tech Mono',monospace;} #swAddPop button{flex:0 0 auto; text-align:left; padding:0 14px;} #swAddPop .h{font-size:.7rem; letter-spacing:2px; color:var(--muted); margin-top:6px;}
+body.sw-medit{padding-bottom:88px;}
+#swGhost{position:fixed; left:0; top:0; z-index:500; pointer-events:none; display:none; background:var(--accent); color:#000; padding:9px 16px; font-size:.82rem; letter-spacing:1px; box-shadow:0 8px 24px rgba(0,0,0,.65); white-space:nowrap; font-family:'Share Tech Mono',monospace;}
+.swi-mtag{font-size:.7rem; letter-spacing:2px; color:#ffb020; padding:12px 0 0;}
 
 /* ===== statistiques en presets ===== */
 .sx-grid.sx-list{grid-template-columns:minmax(0,1fr);gap:0}
@@ -2289,7 +2304,7 @@ body.sw-grabbing, body.sw-grabbing *{cursor:grabbing !important; user-select:non
 .sx-v.sm{font-size:30px;}
 .sx-v.accent{color:var(--accent);} .sx-v.green{color:#3dff7a;}
 .sx-s{font-size:11px; color:var(--muted); min-height:1.4em; line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;}
-@media (max-width:720px){ .sx-grid{--sc:2 !important;} .sx-v{font-size:38px;} }
+@media (max-width:720px){ .sx-v{font-size:38px;} }
 /* succès : les badges remplissent la hauteur du widget */
 .sw[data-w="ach"][data-fixed="1"] .sw-in{display:flex; flex-direction:column;}
 .sw[data-w="ach"][data-fixed="1"] .sw-in > .shop-stats-achv-row{flex:1 1 auto; display:flex; flex-direction:column; min-height:0;}
@@ -10251,7 +10266,8 @@ function shopStatTiles(sales, listings, bps){
 }
 function renderShopStrip(sales, listings, bps){
   const box = $('shopStatsStrip'); if(!box) return;
-  const preset = (swLayout && !swMobile() && swLayout.items.stats && swLayout.items.stats.sp) || 'basic';
+  const SL = (swPC || swLayout) ? swEff() : null;
+  const preset = (SL && SL.items.stats && SL.items.stats.sp) || 'basic';
   const ids = SX_PRESETS[preset==='auto' ? 'complete' : preset] || SX_PRESETS.basic;
   const tiles = shopStatTiles(sales, listings, bps);
   box.innerHTML = '<div class="sx-grid">' + ids.map(id=>{
@@ -10805,8 +10821,8 @@ function openShopAllResources(){
 }
 
 // ===== WIDGETS DE BOUTIQUE (v3 : lignes > colonnes > widgets empilés) =====
-Object.assign(T.fr, {layoutBtn:"ÉDITER LES WIDGETS", layoutSave:"ENREGISTRER", layoutCancel:"ANNULER", layoutReset:"RÉINITIALISER", layoutAddNote:"+ NOTE", layoutAddShape:"+ FORME", layoutEditing:"Glisse un widget par sa barre : sur le bord d'un autre pour le mettre à côté, au-dessus ou en dessous. Tire les poignées ⇔ et ═ pour redimensionner. Clique sur un widget pour le régler.", layoutSaved:"Disposition enregistrée.", layoutErr:"Impossible d'enregistrer la disposition (la colonne « layout » existe-t-elle dans Supabase ?).", layoutHiddenLbl:"MASQUÉS :", wStats:"Statistiques", wAch:"Succès & rang", wListings:"Objets en vente", wBlueprints:"Blueprints", wRequests:"Objets recherchés", wNote:"Note", wShape:"Forme", rowLbl:"LIGNE", rowEq:"MÊME HAUTEUR", rowEqW:"LARGEURS ÉGALES", gapHint:"＋ NOUVELLE LIGNE ICI", spacerHint:"Espace vide — dépose un widget ici", swiTitle:"Réglages", swiContent:"Contenu", swiSize:"Taille", swiWidth:"Largeur de la colonne", swiHeight:"Hauteur minimale", swiAuto:"AUTO", swiCards:"Cartes affichées", swiFrame:"Encadré", swiTheme:"Thème", swiColor:"Couleur", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOISIR UNE IMAGE", swiRemove:"RETIRER", swiFill:"REMPLIR", swiContain:"CONTENIR", swiAlign:"Alignement du texte", swiTitleLbl:"TITRE", swiTextLbl:"TEXTE", swiHide:"MASQUER", swiDelete:"SUPPRIMER", swiClose:"FERMER", swiUp:"Envoi de l'image…", swiUpErr:"Envoi de l'image impossible.", swiNone:"Aucune", swiOn:"OUI", swiOff:"NON", swiShopCol:"Couleur de la boutique", swiLeft:"GAUCHE", swiCenter:"CENTRE", swiRight:"DROITE", swiWNote:"Un widget seul sur sa ligne peut être réduit : un espace vide est créé à côté, où tu pourras déposer un autre widget. Tailles : ¼, ½, ¾ ou 1/1.", swiMax:"Maximum atteint (6).", thDefault:"Simple", thNeon:"Néon", thTerminal:"Terminal", thPaper:"Teinté", thCorners:"Coins", thScan:"Scanlines", thGrid:"Grille", thDouble:"Double", thHazard:"Hazard", thNone:"Aucun", swiStyle:"Style du widget", swiDivStyle:"Style du trait", wDiv:"Séparateur", layoutAddDiv:"+ SÉPARATEUR", dsLine:"Ligne", dsThick:"Épaisse", dsDashed:"Tirets", dsDots:"Points", dsDouble:"Double", dsPixel:"Pixel", dsHazard:"Hazard", dsFade:"Dégradé", swiHTip:"hauteur min.", swiStatsPreset:"Statistiques affichées", swiStatsNote:"BASIQUE = les stats de base. MARCHÉ, CATALOGUE, PROFIL, COMPLET = plus d'infos. AUTO affiche plus de stats quand le widget est grand. Si le widget est trop petit, les dernières stats sont masquées.", spAuto:"AUTO", spBasic:"BASIQUE", spMarket:"MARCHÉ", spCatalog:"CATALOGUE", spProfile:"PROFIL", spComplete:"COMPLET", sxSold:"ARTICLES VENDUS", sxEarned:"TOTAL GAGNÉ", sxAvg:"VENTE MOYENNE", sxTop:"PLUS GROSSE VENTE", sxCourier:"VENTES VIA COURSIER", sxHand:"EN MAIN PROPRE", sxStock:"STOCK TOTAL", sxUnits:"unités", sxAvgP:"PRIX MOYEN", sxMaxP:"ANNONCE LA + CHÈRE", sxMinP:"ANNONCE LA - CHÈRE", sxCraft:"CRAFTS LIVRÉS", sxWanted:"OBJETS RECHERCHÉS", sxWantedQty:"QUANTITÉ RECHERCHÉE", sxWantedMax:"OFFRE MAX RECHERCHÉE", sxRank:"RANG VENDEUR", sxAch:"SUCCÈS", sxSince:"EN LIGNE DEPUIS", sxLoc:"BASE", swiFontSize:"Taille du texte", swiCardsNote:"AUTO : le nombre de cartes s'adapte à la taille du widget."});
-Object.assign(T.en, {layoutBtn:"EDIT WIDGETS", layoutSave:"SAVE", layoutCancel:"CANCEL", layoutReset:"RESET", layoutAddNote:"+ NOTE", layoutAddShape:"+ SHAPE", layoutEditing:"Drag a widget by its bar: onto another one's edge to put it beside, above or below. Pull the ⇔ and ═ handles to resize. Click a widget to adjust it.", layoutSaved:"Layout saved.", layoutErr:"Could not save the layout (does the “layout” column exist in Supabase?).", layoutHiddenLbl:"HIDDEN:", wStats:"Statistics", wAch:"Achievements & rank", wListings:"Items for sale", wBlueprints:"Blueprints", wRequests:"Wanted items", wNote:"Note", wShape:"Shape", rowLbl:"ROW", rowEq:"SAME HEIGHT", rowEqW:"EQUAL WIDTHS", gapHint:"＋ NEW ROW HERE", spacerHint:"Empty space — drop a widget here", swiTitle:"Settings", swiContent:"Content", swiSize:"Size", swiWidth:"Column width", swiHeight:"Minimum height", swiAuto:"AUTO", swiCards:"Cards shown", swiFrame:"Frame", swiTheme:"Theme", swiColor:"Color", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOOSE AN IMAGE", swiRemove:"REMOVE", swiFill:"FILL", swiContain:"FIT", swiAlign:"Text alignment", swiTitleLbl:"TITLE", swiTextLbl:"TEXT", swiHide:"HIDE", swiDelete:"DELETE", swiClose:"CLOSE", swiUp:"Uploading image…", swiUpErr:"Could not upload the image.", swiNone:"None", swiOn:"ON", swiOff:"OFF", swiShopCol:"Shop color", swiLeft:"LEFT", swiCenter:"CENTER", swiRight:"RIGHT", swiWNote:"A widget alone on its row can be narrowed: an empty space is created beside it, where you can drop another widget. Sizes: ¼, ½, ¾ or 1/1.", swiMax:"Maximum reached (6).", thDefault:"Simple", thNeon:"Neon", thTerminal:"Terminal", thPaper:"Tinted", thCorners:"Corners", thScan:"Scanlines", thGrid:"Grid", thDouble:"Double", thHazard:"Hazard", thNone:"None", swiStyle:"Widget style", swiDivStyle:"Line style", wDiv:"Divider", layoutAddDiv:"+ DIVIDER", dsLine:"Line", dsThick:"Thick", dsDashed:"Dashed", dsDots:"Dots", dsDouble:"Double", dsPixel:"Pixel", dsHazard:"Hazard", dsFade:"Fade", swiHTip:"min height", swiStatsPreset:"Statistics shown", swiStatsNote:"BASIC = the base stats. MARKET, CATALOG, PROFILE, COMPLETE = more info. AUTO shows more stats when the widget is big. If the widget is too small, the last stats are hidden.", spAuto:"AUTO", spBasic:"BASIC", spMarket:"MARKET", spCatalog:"CATALOG", spProfile:"PROFILE", spComplete:"COMPLETE", sxSold:"ITEMS SOLD", sxEarned:"TOTAL EARNED", sxAvg:"AVERAGE SALE", sxTop:"BIGGEST SALE", sxCourier:"SALES VIA COURIER", sxHand:"HAND-TO-HAND", sxStock:"TOTAL STOCK", sxUnits:"units", sxAvgP:"AVERAGE PRICE", sxMaxP:"PRICIEST LISTING", sxMinP:"CHEAPEST LISTING", sxCraft:"CRAFTS DELIVERED", sxWanted:"WANTED ITEMS", sxWantedQty:"QUANTITY WANTED", sxWantedMax:"TOP WANTED OFFER", sxRank:"SELLER RANK", sxAch:"ACHIEVEMENTS", sxSince:"ONLINE SINCE", sxLoc:"BASE", swiFontSize:"Text size", swiCardsNote:"AUTO: the number of cards adapts to the widget size."});
+Object.assign(T.fr, {layoutBtn:"ÉDITER LES WIDGETS", layoutSave:"ENREGISTRER", layoutCancel:"ANNULER", layoutReset:"RÉINITIALISER", layoutAddNote:"+ NOTE", layoutAddShape:"+ FORME", layoutEditing:"Glisse un widget par sa barre : sur le bord d'un autre pour le mettre à côté, au-dessus ou en dessous. Tire les poignées ⇔ et ═ pour redimensionner. Clique sur un widget pour le régler.", layoutSaved:"Disposition enregistrée.", layoutErr:"Impossible d'enregistrer la disposition (la colonne « layout » existe-t-elle dans Supabase ?).", layoutHiddenLbl:"MASQUÉS :", wStats:"Statistiques", wAch:"Succès & rang", wListings:"Objets en vente", wBlueprints:"Blueprints", wRequests:"Objets recherchés", wNote:"Note", wShape:"Forme", rowLbl:"LIGNE", rowEq:"MÊME HAUTEUR", rowEqW:"LARGEURS ÉGALES", gapHint:"＋ NOUVELLE LIGNE ICI", spacerHint:"Espace vide — dépose un widget ici", swiTitle:"Réglages", swiContent:"Contenu", swiSize:"Taille", swiWidth:"Largeur de la colonne", swiHeight:"Hauteur minimale", swiAuto:"AUTO", swiCards:"Cartes affichées", swiFrame:"Encadré", swiTheme:"Thème", swiColor:"Couleur", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOISIR UNE IMAGE", swiRemove:"RETIRER", swiFill:"REMPLIR", swiContain:"CONTENIR", swiAlign:"Alignement du texte", swiTitleLbl:"TITRE", swiTextLbl:"TEXTE", swiHide:"MASQUER", swiDelete:"SUPPRIMER", swiClose:"FERMER", swiUp:"Envoi de l'image…", swiUpErr:"Envoi de l'image impossible.", swiNone:"Aucune", swiOn:"OUI", swiOff:"NON", swiShopCol:"Couleur de la boutique", swiLeft:"GAUCHE", swiCenter:"CENTRE", swiRight:"DROITE", swiWNote:"Un widget seul sur sa ligne peut être réduit : un espace vide est créé à côté, où tu pourras déposer un autre widget. Tailles : ¼, ½, ¾ ou 1/1.", swiMax:"Maximum atteint (6).", thDefault:"Simple", thNeon:"Néon", thTerminal:"Terminal", thPaper:"Teinté", thCorners:"Coins", thScan:"Scanlines", thGrid:"Grille", thDouble:"Double", thHazard:"Hazard", thNone:"Aucun", swiStyle:"Style du widget", swiDivStyle:"Style du trait", wDiv:"Séparateur", layoutAddDiv:"+ SÉPARATEUR", dsLine:"Ligne", dsThick:"Épaisse", dsDashed:"Tirets", dsDots:"Points", dsDouble:"Double", dsPixel:"Pixel", dsHazard:"Hazard", dsFade:"Dégradé", swiHTip:"hauteur min.", swiStatsPreset:"Statistiques affichées", swiStatsNote:"BASIQUE = les stats de base. MARCHÉ, CATALOGUE, PROFIL, COMPLET = plus d'infos. AUTO affiche plus de stats quand le widget est grand. Si le widget est trop petit, les dernières stats sont masquées.", spAuto:"AUTO", spBasic:"BASIQUE", spMarket:"MARCHÉ", spCatalog:"CATALOGUE", spProfile:"PROFIL", spComplete:"COMPLET", sxSold:"ARTICLES VENDUS", sxEarned:"TOTAL GAGNÉ", sxAvg:"VENTE MOYENNE", sxTop:"PLUS GROSSE VENTE", sxCourier:"VENTES VIA COURSIER", sxHand:"EN MAIN PROPRE", sxStock:"STOCK TOTAL", sxUnits:"unités", sxAvgP:"PRIX MOYEN", sxMaxP:"ANNONCE LA + CHÈRE", sxMinP:"ANNONCE LA - CHÈRE", sxCraft:"CRAFTS LIVRÉS", sxWanted:"OBJETS RECHERCHÉS", sxWantedQty:"QUANTITÉ RECHERCHÉE", sxWantedMax:"OFFRE MAX RECHERCHÉE", sxRank:"RANG VENDEUR", sxAch:"SUCCÈS", sxSince:"EN LIGNE DEPUIS", sxLoc:"BASE", swiFontSize:"Taille du texte", swiCardsNote:"AUTO : le nombre de cartes s'adapte à la taille du widget.", layoutTabPc:"PC", layoutTabM:"MOBILE", stAuto:"AUTO", stAutoTxt:"suit ta disposition PC", stCustom:"PERSONNALISÉE", stCustomTxt:"mobile uniquement", resetAuto:"REVENIR À L'AUTO", resetAutoAsk:"Revenir à la disposition mobile automatique ? Ta disposition mobile personnalisée sera perdue (la version PC n'est pas touchée).", prevW:"LARGEUR", mHint:"Maintiens un widget puis déplace-le. Touche-le pour régler ses options.", mHintDesk:"Aperçu téléphone : glisse les widgets avec la souris, clique sur un widget pour ses réglages. Ta disposition PC n'est pas modifiée.", mAdd:"+ AJOUTER", mSet:"RÉGLAGES DE LA DISPOSITION MOBILE", swiHideM:"MASQUER SUR MOBILE", swiMNote:"Ces réglages ne concernent que la disposition mobile.", swiWNoteM:"Sur mobile : pleine largeur, ou ½ pour mettre deux widgets côte à côte."});
+Object.assign(T.en, {layoutBtn:"EDIT WIDGETS", layoutSave:"SAVE", layoutCancel:"CANCEL", layoutReset:"RESET", layoutAddNote:"+ NOTE", layoutAddShape:"+ SHAPE", layoutEditing:"Drag a widget by its bar: onto another one's edge to put it beside, above or below. Pull the ⇔ and ═ handles to resize. Click a widget to adjust it.", layoutSaved:"Layout saved.", layoutErr:"Could not save the layout (does the “layout” column exist in Supabase?).", layoutHiddenLbl:"HIDDEN:", wStats:"Statistics", wAch:"Achievements & rank", wListings:"Items for sale", wBlueprints:"Blueprints", wRequests:"Wanted items", wNote:"Note", wShape:"Shape", rowLbl:"ROW", rowEq:"SAME HEIGHT", rowEqW:"EQUAL WIDTHS", gapHint:"＋ NEW ROW HERE", spacerHint:"Empty space — drop a widget here", swiTitle:"Settings", swiContent:"Content", swiSize:"Size", swiWidth:"Column width", swiHeight:"Minimum height", swiAuto:"AUTO", swiCards:"Cards shown", swiFrame:"Frame", swiTheme:"Theme", swiColor:"Color", swiTexture:"Texture", swiFrames:"Frame", swiImage:"Image", swiPick:"CHOOSE AN IMAGE", swiRemove:"REMOVE", swiFill:"FILL", swiContain:"FIT", swiAlign:"Text alignment", swiTitleLbl:"TITLE", swiTextLbl:"TEXT", swiHide:"HIDE", swiDelete:"DELETE", swiClose:"CLOSE", swiUp:"Uploading image…", swiUpErr:"Could not upload the image.", swiNone:"None", swiOn:"ON", swiOff:"OFF", swiShopCol:"Shop color", swiLeft:"LEFT", swiCenter:"CENTER", swiRight:"RIGHT", swiWNote:"A widget alone on its row can be narrowed: an empty space is created beside it, where you can drop another widget. Sizes: ¼, ½, ¾ or 1/1.", swiMax:"Maximum reached (6).", thDefault:"Simple", thNeon:"Neon", thTerminal:"Terminal", thPaper:"Tinted", thCorners:"Corners", thScan:"Scanlines", thGrid:"Grid", thDouble:"Double", thHazard:"Hazard", thNone:"None", swiStyle:"Widget style", swiDivStyle:"Line style", wDiv:"Divider", layoutAddDiv:"+ DIVIDER", dsLine:"Line", dsThick:"Thick", dsDashed:"Dashed", dsDots:"Dots", dsDouble:"Double", dsPixel:"Pixel", dsHazard:"Hazard", dsFade:"Fade", swiHTip:"min height", swiStatsPreset:"Statistics shown", swiStatsNote:"BASIC = the base stats. MARKET, CATALOG, PROFILE, COMPLETE = more info. AUTO shows more stats when the widget is big. If the widget is too small, the last stats are hidden.", spAuto:"AUTO", spBasic:"BASIC", spMarket:"MARKET", spCatalog:"CATALOG", spProfile:"PROFILE", spComplete:"COMPLETE", sxSold:"ITEMS SOLD", sxEarned:"TOTAL EARNED", sxAvg:"AVERAGE SALE", sxTop:"BIGGEST SALE", sxCourier:"SALES VIA COURIER", sxHand:"HAND-TO-HAND", sxStock:"TOTAL STOCK", sxUnits:"units", sxAvgP:"AVERAGE PRICE", sxMaxP:"PRICIEST LISTING", sxMinP:"CHEAPEST LISTING", sxCraft:"CRAFTS DELIVERED", sxWanted:"WANTED ITEMS", sxWantedQty:"QUANTITY WANTED", sxWantedMax:"TOP WANTED OFFER", sxRank:"SELLER RANK", sxAch:"ACHIEVEMENTS", sxSince:"ONLINE SINCE", sxLoc:"BASE", swiFontSize:"Text size", swiCardsNote:"AUTO: the number of cards adapts to the widget size.", layoutTabPc:"DESKTOP", layoutTabM:"MOBILE", stAuto:"AUTO", stAutoTxt:"follows your desktop layout", stCustom:"CUSTOM", stCustomTxt:"mobile only", resetAuto:"RESET TO AUTO", resetAutoAsk:"Go back to the automatic mobile layout? Your custom mobile layout will be lost (your desktop layout is not affected).", prevW:"WIDTH", mHint:"Press and hold a widget, then move it. Tap it to adjust its settings.", mHintDesk:"Phone preview: drag widgets with the mouse, click a widget for its settings. Your desktop layout is not changed.", mAdd:"+ ADD", mSet:"MOBILE LAYOUT SETTINGS", swiHideM:"HIDE ON MOBILE", swiMNote:"These settings apply to the mobile layout only.", swiWNoteM:"On mobile: full width, or ½ to put two widgets side by side."});
 const SW_BUILTIN = ['stats','ach','listings','blueprints','requests'];
 const SW_CARDS = ['listings','blueprints','requests'];
 const SW_TITLE = {stats:'wStats', ach:'wAch', listings:'wListings', blueprints:'wBlueprints', requests:'wRequests'};
@@ -10828,10 +10844,14 @@ const SW_THEMES = ['default','neon','terminal','paper','corners','scan','grid','
 const SW_DS = ['line','thick','dashed','dots','double','pixel','hazard','fade'];
 const SW_COLORS = ['', '#ffb020', '#4da3ff', '#3dff7a', '#ff4d6d', '#a56bff', '#4dd9c0'];
 const SW_MAXCOLS = 4, SW_MINW = 3, SW_MAXCUSTOM = 6;
-let swLayout = null, swSaved = null, swEditing = false, swOwner = false, swShop = null, swSel = null, swRO = null, swRAF = 0, swDrag = null, swScrollTimer = null, swMobileCache = null;
+let swLayout = null, swSaved = null, swEditing = false, swOwner = false, swShop = null, swSel = null, swRO = null, swRAF = 0, swDrag = null, swScrollTimer = null, swMobileCache = null, swPC = null, swMC = null, swES = null, swPW = 390, swTouch = null;
 const swCustom = {};
 const swMQ = window.matchMedia ? window.matchMedia('(max-width:720px)') : { matches:false, addEventListener(){} };
 function swMobile(){ return !!swMQ.matches; }
+// Nombre maximal de colonnes de la disposition affichée / éditée : 2 sur mobile, 4 sur PC
+function swMaxColsNow(){ return (swEditing && swES && swES.target==='m') ? 2 : 4; }
+// La vue affichée est-elle celle du téléphone ? (vrai téléphone, ou aperçu mobile pendant l'édition sur PC)
+function swIsMView(){ return swEditing && swES ? swES.target==='m' : swMobile(); }
 const swIsNote = id => /^n\d{1,3}$/.test(id);
 const swIsShape = id => /^s\d{1,3}$/.test(id);
 const swIsDiv = id => /^d\d{1,3}$/.test(id);
@@ -10859,9 +10879,10 @@ function swCleanProps(id, p){
   }
   return o;
 }
-function swNormW(cols){
+function swNormW(cols, mob){
   const n = cols.length;
   if(n===1){ cols[0].w = 12; return; }
+  if(mob){ cols.forEach(c=>{ c.w = 6; }); return; }
   let q = cols.map(c=> Math.max(1, Math.round((parseInt(c.w)||0)/3)));
   if(cols.some(c=>!(parseInt(c.w)>0))) q = cols.map((_,k)=> Math.floor(4/n) + (k<4%n?1:0));
   let tot = q.reduce((a,b)=>a+b,0), guard = 20;
@@ -10871,10 +10892,30 @@ function swNormW(cols){
   }
   cols.forEach((c,k)=>{ c.w = q[k]*3; });
 }
-function swCleanup(L){
+function swCleanup(L, mob){
+  if(mob===undefined) mob = swMaxColsNow()===2;
+  const max = mob ? 2 : SW_MAXCOLS;
   L.rows.forEach(r=>{ r.cols = r.cols.filter(c=> c.ids.length || c.sp); if(!r.cols.some(c=>c.ids.length)) r.cols = []; });
   L.rows = L.rows.filter(r=>r.cols.length);
-  L.rows.forEach(r=>{ r.cols = r.cols.slice(0,SW_MAXCOLS); swNormW(r.cols); r.cols.forEach(c=>{ if(c.ids.length) delete c.sp; }); });
+  L.rows.forEach(r=>{ r.cols = r.cols.slice(0,max); swNormW(r.cols, mob); r.cols.forEach(c=>{ if(c.ids.length) delete c.sp; }); });
+}
+// Disposition mobile AUTOMATIQUE, déduite de celle du PC : lecture ligne par ligne, de gauche à droite puis de haut en bas ;
+// les widgets étroits (≤ ½) d'une même ligne PC se mettent deux par deux, tout le reste (et les séparateurs) en pleine largeur.
+function swAutoFrom(pc){
+  const m = { v:2, rows:[], items:{}, off:pc.off.slice() };
+  Object.keys(pc.items).forEach(id=>{ const q = Object.assign({}, pc.items[id]); if(!swIsShape(id)) q.mh = 0; delete q.n; m.items[id] = q; });
+  const full = id => m.rows.push({ eq:0, cols:[{ w:12, ids:[id] }] });
+  pc.rows.forEach(row=>{
+    let buf = null;
+    row.cols.forEach(col=> col.ids.forEach(id=>{
+      const narrow = col.w<=6 && !swIsDiv(id);
+      if(narrow){ if(buf){ m.rows.push({ eq:0, cols:[{ w:6, ids:[buf] }, { w:6, ids:[id] }] }); buf = null; } else buf = id; }
+      else { if(buf){ full(buf); buf = null; } full(id); }
+    }));
+    if(buf) full(buf);
+  });
+  swCleanup(m, true);
+  return m;
 }
 function swFromV1(L){
   const byRow = {}, off = [], items = {};
@@ -10887,7 +10928,7 @@ function swFromV1(L){
   const rows = Object.keys(byRow).map(Number).sort((a,b)=>a-b).map(k=>({ eq:0, cols: byRow[k].sort((a,b)=>a.c-b.c).slice(0,SW_MAXCOLS).map(it=>({ w:it.w, ids:[it.id] })) }));
   return { v:2, rows, items, off };
 }
-function swSanitize(L){
+function swSanitize(L, mob){
   if(!L || typeof L!=='object') return swDefault();
   if(L.v!==2 && Array.isArray(L.items)) L = swFromV1(L);
   if(!Array.isArray(L.rows)) return swDefault();
@@ -10898,7 +10939,7 @@ function swSanitize(L){
   L.rows.forEach(r=>{
     if(!r || !Array.isArray(r.cols)) return;
     const cols = [];
-    r.cols.slice(0,SW_MAXCOLS).forEach(c=>{
+    r.cols.slice(0,mob?2:SW_MAXCOLS).forEach(c=>{
       if(!c || !Array.isArray(c.ids)) return;
       const ids = c.ids.filter(id=>okId(id) && !seen.has(id));
       ids.forEach(take);
@@ -10908,19 +10949,24 @@ function swSanitize(L){
   });
   (Array.isArray(L.off)?L.off:[]).forEach(id=>{ if(okId(id) && !seen.has(id)){ take(id); out.off.push(id); } });
   SW_BUILTIN.forEach(k=>{ if(!seen.has(k)){ take(k); out.rows.push({ eq:0, cols:[{ w:12, ids:[k] }] }); } });
-  swCleanup(out);
+  swCleanup(out, !!mob);
   return out;
 }
 function swFind(L, id){ for(const row of L.rows) for(const col of row.cols){ const i = col.ids.indexOf(id); if(i>=0) return { row, col, i }; } return null; }
 function swTitleOf(id){ const d = T[LANG]; if(SW_TITLE[id]) return d[SW_TITLE[id]]; const p = swLayout.items[id] || {}; return p.title || (swIsShape(id) ? d.wShape : swIsDiv(id) ? d.wDiv : d.wNote); }
-function swEff(){ if(swMobile()){ if(!swMobileCache) swMobileCache = swDefault(); return swMobileCache; } return swLayout; }
+function swEff(){
+  if(swEditing && swES) return swLayout;
+  if(swMobile()){ if(!swMobileCache) swMobileCache = swMC || swAutoFrom(swPC || swDefault()); return swMobileCache; }
+  return swPC || swLayout;
+}
 // Nombre de cartes affichées pour une section (réglable par widget ; sur mobile : ancien comportement)
 function swCap(kind){
-  const p = (!swMobile() && swLayout) ? swLayout.items[kind] : null;
+  const L = (swPC || swLayout) ? swEff() : null;
+  const p = L ? L.items[kind] : null;
   if(p && p.n) return p.n;
   if(p && p.mh>0) return 24;      // hauteur fixe : on rend tout, l'ajustement masque ce qui ne tient pas
   if(kind==='requests') return 3;
-  return window.innerWidth <= 640 ? 2 : 4;
+  return swIsMView() ? 2 : 4;
 }
 function swEl(id){
   if(SW_BUILTIN.includes(id)) return document.getElementById('sw-'+id);
@@ -10962,7 +11008,7 @@ function swStyleEl(el, id, p, editing){
   if(p.color){ el.style.setProperty('--accent', p.color); el.style.setProperty('--accent-dim', p.color+'66'); }
   else { el.style.removeProperty('--accent'); el.style.removeProperty('--accent-dim'); }
   el.style.minHeight = p.mh ? p.mh+'px' : '';
-  el.dataset.fixed = (p.mh && !swMobile()) ? '1' : '0';
+  el.dataset.fixed = (p.mh>0) ? '1' : '0';
   if(swIsCustom(id)) swFillCustom(el, id, p);
   el.classList.toggle('sel', editing && swSel===id);
   el.querySelectorAll(':scope > .sw-bar, :scope > .sw-hres').forEach(x=>x.remove());
@@ -10975,6 +11021,7 @@ function swStyleEl(el, id, p, editing){
     gear.addEventListener('click', e=>{ e.stopPropagation(); swInspect(id); });
     bar.addEventListener('pointerdown', e=> swDragStart(e, id));
     el.appendChild(bar);
+    if(!el.__tw){ el.__tw = 1; el.addEventListener('touchstart', swTouchStart, { passive:true }); }
     const hr = document.createElement('div'); hr.className = 'sw-hres'; hr.title = d.swiHeight; hr.innerHTML = '<i></i>';
     hr.addEventListener('pointerdown', e=> swResizeH(e, id));
     hr.addEventListener('dblclick', ()=>{ swLayout.items[id].mh = 0; swRender(); swRefreshInspector(); });
@@ -10984,11 +11031,12 @@ function swStyleEl(el, id, p, editing){
 function swRender(){
   const grid = $('shopWidgetGrid'), hold = $('swHold'); if(!grid || !hold || !swLayout) return;
   const d = T[LANG];
-  const mob = swMobile();
   const L = swEff();
-  const editing = !!(swEditing && swOwner && !mob);
+  const editing = !!(swEditing && swOwner && swES);
+  // 1re modification dans l'onglet mobile : la disposition passe d'AUTO à PERSONNALISÉE
+  if(editing && swES.target==='m' && !swES.mCustom && JSON.stringify(swLayout)!==swES.mBase) swES.mCustom = true;
   grid.querySelectorAll('.sw').forEach(e=> hold.appendChild(e));
-  Object.keys(swCustom).forEach(id=>{ if(!swLayout.items[id]){ swCustom[id].remove(); delete swCustom[id]; } });
+  Object.keys(swCustom).forEach(id=>{ if(!L.items[id]){ swCustom[id].remove(); delete swCustom[id]; } });
   grid.innerHTML = '';
   const addGap = idx => { if(!editing) return; const g = document.createElement('div'); g.className = 'swgap'; g.dataset.idx = idx; g.textContent = d.gapHint; grid.appendChild(g); };
   addGap(0);
@@ -11016,6 +11064,10 @@ function swRender(){
   // widgets masqués / non placés : en réserve, avec leur style à jour
   L.off.forEach(id=>{ const el = swEl(id); if(el) swStyleEl(el, id, L.items[id] || swProp0(), false); });
   grid.classList.toggle('editing', editing);
+  const prev = editing && swES.target==='m' && !swMobile();
+  grid.classList.toggle('mprev', prev);
+  if(prev) grid.style.setProperty('--pw', (swPW-28)+'px'); else grid.style.removeProperty('--pw');
+  document.body.classList.toggle('sw-medit', !!(editing && swMobile()));
   if(swRO){ swRO.observe(grid); grid.querySelectorAll('.sw').forEach(e=> swRO.observe(e)); }
   swRenderBar();
   swFit();
@@ -11034,7 +11086,7 @@ function swFitStats(sw, p){
   if(!items.length) return;
   const inn = sw.querySelector('.sw-in'), cs = getComputedStyle(inn);
   const W = inn.clientWidth - (parseFloat(cs.paddingLeft)||0) - (parseFloat(cs.paddingRight)||0);
-  const fixed = !!(p && p.mh>0 && !swMobile());
+  const fixed = !!(p && p.mh>0);
   let want = items.length;
   if(p && p.sp==='auto' && !fixed) want = Math.min(items.length, W<260 ? 6 : W<560 ? 4 : W<900 ? 8 : 12);
   let avail = 0, gap = 0;
@@ -11078,7 +11130,7 @@ function swFitStats(sw, p){
 }
 function swFitAch(sw, p){
   const g = sw.querySelector('#shopAchvCard .achv-grid'); if(!g) return;
-  const fixed = !!(p && p.mh>0 && !swMobile());
+  const fixed = !!(p && p.mh>0);
   const items = [...g.children];
   const vb = sw.querySelector('#shopAchvViewAllBtn');
   if(!fixed){ g.style.gridTemplateColumns = ''; g.style.gridTemplateRows = ''; g.style.removeProperty('--bs'); if(vb) vb.style.visibility=''; return; }
@@ -11109,7 +11161,7 @@ function swFitItems(sw, id, p){
   const items = [...g.children].filter(c=> c.tagName!=='P' && !c.classList.contains('muted'));
   items.forEach(c=>{ c.style.display = ''; });
   if(!items.length) return;
-  const fixed = !!(p && p.mh>0 && !swMobile());
+  const fixed = !!(p && p.mh>0);
   let vis = items.length;
   if(fixed){
     const inn = sw.querySelector('.sw-in'), cs = getComputedStyle(inn), gs = getComputedStyle(g);
@@ -11145,7 +11197,7 @@ function swFit(){
     if(SW_LIST[id]) swFitItems(sw, id, p);
     const host = sw.querySelector('.sw-shape');
     if(host){
-      const w = host.clientWidth, h = host.clientHeight, fp = swLayout.items[id];
+      const w = host.clientWidth, h = host.clientHeight, fp = L.items[id];
       if(fp && fp.frame && (Math.abs(w-(+host.dataset.fw||0))>12 || Math.abs(h-(+host.dataset.fh||0))>12)){
         host.dataset.fw = w; host.dataset.fh = h;
         clearTimeout(host.__ft); host.__ft = setTimeout(()=>{ const l = host.querySelector(':scope > .shop-frame-layer'); if(l) delete l.dataset.built; applyShopFrame(host, fp.frame); }, 220);
@@ -11155,26 +11207,82 @@ function swFit(){
 }
 function swRenderBar(){
   const bar = $('shopLayoutBar'); if(!bar) return;
-  const d = T[LANG];
-  if(!swOwner || swMobile()){ bar.hidden = true; bar.innerHTML = ''; return; }
+  const d = T[LANG], ph = swMobile();
+  swRenderBottom();
+  if(!swOwner){ bar.hidden = true; bar.innerHTML = ''; return; }
   bar.hidden = false;
-  if(!swEditing){ bar.innerHTML = `<button type="button" class="lb-btn" onclick="swStartEdit()">▦ ${d.layoutBtn}</button>`; return; }
+  if(!swEditing || !swES){ bar.innerHTML = `<button type="button" class="lb-btn" onclick="swStartEdit()">▦ ${d.layoutBtn}</button>`; return; }
+  const es = swES, m = es.target==='m';
+  const state = m ? (es.mCustom
+    ? `<span class="lb-state cu"><i></i><span><b>${d.stCustom}</b> · ${d.stCustomTxt}</span></span>`
+    : `<span class="lb-state au"><i></i><span><b>${d.stAuto}</b> · ${d.stAutoTxt}</span></span>`) : '';
+  if(ph){
+    bar.innerHTML = `${state}${es.mCustom?`<button type="button" class="lb-btn" onclick="swResetAuto()">${d.resetAuto}</button>`:''}<span class="lb-lbl">${d.mHint}</span>`;
+    return;
+  }
   const hid = swLayout.off.map(id=>`<button type="button" class="lb-btn lb-chip" onclick="swRestore('${id}')">+ ${escHtml(swTitleOf(id))}</button>`).join('');
-  bar.innerHTML = `<span class="lb-lbl">${d.layoutEditing}</span>${hid?`<span class="lb-lbl" style="margin:0;flex:0 0 auto">${d.layoutHiddenLbl}</span>${hid}`:''}
+  const tabs = `<span class="lb-tabs"><button type="button" class="${m?'':'on'}" onclick="swSetTarget('pc')">${d.layoutTabPc}</button><button type="button" class="${m?'on':''}" onclick="swSetTarget('m')">${d.layoutTabM}</button></span>`;
+  const pw = m ? `<span class="lb-pw"><span>${d.prevW}</span>${[360,390,430].map(n=>`<button type="button" class="${swPW===n?'on':''}" onclick="swSetPW(${n})">${n}</button>`).join('')}</span>` : '';
+  const reset = m ? (es.mCustom ? `<button type="button" class="lb-btn" onclick="swResetAuto()">${d.resetAuto}</button>` : '') : `<button type="button" class="lb-btn" onclick="swReset()">${d.layoutReset}</button>`;
+  bar.innerHTML = `${tabs}${state}${pw}<span class="lb-sp"></span>${hid?`<span class="lb-lbl" style="margin:0;flex:0 0 auto">${d.layoutHiddenLbl}</span>${hid}`:''}
     <button type="button" class="lb-btn" onclick="swAddCustom('n')">${d.layoutAddNote}</button>
     <button type="button" class="lb-btn" onclick="swAddCustom('s')">${d.layoutAddShape}</button>
     <button type="button" class="lb-btn" onclick="swAddCustom('d')">${d.layoutAddDiv}</button>
-    <button type="button" class="lb-btn" onclick="swReset()">${d.layoutReset}</button>
+    ${reset}
     <button type="button" class="lb-btn" onclick="swCancel()">${d.layoutCancel}</button>
-    <button type="button" class="lb-btn primary" onclick="swSave()">${d.layoutSave}</button>`;
+    <button type="button" class="lb-btn primary" onclick="swSave()">${d.layoutSave}</button>
+    <span class="lb-lbl lb-hint">${m ? d.mHintDesk : d.layoutEditing}</span>`;
 }
+// Barre fixe en bas (téléphone, pendant l'édition) : ANNULER / + AJOUTER / ENREGISTRER
+function swRenderBottom(){
+  let b = document.getElementById('swBottom'), pop = document.getElementById('swAddPop');
+  const on = !!(swEditing && swES && swOwner && swMobile());
+  if(!on){ if(b) b.hidden = true; if(pop) pop.hidden = true; return; }
+  const d = T[LANG];
+  if(!b){ b = document.createElement('div'); b.id = 'swBottom'; document.body.appendChild(b); }
+  if(!pop){ pop = document.createElement('div'); pop.id = 'swAddPop'; pop.hidden = true; document.body.appendChild(pop); }
+  { const cs = getComputedStyle($('view-seller-shop')); const ac = cs.getPropertyValue('--accent').trim(), ad = cs.getPropertyValue('--accent-dim').trim(); if(ac) [b,pop].forEach(x=>{ x.style.setProperty('--accent', ac); x.style.setProperty('--accent-dim', ad || ac+'66'); }); }
+  b.hidden = false;
+  b.innerHTML = `<button type="button" onclick="swCancel()">${d.layoutCancel}</button><button type="button" onclick="swTogglePop()">${d.mAdd}</button><button type="button" class="p" onclick="swSave()">${d.layoutSave}</button>`;
+  const hid = swLayout.off.map(id=>`<button type="button" onclick="swRestore('${id}');swTogglePop(false)">+ ${escHtml(swTitleOf(id))}</button>`).join('');
+  pop.innerHTML = `<button type="button" onclick="swAddCustom('n');swTogglePop(false)">${d.layoutAddNote}</button><button type="button" onclick="swAddCustom('s');swTogglePop(false)">${d.layoutAddShape}</button><button type="button" onclick="swAddCustom('d');swTogglePop(false)">${d.layoutAddDiv}</button>${hid?`<div class="h">${d.layoutHiddenLbl}</div>${hid}`:''}`;
+}
+function swTogglePop(v){ const pop = document.getElementById('swAddPop'); if(!pop) return; pop.hidden = (v===undefined) ? !pop.hidden : !v; }
 async function swStartEdit(){
-  if(!swOwner || swMobile()) return;
-  swEditing = true; swSaved = swClone(swLayout); swSel = null; swRender();
+  if(!swOwner) return;
+  swEditing = true;
+  swES = { target: swMobile() ? 'm' : 'pc', pc: swClone(swPC), m: swMC ? swClone(swMC) : null, mCustom: !!swMC, mBase: '' };
+  swSetTarget(swES.target);
   try{ await loadShopUnlockCtx(); }catch(e){}
 }
-function swCancel(){ swCloseInspector(); swEditing = false; if(swSaved) swLayout = swClone(swSaved); swSel = null; swRender(); renderShopGrids(); }
-function swReset(){ swCloseInspector(); Object.keys(swCustom).forEach(id=>{ swCustom[id].remove(); delete swCustom[id]; }); swLayout = swDefault(); swRender(); renderShopGrids(); }
+// Bascule entre l'édition de la disposition PC et celle du mobile (aperçu téléphone sur PC)
+function swSetTarget(t){
+  const es = swES; if(!es) return;
+  swCloseInspector(); swTogglePop(false);
+  es.target = t;
+  if(t==='m'){
+    if(!es.mCustom || !es.m){ es.mCustom = false; es.m = swAutoFrom(es.pc); es.mBase = JSON.stringify(es.m); }
+    swLayout = es.m;
+  } else swLayout = es.pc;
+  swSel = null; swRender(); renderShopGrids(); renderShopStrip();
+}
+function swSetPW(n){ swPW = n; swRender(); }
+function swEndEdit(){
+  swCloseInspector(); swTogglePop(false);
+  swEditing = false; swES = null; swSel = null; swLayout = swPC; swMobileCache = null;
+  document.body.classList.remove('sw-grabbing');
+}
+function swCancel(){ swEndEdit(); swRender(); renderShopGrids(); renderShopStrip(); }
+// PC : remet la disposition par défaut
+function swReset(){ if(!swES) return; swCloseInspector(); swES.pc = swLayout = swDefault(); swRender(); renderShopGrids(); }
+// Mobile : revient à la disposition automatique (déduite du PC)
+function swResetAuto(){
+  const es = swES; if(!es || es.target!=='m') return;
+  if(!confirm(T[LANG].resetAutoAsk)) return;
+  swCloseInspector();
+  es.mCustom = false; es.m = swAutoFrom(es.pc); es.mBase = JSON.stringify(es.m); swLayout = es.m;
+  swRender(); renderShopGrids(); renderShopStrip();
+}
 function swDetach(L, id){
   const f = swFind(L, id);
   if(f){
@@ -11214,7 +11322,18 @@ function swSet(id, key, val, keep){
   if(key==='sp') renderShopStrip();
   if(!keep) swInspect(id);
 }
+function swSetWM(id, w){
+  const L = swLayout, f = swFind(L, id); if(!f) return;
+  const row = f.row;
+  if(w>=12){
+    const crowded = row.cols.some(c=>c!==f.col && c.ids.length) || f.col.ids.length>1;
+    if(crowded){ swDetach(L, id); L.rows.splice(L.rows.indexOf(row)+1, 0, { eq:0, cols:[{ w:12, ids:[id] }] }); }
+    else { row.cols = [f.col]; f.col.w = 12; }
+  } else if(row.cols.length===1){ f.col.w = 6; row.cols.push({ w:6, ids:[], sp:1 }); }
+  swCleanup(L); swRender(); swInspect(id);
+}
 function swSetW(id, w){
+  if(swMaxColsNow()===2) return swSetWM(id, w);
   const L = swLayout, f = swFind(L, id); if(!f) return;
   const row = f.row;
   if(w>=12){ row.cols = row.cols.filter(c=> !c.sp || c===f.col); }
@@ -11272,6 +11391,7 @@ function swResizeH(e, id){
 }
 // ---- glisser-déposer : on attrape la barre du haut d'un widget ; un simple clic ouvre ses réglages
 function swDragStart(e, id){
+  if(e.pointerType==='touch') return;      // au doigt : appui long sur le widget (swTouchStart)
   if(e.button!==undefined && e.button!==0) return;
   if(e.target.closest('.sw-gear')) return;
   e.preventDefault();
@@ -11285,14 +11405,54 @@ function swDragMove(e){
   D.x = e.clientX; D.y = e.clientY;
   if(!D.moved){
     if(Math.hypot(D.x-D.x0, D.y-D.y0) < 6) return;
-    D.moved = true;
-    const grid = $('shopWidgetGrid');
-    D.el.classList.add('dragging'); document.body.classList.add('sw-grabbing'); grid.classList.add('dragmode');
-    D.drop = grid.querySelector(':scope > .sw-drop') || (()=>{ const x = document.createElement('div'); x.className = 'sw-drop'; grid.appendChild(x); return x; })();
-    swScrollTimer = setInterval(()=>{ const D2 = swDrag; if(!D2) return; const vh = window.innerHeight; if(D2.y<80) window.scrollBy(0,-20); else if(D2.y>vh-80) window.scrollBy(0,20); else return; swDragUpdate(); }, 30);
+    swDragActivate(D);
   }
   swDragUpdate();
 }
+function swDragActivate(D){
+  D.moved = true;
+  const grid = $('shopWidgetGrid');
+  D.el.classList.add('dragging'); document.body.classList.add('sw-grabbing'); grid.classList.add('dragmode');
+  D.drop = grid.querySelector(':scope > .sw-drop') || (()=>{ const x = document.createElement('div'); x.className = 'sw-drop'; grid.appendChild(x); return x; })();
+  if(D.touch){
+    let g = document.getElementById('swGhost'); if(!g){ g = document.createElement('div'); g.id = 'swGhost'; document.body.appendChild(g); }
+    g.textContent = '⠿ ' + swTitleOf(D.id); g.style.display = 'block';
+  }
+  swScrollTimer = setInterval(()=>{
+    const D2 = swDrag; if(!D2) return; const vh = window.innerHeight, top = 90, bot = D2.touch ? 150 : 80;
+    if(D2.y<top) window.scrollBy(0, -(D2.touch?14:20)); else if(D2.y>vh-bot) window.scrollBy(0, D2.touch?14:20); else return;
+    swDragUpdate();
+  }, 30);
+}
+// ---- appui long au doigt (téléphone) : on maintient un widget pour le « saisir », puis on le déplace
+function swTouchStart(e){
+  if(!swEditing || !swOwner || swDrag || (e.touches && e.touches.length!==1)) return;
+  if(e.target.closest && e.target.closest('.sw-gear, .sw-hres, .colsplit')) return;
+  const t = e.touches[0], id = this.dataset.w; if(!id) return;
+  const T0 = { id, x:t.clientX, y:t.clientY, x0:t.clientX, y0:t.clientY, timer:0 };
+  swTouch = T0;
+  T0.timer = setTimeout(()=>{
+    if(swTouch!==T0) return;
+    swTouch = null;
+    const el = swEl(id); if(!el) return;
+    swDrag = { id, el, x0:T0.x, y0:T0.y, x:T0.x, y:T0.y, moved:false, target:null, drop:null, touch:true };
+    swDragActivate(swDrag); swDragUpdate();
+    try{ if(navigator.vibrate) navigator.vibrate(18); }catch(_){}
+  }, 380);
+}
+document.addEventListener('touchmove', e=>{
+  const t = e.touches && e.touches[0]; if(!t) return;
+  if(swDrag && swDrag.touch){ e.preventDefault(); swDrag.x = t.clientX; swDrag.y = t.clientY; swDragUpdate(); swMoveGhost(); return; }
+  if(swTouch){ swTouch.x = t.clientX; swTouch.y = t.clientY; if(Math.hypot(t.clientX-swTouch.x0, t.clientY-swTouch.y0) > 10){ clearTimeout(swTouch.timer); swTouch = null; } }
+}, { passive:false });
+function swMoveGhost(){ const g = document.getElementById('swGhost'); if(g && swDrag) g.style.transform = `translate(${Math.round(swDrag.x)}px,${Math.round(swDrag.y)-58}px) translateX(-50%)`; }
+function swTouchEnd(){
+  const T0 = swTouch; swTouch = null;
+  if(T0){ clearTimeout(T0.timer); if(Math.hypot(T0.x-T0.x0, T0.y-T0.y0) <= 10) swInspect(T0.id); return; }   // simple appui : réglages
+  if(swDrag && swDrag.touch) swDragEnd();
+}
+document.addEventListener('touchend', swTouchEnd);
+document.addEventListener('touchcancel', ()=>{ if(swTouch){ clearTimeout(swTouch.timer); swTouch = null; } if(swDrag && swDrag.touch){ swDrag.target = null; swDragEnd(); } });
 function swHit(D){
   const grid = $('shopWidgetGrid'), x = D.x, y = D.y, me = 'sw-'+D.id;
   for(const g of grid.querySelectorAll(':scope > .swgap')){
@@ -11306,7 +11466,7 @@ function swHit(D){
       const u = (x-r.left)/r.width, v = (y-r.top)/r.height;
       const rowEl = s.closest('.rowx'), ncols = rowEl.querySelectorAll(':scope > .colx:not(.spacer)').length + rowEl.querySelectorAll(':scope > .colx.spacer').length;
       let side = null;
-      if(ncols < SW_MAXCOLS){ if(u<0.22) side = 'left'; else if(u>0.78) side = 'right'; }
+      if(ncols < swMaxColsNow()){ if(u<0.22) side = 'left'; else if(u>0.78) side = 'right'; }
       if(side) return { type:'side', ref:s.dataset.w, side };
       return { type: v<0.5 ? 'above' : 'below', ref:s.dataset.w };
     }
@@ -11328,7 +11488,7 @@ function swHit(D){
 function swShowDrop(D, t){
   const dr = D.drop; if(!dr) return;
   if(!t){ dr.style.display = 'none'; return; }
-  const gr = $('shopWidgetGrid').getBoundingClientRect(); let r;
+  const grid = $('shopWidgetGrid'), gr = grid.getBoundingClientRect(); let r;
   if(t.type==='row' || t.type==='into') r = { left:t.rect.left, top:t.rect.top, width:t.rect.width, height:t.rect.height };
   else {
     const s = swEl(t.ref), sr = s.getBoundingClientRect();
@@ -11336,13 +11496,14 @@ function swShowDrop(D, t){
     else if(t.type==='below') r = { left:sr.left, top:sr.bottom+3, width:sr.width, height:6 };
     else { const cr = s.closest('.colx').getBoundingClientRect(), rr = s.closest('.rowx').getBoundingClientRect(); r = { left: t.side==='left' ? cr.left-12 : cr.right+6, top:rr.top, width:6, height:rr.height }; }
   }
-  dr.style.cssText = `display:block;left:${r.left-gr.left}px;top:${r.top-gr.top}px;width:${r.width}px;height:${r.height}px`;
+  dr.style.cssText = `display:block;left:${r.left-gr.left-grid.clientLeft}px;top:${r.top-gr.top-grid.clientTop}px;width:${r.width}px;height:${r.height}px`;
 }
 function swDragUpdate(){ const D = swDrag; if(!D || !D.moved) return; D.target = swHit(D); swShowDrop(D, D.target); }
 function swDragEnd(){
   window.removeEventListener('pointermove', swDragMove);
   clearInterval(swScrollTimer); swScrollTimer = null;
   const D = swDrag; swDrag = null; if(!D) return;
+  { const g = document.getElementById('swGhost'); if(g) g.style.display = 'none'; }
   document.body.classList.remove('sw-grabbing');
   const grid = $('shopWidgetGrid'); if(grid) grid.classList.remove('dragmode');
   D.el.classList.remove('dragging'); if(D.drop) D.drop.style.display = 'none';
@@ -11395,7 +11556,8 @@ function swInspect(id, quiet){
   swSel = id;
   document.querySelectorAll('.sw.sel').forEach(e=>e.classList.remove('sel'));
   const el = swEl(id); if(el) el.classList.add('sel');
-  const f = swFind(swLayout, id), colW = f ? f.col.w : 12;
+  const f = swFind(swLayout, id), colW = f ? f.col.w : 12, mob = swMaxColsNow()===2;
+  const PW = mob ? [[6,'½'],[12,'1/1']] : SW_PRESET_W;
   const opt = (on, js, label)=>`<button type="button" class="swi-opt ${on?'on':''}" onclick="${js}">${label}</button>`;
   const custom = swIsCustom(id), shape = swIsShape(id), cards = SW_CARDS.includes(id);
   const FS = ['S','M','L','XL','XXL'];
@@ -11413,8 +11575,8 @@ function swInspect(id, quiet){
   if(id==='stats') h += `<div class="swi-sec"><div class="swi-h">${d.swiStatsPreset}</div><div class="swi-row">${SX_NAMES.map(n=>opt((p.sp||'basic')===n, `swSet('${id}','sp','${n}')`, d['sp'+n.charAt(0).toUpperCase()+n.slice(1)])).join('')}</div><p class="swi-note" style="margin-top:10px">${d.swiStatsNote}</p></div>`;
   h += `<div class="swi-sec"><div class="swi-h">${d.swiSize}</div>
     <div class="swi-h" style="font-size:.7rem;margin-bottom:8px;letter-spacing:2px">${d.swiWidth}</div>
-    <div class="swi-row">${SW_PRESET_W.map(([w,l])=>opt(colW===w, `swSetW('${id}',${w})`, l)).join('')}</div>
-    <p class="swi-note" style="margin-top:10px">${d.swiWNote}</p>
+    <div class="swi-row">${PW.map(([w,l])=>opt(colW===w, `swSetW('${id}',${w})`, l)).join('')}</div>
+    <p class="swi-note" style="margin-top:10px">${mob?d.swiWNoteM:d.swiWNote}</p>
     ${div?'':`<div class="swi-h" style="font-size:.7rem;margin:14px 0 8px;letter-spacing:2px">${d.swiHeight}</div>
     <div class="swi-row">${SW_PRESET_H.map(([v,l])=>opt(p.mh===v, `swSet('${id}','mh',${v})`, v?l:d.swiAuto)).join('')}</div>`}
   </div>`;
@@ -11431,8 +11593,9 @@ function swInspect(id, quiet){
       <div class="swi-sec"><div class="swi-h">${d.swiFrames}</div><div class="swi-pick" id="swiFrm"></div></div>`;
   }
   a.querySelector('.swi-head').innerHTML = `<h3><b>//</b> ${escHtml(swTitleOf(id))}</h3><button type="button" class="swi-x" onclick="swCloseInspector()" aria-label="${d.swiClose}">×</button>`;
+  if(mob) h = `<div class="swi-mtag">${d.mSet}</div>` + h + `<p class="swi-note" style="margin:14px 0 0;text-align:center">${d.swiMNote}</p>`;
   body.innerHTML = h;
-  a.querySelector('.swi-foot').innerHTML = `<button type="button" class="swi-opt" onclick="swHide('${id}')">${d.swiHide}</button>${custom?`<button type="button" class="swi-opt danger" onclick="swDeleteCustom('${id}')">${d.swiDelete}</button>`:''}<button type="button" class="swi-opt on" onclick="swCloseInspector()">${d.swiClose}</button>`;
+  a.querySelector('.swi-foot').innerHTML = `<button type="button" class="swi-opt" onclick="swHide('${id}')">${mob?d.swiHideM:d.swiHide}</button>${custom?`<button type="button" class="swi-opt danger" onclick="swDeleteCustom('${id}')">${d.swiDelete}</button>`:''}<button type="button" class="swi-opt on" onclick="swCloseInspector()">${d.swiClose}</button>`;
   if(shape){
     // mêmes composants que le sélecteur de la boutique : aperçus identiques (frames construites avant l'insertion, comme là-bas)
     const tw = body.querySelector('#swiTex');
@@ -11459,6 +11622,7 @@ function swInspect(id, quiet){
       fw.appendChild(item);
     });
   }
+  if(swMobile() && el){ requestAnimationFrame(()=>{ const r = el.getBoundingClientRect(); if(r.top > window.innerHeight*0.34 || r.top < 70) window.scrollBy({ top: r.top-90, behavior:'smooth' }); }); }
   requestAnimationFrame(()=>{ a.classList.add('open'); body.scrollTop = quiet ? st : (a.dataset.last===id ? st : 0); a.dataset.last = id; });
 }
 function swDeleteCustom(id){
@@ -11490,13 +11654,16 @@ async function swUploadImg(id, input){
   input.value = '';
 }
 async function swSave(){
-  const d = T[LANG]; swCloseInspector();
-  const L = swClone(swLayout); swCleanup(L);
-  const { error } = await sb.from('marketplace_shops').update({ layout: L }).eq('id', session.user.id);
+  const d = T[LANG], es = swES; if(!es) return;
+  swCloseInspector();
+  const out = swClone(es.pc); swCleanup(out, false);
+  if(es.mCustom && es.m){ const m = swClone(es.m); swCleanup(m, true); out.m = m; }
+  const { error } = await sb.from('marketplace_shops').update({ layout: out }).eq('id', session.user.id);
   if(error){ console.error(error); toastShow(d.layoutErr); return; }
-  swLayout = swSanitize(L); swSaved = swClone(swLayout); swEditing = false;
-  if(swShop) swShop.layout = L;
-  swRender(); renderShopGrids(); toastShow(d.layoutSaved);
+  swPC = swSanitize(out); swMC = out.m ? swSanitize(out.m, true) : null;
+  if(swShop) swShop.layout = out;
+  swEndEdit(); swLayout = swPC;
+  swRender(); renderShopGrids(); renderShopStrip(); toastShow(d.layoutSaved);
 }
 // Redessine les 3 grilles de cartes depuis les caches (changement du nombre de cartes / du mode mobile)
 function renderShopGrids(){
@@ -11517,13 +11684,15 @@ function renderShopGrids(){
   swFit();
 }
 function shopLayoutInit(shop, isOwner){
-  swCloseInspector(); swEditing = false; swOwner = !!isOwner; swShop = shop || null; swDrag = null; swMobileCache = null;
+  swCloseInspector(); swEditing = false; swES = null; swOwner = !!isOwner; swShop = shop || null; swDrag = null; swTouch = null; swMobileCache = null;
   document.body.classList.remove('sw-grabbing');
-  swLayout = swSanitize(shop && shop.layout); swSaved = swClone(swLayout);
+  { const raw = shop && shop.layout; swPC = swSanitize(raw); swMC = (raw && typeof raw==='object' && raw.m && typeof raw.m==='object') ? swSanitize(raw.m, true) : null; }
+  swLayout = swPC;
   if(!swRO && window.ResizeObserver) swRO = new ResizeObserver(()=> swFitSoon());
   swRender();
 }
-if(swMQ.addEventListener) swMQ.addEventListener('change', ()=>{ if(!swLayout) return; if(swMobile()){ swCloseInspector(); if(swEditing){ swEditing = false; if(swSaved) swLayout = swClone(swSaved); } } swRender(); renderShopGrids(); });
+let swLastMob = swMobile();
+if(swMQ.addEventListener) swMQ.addEventListener('change', ()=>{ if(!swPC || swMobile()===swLastMob) return; swLastMob = swMobile(); if(swEditing) swEndEdit(); swMobileCache = null; swRender(); renderShopGrids(); renderShopStrip(); });
 window.addEventListener('resize', swFitSoon);
 function closeSellerShop(){ routeApp(); }
 
@@ -13103,7 +13272,7 @@ function updateShopAchvViewAllVisibility(){
   if(!grid || !btn) return;
   const badges = Array.from(grid.querySelectorAll('.achv-badge'));
   { const swx = grid.closest('.sw'); if(swx && swx.dataset.fixed==='1'){ return; } }
-  const isMobile = window.matchMedia('(max-width:640px)').matches;
+  const isMobile = false;   // plus de comportement mobile spécifique : la disposition mobile est gérée par les widgets
   if(isMobile){
     badges.forEach(b => { b.style.display = ''; });
     shopAchvHasOverflow = false;

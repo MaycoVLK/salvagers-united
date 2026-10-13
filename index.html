@@ -67,43 +67,104 @@
   .career-stat .val{font-family:'VT323',monospace; font-size:1.6rem; color:var(--accent); line-height:1.1;}
   .career-stat .lbl{font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;}
 
-  /* minmax(0,1fr) plutôt que 1fr seul : sans ça, un contenu non cassable dans une colonne (ex: un nom
-     d'objet très long) forçait cette colonne à s'élargir bien au-delà de son tiers de largeur, écrasant
-     les deux autres colonnes du podium — surtout visible sur mobile où il n'y a déjà pas beaucoup de place. */
-  .shop-leaderboard-grid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); gap:10px; margin-top:10px;}
-  .shop-lb-slot{display:flex; flex-direction:column; align-items:center; text-align:center; gap:7px; border:1px solid var(--border); border-radius:4px; padding:16px 10px;}
-  /* Même gabarit que le logo de la bannière boutique (coins arrondis, pas un rond) ; chaque slot porte
-     --accent/--accent-dim en inline-style avec la couleur de la boutique gagnante, donc le logo (et le
-     glow au survol) prend automatiquement la couleur propre à chaque boutique du podium. Tailles agrandies
-     sur ordinateur (desktop jugé trop petit) ; la media query mobile ci-dessous reprend les anciennes
-     tailles telles quelles, puisque sur mobile l'affichage était déjà jugé satisfaisant. */
-  .shop-lb-slot-logo{width:72px; height:72px; border-radius:12px; object-fit:cover; border:2px solid var(--accent); background:var(--bg2); box-shadow:0 0 10px var(--accent-dim);}
-  .shop-lb-slot-logo-fallback{width:72px; height:72px; border-radius:12px; border:2px solid var(--accent); background:var(--bg2); display:flex; align-items:center; justify-content:center; color:var(--accent); font-family:'VT323',monospace; font-size:1.8rem; box-shadow:0 0 10px var(--accent-dim);}
-  .shop-lb-slot-logo-btn{padding:0; border:none; background:none; cursor:pointer; line-height:0; border-radius:12px; transition:transform .15s ease;}
-  .shop-lb-slot-logo-btn:hover{transform:scale(1.08);}
-  .shop-lb-slot-logo-btn:hover .shop-lb-slot-logo,.shop-lb-slot-logo-btn:hover .shop-lb-slot-logo-fallback{border-color:var(--text);}
-  /* Hauteur fixe (en em, donc proportionnelle à chaque taille de police) sur le nom et le libellé, pour
-     que les 3 colonnes du podium restent alignées ligne par ligne même quand un nom de boutique ou un
-     libellé passe sur 2 lignes dans une colonne et pas dans les autres — sinon value/label se décalaient
-     verticalement d'une colonne à l'autre, surtout visible sur mobile où la grille est resserrée. */
-  .shop-lb-slot-shopname{font-family:'VT323',monospace; font-size:1.3rem; color:var(--text); line-height:1.15; word-break:break-word;
-    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.3em;}
-  .shop-lb-slot-lbl{font-size:.85rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; line-height:1.25; min-height:2.5em;}
-  .shop-lb-slot-val{font-family:'VT323',monospace; font-size:1.7rem; color:var(--accent); line-height:1.1;}
-  .shop-lb-slot-item{font-size:.85rem; color:var(--muted); max-width:100%; word-break:break-word; overflow-wrap:break-word;
-    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
-  @media (max-width:480px){
-    .shop-leaderboard-grid{gap:4px;}
-    .shop-lb-slot{padding:8px 3px; gap:5px;}
-    .shop-lb-slot-logo, .shop-lb-slot-logo-fallback{width:38px; height:38px; border-radius:7px;}
-    .shop-lb-slot-logo-btn{border-radius:7px;}
-    .shop-lb-slot-logo-fallback{font-size:1rem;}
-    .shop-lb-slot-shopname{font-size:.82rem;}
-    .shop-lb-slot-lbl{font-size:.58rem;}
-    .shop-lb-slot-val{font-size:1.05rem;}
-    .shop-lb-slot-item{font-size:.62rem;}
+  /* ===== LEADERBOARD HEBDOMADAIRE + SHOP DU JOUR ===== */
+  .lb-hdr{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+  .lb-hdr h3{order:1;} .lb-seg{order:2;} .lb-wk{order:3; flex:0 0 100%;} .lb-brk{display:none;}
+  .lb-hdr h3{margin:0 !important;}
+  .lb-seg{display:inline-flex;}
+  .lb-seg button{height:34px; padding:0 14px; background:transparent; color:var(--muted); border:1px solid var(--accent-dim); letter-spacing:2px; font-size:11px; font-family:inherit; cursor:pointer;}
+  .lb-seg button + button{border-left:0;}
+  .lb-seg button.on{background:var(--accent); color:#000; border-color:var(--accent);}
+  .lb-seg .lb-s-m{display:none;}
+  .lb-all{display:none; font-size:10px; letter-spacing:1px; color:var(--accent); white-space:nowrap; background:none; border:0; padding:0; font-family:inherit; cursor:pointer;}
+  .lb-wk{display:flex; align-items:center; gap:10px; font-size:11px; letter-spacing:1px; color:var(--muted); margin:10px 0 18px;}
+  .lb-wk i{width:8px; height:8px; background:var(--accent); display:block; flex:0 0 auto;}
+  .lb-wk.end i{background:#ffb020;}
+  .lb-wk b{color:#ffb020; font-weight:400; letter-spacing:2px;}
+  .lb-wk .m{display:none;}
+  .shop-leaderboard-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:0;}
+  .lb-slot{--c:var(--accent); border:1px solid color-mix(in srgb,var(--c) 45%,transparent); background:var(--bg2,#080d0c); padding:16px 18px 12px; min-width:0;}
+  .lb-lbl{font-size:10px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:12px; line-height:1.4; min-height:2.8em;}
+  .lb-fin{font-size:9px; letter-spacing:2px; border:1px solid #ffb020; color:#ffb020; padding:2px 6px; margin-left:8px; vertical-align:middle;}
+  .lb-top{display:flex; gap:14px; align-items:center;}
+  .lb-logo{width:56px; height:56px; flex:0 0 auto; background:var(--c); color:#000; font-family:'VT323',monospace; font-size:34px; display:flex; align-items:center; justify-content:center; border-radius:6px; overflow:hidden; padding:0; border:0; cursor:pointer; line-height:1;}
+  .lb-logo img{width:100%; height:100%; object-fit:cover; display:block;}
+  .lb-logo.s{width:24px; height:24px; font-size:16px; border-radius:3px; cursor:inherit;}
+  .lb-logo.b{width:72px; height:72px; font-size:46px; border-radius:8px;}
+  .lb-top .lb-logo:hover{filter:brightness(1.15);}
+  .lb-mid{min-width:0;}
+  .lb-name{font-family:'VT323',monospace; font-size:26px; line-height:1; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .lb-val{font-family:'VT323',monospace; font-size:42px; line-height:1; color:var(--c); white-space:nowrap;}
+  .lb-val small{font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:1px; color:var(--muted); text-transform:uppercase;}
+  .lb-item{font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .lb-rks{display:flex; flex-direction:column;}
+  .lb-rk{display:flex; align-items:center; gap:10px; border-top:1px dashed #22312d; margin-top:10px; padding-top:9px; font-size:12px; cursor:pointer; min-width:0;}
+  .lb-rk + .lb-rk{margin-top:8px;}
+  .lb-rk i{font-style:normal; font-family:'VT323',monospace; font-size:20px; color:var(--muted); width:14px; flex:0 0 auto;}
+  .lb-rk .n{flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .lb-rk b{font-weight:400; color:var(--text);}
+  .lb-rk:hover .n{color:var(--accent);}
+  .lb-empty{border:1px dashed var(--accent-dim); padding:26px 14px; text-align:center; color:var(--muted); font-size:12px; line-height:1.5;}
+  .lb-empty b{display:block; font-family:'VT323',monospace; font-weight:400; font-size:26px; color:var(--accent); margin-bottom:4px;}
+  .lb-dots{display:none; justify-content:center; gap:6px; margin-top:10px;}
+  .lb-dots i{width:14px; height:3px; background:#243430; display:block;}
+  .lb-dots i.on{background:var(--accent);}
+  /* ---- shop du jour ---- */
+  .sotd{--c:var(--accent); display:flex; align-items:center; gap:22px; border:1px solid var(--c); background:linear-gradient(90deg,color-mix(in srgb,var(--c) 10%,var(--panel)),var(--panel) 55%); padding:16px 22px; position:relative; cursor:pointer; min-width:0;}
+  .sotd[hidden]{display:none;}
+  .sotd-l{min-width:150px; flex:0 0 auto;}
+  .sotd-tag{font-size:10px; letter-spacing:3px; color:#000; background:#ffb020; padding:3px 8px; display:inline-block; font-weight:700; white-space:nowrap;}
+  .sotd-tag span + span::before{content:" ";}
+  .sotd-t{font-size:10px; letter-spacing:1px; color:var(--muted); margin-top:7px;}
+  .sotd-m{flex:1 1 0; min-width:0;}
+  .sotd-name{font-family:'VT323',monospace; font-size:34px; line-height:1; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .sotd-desc{font-size:12px; color:var(--muted); margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .sotd-st{display:flex; gap:16px; margin-top:8px; font-size:11px; letter-spacing:1px; color:var(--c); text-transform:uppercase; flex-wrap:wrap;}
+  .sotd-sub-m{display:none;}
+  .sotd-items{display:flex; gap:12px; flex:0 0 auto;}
+  .sotd-it{width:96px;}
+  .sotd-im{height:62px; background:#17211e; border:1px solid #22312d; display:flex; align-items:center; justify-content:center; overflow:hidden;}
+  .sotd-im img{width:100%; height:100%; object-fit:cover; display:block;}
+  .sotd-im.ph::after{content:""; width:22px; height:22px; background:#2c3a36;}
+  .sotd-itn{font-size:10px; color:var(--text); margin-top:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .sotd-itp{font-family:'VT323',monospace; font-size:20px; color:var(--c); line-height:1;}
+  .sotd-btn{height:38px; padding:0 16px; background:var(--accent); color:#000; border:1px solid var(--accent); letter-spacing:2px; font-size:11px; font-weight:700; font-family:inherit; cursor:pointer; white-space:nowrap; flex:0 0 auto;}
+  .sotd-btn .a{display:none;}
+  .sotd-badge{display:inline-block; font-size:10px; letter-spacing:2px; color:#000; background:#ffb020; padding:2px 7px; font-weight:700; margin-left:10px; vertical-align:middle;}
+  .sotd-badge[hidden]{display:none;}
+  .sd-card{position:relative;}
+  .sd-card .sotd-badge{position:absolute; top:8px; right:8px; margin:0; z-index:3;}
+  @media (max-width:640px){
+    .lb-hdr{gap:0 8px;}
+    .lb-hdr h3{font-size:20px !important; flex:1; min-width:0;}
+    .lb-all{display:block; order:2;}
+    .lb-brk{display:block; order:3; flex:0 0 100%; height:10px;} .lb-seg{order:4;} .lb-wk{order:5;}
+    .shop-leaderboard-card .shops-dir-entry{display:none;}
+    .lb-seg button{height:30px; padding:0 10px;}
+    .lb-seg .lb-s-d{display:none;} .lb-seg .lb-s-m{display:inline;}
+    .lb-wk{margin:0; flex:1 1 0; min-width:0; justify-content:flex-end; text-align:right; font-size:10px;}
+    .lb-wk i, .lb-wk .d{display:none;} .lb-wk .m{display:inline;}
+    .lb-wk b{display:inline;}
+    .shop-leaderboard-grid{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:10px; margin:12px -14px 0; padding:0 14px 2px; scrollbar-width:none;}
+    .shop-leaderboard-grid::-webkit-scrollbar{display:none;}
+    .lb-slot{flex:0 0 282px; scroll-snap-align:start; padding:13px 14px 10px;}
+    .lb-lbl{margin-bottom:9px; min-height:0;} .lb-suf{display:none;}
+    .lb-logo{width:44px; height:44px; font-size:28px;} .lb-logo.s{display:none;} .lb-logo.b{width:40px; height:40px; font-size:26px;}
+    .lb-name{font-size:22px;} .lb-val{font-size:32px;} .lb-item{display:none;}
+    .lb-rks{flex-direction:row; gap:12px; border-top:1px dashed #22312d; margin-top:9px; padding-top:8px;}
+    .lb-rk{border:0; margin:0 !important; padding:0; gap:5px; font-size:11px; color:var(--muted); flex:0 1 auto;}
+    .lb-rk i{font-size:18px; width:auto;} .lb-rk .n{flex:0 1 auto;}
+    .lb-empty{flex:0 0 282px; scroll-snap-align:start;}
+    .lb-dots{display:flex;}
+    .sotd{gap:12px; padding:10px 12px; margin-top:0;}
+    .sotd-l{width:auto; min-width:0;} .sotd-t, .sotd-items, .sotd-desc, .sotd-st{display:none;}
+    .sotd-tag{font-size:9px; letter-spacing:2px; line-height:1.35; padding:4px 7px; text-align:center;}
+    .sotd-tag span{display:block;} .sotd-tag span + span::before{content:none;}
+    .sotd .lb-logo.b{width:40px; height:40px; font-size:26px; border-radius:6px;}
+    .sotd-name{font-size:24px;}
+    .sotd-sub-m{display:block; font-size:11px; color:var(--muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .sotd-btn{width:40px; height:40px; padding:0; font-size:16px;} .sotd-btn .t{display:none;} .sotd-btn .a{display:inline;}
   }
-  .shop-lb-slot-empty{color:var(--muted); font-size:.8rem; padding:10px 0;}
 
   /* --- CUSTOM DATE/TIME PICKER (deadline) --- */
   .dt-field{position:relative; display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid var(--border); background:var(--bg2); color:var(--text); padding:10px 12px; cursor:pointer; font-family:'VT323',monospace; font-size:1.05rem;}
@@ -1370,7 +1431,7 @@
   #clientTabBlueprints > p.muted{margin:-8px 0 0 !important;}
   .shop-leaderboard-card{border:1px solid var(--border); border-radius:4px; padding:22px 24px; margin-bottom:0; box-shadow:none; background:var(--panel);}
   .shop-leaderboard-card .trophy-icon{display:none;}
-  .shop-leaderboard-card h3{font-size:26px !important; color:var(--accent); letter-spacing:1px; margin-bottom:18px !important;}
+  .shop-leaderboard-card h3{font-size:26px !important; color:var(--accent); letter-spacing:1px; margin-bottom:0 !important;}
   .shop-leaderboard-card h3 span::before{content:"// ";}
   .shops-dir-entry{margin-top:20px; padding-top:18px; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; gap:14px 16px; align-items:center; justify-content:space-between;}
   .shops-dir-entry-txt{color:var(--muted); font-size:13px;}
@@ -2599,20 +2660,28 @@ body.sw-medit{padding-bottom:88px;}
       </div>
       <div id="clientTabMarketplace" class="mk-col tight" hidden>
         <div class="card shop-leaderboard-card">
-          <h3 style="margin-top:0; display:flex; align-items:center; gap:8px;">
-            <svg class="icon trophy-icon" viewBox="0 0 8 7" shape-rendering="crispEdges"><g fill="currentColor">
-              <rect x="1" y="0" width="6" height="1"/><rect x="0" y="1" width="8" height="1"/><rect x="1" y="2" width="6" height="1"/>
-              <rect x="2" y="3" width="4" height="1"/><rect x="3" y="4" width="2" height="1"/><rect x="3" y="5" width="2" height="1"/>
-              <rect x="1" y="6" width="6" height="1"/>
-            </g></svg>
-            <span data-i18n="leaderboardTitle">Boutiques de la semaine</span>
-          </h3>
+          <div class="lb-hdr">
+            <h3 style="margin-top:0; display:flex; align-items:center; gap:8px;">
+              <svg class="icon trophy-icon" viewBox="0 0 8 7" shape-rendering="crispEdges"><g fill="currentColor">
+                <rect x="1" y="0" width="6" height="1"/><rect x="0" y="1" width="8" height="1"/><rect x="1" y="2" width="6" height="1"/>
+                <rect x="2" y="3" width="4" height="1"/><rect x="3" y="4" width="2" height="1"/><rect x="3" y="5" width="2" height="1"/>
+                <rect x="1" y="6" width="6" height="1"/>
+              </g></svg>
+              <span data-i18n="leaderboardTitle">Boutiques de la semaine</span>
+            </h3>
+            <button type="button" class="lb-all" onclick="openShopsDirectory()" id="lbAllBtn">TOUS LES SHOPS ▸</button>
+            <div class="lb-brk"></div>
+            <div class="lb-seg" id="lbSeg"></div>
+            <div class="lb-wk" id="lbWk"></div>
+          </div>
           <div class="shop-leaderboard-grid" id="shopLeaderboardGrid"></div>
+          <div class="lb-dots" id="lbDots"></div>
           <div class="shops-dir-entry">
             <span class="shops-dir-entry-txt"><span class="sl">//</span> <span id="shopsDirEntryTxt" data-i18n="shopsDirEntryTxt">Cherche, trie, trouve ton prochain vendeur.</span></span>
             <button type="button" class="mk-btn" onclick="openShopsDirectory()" data-i18n="shopsDirViewAll">VOIR TOUS LES SHOPS ▸</button>
           </div>
         </div>
+        <div class="sotd" id="shopOfDayStrip" hidden></div>
         <h3 data-i18n="marketplaceFeedTitle" style="margin-top:0;">Derniers objets en vente</h3>
         <div class="mkt-toolbar">
           <input type="text" id="marketplaceSearchInput" class="mkt-search-input" data-i18n-ph="mktSearchPh" placeholder="Rechercher un objet…" oninput="onMarketplaceSearchInput()">
@@ -3273,7 +3342,7 @@ body.sw-medit{padding-bottom:88px;}
             <div class="shop-banner-id">
               <div class="shop-banner-top">
                 <div class="shop-banner-text">
-                  <div class="shop-banner-kicker"><span class="sl">//</span> SHOP</div>
+                  <div class="shop-banner-kicker"><span class="sl">//</span> SHOP<span class="sotd-badge" id="shopSotdBadge" hidden></span></div>
                   <div class="shop-banner-title-row">
                     <h1 id="shopPageTitle">—</h1>
                   </div>
@@ -4062,7 +4131,7 @@ const T = {
     dtWeekdays:["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"],
     tabDeliveries:"ACCUEIL", tabMarketplace:"MARKETPLACE",
     marketplaceFeedTitle:"Derniers objets en vente", marketplaceEmpty:"Aucun objet en vente pour le moment.",
-    leaderboardTitle:"Boutiques de la semaine", lbWeeklySalesLbl:"Ventes cette semaine", lbWeeklyUpvotesLbl:"Upvotes cette semaine", lbMostExpensiveLbl:"Objet le plus cher vendu", lbNoDataYet:"Pas encore de données", lbSalesWord:"ventes", lbUpvotesWord:"upvotes",
+    leaderboardTitle:"Boutiques de la semaine", lbWeeklySalesLbl:"Ventes cette semaine", lbWeeklyUpvotesLbl:"Upvotes cette semaine", lbMostExpensiveLbl:"Objet le plus cher vendu", lbNoDataYet:"Pas encore de données", lbSalesWord:"ventes", lbUpvotesWord:"upvotes", lbTabThis:"CETTE SEMAINE", lbTabThisS:"CETTE SEM.", lbTabLast:"SEMAINE DERNIÈRE", lbTabLastS:"DERNIÈRE", lbWkNow:"EN COURS", lbWkEnded:"TERMINÉE", lbEndsIn:"se termine dans", lbEndsInS:"FIN DANS", lbDayU:"j", lbFinal:"FINAL", lbLblSales:"Ventes", lbLblUpvotes:"Upvotes", lbLblPrice:"Objet le plus cher vendu", lbThisWeekSuf:" cette semaine", lbEmptyT:"PERSONNE ENCORE", lbEmptyOldT:"AUCUNE DONNÉE", lbEmptySales:"Sois le premier à vendre cette semaine.", lbEmptyUps:"Un upvote suffit pour ouvrir la course.", lbEmptyPrice:"Le record de la semaine est à battre.", sotdTag1:"★ SHOP", sotdTag2:"DU JOUR", sotdChange:"CHANGE DANS", sotdVisit:"VISITER LE SHOP ▸", sotdItems:"objets en vente", sotdItemsS:"objets", sotdSales:"ventes", sotdSince:"en ligne depuis", sotdBadge:"★ SHOP DU JOUR", sotdYou:"★ Ton shop est le shop du jour !",
     mktSearchPh:"Rechercher un objet…", filterBtn:"FILTRER", categoryBtn:"CATÉGORIE", categoryAll:"Toutes les catégories", categoryLbl:"Catégorie", categoryPh:"— Choisir une catégorie —", categoryRequired:"Erreur : choisis une catégorie pour cet objet.", sortNewest:"Plus récent", sortOldest:"Plus ancien", sortPriceAsc:"Prix croissant", sortPriceDesc:"Prix décroissant", mktNoResults:"Aucun objet ne correspond à ta recherche.",
     mktByLbl:"Vendu par", visitShopBtn:"VOIR LA MARKETPLACE",
     roleWords:{client:"client", courier:"coursier", admin:"admin", seller:"vendeur"},
@@ -4238,7 +4307,7 @@ const T = {
     dtWeekdays:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
     tabDeliveries:"HOME", tabMarketplace:"MARKETPLACE",
     marketplaceFeedTitle:"Latest items for sale", marketplaceEmpty:"No items for sale right now.",
-    leaderboardTitle:"Shops of the week", lbWeeklySalesLbl:"Sales this week", lbWeeklyUpvotesLbl:"Upvotes this week", lbMostExpensiveLbl:"Most expensive item sold", lbNoDataYet:"No data yet", lbSalesWord:"sales", lbUpvotesWord:"upvotes",
+    leaderboardTitle:"Shops of the week", lbWeeklySalesLbl:"Sales this week", lbWeeklyUpvotesLbl:"Upvotes this week", lbMostExpensiveLbl:"Most expensive item sold", lbNoDataYet:"No data yet", lbSalesWord:"sales", lbUpvotesWord:"upvotes", lbTabThis:"THIS WEEK", lbTabThisS:"THIS WEEK", lbTabLast:"LAST WEEK", lbTabLastS:"LAST WEEK", lbWkNow:"LIVE", lbWkEnded:"ENDED", lbEndsIn:"ends in", lbEndsInS:"ENDS IN", lbDayU:"d", lbFinal:"FINAL", lbLblSales:"Sales", lbLblUpvotes:"Upvotes", lbLblPrice:"Most expensive item sold", lbThisWeekSuf:" this week", lbEmptyT:"NOBODY YET", lbEmptyOldT:"NO DATA", lbEmptySales:"Be the first to sell this week.", lbEmptyUps:"One upvote is enough to start the race.", lbEmptyPrice:"This week's record is up for grabs.", sotdTag1:"★ SHOP", sotdTag2:"OF THE DAY", sotdChange:"CHANGES IN", sotdVisit:"VISIT THE SHOP ▸", sotdItems:"items for sale", sotdItemsS:"items", sotdSales:"sales", sotdSince:"online since", sotdBadge:"★ SHOP OF THE DAY", sotdYou:"★ Your shop is the shop of the day!",
     mktSearchPh:"Search for an item…", filterBtn:"FILTER", categoryBtn:"CATEGORY", categoryAll:"All categories", categoryLbl:"Category", categoryPh:"— Choose a category —", categoryRequired:"Error: please choose a category for this item.", sortNewest:"Newest first", sortOldest:"Oldest first", sortPriceAsc:"Price: low to high", sortPriceDesc:"Price: high to low", mktNoResults:"No items match your search.",
     mktByLbl:"Sold by", visitShopBtn:"VIEW MARKETPLACE",
     roleWords:{client:"client", courier:"courier", admin:"admin", seller:"seller"},
@@ -6427,6 +6496,7 @@ async function loadMarketplaceFeed(){
   const d = T[LANG];
   box.innerHTML = `<p class="muted">…</p>`;
   loadShopLeaderboard();
+  loadShopOfTheDay();
   const { data, error } = await sb.from('marketplace_listings').select('*').eq('is_deleted', false).order('created_at',{ascending:false}).limit(200);
   if(error){ box.textContent = error.message; return; }
   marketplaceFeedCache = data || [];
@@ -6525,6 +6595,7 @@ async function openShopsDirectory(){
     (data||[]).forEach(p => { profs[p.id] = p; });
   }
   shopsDirData = shops.map(sh => ({ shop: sh, prof: profs[sh.id] || {}, sales: sales[sh.id]||0, listings: lists[sh.id]||0, bps: bps[sh.id]||0 }));
+  await getSotdId();
   renderShopsDirectory();
 }
 function renderShopsDirSorts(){
@@ -6570,6 +6641,7 @@ function renderShopsDirectory(){
     const ds = sh.created_at ? Math.floor((Date.now() - new Date(sh.created_at).getTime()) / 86400000) : null;
     if(ds !== null && !isNaN(ds)) since = ds < 7 ? d.sdSinceWeek : d.sdSinceDays.replace('{n}', ds);
     return `<div class="sd-card" data-frame="${escHtml(sh.frame || '')}" style="--sc:${col}; --sc-dim:${col}88;" onclick="openSellerShop('${sh.id}')">
+      ${sotdCache.id && sotdCache.id===sh.id ? `<span class="sotd-badge">${d.sotdBadge}</span>` : ''}
       <div class="sd-banner shop-texture-host"><div class="shop-texture-layer ${(SHOP_TEXTURE_PRESETS.find(t => t.key === (sh.texture || DEFAULT_SHOP_TEXTURE)) || SHOP_TEXTURE_PRESETS[1]).cls}"></div></div>
       <div class="sd-body">
         <div class="sd-logo">${logo}</div>
@@ -6584,70 +6656,189 @@ function renderShopsDirectory(){
     applyShopFrame(card.querySelector('.sd-banner'), fk);
   });
 }
-// --- LEADERBOARD DES BOUTIQUES (3 stats : ventes cette semaine, upvotes cette semaine, objet le plus cher vendu) ---
+// --- LEADERBOARD DES BOUTIQUES : semaine calendaire du lundi 00:00 au dimanche 23:59 (heure de Paris), top 3 par catégorie ---
+const LB_TZ = 'Europe/Paris';
+function lbParts(ms){
+  const o = {};
+  new Intl.DateTimeFormat('en-GB', { timeZone:LB_TZ, hourCycle:'h23', year:'numeric', month:'numeric', day:'numeric', hour:'numeric', minute:'numeric', second:'numeric' }).formatToParts(new Date(ms)).forEach(x=>{ o[x.type] = x.value; });
+  return { y:+o.year, m:+o.month, d:+o.day, h:+o.hour, mi:+o.minute, s:+o.second };
+}
+// minuit (heure de Paris) du jour calendaire y-m-d, en ms UTC ; gère les changements d'heure
+function lbMidnight(y, m, d){
+  let t = Date.UTC(y, m-1, d);
+  for(let i=0;i<3;i++){ const q = lbParts(t); t -= (Date.UTC(q.y, q.m-1, q.d, q.h, q.mi, q.s) - Date.UTC(y, m-1, d)); }
+  return t;
+}
+// semaine décalée de `off` semaines (0 = en cours, -1 = dernière) : bornes en ms UTC + dates calendaires du lundi / dimanche
+function lbWeek(off, now){
+  const q = lbParts(now || Date.now());
+  const dow = new Date(Date.UTC(q.y, q.m-1, q.d)).getUTCDay();
+  const mon = new Date(Date.UTC(q.y, q.m-1, q.d - ((dow+6)%7) + 7*off));
+  const nextMon = new Date(Date.UTC(mon.getUTCFullYear(), mon.getUTCMonth(), mon.getUTCDate()+7));
+  const sun = new Date(Date.UTC(mon.getUTCFullYear(), mon.getUTCMonth(), mon.getUTCDate()+6));
+  return {
+    start: lbMidnight(mon.getUTCFullYear(), mon.getUTCMonth()+1, mon.getUTCDate()),
+    end: lbMidnight(nextMon.getUTCFullYear(), nextMon.getUTCMonth()+1, nextMon.getUTCDate()),
+    mon, sun
+  };
+}
+function lbDayKey(){ const q = lbParts(Date.now()); return q.y+'-'+String(q.m).padStart(2,'0')+'-'+String(q.d).padStart(2,'0'); }
+let lbWeekOff = 0, lbToken = 0; const lbCache = {};
+async function lbFetch(off){
+  const c = lbCache[off]; if(c && Date.now() - c.at < 60000) return c.data;
+  const wk = lbWeek(off), a = new Date(wk.start).toISOString(), z = new Date(wk.end).toISOString();
+  const [sRes, uRes, eRes] = await Promise.all([
+    sb.from('marketplace_inquiries').select('seller_id,updated_at').eq('status','completed').gte('updated_at', a).lt('updated_at', z),
+    sb.from('shop_upvotes').select('seller_id,created_at').gte('created_at', a).lt('created_at', z),
+    sb.from('marketplace_inquiries').select('seller_id,snap_item_name,snap_price').eq('status','completed').not('snap_price','is',null).gte('updated_at', a).lt('updated_at', z).order('snap_price',{ascending:false}).limit(300)
+  ]);
+  // classement par nombre ; à égalité, celui qui a atteint son score le premier passe devant
+  const rank = (rows, col) => {
+    const m = {};
+    (rows || []).forEach(r=>{ const e = m[r.seller_id] || (m[r.seller_id] = { id:r.seller_id, n:0, last:0 }); e.n++; e.last = Math.max(e.last, new Date(r[col]).getTime() || 0); });
+    return Object.values(m).sort((x,y)=> y.n-x.n || x.last-y.last).slice(0,3);
+  };
+  const best = {};
+  (eRes.data || []).forEach(r=>{ if(!best[r.seller_id] || r.snap_price > best[r.seller_id].price) best[r.seller_id] = { id:r.seller_id, price:r.snap_price||0, item:r.snap_item_name||'' }; });
+  const exp = Object.values(best).sort((x,y)=> y.price-x.price).slice(0,3);
+  const ids = [...new Set([...rank(sRes.data,'updated_at'), ...rank(uRes.data,'created_at'), ...exp].map(x=>x.id))];
+  let shopById = {}, profById = {};
+  if(ids.length){
+    const [{ data: profs }, { data: shops }] = await Promise.all([
+      sb.from('profiles').select('id,discord_username,rsi_handle').in('id', ids),
+      sb.from('marketplace_shops').select('id,shop_name,logo_url,theme_color').in('id', ids)
+    ]);
+    (profs||[]).forEach(x=>{ profById[x.id] = x; }); (shops||[]).forEach(x=>{ shopById[x.id] = x; });
+  }
+  const data = { sales: rank(sRes.data,'updated_at'), ups: rank(uRes.data,'created_at'), exp, shopById, profById };
+  lbCache[off] = { at: Date.now(), data };
+  return data;
+}
+function lbWeekTexts(off){
+  const d = T[LANG], wk = lbWeek(off), loc = LANG==='fr' ? 'fr-FR' : 'en-GB';
+  const f = (dt,o) => new Intl.DateTimeFormat(loc, Object.assign({ timeZone:'UTC' }, o)).format(dt);
+  const diffM = wk.mon.getUTCMonth() !== wk.sun.getUTCMonth();
+  const s1 = f(wk.mon, Object.assign({ weekday:'long', day:'numeric' }, diffM ? { month:'long' } : {}));
+  const s2 = f(wk.sun, { weekday:'long', day:'numeric', month:'long' });
+  const long = LANG==='fr' ? `du ${s1} au ${s2}` : `${s1} to ${s2}`;
+  const mon = f(wk.sun, { month:'short' }).replace('.','').toUpperCase();
+  const short = `${f(wk.mon, Object.assign({ day:'numeric' }, diffM ? { month:'short' } : {})).replace('.','').toUpperCase()} → ${f(wk.sun,{day:'numeric'})} ${mon}`;
+  let left = '', leftS = '';
+  if(off===0){ const ms = Math.max(0, wk.end - Date.now()), dd = Math.floor(ms/864e5), hh = Math.floor(ms%864e5/36e5); left = `${dd} ${d.lbDayU} ${hh} h`; }
+  return { long, short, left };
+}
+function lbRenderHead(off){
+  const d = T[LANG], seg = $('lbSeg'), wk = $('lbWk'); if(!seg || !wk) return;
+  seg.innerHTML = `<button type="button" class="${off===0?'on':''}" onclick="setLbWeek(0)"><span class="lb-s-d">${d.lbTabThis}</span><span class="lb-s-m">${d.lbTabThisS}</span></button><button type="button" class="${off===-1?'on':''}" onclick="setLbWeek(-1)"><span class="lb-s-d">${d.lbTabLast}</span><span class="lb-s-m">${d.lbTabLastS}</span></button>`;
+  const t = lbWeekTexts(off);
+  wk.className = 'lb-wk' + (off===0 ? '' : ' end');
+  wk.innerHTML = off===0
+    ? `<i></i><span class="d"><b>${d.lbWkNow}</b> ${t.long} · ${d.lbEndsIn} ${t.left}</span><span class="m"><b>${t.short}</b> · ${d.lbEndsInS} ${t.left.toUpperCase()}</span>`
+    : `<i></i><span class="d"><b>${d.lbWkEnded}</b> ${t.long}</span><span class="m"><b>${t.short}</b> · ${d.lbWkEnded}</span>`;
+}
+function setLbWeek(off){ lbWeekOff = off; loadShopLeaderboard(); }
 async function loadShopLeaderboard(){
   const grid = $('shopLeaderboardGrid'); if(!grid) return;
-  const d = T[LANG];
-  grid.innerHTML = `<p class="muted" style="grid-column:1/-1;">…</p>`;
-  const weekAgoIso = new Date(Date.now() - 7*24*60*60*1000).toISOString();
-  const [weeklySalesRes, weeklyUpvotesRes, mostExpensiveRes] = await Promise.all([
-    sb.from('marketplace_inquiries').select('seller_id').eq('status','completed').gte('updated_at', weekAgoIso),
-    sb.from('shop_upvotes').select('seller_id').gte('created_at', weekAgoIso),
-    sb.from('marketplace_inquiries').select('seller_id,snap_item_name,snap_price').eq('status','completed').not('snap_price','is',null).order('snap_price',{ascending:false}).limit(1)
-  ]);
-  const countBySeller = rows => {
-    const map = {};
-    (rows || []).forEach(r => { map[r.seller_id] = (map[r.seller_id] || 0) + 1; });
-    let topId = null, topCount = 0;
-    Object.entries(map).forEach(([id, c]) => { if(c > topCount){ topCount = c; topId = id; } });
-    return { topId, topCount };
+  const d = T[LANG], off = lbWeekOff, my = ++lbToken;
+  lbRenderHead(off);
+  if(!grid.children.length) grid.innerHTML = `<p class="muted" style="grid-column:1/-1;">…</p>`;
+  let data;
+  try{ data = await lbFetch(off); }catch(e){ console.error(e); return; }
+  if(my !== lbToken) return;
+  const info = id => {
+    const sh = data.shopById[id], pr = data.profById[id];
+    const name = (sh && sh.shop_name) || (pr && (pr.rsi_handle || pr.discord_username)) || '—';
+    return { name, col: normalizeShopColor(sh && sh.theme_color), logo: sh && sh.logo_url, letter: (name[0]||'?').toUpperCase() };
   };
-  const topSales = countBySeller(weeklySalesRes.data);
-  const topUpvotes = countBySeller(weeklyUpvotesRes.data);
-  const topExpensive = (mostExpensiveRes.data && mostExpensiveRes.data[0]) || null;
-
-  const neededIds = [...new Set([topSales.topId, topUpvotes.topId, topExpensive ? topExpensive.seller_id : null].filter(Boolean))];
-  let profById = {}, shopById = {};
-  if(neededIds.length){
-    const [{ data: profs }, { data: shops }] = await Promise.all([
-      sb.from('profiles').select('id,discord_username,rsi_handle').in('id', neededIds),
-      sb.from('marketplace_shops').select('id,shop_name,logo_url,theme_color').in('id', neededIds)
-    ]);
-    (profs||[]).forEach(p => { profById[p.id] = p; });
-    (shops||[]).forEach(s => { shopById[s.id] = s; });
-  }
-  const slotFor = (sellerId, valueHtml) => {
-    if(!sellerId) return null;
-    const shop = shopById[sellerId];
-    const prof = profById[sellerId];
-    const name = (shop && shop.shop_name) || (prof && (prof.rsi_handle || prof.discord_username)) || '—';
-    // Même gabarit que le logo de la bannière boutique (coins arrondis, pas un rond) et même couleur
-    // que celle choisie par le vendeur pour sa boutique, au lieu d'un rond générique à la couleur du site.
-    const colorHex = normalizeShopColor(shop && shop.theme_color);
-    const logo = shop && shop.logo_url
-      ? `<img class="shop-lb-slot-logo" src="${shop.logo_url}" alt="">`
-      : `<div class="shop-lb-slot-logo-fallback">${(name[0]||'?').toUpperCase()}</div>`;
-    const logoLink = `<button type="button" class="shop-lb-slot-logo-btn" onclick="openSellerShop('${sellerId}')" aria-label="${name}">${logo}</button>`;
-    return { name, logo: logoLink, valueHtml, colorHex };
-  };
-
-  const slots = [
-    { lbl: d.lbWeeklySalesLbl, winner: slotFor(topSales.topId, `<div class="shop-lb-slot-val">${topSales.topCount} <span style="font-size:.85rem;">${d.lbSalesWord}</span></div>`) },
-    { lbl: d.lbWeeklyUpvotesLbl, winner: slotFor(topUpvotes.topId, `<div class="shop-lb-slot-val">${topUpvotes.topCount} <span style="font-size:.85rem;">${d.lbUpvotesWord}</span></div>`) },
-    { lbl: d.lbMostExpensiveLbl, winner: topExpensive ? slotFor(topExpensive.seller_id, `<div class="shop-lb-slot-val">${fmt(topExpensive.snap_price||0)}</div><div class="shop-lb-slot-item">${topExpensive.snap_item_name||''}</div>`) : null }
-  ];
-
-  grid.innerHTML = slots.map(slot => {
-    if(!slot.winner){
-      return `<div class="shop-lb-slot"><div class="shop-lb-slot-lbl">${slot.lbl}</div><div class="shop-lb-slot-empty">${d.lbNoDataYet}</div></div>`;
-    }
-    return `<div class="shop-lb-slot" style="--accent:${slot.winner.colorHex}; --accent-dim:${slot.winner.colorHex}55;">
-      ${slot.winner.logo}
-      <div class="shop-lb-slot-shopname">${slot.winner.name}</div>
-      <div class="shop-lb-slot-lbl">${slot.lbl}</div>
-      ${slot.winner.valueHtml}
+  const slot = (label, suf, list, valHtml, itemHtml, emptyMsg) => {
+    if(!list.length) return `<div class="lb-empty"><b>${off===0 ? d.lbEmptyT : d.lbEmptyOldT}</b>${off===0 ? emptyMsg : d.lbNoDataYet}</div>`;
+    const w = list[0], i = info(w.id);
+    const logo = i.logo ? `<img src="${escHtml(i.logo)}" alt="">` : i.letter;
+    const tag = off===0 ? `<span class="lb-suf">${suf}</span>` : `<span class="lb-fin">${d.lbFinal}</span>`;
+    return `<div class="lb-slot" style="--c:${i.col}">
+      <div class="lb-lbl">${label}${tag}</div>
+      <div class="lb-top"><button type="button" class="lb-logo" onclick="openSellerShop('${w.id}')" aria-label="${escHtml(i.name)}">${logo}</button><div class="lb-mid"><div class="lb-name">${escHtml(i.name)}</div><div class="lb-val">${valHtml(w)}</div>${itemHtml ? `<div class="lb-item">${itemHtml(w)}</div>` : ''}</div></div>
+      <div class="lb-rks">${list.slice(1).map((r,k)=>{ const j = info(r.id); return `<div class="lb-rk" onclick="openSellerShop('${r.id}')"><i>${k+2}</i><span class="lb-logo s" style="--c:${j.col}">${j.letter}</span><span class="n">${escHtml(j.name)}</span><b>${valHtml(r, true)}</b></div>`; }).join('')}</div>
     </div>`;
-  }).join('');
+  };
+  grid.innerHTML = [
+    slot(d.lbLblSales, d.lbThisWeekSuf, data.sales, (r,mini)=> mini ? r.n : `${r.n} <small>${d.lbSalesWord}</small>`, null, d.lbEmptySales),
+    slot(d.lbLblUpvotes, d.lbThisWeekSuf, data.ups, (r,mini)=> mini ? r.n : `${r.n} <small>${d.lbUpvotesWord}</small>`, null, d.lbEmptyUps),
+    slot(d.lbLblPrice, d.lbThisWeekSuf, data.exp, (r)=> fmtNum(r.price), r=> escHtml(r.item), d.lbEmptyPrice)
+  ].join('');
+  grid.scrollLeft = 0;
+  const dots = $('lbDots'), n = grid.querySelectorAll('.lb-slot, .lb-empty').length;
+  if(dots){ dots.innerHTML = Array.from({length:n}, (_,k)=>`<i class="${k===0?'on':''}"></i>`).join(''); }
+  if(!grid.__lbScroll){
+    grid.__lbScroll = true;
+    grid.addEventListener('scroll', ()=>{ const f = grid.firstElementChild; if(!f) return; const step = f.offsetWidth + 10, k = Math.round(grid.scrollLeft / step); const dd = $('lbDots'); if(dd) [...dd.children].forEach((x,j)=> x.classList.toggle('on', j===k)); }, { passive:true });
+  }
+}
+// --- SHOP DU JOUR : tiré au sort une fois par jour (RPC get_shop_of_the_day, mémorisé en base pour que ce soit le même pour tout le monde) ---
+let sotdCache = { day:'', id:null, promise:null }, sotdTimer = 0;
+function getSotdId(){
+  const day = lbDayKey();
+  if(sotdCache.day === day && sotdCache.promise) return sotdCache.promise;
+  const pr = (async()=>{
+    try{
+      const { data, error } = await sb.rpc('get_shop_of_the_day');
+      if(error || !data){ if(error) console.warn('shop of the day:', error.message); sotdCache.promise = null; return null; }
+      sotdCache.id = data; return data;
+    }catch(e){ sotdCache.promise = null; return null; }
+  })();
+  sotdCache = { day, id:null, promise:pr };
+  return pr;
+}
+function sotdTimeLeft(){
+  const q = lbParts(Date.now()), nx = new Date(Date.UTC(q.y, q.m-1, q.d+1));
+  const ms = Math.max(0, lbMidnight(nx.getUTCFullYear(), nx.getUTCMonth()+1, nx.getUTCDate()) - Date.now());
+  return `${Math.floor(ms/36e5)} H ${String(Math.floor(ms%36e5/6e4)).padStart(2,'0')}`;
+}
+async function loadShopOfTheDay(){
+  const strip = $('shopOfDayStrip'); if(!strip) return;
+  const d = T[LANG];
+  const id = await getSotdId();
+  if(!id){ strip.hidden = true; return; }
+  const [{ data: shop }, { data: lst }, { data: sales }] = await Promise.all([
+    sb.from('marketplace_shops').select('id,shop_name,logo_url,theme_color,description,location_system,location_name,created_at').eq('id', id).maybeSingle(),
+    sb.from('marketplace_listings').select('id,item_name,price,photo_url').eq('seller_id', id).eq('is_deleted', false).order('created_at',{ascending:false}).limit(60),
+    sb.from('marketplace_inquiries').select('id').eq('seller_id', id).eq('status','completed')
+  ]);
+  if(!shop){ strip.hidden = true; return; }
+  const items = lst || [], nSales = (sales || []).length, nItems = items.length;
+  const col = normalizeShopColor(shop.theme_color), name = shop.shop_name || '—';
+  const logo = shop.logo_url ? `<img src="${escHtml(shop.logo_url)}" alt="">` : escHtml((name[0]||'?').toUpperCase());
+  const loc = [shop.location_system, shop.location_name].filter(Boolean).join(' · ');
+  const desc = [shop.description, loc].filter(Boolean).join(' · ');
+  const sub = [shop.description, shop.location_name, nItems + ' ' + d.sotdItemsS].filter(Boolean).join(' · ');
+  let since = '';
+  if(shop.created_at){ const dt = new Date(shop.created_at); if(!isNaN(dt)) since = `<span>${d.sotdSince} ${escHtml(new Intl.DateTimeFormat(LANG==='fr'?'fr-FR':'en-GB',{month:'short',year:'numeric'}).format(dt).replace('.','').toUpperCase())}</span>`; }
+  const thumbs = items.slice(0,3).map(l=>`<div class="sotd-it"><div class="sotd-im${l.photo_url?'':' ph'}">${l.photo_url?`<img src="${escHtml(l.photo_url)}" alt="" loading="lazy">`:''}</div><div class="sotd-itn">${escHtml(l.item_name||'')}</div><div class="sotd-itp">${fmtNum(l.price||0)}</div></div>`).join('');
+  strip.style.setProperty('--c', col);
+  strip.innerHTML = `<div class="sotd-l"><span class="sotd-tag"><span>${d.sotdTag1}</span><span>${d.sotdTag2}</span></span><div class="sotd-t" id="sotdTimer">${d.sotdChange} ${sotdTimeLeft()}</div></div>
+    <div class="lb-logo b">${logo}</div>
+    <div class="sotd-m"><div class="sotd-name">${escHtml(name)}</div><div class="sotd-desc">${escHtml(desc)}</div><div class="sotd-sub-m">${escHtml(sub)}</div>
+      <div class="sotd-st"><span>${nItems} ${d.sotdItems}</span><span>${nSales} ${d.sotdSales}</span>${since}</div></div>
+    <div class="sotd-items">${thumbs}</div>
+    <button type="button" class="sotd-btn" aria-label="${escHtml(d.sotdVisit)}"><span class="t">${d.sotdVisit}</span><span class="a">▸</span></button>`;
+  strip.onclick = () => openSellerShop(id);
+  strip.hidden = false;
+  clearInterval(sotdTimer);
+  sotdTimer = setInterval(()=>{ const t = $('sotdTimer'); if(!t || strip.hidden){ clearInterval(sotdTimer); return; } t.textContent = d.sotdChange + ' ' + sotdTimeLeft(); }, 30000);
+  // le vendeur tiré au sort est prévenu une fois dans la journée
+  try{
+    if(session && session.user && session.user.id === id){
+      const k = 'sotdSeen', day = lbDayKey();
+      if(localStorage.getItem(k) !== day){ localStorage.setItem(k, day); toastShow(d.sotdYou); }
+    }
+  }catch(e){}
+}
+// badge ★ SHOP DU JOUR sur la page d'un shop
+function sotdBadgeUpdate(shopId){
+  const b = $('shopSotdBadge'); if(!b) return;
+  b.hidden = true;
+  if(!shopId) return;
+  getSotdId().then(id=>{ if(id && id===shopId){ b.textContent = T[LANG].sotdBadge; b.hidden = false; } });
 }
 // Tri + recherche. Sans recherche : on trie le feed déjà chargé (200 dernières annonces).
 // Avec une recherche : on interroge toute la base (pas seulement les 200 dernières) pour ne rater aucun objet.
@@ -10057,6 +10248,7 @@ async function openSellerShop(sellerId){
   }
   myListingsOrderMap = activeOrdersByListing;
   shopLayoutInit(shop, isOwner);
+  sotdBadgeUpdate(shop && shop.id);
   if(shop?.logo_url) $('shopHeroIcon').innerHTML = `<img class="shop-hero-logo-img" src="${shop.logo_url}" alt="">`;
   const shopColorHex = normalizeShopColor(shop && shop.theme_color);
   shopEl.style.setProperty('--accent', shopColorHex);

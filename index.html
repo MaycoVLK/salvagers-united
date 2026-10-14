@@ -82,29 +82,29 @@
   .lb-wk.end i{background:#ffb020;}
   .lb-wk b{color:#ffb020; font-weight:400; letter-spacing:2px;}
   .lb-wk .m{display:none;}
-  .shop-leaderboard-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:0;}
-  .lb-slot{--c:var(--accent); border:1px solid color-mix(in srgb,var(--c) 45%,transparent); background:var(--bg2,#080d0c); padding:16px 18px 12px; min-width:0;}
-  .lb-lbl{font-size:10px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:12px; line-height:1.4; min-height:2.8em;}
+  .shop-leaderboard-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:0; min-height:240px; grid-auto-rows:240px;}
+  .lb-slot{--c:var(--accent); border:1px solid color-mix(in srgb,var(--c) 45%,transparent); background:var(--bg2,#080d0c); padding:16px 18px 12px; min-width:0; height:240px; box-sizing:border-box; display:flex; flex-direction:column; overflow:hidden;}
+  .lb-lbl{font-size:10px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:12px; line-height:14px; height:28px; overflow:hidden; flex:0 0 auto;}
   .lb-fin{font-size:9px; letter-spacing:2px; border:1px solid #ffb020; color:#ffb020; padding:2px 6px; margin-left:8px; vertical-align:middle;}
-  .lb-top{display:flex; gap:14px; align-items:center;}
-  .lb-logo{width:56px; height:56px; flex:0 0 auto; background:var(--c); color:#000; font-family:'VT323',monospace; font-size:34px; display:flex; align-items:center; justify-content:center; border-radius:6px; overflow:hidden; padding:0; border:0; cursor:pointer; line-height:1;}
-  .lb-logo img{width:100%; height:100%; object-fit:cover; display:block;}
+  .lb-top{display:flex; gap:14px; align-items:center; height:82px; flex:0 0 auto;}
+  .lb-logo{width:56px; height:56px; flex:0 0 auto; background:var(--c); color:#000; font-family:'VT323',monospace; font-size:34px; display:flex; align-items:center; justify-content:center; border-radius:6px; overflow:hidden; padding:0; border:0; cursor:pointer; line-height:1; position:relative;}
+  .lb-logo img{position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; display:block;}
   .lb-logo.s{width:24px; height:24px; font-size:16px; border-radius:3px; cursor:inherit;}
   .lb-logo.b{width:72px; height:72px; font-size:46px; border-radius:8px;}
   .lb-top .lb-logo:hover{filter:brightness(1.15);}
-  .lb-mid{min-width:0;}
+  .lb-mid{min-width:0; flex:1;}
   .lb-name{font-family:'VT323',monospace; font-size:26px; line-height:1; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .lb-val{font-family:'VT323',monospace; font-size:42px; line-height:1; color:var(--c); white-space:nowrap;}
   .lb-val small{font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:1px; color:var(--muted); text-transform:uppercase;}
-  .lb-item{font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .lb-rks{display:flex; flex-direction:column;}
-  .lb-rk{display:flex; align-items:center; gap:10px; border-top:1px dashed #22312d; margin-top:10px; padding-top:9px; font-size:12px; cursor:pointer; min-width:0;}
-  .lb-rk + .lb-rk{margin-top:8px;}
+  .lb-item{font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; height:14px; line-height:14px;}
+  .lb-rks{display:flex; flex-direction:column; margin-top:auto; flex:0 0 auto;}
+  .lb-rk{display:flex; align-items:center; gap:10px; border-top:1px dashed #22312d; height:34px; box-sizing:border-box; font-size:12px; cursor:pointer; min-width:0;}
+  .lb-rk.ph{visibility:hidden; cursor:default;}
   .lb-rk i{font-style:normal; font-family:'VT323',monospace; font-size:20px; color:var(--muted); width:14px; flex:0 0 auto;}
   .lb-rk .n{flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .lb-rk b{font-weight:400; color:var(--text);}
   .lb-rk:hover .n{color:var(--accent);}
-  .lb-empty{border:1px dashed var(--accent-dim); padding:26px 14px; text-align:center; color:var(--muted); font-size:12px; line-height:1.5;}
+  .lb-empty{border:1px dashed var(--accent-dim); padding:0 14px; text-align:center; color:var(--muted); font-size:12px; line-height:1.5; height:240px; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center;}
   .lb-empty b{display:block; font-family:'VT323',monospace; font-weight:400; font-size:26px; color:var(--accent); margin-bottom:4px;}
   .lb-dots{display:none; justify-content:center; gap:6px; margin-top:10px;}
   .lb-dots i{width:14px; height:3px; background:#243430; display:block;}
@@ -142,19 +142,20 @@
     .shop-leaderboard-card .shops-dir-entry{display:none;}
     .lb-seg button{height:30px; padding:0 10px;}
     .lb-seg .lb-s-d{display:none;} .lb-seg .lb-s-m{display:inline;}
-    .lb-wk{margin:0; flex:1 1 0; min-width:0; justify-content:flex-end; text-align:right; font-size:10px;}
+    .lb-wk{margin:0; flex:1 1 0; min-width:0; justify-content:flex-end; text-align:right; font-size:10px; height:28px; align-items:center; line-height:14px; overflow:hidden;}
     .lb-wk i, .lb-wk .d{display:none;} .lb-wk .m{display:inline;}
     .lb-wk b{display:inline;}
-    .shop-leaderboard-grid{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:10px; margin:12px -14px 0; padding:0 14px 2px; scrollbar-width:none;}
+    .shop-leaderboard-grid{min-height:140px; display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:10px; margin:12px -14px 0; padding:0 14px 2px; scrollbar-width:none;}
     .shop-leaderboard-grid::-webkit-scrollbar{display:none;}
-    .lb-slot{flex:0 0 282px; scroll-snap-align:start; padding:13px 14px 10px;}
-    .lb-lbl{margin-bottom:9px; min-height:0;} .lb-suf{display:none;}
+    .lb-slot{flex:0 0 282px; scroll-snap-align:start; padding:13px 14px 10px; height:140px;}
+    .lb-lbl{margin-bottom:9px; height:14px; white-space:nowrap;} .lb-suf{display:none;}
+    .lb-top{height:54px;}
     .lb-logo{width:44px; height:44px; font-size:28px;} .lb-logo.s{display:none;} .lb-logo.b{width:40px; height:40px; font-size:26px;}
     .lb-name{font-size:22px;} .lb-val{font-size:32px;} .lb-item{display:none;}
-    .lb-rks{flex-direction:row; gap:12px; border-top:1px dashed #22312d; margin-top:9px; padding-top:8px;}
-    .lb-rk{border:0; margin:0 !important; padding:0; gap:5px; font-size:11px; color:var(--muted); flex:0 1 auto;}
+    .lb-rks{flex-direction:row; gap:12px; border-top:1px dashed #22312d; margin-top:auto; padding-top:8px; height:30px; overflow:hidden;}
+    .lb-rk{border:0; height:auto; padding:0; gap:5px; font-size:11px; color:var(--muted); flex:0 1 auto;}
     .lb-rk i{font-size:18px; width:auto;} .lb-rk .n{flex:0 1 auto;}
-    .lb-empty{flex:0 0 282px; scroll-snap-align:start;}
+    .lb-empty{flex:0 0 282px; scroll-snap-align:start; height:140px;}
     .lb-dots{display:flex;}
     .sotd{gap:12px; padding:10px 12px; margin-top:0;}
     .sotd-l{width:auto; min-width:0;} .sotd-t, .sotd-items, .sotd-desc, .sotd-st{display:none;}
@@ -671,6 +672,11 @@
   .mkt-photo-wrap{position:relative; width:100%; aspect-ratio:4/3; background:var(--panel); display:flex; align-items:center; justify-content:center; overflow:hidden;}
   .mkt-photo-wrap img{width:100%; height:100%; object-fit:cover;}
   .mkt-photo-placeholder{width:34px; height:34px; color:var(--muted); opacity:.4;}
+  .mkt-ph{display:flex; flex-direction:column; align-items:center; gap:10px; padding:0 10px; max-width:100%;}
+  .mkt-ph .mkt-photo-placeholder{width:44px; height:44px; opacity:.55;}
+  .mkt-ph-cat{font-size:.62rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); opacity:.75; text-align:center; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .mkt-photos-btn.on{border-color:var(--accent); color:var(--accent);}
+  .photo-tip{font-size:.72rem; color:var(--muted); margin-top:6px; line-height:1.4;}
   .mkt-info{padding:12px 14px 14px; display:flex; flex-direction:column; gap:8px; flex:1;}
   .mkt-item-name{font-family:'VT323',monospace; font-size:1.15rem; color:var(--text); line-height:1.25; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.5em;}
   .mkt-price-row{display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
@@ -2694,6 +2700,10 @@ body.sw-medit{padding-bottom:88px;}
             </button>
             <div class="create-menu mkt-filter-menu mkt-cat-menu" id="mktCatMenu" hidden></div>
           </div>
+          <button type="button" class="btn-secondary mkt-filter-btn mkt-photos-btn on" onclick="togglePhotosFirst()" title="">
+            <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="1" y="4" width="14" height="9"/><rect x="5" y="2" width="6" height="2"/><rect x="6" y="6" width="4" height="4" fill="#000" fill-opacity=".6"/></g></svg>
+            <span data-i18n="photosFirst">PHOTOS D'ABORD</span>
+          </button>
           <div class="create-wrap mkt-filter-wrap" id="mktFilterWrap">
             <button type="button" class="btn-secondary mkt-filter-btn" id="mktFilterBtn" onclick="toggleMktFilterMenu()">
               <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
@@ -2725,6 +2735,10 @@ body.sw-medit{padding-bottom:88px;}
             </button>
             <div class="create-menu mkt-filter-menu mkt-cat-menu" id="bpCatMenu" hidden></div>
           </div>
+          <button type="button" class="btn-secondary mkt-filter-btn mkt-photos-btn on" onclick="togglePhotosFirst()" title="">
+            <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor"><rect x="1" y="4" width="14" height="9"/><rect x="5" y="2" width="6" height="2"/><rect x="6" y="6" width="4" height="4" fill="#000" fill-opacity=".6"/></g></svg>
+            <span data-i18n="photosFirst">PHOTOS D'ABORD</span>
+          </button>
         </div>
         <div id="blueprintsFeed" class="marketplace-grid"></div>
       </div>
@@ -3138,6 +3152,7 @@ body.sw-medit{padding-bottom:88px;}
               <span data-i18n="uploadListingPhoto">CHOISIR UNE PHOTO</span>
             </button>
             <div id="listingPhotoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
+            <div class="photo-tip" data-i18n="photoTip">Les annonces avec photo sont affichées en premier et se vendent mieux.</div>
             <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createListing()">
               <span id="listingSubmitLabel" data-i18n="addListingBtn">METTRE EN VENTE</span>
             </button>
@@ -3181,6 +3196,7 @@ body.sw-medit{padding-bottom:88px;}
               <span data-i18n="uploadListingPhoto">CHOISIR UNE PHOTO</span>
             </button>
             <div id="blueprintPhotoPreviewName" class="muted" style="font-size:.75rem; margin-top:4px;"></div>
+            <div class="photo-tip" data-i18n="photoTip">Les annonces avec photo sont affichées en premier et se vendent mieux.</div>
             <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="createBlueprint()">
               <span id="blueprintSubmitLabel" data-i18n="addBlueprintBtn">AJOUTER AU CATALOGUE</span>
             </button>
@@ -4184,7 +4200,7 @@ const T = {
     proposeResourceBtn:"PROPOSER DE FOURNIR", resourceOfferMsgLbl:"Message au vendeur", phResourceOfferMsg:"ex: J'en ai 50 unités disponibles, je peux livrer sur Stanton.", resourceOfferPriceLbl:"Ton prix (aUEC, optionnel)", submitResourceOfferBtn:"ENVOYER LA PROPOSITION", resourceOfferSent:"PROPOSITION ENVOYÉE !",
     myResourceOffersTitle:"Mes propositions", noResourceOffers:"Tu n'as envoyé aucune proposition pour le moment.", resourceOfferLabel:"Objet recherché :",
     shopDescLbl:"Description de la boutique (optionnel)", phShopDesc:"ex: Spécialiste minerais rares, livraison rapide sur Stanton.", shopDescMaxHint:"260 caractères max, pour garder un bel alignement avec ta photo de boutique.",
-    cropModalTitle:"Recadrer la photo", cropZoomLbl:"Zoom", cropDragHint:"Fais glisser l'image pour la repositionner.", cropConfirmBtn:"VALIDER LE RECADRAGE", photoReady:"Photo prête ✓",
+    photosFirst:"PHOTOS D'ABORD", photoTip:"Les annonces avec photo sont affichées en premier et se vendent mieux.", cropModalTitle:"Recadrer la photo", cropZoomLbl:"Zoom", cropDragHint:"Fais glisser l'image pour la repositionner.", cropConfirmBtn:"VALIDER LE RECADRAGE", photoReady:"Photo prête ✓",
     myListingsTitle:"Mes annonces", noListings:"Tu n'as encore aucune annonce.", deleteListingBtn:"SUPPRIMER", confirmDeleteListing:"Supprimer cette annonce définitivement ?",
     requestDeliveryBtn:"DEMANDER UNE LIVRAISON", requestDeliveryTitle:"Demander une livraison coursier", buyerHandleLbl:"Pseudo RSI de l'acheteur (optionnel)", phBuyerHandle:"ex: Mayco_SC", deliveryRequested:"LIVRAISON DEMANDÉE !", cancelRequest:"ANNULER", confirmDeliveryBtn:"CONFIRMER LA DEMANDE",
     marketplaceDeliveryBadge:"LIVRAISON MARKETPLACE", marketplaceDeliveryNote:"Livraison Marketplace : l'objet part de chez un VENDEUR pour être livré à un client, contrairement aux commandes classiques (client → coursier).",
@@ -4360,7 +4376,7 @@ const T = {
     proposeResourceBtn:"PROPOSE TO SUPPLY", resourceOfferMsgLbl:"Message to the seller", phResourceOfferMsg:"e.g. I have 50 units available, I can deliver to Stanton.", resourceOfferPriceLbl:"Your price (aUEC, optional)", submitResourceOfferBtn:"SEND PROPOSAL", resourceOfferSent:"PROPOSAL SENT!",
     myResourceOffersTitle:"My proposals", noResourceOffers:"You haven't sent any proposal yet.", resourceOfferLabel:"Desired item:",
     shopDescLbl:"Shop description (optional)", phShopDesc:"e.g. Rare ore specialist, fast delivery on Stanton.", shopDescMaxHint:"260 characters max, to keep a clean alignment with your shop photo.",
-    cropModalTitle:"Crop the photo", cropZoomLbl:"Zoom", cropDragHint:"Drag the image to reposition it.", cropConfirmBtn:"CONFIRM CROP", photoReady:"Photo ready ✓",
+    photosFirst:"PHOTOS FIRST", photoTip:"Listings with a photo are shown first and sell better.", cropModalTitle:"Crop the photo", cropZoomLbl:"Zoom", cropDragHint:"Drag the image to reposition it.", cropConfirmBtn:"CONFIRM CROP", photoReady:"Photo ready ✓",
     myListingsTitle:"My listings", noListings:"You have no listings yet.", deleteListingBtn:"DELETE", confirmDeleteListing:"Permanently delete this listing?",
     requestDeliveryBtn:"REQUEST A DELIVERY", requestDeliveryTitle:"Request a courier delivery", buyerHandleLbl:"Buyer's RSI handle (optional)", phBuyerHandle:"e.g. Mayco_SC", deliveryRequested:"DELIVERY REQUESTED!", cancelRequest:"CANCEL", confirmDeliveryBtn:"CONFIRM REQUEST",
     marketplaceDeliveryBadge:"MARKETPLACE DELIVERY", marketplaceDeliveryNote:"Marketplace delivery: the item ships from a SELLER to a client, unlike classic orders (client → courier).",
@@ -6358,6 +6374,25 @@ function toggleItemsList(btn){
 const MKT_PHOTO_PLACEHOLDER = `<svg class="mkt-photo-placeholder" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
   <rect x="2" y="9" width="12" height="4"/><rect x="4" y="4" width="8" height="5"/><rect x="6" y="2" width="4" height="2"/>
 </g></svg>`;
+// Placeholder des annonces sans photo : pictogramme pixel selon le groupe de catégorie + nom du groupe.
+const MKT_PH_ICONS = {
+  weapons:'<rect x="1" y="6" width="11" height="3"/><rect x="9" y="3" width="3" height="3"/><rect x="3" y="9" width="3" height="5"/><rect x="12" y="7" width="3" height="2"/>',
+  armor:'<rect x="2" y="2" width="12" height="4"/><rect x="4" y="6" width="8" height="8"/><rect x="0" y="3" width="2" height="5"/><rect x="14" y="3" width="2" height="5"/>',
+  undersuits:'<rect x="5" y="1" width="6" height="3"/><rect x="3" y="4" width="10" height="5"/><rect x="4" y="9" width="3" height="6"/><rect x="9" y="9" width="3" height="6"/>',
+  clothing:'<rect x="1" y="3" width="4" height="4"/><rect x="11" y="3" width="4" height="4"/><rect x="4" y="2" width="8" height="12"/>',
+  vweapons:'<rect x="7" y="1" width="2" height="9"/><rect x="5" y="4" width="2" height="6"/><rect x="9" y="4" width="2" height="6"/><rect x="6" y="11" width="4" height="3"/>',
+  systems:'<rect x="3" y="3" width="10" height="10"/><rect x="6" y="6" width="4" height="4" fill="#000" fill-opacity=".55"/><rect x="7" y="0" width="2" height="3"/><rect x="7" y="13" width="2" height="3"/>',
+  utility:'<rect x="2" y="2" width="4" height="4"/><rect x="5" y="5" width="3" height="3"/><rect x="7" y="7" width="3" height="3"/><rect x="9" y="9" width="5" height="5"/>',
+  avionics:'<rect x="7" y="1" width="2" height="4"/><rect x="5" y="5" width="6" height="6"/><rect x="2" y="9" width="3" height="4"/><rect x="11" y="9" width="3" height="4"/>',
+  misc:'<rect x="2" y="5" width="12" height="9"/><rect x="2" y="2" width="12" height="3" fill-opacity=".6"/><rect x="6" y="7" width="4" height="2" fill="#000" fill-opacity=".5"/>'
+};
+function mktPlaceholderHtml(catId){
+  const c = ITEM_CATEGORY_BY_ID[catId];
+  if(!c) return MKT_PHOTO_PLACEHOLDER;
+  const icon = MKT_PH_ICONS[c.group.key] || '';
+  const label = categoryGroupLabel(c.group);
+  return `<div class="mkt-ph"><svg class="mkt-photo-placeholder" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">${icon}</g></svg><span class="mkt-ph-cat">${escapeHtml(label)}</span></div>`;
+}
 function mktPriceRowHtml(listing){
   const d = T[LANG];
   if(listing.is_stock){
@@ -6398,7 +6433,7 @@ function mktCardHtml(listing, sellerMap, unreadSet){
   const d = T[LANG];
   const seller = sellerMap[listing.seller_id];
   if(listing.id !== 'preview') listingDetailIndex[listing.id] = { type:'listing', data:listing, seller };
-  const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="" loading="lazy" decoding="async">` : MKT_PHOTO_PLACEHOLDER;
+  const photo = listing.photo_url ? `<img src="${listing.photo_url}" alt="" loading="lazy" decoding="async">` : mktPlaceholderHtml(listing.category_id);
   const isNew = !!(unreadSet && unreadSet.has(listing.id));
   const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
   const hoverAttr = isNew ? ` onmouseenter="markListingSeen('${listing.id}', this)"` : '';
@@ -6527,6 +6562,22 @@ async function loadMarketplaceFeed(){
 }
 
 // --- CATALOGUE DE BLUEPRINTS (onglet client) : tous les blueprints publiés, toutes boutiques confondues ---
+let photosFirst = true;
+try{ if(localStorage.getItem('photosFirst') === '0') photosFirst = false; }catch(e){}
+function sortPhotosFirst(list){
+  if(!photosFirst) return list;
+  // tri stable : on garde l'ordre actuel à l'intérieur de chaque groupe
+  return list.map((x,i)=>[x,i]).sort((a,b)=>((b[0].photo_url?1:0)-(a[0].photo_url?1:0)) || (a[1]-b[1])).map(x=>x[0]);
+}
+function photosBtnRefresh(){ document.querySelectorAll('.mkt-photos-btn').forEach(b=>b.classList.toggle('on', photosFirst)); }
+document.addEventListener('DOMContentLoaded', photosBtnRefresh); setTimeout(photosBtnRefresh, 0);
+function togglePhotosFirst(){
+  photosFirst = !photosFirst;
+  try{ localStorage.setItem('photosFirst', photosFirst ? '1' : '0'); }catch(e){}
+  photosBtnRefresh();
+  applyBlueprintsFilter();
+  applyMarketplaceFilters();
+}
 let blueprintsFeedCache = [];
 let blueprintsSellerMapCache = {};
 async function loadBlueprintsFeed(){
@@ -6561,6 +6612,7 @@ function applyBlueprintsFilter(){
   if(q) list = list.filter(bp => (bp.item_name||'').toLowerCase().includes(q));
   if(catIds) list = list.filter(bp => catIds.includes(bp.category_id));
   if(!list.length){ box.innerHTML = `<p class="muted">${(q || catIds) ? d.mktNoResults : d.blueprintsEmpty}</p>`; return; }
+  list = sortPhotosFirst(list);
   // false : même dans le catalogue, les boutons "modifier/supprimer" n'ont de sens que sur la propre page
   // boutique du vendeur (comme pour les annonces marketplace) — ici on reste en vue "client".
   box.innerHTML = list.map(bp => blueprintCardHtml(bp, blueprintsSellerMapCache, false)).join('');
@@ -6757,8 +6809,8 @@ async function loadShopLeaderboard(){
     const tag = off===0 ? `<span class="lb-suf">${suf}</span>` : `<span class="lb-fin">${d.lbFinal}</span>`;
     return `<div class="lb-slot" style="--c:${i.col}">
       <div class="lb-lbl">${label}${tag}</div>
-      <div class="lb-top"><button type="button" class="lb-logo" onclick="openSellerShop('${w.id}')" aria-label="${escHtml(i.name)}">${logo}</button><div class="lb-mid"><div class="lb-name">${escHtml(i.name)}</div><div class="lb-val">${valHtml(w)}</div>${itemHtml ? `<div class="lb-item">${itemHtml(w)}</div>` : ''}</div></div>
-      <div class="lb-rks">${list.slice(1).map((r,k)=>{ const j = info(r.id); return `<div class="lb-rk" onclick="openSellerShop('${r.id}')"><i>${k+2}</i><span class="lb-logo s" style="--c:${j.col}">${j.letter}</span><span class="n">${escHtml(j.name)}</span><b>${valHtml(r, true)}</b></div>`; }).join('')}</div>
+      <div class="lb-top"><button type="button" class="lb-logo" onclick="openSellerShop('${w.id}')" aria-label="${escHtml(i.name)}">${logo}</button><div class="lb-mid"><div class="lb-name">${escHtml(i.name)}</div><div class="lb-val">${valHtml(w)}</div><div class="lb-item">${itemHtml ? itemHtml(w) : ''}</div></div></div>
+      <div class="lb-rks">${[1,2].map(k=>{ const r = list[k]; if(!r) return `<div class="lb-rk ph"><i>${k+1}</i><span class="lb-logo s">·</span><span class="n">—</span></div>`; const j = info(r.id); return `<div class="lb-rk" onclick="openSellerShop('${r.id}')"><i>${k+1}</i><span class="lb-logo s" style="--c:${j.col}">${j.letter}</span><span class="n">${escHtml(j.name)}</span><b>${valHtml(r, true)}</b></div>`; }).join('')}</div>
     </div>`;
   };
   grid.innerHTML = [
@@ -6886,6 +6938,7 @@ async function applyMarketplaceFilters(){
     return new Date(b.created_at) - new Date(a.created_at); // newest (défaut)
   });
   if(!list.length){ box.innerHTML = `<p class="muted">${d.mktNoResults}</p>`; return; }
+  if(marketplaceSortMode === 'newest' || marketplaceSortMode === 'oldest') list = sortPhotosFirst(list);
   box.innerHTML = list.map(l => mktCardHtml(l, sellerMap, (q || catIds) ? new Set() : marketplaceUnreadSet)).join('');
 }
 function toggleMktFilterMenu(){ const c = $('mktCatMenu'); if(c) c.hidden = true; $('mktFilterMenu').hidden = !$('mktFilterMenu').hidden; }
@@ -9666,7 +9719,7 @@ function blueprintCardHtml(bp, sellerMap, isOwner){
   const d = T[LANG];
   const seller = sellerMap ? sellerMap[bp.seller_id] : null;
   if(bp.id !== 'preview') listingDetailIndex[bp.id] = { type:'blueprint', data:bp, seller, isOwner };
-  const photo = bp.photo_url ? `<img src="${bp.photo_url}" alt="" loading="lazy" decoding="async">` : MKT_PHOTO_PLACEHOLDER;
+  const photo = bp.photo_url ? `<img src="${bp.photo_url}" alt="" loading="lazy" decoding="async">` : mktPlaceholderHtml(bp.category_id);
   const canOrder = !isOwner && session && session.user.id !== bp.seller_id;
   const ownerActions = isOwner ? `
     <div class="my-listing-actions">
@@ -10030,7 +10083,7 @@ function refreshShopAllListingsFullIfOpen(){
 // mais avec les actions de gestion : demander une livraison, supprimer, ou annuler la livraison en cours.
 function myListingCardHtml(l){
   const d = T[LANG];
-  const photo = l.photo_url ? `<img src="${l.photo_url}" alt="" loading="lazy" decoding="async">` : MKT_PHOTO_PLACEHOLDER;
+  const photo = l.photo_url ? `<img src="${l.photo_url}" alt="" loading="lazy" decoding="async">` : mktPlaceholderHtml(l.category_id);
   const activeOrder = myListingsOrderMap[l.id];
   const actionsBlock = activeOrder ? `
         <div class="my-listing-delivery-status">

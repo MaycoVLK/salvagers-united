@@ -129,7 +129,9 @@
   .sotd-tag{font-size:10px; letter-spacing:3px; color:#000; background:#ffb020; padding:3px 8px; display:inline-block; font-weight:700; white-space:nowrap;}
   .sotd-tag span + span::before{content:" ";}
   .sotd-t{font-size:10px; letter-spacing:1px; color:var(--muted); margin-top:7px;}
-  .sotd-m{flex:1 1 0; min-width:0;}
+  .sotd-m{flex:1 1 0; min-width:200px;}
+  @media (max-width:1180px){ .sotd-items{display:none;} }
+  .sotd-st span{white-space:nowrap;}
   .sotd-name{font-family:'VT323',monospace; font-size:34px; line-height:1; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .sotd-desc{font-size:12px; color:var(--muted); margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .sotd-st{display:flex; gap:16px; margin-top:8px; font-size:11px; letter-spacing:1px; color:var(--c); text-transform:uppercase; flex-wrap:wrap;}
@@ -2016,6 +2018,104 @@
 
   /* --- PUB "DEVENIR COURSIER" (dashboard client) --- */
 
+  /* ===== MODE INVITÉ + TERMINAL D'ÉCHANGE (marketplace, blueprints, objets recherchés) ===== */
+  :root{ --hull:#0a1110; --line:#1c2925; --sys-stanton:#5fb8ff; --sys-pyro:#ff6a45; --sys-nyx:#b48cff; }
+  body.is-guest .app-topbar .gear-wrap, body.is-guest #adminViewBar, body.is-guest #createOrderBtn, body.is-guest #sellerCreateWrap, body.is-guest #tabBtnDeliveries{display:none !important;}
+  .guest-login-btn{display:none; height:40px; padding:0 16px; background:var(--accent); color:#000; border:0; font-family:'VT323',monospace; font-size:1.3rem; cursor:pointer; white-space:nowrap;}
+  body.is-guest .guest-login-btn{display:inline-flex; align-items:center;}
+  .guest-login-btn:hover{filter:brightness(1.12);}
+  .guest-login-btn:focus-visible,.tt-btn:focus-visible,.ls-go:focus-visible,.tt-seller:focus-visible{outline:2px solid var(--text); outline-offset:2px;}
+
+  /* feuille de connexion */
+  .ls-back{position:fixed; inset:0; z-index:9000; background:rgba(0,0,0,.72); display:flex; align-items:center; justify-content:center; padding:16px;}
+  .ls-back[hidden]{display:none;}
+  .ls-sheet{position:relative; width:100%; max-width:420px; background:var(--hull); border:1px solid var(--accent); padding:28px 24px 22px; text-align:center; animation:lsIn .18s ease-out;}
+  @keyframes lsIn{from{transform:translateY(8px); opacity:0}to{transform:none; opacity:1}}
+  .ls-x{position:absolute; top:10px; right:10px; width:34px; height:34px; background:transparent; border:1px solid var(--line); color:var(--muted); cursor:pointer; font-family:inherit;}
+  .ls-mark{width:56px; height:56px; margin:0 auto 14px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; color:var(--accent);}
+  .ls-mark svg{width:30px; height:30px;}
+  .ls-title{margin:0; font-family:'VT323',monospace; font-weight:400; font-size:1.9rem; line-height:1.05; color:var(--text);}
+  .ls-sub{margin:10px 0 18px; font-size:.86rem; line-height:1.55; color:var(--muted);}
+  .ls-go{width:100%; height:48px; background:var(--accent); color:#000; border:0; font-family:inherit; font-weight:700; letter-spacing:1px; font-size:.82rem; cursor:pointer;}
+  .ls-later{width:100%; height:42px; margin-top:8px; background:transparent; border:0; color:var(--muted); font-family:inherit; font-size:.82rem; cursor:pointer; text-decoration:underline; text-underline-offset:3px;}
+  .ls-fine{margin:12px 0 0; font-size:.72rem; color:var(--muted); line-height:1.5;}
+
+  /* héros + tableau des arrivées */
+  .tt-hero{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:28px; align-items:start; margin-bottom:26px;}
+  .tt-hero[hidden]{display:none;}
+  .tt-hero.member .tt-h1{font-size:2.6rem;}
+  .tt-hero.member{margin-bottom:22px;}
+  @media (max-width:880px){ .tt-hero{grid-template-columns:1fr; gap:18px;} }
+  .tt-h1{margin:6px 0 12px; font-family:'VT323',monospace; font-weight:400; font-size:3.4rem; line-height:.95; color:var(--text); letter-spacing:.5px; text-wrap:balance;}
+  @media (max-width:560px){ .tt-h1{font-size:2.6rem;} }
+  .tt-lead{margin:0 0 18px; color:var(--muted); font-size:.92rem; line-height:1.6; max-width:52ch;}
+  .tt-hero-cta{display:flex; gap:10px; flex-wrap:wrap;}
+  .tt-btn{height:46px; padding:0 18px; background:var(--accent); color:#000; border:1px solid var(--accent); font-family:'VT323',monospace; font-size:1.35rem; cursor:pointer; white-space:nowrap;}
+  .tt-btn:hover{filter:brightness(1.12);}
+  .tt-btn.ghost{background:transparent; color:var(--accent);}
+  .tt-btn.ghost:hover{background:var(--accent-dim); filter:none;}
+  .tt-facts{list-style:none; margin:20px 0 0; padding:0; display:flex; gap:22px; flex-wrap:wrap;}
+  .tt-facts li{font-size:.8rem; color:var(--muted);}
+  .tt-facts b{display:block; font-family:'VT323',monospace; font-weight:400; font-size:2rem; line-height:1; color:var(--text);}
+  .tt-board{background:#020303; border:1px solid var(--line); box-shadow:inset 0 0 0 4px #070b0a, inset 0 0 0 5px var(--line); padding:14px 16px 10px; font-family:'VT323',monospace; min-width:0;}
+  .tt-board-h{display:flex; justify-content:space-between; align-items:center; font-size:1.25rem; color:var(--accent); padding-bottom:8px; border-bottom:2px solid var(--line);}
+  .tt-live{display:flex; align-items:center; gap:6px; font-size:1rem; color:var(--muted);}
+  .tt-live i{width:7px; height:7px; background:#39ff6a; display:block; animation:ttBlink 1.6s steps(2) infinite;}
+  @keyframes ttBlink{50%{opacity:.25}}
+  .tt-board-cols,.tt-row{display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr) 8.5rem; gap:14px; align-items:baseline;}
+  .tt-board-cols span{text-align:left;}
+  .tt-board-cols span:last-child{text-align:right;}
+  .tt-board-cols{font-size:.95rem; color:#4f6a5f; padding:8px 0 4px;}
+  .tt-row{padding:6px 0; border-top:1px dashed #16211d; font-size:1.25rem; color:#ffb35c; cursor:pointer; background:none; border-left:0; border-right:0; border-bottom:0; width:100%; text-align:left; font-family:inherit; text-transform:none; letter-spacing:0;}
+  .tt-row .s{text-align:left;}
+  .tt-row:hover{color:#fff;}
+  .tt-row span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .tt-row .s{color:#7d9a8c;}
+  .tt-row .p{text-align:right; color:var(--text);}
+  .tt-row.flap span{animation:ttFlap .5s steps(5) both; animation-delay:var(--d,0s);}
+  @keyframes ttFlap{0%{clip-path:inset(0 0 100% 0); opacity:.3} 100%{clip-path:inset(0); opacity:1}}
+  @media (prefers-reduced-motion:reduce){ .tt-row.flap span,.tt-live i,.ls-sheet{animation:none;} }
+
+  /* cartes « étiquette de cargo » */
+  .mkt-card.tt-card{position:relative; background:var(--hull); border:1px solid var(--line); border-radius:0; display:flex; flex-direction:column; overflow:visible;
+    clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);}
+  .mkt-card.tt-card:hover{border-color:var(--accent); transform:none;}
+  .mkt-card.tt-card:hover .tt-name{color:#fff;}
+  .tt-strip{display:flex; justify-content:space-between; align-items:center; gap:8px; height:30px; padding:0 22px 0 10px; border-bottom:1px solid var(--line); font-size:.72rem; color:var(--muted); background:#070c0b;}
+  .tt-cat{display:flex; align-items:center; gap:6px; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .tt-cat svg{width:14px; height:14px; flex:none; color:var(--accent);}
+  .tt-sys{flex:none; font-size:.66rem; letter-spacing:1px; padding:1px 6px; border:1px solid var(--s); color:var(--s);}
+  .tt-card .mkt-photo-wrap{background:#060a09;}
+  .tt-card.tt-bp .mkt-photo-wrap{background-color:#050909; background-image:linear-gradient(rgba(95,184,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(95,184,255,.07) 1px, transparent 1px); background-size:16px 16px;}
+  .tt-body{padding:12px 12px 14px; display:flex; flex-direction:column; gap:8px; flex:1;}
+  .tt-name{margin:0; font-family:'VT323',monospace; font-weight:400; font-size:1.45rem; line-height:1.05; color:var(--mint, #aef5e0); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.1em;}
+  .tt-price{display:flex; align-items:baseline; gap:6px; flex-wrap:wrap;}
+  .tt-price b{font-family:'VT323',monospace; font-weight:400; font-size:1.9rem; line-height:.9; color:var(--accent);}
+  .tt-price small{font-size:.72rem; color:var(--muted);}
+  .tt-price em{margin-left:auto; font-style:normal; font-size:.75rem; color:var(--muted);}
+  .tt-price.tbd b{font-size:1.3rem; color:var(--muted);}
+  .tt-prices{display:flex; flex-direction:column; gap:4px;}
+  .tt-prices .tt-price b{font-size:1.6rem;}
+  .tt-mats{font-size:.72rem; color:var(--muted); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .tt-seller{margin-top:auto; display:flex; align-items:center; gap:8px; width:100%; min-height:34px; padding:0 10px; background:transparent; border:1px solid var(--line); color:var(--text); font-family:inherit; font-size:.78rem; cursor:pointer; text-align:left;}
+  .tt-seller{text-transform:none; letter-spacing:0;}
+  .tt-card.tt-want .tt-sys{border-color:#000; color:#000;}
+  .tt-seller i{width:10px; height:10px; flex:none; background:var(--c, var(--accent));}
+  .tt-seller span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .tt-seller:hover{border-color:var(--c, var(--accent));}
+  .tt-card .mkt-interest-btn{width:100%; margin:0;}
+  .tt-card .new-order-dot{z-index:3;}
+  /* objet recherché : affiche « recherché » */
+  .tt-card.tt-want .tt-strip{background:var(--accent); color:#000;}
+  .tt-card.tt-want .tt-strip svg{color:#000;}
+  .tt-want-q{display:flex; align-items:baseline; gap:8px;}
+  .tt-want-q b{font-family:'VT323',monospace; font-weight:400; font-size:2.6rem; line-height:.85; color:var(--text);}
+  .tt-want-q span{font-size:.75rem; color:var(--muted);}
+  .tt-note{font-size:.76rem; color:var(--muted); line-height:1.45; border-left:2px solid var(--line); padding-left:8px; font-style:italic;}
+  .tt-lock{grid-column:1 / -1; border:1px dashed var(--line); padding:22px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; color:var(--muted);}
+  .tt-lock p{margin:0; max-width:56ch;}
+  .tt-guest-btn{width:100%; height:38px; background:transparent; border:1px solid var(--accent); color:var(--accent); font-family:inherit; font-size:.75rem; letter-spacing:1px; cursor:pointer;}
+  .tt-guest-btn:hover{background:var(--accent-dim);}
   .login-seo{width:100%; max-width:440px; margin:18px auto 0; display:flex; flex-direction:column; gap:14px; text-align:left;}
   .login-browse{display:flex; align-items:center; justify-content:center; height:44px; border:1px solid var(--accent); color:var(--accent); text-decoration:none; font-size:.8rem; letter-spacing:2px;}
   .login-browse:hover{background:var(--accent-dim); color:var(--text);}
@@ -2023,6 +2123,63 @@
   .login-pts{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; font-size:.82rem; color:var(--muted); line-height:1.5;}
   .login-pts li{border-left:2px solid var(--accent-dim); padding-left:10px;}
   .login-pts b{color:var(--accent); font-weight:400;}
+  /* ===== PAGE DÉTAIL D'ANNONCE (fiche « manifeste ») ===== */
+  .ld{max-width:1180px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:22px;}
+  .ld-crumbs{display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:.8rem; color:var(--muted);}
+  .ld-crumbs button{background:none; border:0; padding:0; color:var(--muted); font-family:inherit; font-size:inherit; cursor:pointer; text-transform:none; letter-spacing:0;}
+  .ld-crumbs button:hover{color:var(--accent);}
+  .ld-crumbs .back{display:inline-flex; align-items:center; gap:6px; height:34px; padding:0 12px; border:1px solid var(--line); color:var(--text);}
+  .ld-crumbs .back:hover{border-color:var(--accent);}
+  .ld-main{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:28px; align-items:start;}
+  @media (max-width:900px){ .ld-main{grid-template-columns:1fr; gap:18px;} }
+  .ld-photo{position:relative; background:var(--hull); border:1px solid var(--line); clip-path:polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);}
+  .ld-photo .tt-strip{height:34px; font-size:.78rem;}
+  .ld-img{aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; background:#060a09; overflow:hidden; position:relative;}
+  .ld-img img{width:100%; height:100%; object-fit:cover; display:block;}
+  .ld-img .mkt-ph .mkt-photo-placeholder{width:96px; height:96px;}
+  .ld-img .mkt-tags-overlay{top:12px; left:12px;}
+  .ld-photo.bp .ld-img{background-color:#050909; background-image:linear-gradient(rgba(95,184,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(95,184,255,.07) 1px, transparent 1px); background-size:20px 20px;}
+  .ld-side{display:flex; flex-direction:column; gap:16px; min-width:0;}
+  .ld-kicker{display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:.8rem; color:var(--muted);}
+  .ld-kicker .tt-sys{font-size:.72rem;}
+  .ld-title{margin:0; font-family:'VT323',monospace; font-weight:400; font-size:3.2rem; line-height:.95; color:var(--text); text-wrap:balance; overflow-wrap:anywhere;}
+  @media (max-width:560px){ .ld-title{font-size:2.5rem;} }
+  .ld-buy{border:1px solid var(--line); border-left:4px solid var(--c, var(--accent)); background:var(--hull); padding:18px 18px 16px; display:flex; flex-direction:column; gap:12px;}
+  .ld-price b{font-family:'VT323',monospace; font-weight:400; font-size:3.4rem; line-height:.85; color:var(--accent);}
+  .ld-price small{font-size:.85rem; color:var(--muted); margin-left:8px;}
+  .ld-price-sub{font-size:.8rem; color:var(--muted); margin-top:6px;}
+  .ld-opts{display:flex; flex-direction:column; gap:8px;}
+  .ld-opt{display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:10px 12px; border:1px solid var(--line); background:#070c0b;}
+  .ld-opt span{font-size:.82rem; color:var(--muted);}
+  .ld-opt span b{display:block; color:var(--text); font-weight:400; font-size:.9rem;}
+  .ld-opt strong{font-family:'VT323',monospace; font-weight:400; font-size:2.1rem; line-height:.9; color:var(--accent); white-space:nowrap;}
+  .ld-buy .mkt-interest-btn,.ld-buy .tt-guest-btn{width:100%; height:50px; margin:0; font-size:.85rem;}
+  .ld-self{font-size:.8rem; color:var(--muted); border:1px dashed var(--line); padding:10px 12px;}
+  .ld-deliv{display:flex; gap:10px; align-items:flex-start; font-size:.8rem; color:var(--muted); line-height:1.5; border-top:1px dashed var(--line); padding-top:12px;}
+  .ld-deliv svg{width:16px; height:16px; flex:none; color:var(--accent); margin-top:2px;}
+  .ld-deliv b{color:var(--text); font-weight:400;}
+  .ld-seller{display:flex; align-items:center; gap:14px; padding:14px 16px; border:1px solid var(--line); background:var(--hull); cursor:pointer; text-align:left; font-family:inherit; color:var(--text); width:100%; text-transform:none; letter-spacing:0;}
+  .ld-seller:hover{border-color:var(--c, var(--accent));}
+  .ld-seller-logo{width:52px; height:52px; flex:none; background:var(--c, var(--accent)); color:#000; display:flex; align-items:center; justify-content:center; font-family:'VT323',monospace; font-size:2rem; overflow:hidden;}
+  .ld-seller-logo img{width:100%; height:100%; object-fit:cover;}
+  .ld-seller-t{flex:1; min-width:0;}
+  .ld-seller-t small{display:block; font-size:.74rem; color:var(--muted);}
+  .ld-seller-t b{display:block; font-family:'VT323',monospace; font-weight:400; font-size:1.7rem; line-height:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ld-seller-go{font-size:.78rem; color:var(--accent); white-space:nowrap;}
+  .ld-info{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:28px;}
+  @media (max-width:900px){ .ld-info{grid-template-columns:1fr; gap:18px;} }
+  .ld-block h2{margin:0 0 10px; font-family:'VT323',monospace; font-weight:400; font-size:1.7rem; color:var(--text);}
+  .ld-desc{font-size:.92rem; line-height:1.7; color:var(--text); white-space:pre-wrap; overflow-wrap:anywhere; max-width:70ch;}
+  .ld-desc.muted{color:var(--muted);}
+  .ld-mats{display:flex; gap:6px; flex-wrap:wrap;}
+  .ld-mats span{border:1px solid var(--line); background:var(--hull); padding:6px 10px; font-size:.8rem;}
+  .ld-steps{list-style:none; margin:0; padding:0; display:flex; flex-direction:column;}
+  .ld-steps li{display:grid; grid-template-columns:28px 1fr; gap:10px; padding:10px 0; border-top:1px dashed var(--line); font-size:.85rem; color:var(--muted); line-height:1.5;}
+  .ld-steps li:first-child{border-top:0;}
+  .ld-steps li i{font-style:normal; font-family:'VT323',monospace; font-size:1.5rem; line-height:1; color:var(--accent);}
+  .ld-steps li b{color:var(--text); font-weight:400;}
+  .ld-more h2{margin:6px 0 12px; font-family:'VT323',monospace; font-weight:400; font-size:1.7rem;}
+  .ld-more .marketplace-grid{margin:0;}
   /* ===== DASHBOARD ADMIN (v2 — lisibilité) ===== */
   .ax{display:flex; flex-direction:column; gap:20px; max-width:1180px; margin:0 auto; width:100%;}
   .ax-head{display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
@@ -2670,6 +2827,19 @@ body.sw-medit{padding-bottom:88px;}
     </div>
   </section>
 
+  <!-- FEUILLE "CONNECTE-TOI" (mode invité) -->
+  <div class="ls-back" id="loginSheet" hidden onclick="if(event.target===this) closeLoginSheet()">
+    <div class="ls-sheet" role="dialog" aria-modal="true" aria-labelledby="lsTitle">
+      <button type="button" class="ls-x" onclick="closeLoginSheet()" aria-label="Fermer">✕</button>
+      <div class="ls-mark"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><g fill="currentColor"><rect x="4" y="3" width="8" height="2"/><rect x="2" y="5" width="2" height="6"/><rect x="12" y="5" width="2" height="6"/><rect x="4" y="11" width="8" height="2"/><rect x="5" y="7" width="2" height="2"/><rect x="9" y="7" width="2" height="2"/></g></svg></div>
+      <h2 class="ls-title" id="lsTitle"></h2>
+      <p class="ls-sub" id="lsSub"></p>
+      <button type="button" class="ls-go" onclick="loginDiscord()"><span data-i18n="loginBtn">SE CONNECTER AVEC DISCORD</span></button>
+      <button type="button" class="ls-later" onclick="closeLoginSheet()" data-i18n="lsLater">Continuer à regarder</button>
+      <p class="ls-fine" data-i18n="lsFine">Gratuit. On ne voit ni ton mot de passe ni tes messages Discord, seulement ton pseudo et ton avatar.</p>
+    </div>
+  </div>
+
   <!-- APP (visiteur connecté) -->
   <div id="app" hidden>
     <div class="app-topbar">
@@ -2741,6 +2911,7 @@ body.sw-medit{padding-bottom:88px;}
             </button>
           </div>
         </div>
+        <button type="button" class="guest-login-btn" id="guestLoginBtn" onclick="needLogin('generic')" data-i18n="guestLoginBtn">Se connecter</button>
         <div class="msg-overlay" id="msgOverlay" onclick="closeMessagesPanel()" hidden></div>
         <div class="gear-wrap">
           <button class="online-badge-btn" id="onlineBadgeBtn" onclick="toggleOnlinePanel()" aria-label="Membres en ligne" title="Membres en ligne">
@@ -2897,6 +3068,19 @@ body.sw-medit{padding-bottom:88px;}
         <div class="card shop-ad" id="sellerAdCard" hidden></div>
       </div>
       <div id="clientTabMarketplace" class="mk-col tight" hidden>
+        <section class="tt-hero" id="guestHero" hidden>
+          <div class="tt-hero-l">
+            <h1 class="tt-h1" id="ttH1"></h1>
+            <p class="tt-lead" id="ttLead"></p>
+            <div class="tt-hero-cta" id="ttCta"></div>
+            <ul class="tt-facts" id="ttFacts"></ul>
+          </div>
+          <div class="tt-board" aria-label="Dernières annonces">
+            <div class="tt-board-h"><span data-i18n="ttBoardT">Arrivées sur le marché</span><span class="tt-live"><i></i><span data-i18n="ttLive">en direct</span></span></div>
+            <div class="tt-board-cols"><span data-i18n="ttColItem">Objet</span><span data-i18n="ttColShop">Shop</span><span data-i18n="ttColPrice">Prix</span></div>
+            <div id="ttBoardRows"></div>
+          </div>
+        </section>
         <div class="card shop-leaderboard-card">
           <div class="lb-hdr">
             <h3 style="margin-top:0; display:flex; align-items:center; gap:8px;">
@@ -3791,46 +3975,7 @@ body.sw-medit{padding-bottom:88px;}
          client, de la boutique d'un vendeur, ou du catalogue de blueprints. Un seul écran, rempli en JS
          par renderListingDetailView()/renderBlueprintDetailView() selon le type d'annonce cliquée. -->
     <section id="view-listing-detail" hidden>
-      <button class="back" onclick="closeListingDetail()" data-i18n="back">&lt; RETOUR</button>
-      <div class="listing-detail-layout">
-        <!-- Encadré aux couleurs/texture de la boutique du vendeur (mêmes réglages que sa page boutique,
-             voir applyListingDetailShopTexture()) : photo collée à gauche, même ratio que les cards des
-             feeds (4/3, object-fit:cover) ; à droite le titre, le bouton d'action et le prix. -->
-        <div class="listing-detail-photo-frame shop-texture-host" id="listingDetailPhotoFrame">
-          <div class="shop-texture-layer"></div>
-          <div class="listing-detail-photo-wrap">
-            <div id="listingDetailTags" class="listing-detail-tags"></div>
-            <div id="listingDetailPhoto"></div>
-          </div>
-          <div class="listing-detail-frame-right">
-            <div class="listing-detail-header-row">
-              <div class="listing-detail-titlewrap">
-                <div class="listing-detail-eyebrow" id="listingDetailEyebrow"></div>
-                <h1 class="listing-detail-title" id="listingDetailTitle"></h1>
-              </div>
-              <div class="listing-detail-action" id="listingDetailActionWrap"></div>
-            </div>
-            <div class="card listing-detail-price-card" id="listingDetailPriceRow"></div>
-          </div>
-        </div>
-        <div class="listing-detail-info">
-          <div class="card" id="listingDetailMaterialsWrap" hidden>
-            <div class="listing-detail-section-lbl" data-i18n="bpMaterialsLbl">Ressources nécessaires</div>
-            <div class="listing-detail-materials" id="listingDetailMaterials"></div>
-          </div>
-          <div class="card">
-            <div class="listing-detail-section-lbl" data-i18n="detailDescriptionLbl">Description</div>
-            <div class="listing-detail-description" id="listingDetailDescription"></div>
-          </div>
-          <div id="listingDetailSellerBox"></div>
-          <!-- Pub "livraison par coursier" : même style graphique (discret) que les encarts "devenir
-               coursier/vendeur" du dashboard client (icône + titre + sous-titre, classe .courier-ad), mais
-               avec son propre contenu : prévient le client que cet objet peut lui être livré par un coursier,
-               avec un prix de commission qui s'adapte au prix de l'annonce. Marketplace uniquement (pas de
-               sens pour un blueprint, qui est fabriqué à la commande). -->
-          <div class="card courier-ad" id="listingDetailDeliveryAd" hidden></div>
-        </div>
-      </div>
+      <div class="ld" id="ldRoot"></div>
     </section>
 
     <!-- MESSAGERIE MOBILE : page dédiée plein écran (remplace le popup sur mobile, voir onMessagesBtnClick()) -->
@@ -4476,7 +4621,7 @@ const T = {
     proposeResourceBtn:"PROPOSER DE FOURNIR", resourceOfferMsgLbl:"Message au vendeur", phResourceOfferMsg:"ex: J'en ai 50 unités disponibles, je peux livrer sur Stanton.", resourceOfferPriceLbl:"Ton prix (aUEC, optionnel)", submitResourceOfferBtn:"ENVOYER LA PROPOSITION", resourceOfferSent:"PROPOSITION ENVOYÉE !",
     myResourceOffersTitle:"Mes propositions", noResourceOffers:"Tu n'as envoyé aucune proposition pour le moment.", resourceOfferLabel:"Objet recherché :",
     shopDescLbl:"Description de la boutique (optionnel)", phShopDesc:"ex: Spécialiste minerais rares, livraison rapide sur Stanton.", shopDescMaxHint:"260 caractères max, pour garder un bel alignement avec ta photo de boutique.",
-    admTitle:"Tableau de bord", admP7:"7 JOURS", admP30:"30 JOURS", admRefresh:"ACTUALISER", admSqlTitle:"STATISTIQUES INDISPONIBLES", admSqlTxt:"lance le fichier SQL 2026-10-16-shops-pour-tous-admin-dashboard.sql dans Supabase pour activer le tableau de bord.", admDaily:"VISITEURS PAR JOUR · 30 JOURS", admFunnel:"ENTONNOIR", admSources:"D'OÙ VIENNENT LES VISITEURS", admRecent:"DERNIERS INSCRITS", admOnP:"sur {n} j", admKMembers:"Membres", admKVisitors:"Visiteurs", admKVisitorsS:"uniques", admKLogins:"Connexions", admKLoginsS:"joueurs connectés", admKShops:"Shops", admKShopsS:"avec au moins 1 annonce", admKListings:"Annonces en ligne", admKBlueprints:"Blueprints en ligne", admKSales:"Ventes conclues", admKReq:"demandes", admKOrders:"Commandes passées", admKPending:"en attente", admKInProg:"en cours", admKDelivered:"Livraisons", admKCouriers:"Coursiers", admKCandid:"candidature(s)", admNoData:"Pas encore de données.", admVis:"visiteurs", admSign:"inscrits", admToday:"aujourd'hui", admSum30:"{v} visiteurs et {s} inscriptions sur 30 jours", admNoFunnel:"Pas encore de données : la mesure démarre dès que la nouvelle version est en ligne.", admF_visit:"Visite", admF_login_click:"Clic connexion", admF_signed_in:"Connecté", admF_listing_created:"Annonce publiée", admF_blueprint_created:"Blueprint publié", admF_inquiry_sent:"Demande envoyée", admF_order_created:"Commande passée", admFunnelHint:"Nombre de personnes différentes à chaque étape, et part des visiteurs qui l'ont atteinte.", admNoSources:"Aucune visite enregistrée sur la période.", admDirect:"Accès direct / lien inconnu", admSrcHint:"Astuce : ajoute ?utm_source=discord (ou x, spectrum…) à tes liens pour savoir quel canal ramène des joueurs.", admAgoMin:"il y a {n} min", admAgoH:"il y a {n} h", admAgoD:"il y a {n} j", admMF_all:"TOUS", admMF_new:"NOUVEAUX 7 J", admMF_shop:"AVEC SHOP", admMF_active:"ANNONCES EN LIGNE", admMF_couriers:"COURSIERS", admMF_candid:"CANDIDATS COURSIER", admMF_admins:"ADMINS", admMF_revoked:"VENTE SUSPENDUE", admJoined:"inscrit", admLastLogin:"connecté", admListingsShort:"annonces", admCandidCourier:"▲ veut devenir coursier", admRCourier:"COURSIER", admRSeller:"VENDEUR", admRSellerOff:"VENTE SUSPENDUE", admRAdmin:"ADMIN", admMore:"Plus d'actions", admCourierTip:"Donner ou retirer le rôle coursier", admSellerTip:"Suspendre ou rétablir le droit de vendre", admSeeShop:"Voir son shop", admMoreRes:"+ {n} autres membres : affine la recherche.", admConfirmCourierOff:"Retirer le rôle coursier à {n} ?", admConfirmSellerOff:"Suspendre le droit de vendre de {n} ? Ses annonces restent visibles mais il ne pourra plus en publier.", admConfirmAdminOn:"Donner les droits ADMIN à {n} ? Il aura accès à tout, y compris ce tableau de bord.", admConfirmAdminOff:"Retirer les droits admin à {n} ?", admToastCourierOn:"{n} est maintenant coursier", admToastCourierOff:"{n} n'est plus coursier", admToastSellerOn:"{n} peut de nouveau vendre", admToastSellerOff:"Vente suspendue pour {n}", admToastAdminOn:"{n} est maintenant admin", admToastAdminOff:"{n} n'est plus admin", admUpdated:"Mis à jour à {t}", admLast7:"7 derniers jours", admLast30:"30 derniers jours", admTodoApps:"Candidatures coursier à traiter", admTodoAppsS:"Ces joueurs attendent ta réponse pour livrer.", admTodoOrders:"Commandes sans coursier", admTodoOrdersS:"Des clients attendent qu'un coursier accepte leur commande.", admTodoOrdersBtn:"VOIR LES COMMANDES", admTodoNone:"Rien à traiter pour le moment.", admVsPrev:"vs avant", admK1:"Visiteurs", admK1f:"personnes différentes venues sur le site", admK2:"Nouveaux membres", admK2f:"{n} membres au total", admK3:"Ventes conclues", admK3f:"{v} échangés · {r} demandes reçues", admK4:"Livraisons terminées", admK4f:"{v} livrés · {n} commandes passées", admInsDrop:"OÙ ÇA BLOQUE", admInsDropClick:"{p} des visiteurs repartent sans cliquer sur « Se connecter ». C'est l'étape à améliorer en premier.", admInsDropLogin:"{p} de ceux qui cliquent sur « Se connecter » n'arrivent pas au bout de la connexion Discord.", admInsSrc:"MEILLEURE SOURCE", admInsSrcT:"{s} t'amène {p} des visiteurs identifiés sur la période.", admInsShops:"SHOPS ENDORMIS", admInsShopsT:"{n} shops sur {t} n'ont aucune annonce en ligne : la pub « Reprends ton shop » les relance.", admDailyT:"Visiteurs par jour", admDailyS:"30 derniers jours", admHealthT:"Santé de la marketplace", admFunnelT:"Parcours des visiteurs", admSourcesT:"D'où ils viennent", admVis30:"visiteurs sur 30 jours", admSign30:"inscriptions", admBest:"Record :", admOnPeriod:"sur la période", admNoneNew:"aucune nouvelle sur la période", admHShops:"Shops actifs", admHShopsS:"{p} % des shops ont au moins une annonce en ligne", admHListings:"Annonces en ligne", admHBlueprints:"Blueprints en ligne", admHOrders:"Commandes ouvertes", admHOrdersS:"{p} sans coursier · {c} en cours de livraison", admHCouriers:"Coursiers", admHLogins:"{n} joueurs se sont connectés sur la période", admContinue:"continuent", admStVisit:"Visitent le site", admStVisitS:"point de départ", admStClick:"Cliquent sur Connexion", admStLogged:"Se connectent", admStPct:"{p} % des visiteurs", admActListings:"annonces", admActBlueprints:"blueprints", admActInquiries:"demandes envoyées", admActOrders:"commandes", admFunnelHint2:"Nombre de personnes différentes. En rouge : l'étape où l'on perd le plus de monde.", admSrcUtm:"Lien", admSrcHint2:"Ajoute <code>?utm_source=discord</code> (ou x, spectrum…) à tes liens pour savoir quel canal ramène vraiment des joueurs.", admSearchPh:"Nom, pseudo RSI ou shop…", admSortLbl:"Trier", admSortRecent:"Inscription récente", admSortSeen:"Dernière connexion", admSortListings:"Nombre d'annonces", admSortName:"Nom (A → Z)", admMT_all:"Tous", admMT_candid:"Candidats coursier", admMT_new:"Nouveaux", admMT_active:"Vendent", admMT_shop:"Ont un shop", admMT_couriers:"Coursiers", admMT_admins:"Admins", admMT_revoked:"Vente suspendue", admBAdmin:"ADMIN", admBCourier:"COURSIER", admBPending:"VEUT ÊTRE COURSIER", admBSuspended:"VENTE SUSPENDUE", admListingsN:"{n} annonce(s) en ligne", admNoShop:"Pas de shop", admManage:"Gérer ce membre", admSwCourier:"Coursier", admSwCourierD:"Peut accepter et livrer des commandes.", admSwCourierPend:"A demandé à devenir coursier : active pour accepter.", admSwSeller:"Peut vendre", admSwSellerD:"Désactive pour suspendre ses annonces futures (abus, arnaque).", admSwAdmin:"Admin", admSwAdminD:"Accès total, dont ce tableau de bord.", admShowMore:"AFFICHER {n} DE PLUS ({t} RESTANTS)", admAgoNow:"à l'instant", admAgoMo:"il y a {n} mois", loginBrowse:"VOIR LA MARKETPLACE SANS CONNEXION ▸", loginH1:"Marketplace et livraisons entre joueurs Star Citizen", loginPt1T:"Achète", loginPt1:"armures, armes, composants et objets craftés vendus par d'autres joueurs.", loginPt2T:"Vends", loginPt2:"ouvre ton shop gratuitement et propose tes blueprints sur commande.", loginPt3T:"Fais-toi livrer", loginPt3:"par un coursier n'importe où dans Stanton, Pyro et Nyx.", shNewK:"BIENVENUE DANS TON SHOP", shNewT:"Donne-lui un nom et une couleur", shNewS:"Ton shop est déjà ouvert. Personnalise-le (nom, logo, couleur, lieu), puis poste ta première annonce : elle apparaîtra tout de suite sur la marketplace.", shNewCta:"PERSONNALISER ▸", shAdClose:"Masquer", shAdOpenK:"OUVERT À TOUS · GRATUIT", shAdOpenT:"Ouvre ton shop sur Couriers United", shAdOpenS:"Vends tes objets craftés, tes blueprints et tes surplus à toute la communauté. Ton shop est prêt en deux minutes, sans demande à faire.", shAdOpenCta:"OUVRIR MON SHOP ▸", shAdResumeK:"TON SHOP T'ATTEND", shAdResumeT:"{shop} est vide pour l'instant", shAdResumeS:"Les joueurs passent devant sans rien trouver. Une annonce suffit pour revenir dans le fil des nouveautés et dans le classement de la semaine.", shAdResumeCta:"POSTER UNE ANNONCE ▸", shNudgeK:"RAPPEL VENDEUR", shNudgeT:"Ça fait {n} jours sans nouvelle annonce", shNudgeS:"Ta dernière annonce date du {date}. Une nouveauté te remet en haut du fil et te redonne une chance dans le classement de la semaine.", shNudgeEmptyK:"SHOP VIDE", shNudgeEmptyT:"Ton shop n'a aucune annonce en ligne", shNudgeEmptyS:"Les visiteurs ne voient rien à acheter. Ajoute une annonce ou un blueprint pour réapparaître sur la marketplace.", shNudgeCta:"NOUVELLE ANNONCE ▸", photoTip:"Les annonces avec photo sont affichées en premier et se vendent mieux.", cropModalTitle:"Recadrer la photo", cropZoomLbl:"Zoom", cropDragHint:"Fais glisser l'image pour la repositionner.", cropConfirmBtn:"VALIDER LE RECADRAGE", photoReady:"Photo prête ✓",
+    admTitle:"Tableau de bord", admP7:"7 JOURS", admP30:"30 JOURS", admRefresh:"ACTUALISER", admSqlTitle:"STATISTIQUES INDISPONIBLES", admSqlTxt:"lance le fichier SQL 2026-10-16-shops-pour-tous-admin-dashboard.sql dans Supabase pour activer le tableau de bord.", admDaily:"VISITEURS PAR JOUR · 30 JOURS", admFunnel:"ENTONNOIR", admSources:"D'OÙ VIENNENT LES VISITEURS", admRecent:"DERNIERS INSCRITS", admOnP:"sur {n} j", admKMembers:"Membres", admKVisitors:"Visiteurs", admKVisitorsS:"uniques", admKLogins:"Connexions", admKLoginsS:"joueurs connectés", admKShops:"Shops", admKShopsS:"avec au moins 1 annonce", admKListings:"Annonces en ligne", admKBlueprints:"Blueprints en ligne", admKSales:"Ventes conclues", admKReq:"demandes", admKOrders:"Commandes passées", admKPending:"en attente", admKInProg:"en cours", admKDelivered:"Livraisons", admKCouriers:"Coursiers", admKCandid:"candidature(s)", admNoData:"Pas encore de données.", admVis:"visiteurs", admSign:"inscrits", admToday:"aujourd'hui", admSum30:"{v} visiteurs et {s} inscriptions sur 30 jours", admNoFunnel:"Pas encore de données : la mesure démarre dès que la nouvelle version est en ligne.", admF_visit:"Visite", admF_login_click:"Clic connexion", admF_signed_in:"Connecté", admF_listing_created:"Annonce publiée", admF_blueprint_created:"Blueprint publié", admF_inquiry_sent:"Demande envoyée", admF_order_created:"Commande passée", admFunnelHint:"Nombre de personnes différentes à chaque étape, et part des visiteurs qui l'ont atteinte.", admNoSources:"Aucune visite enregistrée sur la période.", admDirect:"Accès direct / lien inconnu", admSrcHint:"Astuce : ajoute ?utm_source=discord (ou x, spectrum…) à tes liens pour savoir quel canal ramène des joueurs.", admAgoMin:"il y a {n} min", admAgoH:"il y a {n} h", admAgoD:"il y a {n} j", admMF_all:"TOUS", admMF_new:"NOUVEAUX 7 J", admMF_shop:"AVEC SHOP", admMF_active:"ANNONCES EN LIGNE", admMF_couriers:"COURSIERS", admMF_candid:"CANDIDATS COURSIER", admMF_admins:"ADMINS", admMF_revoked:"VENTE SUSPENDUE", admJoined:"inscrit", admLastLogin:"connecté", admListingsShort:"annonces", admCandidCourier:"▲ veut devenir coursier", admRCourier:"COURSIER", admRSeller:"VENDEUR", admRSellerOff:"VENTE SUSPENDUE", admRAdmin:"ADMIN", admMore:"Plus d'actions", admCourierTip:"Donner ou retirer le rôle coursier", admSellerTip:"Suspendre ou rétablir le droit de vendre", admSeeShop:"Voir son shop", admMoreRes:"+ {n} autres membres : affine la recherche.", admConfirmCourierOff:"Retirer le rôle coursier à {n} ?", admConfirmSellerOff:"Suspendre le droit de vendre de {n} ? Ses annonces restent visibles mais il ne pourra plus en publier.", admConfirmAdminOn:"Donner les droits ADMIN à {n} ? Il aura accès à tout, y compris ce tableau de bord.", admConfirmAdminOff:"Retirer les droits admin à {n} ?", admToastCourierOn:"{n} est maintenant coursier", admToastCourierOff:"{n} n'est plus coursier", admToastSellerOn:"{n} peut de nouveau vendre", admToastSellerOff:"Vente suspendue pour {n}", admToastAdminOn:"{n} est maintenant admin", admToastAdminOff:"{n} n'est plus admin", admUpdated:"Mis à jour à {t}", admLast7:"7 derniers jours", admLast30:"30 derniers jours", admTodoApps:"Candidatures coursier à traiter", admTodoAppsS:"Ces joueurs attendent ta réponse pour livrer.", admTodoOrders:"Commandes sans coursier", admTodoOrdersS:"Des clients attendent qu'un coursier accepte leur commande.", admTodoOrdersBtn:"VOIR LES COMMANDES", admTodoNone:"Rien à traiter pour le moment.", admVsPrev:"vs avant", admK1:"Visiteurs", admK1f:"personnes différentes venues sur le site", admK2:"Nouveaux membres", admK2f:"{n} membres au total", admK3:"Ventes conclues", admK3f:"{v} échangés · {r} demandes reçues", admK4:"Livraisons terminées", admK4f:"{v} livrés · {n} commandes passées", admInsDrop:"OÙ ÇA BLOQUE", admInsDropClick:"{p} des visiteurs repartent sans cliquer sur « Se connecter ». C'est l'étape à améliorer en premier.", admInsDropLogin:"{p} de ceux qui cliquent sur « Se connecter » n'arrivent pas au bout de la connexion Discord.", admInsSrc:"MEILLEURE SOURCE", admInsSrcT:"{s} t'amène {p} des visiteurs identifiés sur la période.", admInsShops:"SHOPS ENDORMIS", admInsShopsT:"{n} shops sur {t} n'ont aucune annonce en ligne : la pub « Reprends ton shop » les relance.", admDailyT:"Visiteurs par jour", admDailyS:"30 derniers jours", admHealthT:"Santé de la marketplace", admFunnelT:"Parcours des visiteurs", admSourcesT:"D'où ils viennent", admVis30:"visiteurs sur 30 jours", admSign30:"inscriptions", admBest:"Record :", admOnPeriod:"sur la période", admNoneNew:"aucune nouvelle sur la période", admHShops:"Shops actifs", admHShopsS:"{p} % des shops ont au moins une annonce en ligne", admHListings:"Annonces en ligne", admHBlueprints:"Blueprints en ligne", admHOrders:"Commandes ouvertes", admHOrdersS:"{p} sans coursier · {c} en cours de livraison", admHCouriers:"Coursiers", admHLogins:"{n} joueurs se sont connectés sur la période", admContinue:"continuent", admStVisit:"Visitent le site", admStVisitS:"point de départ", admStClick:"Cliquent sur Connexion", admStLogged:"Se connectent", admStPct:"{p} % des visiteurs", admActListings:"annonces", admActBlueprints:"blueprints", admActInquiries:"demandes envoyées", admActOrders:"commandes", admFunnelHint2:"Nombre de personnes différentes. En rouge : l'étape où l'on perd le plus de monde.", admSrcUtm:"Lien", admSrcHint2:"Ajoute <code>?utm_source=discord</code> (ou x, spectrum…) à tes liens pour savoir quel canal ramène vraiment des joueurs.", admSearchPh:"Nom, pseudo RSI ou shop…", admSortLbl:"Trier", admSortRecent:"Inscription récente", admSortSeen:"Dernière connexion", admSortListings:"Nombre d'annonces", admSortName:"Nom (A → Z)", admMT_all:"Tous", admMT_candid:"Candidats coursier", admMT_new:"Nouveaux", admMT_active:"Vendent", admMT_shop:"Ont un shop", admMT_couriers:"Coursiers", admMT_admins:"Admins", admMT_revoked:"Vente suspendue", admBAdmin:"ADMIN", admBCourier:"COURSIER", admBPending:"VEUT ÊTRE COURSIER", admBSuspended:"VENTE SUSPENDUE", admListingsN:"{n} annonce(s) en ligne", admNoShop:"Pas de shop", admManage:"Gérer ce membre", admSwCourier:"Coursier", admSwCourierD:"Peut accepter et livrer des commandes.", admSwCourierPend:"A demandé à devenir coursier : active pour accepter.", admSwSeller:"Peut vendre", admSwSellerD:"Désactive pour suspendre ses annonces futures (abus, arnaque).", admSwAdmin:"Admin", admSwAdminD:"Accès total, dont ce tableau de bord.", admShowMore:"AFFICHER {n} DE PLUS ({t} RESTANTS)", admAgoNow:"à l'instant", admAgoMo:"il y a {n} mois", ttH1Member:"Sur le marché aujourd'hui", ttLeadMember:"Les dernières annonces des shops de joueurs. Vends un objet en deux minutes ou dis à tout le monde ce que tu cherches.", ttCtaSell:"Vendre un objet", ttCtaWant:"Poster un objet recherché", ldBackMkt:"Marketplace", ldBackBp:"Blueprints", ldOnSale:"En vente", ldCrafted:"Craft sur commande", ldStock:"{n} en stock, achète la quantité que tu veux", ldLot:"Lot de {n}", ldSingle:"Pièce unique", ldOwn:"C'est ton annonce. Tu la modifies depuis ton shop.", ldOwnBp:"C'est ton blueprint. Tu le modifies depuis ton shop.", ldDeliv:"Pas envie de te déplacer ? Un coursier peut te l'apporter dans Stanton, Pyro ou Nyx pour environ {c} de commission.", ldBasedIn:"Shop basé dans {s}", ldSoldBy:"Vendu par", ldSeeShop:"Voir le shop ›", ldDescT:"Description", ldHowT:"Comment se passe l'achat", ldHowBpT:"Comment se passe la commande", ldStep1:"<b>Tu envoies ta demande</b> : quantité, prix proposé si tu veux négocier.", ldStep2:"<b>Le vendeur accepte</b> et vous discutez directement dans la messagerie.", ldStep3:"<b>Rendez-vous en jeu</b> pour l'échange, ou livraison par un coursier.", ldStepBp1:"<b>Tu choisis l'option</b> : clé en main, ou avec tes propres ressources.", ldStepBp2:"<b>Le vendeur crafte l'objet</b> et te tient au courant dans la messagerie.", ldStepBp3:"<b>Rendez-vous en jeu</b> pour récupérer l'objet et payer.", ldOptReady:"Clé en main", ldOptReadyS:"Le vendeur fournit tout", ldOptMats:"Avec tes ressources", ldOptMatsS:"Tu apportes les matériaux", ldMatsT:"Ressources nécessaires", ldMoreFrom:"Aussi chez {s}", ldMoreBpFrom:"Autres blueprints de {s}", guestLoginBtn:"Se connecter", lsLater:"Continuer à regarder", lsFine:"Gratuit. On ne voit ni ton mot de passe ni tes messages Discord, seulement ton pseudo et ton avatar.", lsT_buy:"Connecte-toi pour contacter le vendeur", lsS_buy:"Un clic avec Discord et tu peux envoyer ta demande, discuter avec le vendeur et te faire livrer. Tu reviens ensuite exactement ici.", lsT_sell:"Connecte-toi pour ouvrir ton shop", lsS_sell:"Ton shop est gratuit et prêt en deux minutes. Connecte-toi avec Discord, choisis un nom, poste ta première annonce.", lsT_offer:"Connecte-toi pour proposer cet objet", lsS_offer:"Ce joueur cherche cet objet. Connecte-toi avec Discord pour lui faire une offre.", lsT_generic:"Connecte-toi avec Discord", lsS_generic:"Pour acheter, vendre, commander une livraison et discuter avec les autres joueurs. Tu reviens ensuite exactement ici.", ttH1:"Le marché des joueurs du 'verse", ttLead:"Armures craftées, blueprints, pièces de vaisseau : achète directement à d'autres joueurs, puis retrouve-les en jeu ou fais-toi livrer dans Stanton, Pyro et Nyx.", ttCtaLogin:"Se connecter avec Discord", ttCtaShop:"Ouvrir mon shop gratuitement", ttBoardT:"Arrivées sur le marché", ttLive:"en direct", ttColItem:"Objet", ttColShop:"Shop", ttColPrice:"Prix aUEC", ttFactItems:"annonces en ligne", ttFactShops:"shops actifs", ttFactSystems:"systèmes livrés", ttItem:"Objet", ttPerUnit:"/ unité", ttReady:"clé en main", ttYourMats:"avec tes ressources", ttCrafted:"Craft sur commande", ttMats:"Ressources :", ttWanted:"Recherché", ttWantedLocked:"Les objets recherchés par les joueurs sont visibles une fois connecté.", ttWantedQty:"demandé(s)", ttOffered:"proposé", ttHaveIt:"J'ai cet objet", ttBy:"Par ", loginBrowse:"VOIR LA MARKETPLACE SANS CONNEXION ▸", loginH1:"Marketplace et livraisons entre joueurs Star Citizen", loginPt1T:"Achète", loginPt1:"armures, armes, composants et objets craftés vendus par d'autres joueurs.", loginPt2T:"Vends", loginPt2:"ouvre ton shop gratuitement et propose tes blueprints sur commande.", loginPt3T:"Fais-toi livrer", loginPt3:"par un coursier n'importe où dans Stanton, Pyro et Nyx.", shNewK:"BIENVENUE DANS TON SHOP", shNewT:"Donne-lui un nom et une couleur", shNewS:"Ton shop est déjà ouvert. Personnalise-le (nom, logo, couleur, lieu), puis poste ta première annonce : elle apparaîtra tout de suite sur la marketplace.", shNewCta:"PERSONNALISER ▸", shAdClose:"Masquer", shAdOpenK:"OUVERT À TOUS · GRATUIT", shAdOpenT:"Ouvre ton shop sur Couriers United", shAdOpenS:"Vends tes objets craftés, tes blueprints et tes surplus à toute la communauté. Ton shop est prêt en deux minutes, sans demande à faire.", shAdOpenCta:"OUVRIR MON SHOP ▸", shAdResumeK:"TON SHOP T'ATTEND", shAdResumeT:"{shop} est vide pour l'instant", shAdResumeS:"Les joueurs passent devant sans rien trouver. Une annonce suffit pour revenir dans le fil des nouveautés et dans le classement de la semaine.", shAdResumeCta:"POSTER UNE ANNONCE ▸", shNudgeK:"RAPPEL VENDEUR", shNudgeT:"Ça fait {n} jours sans nouvelle annonce", shNudgeS:"Ta dernière annonce date du {date}. Une nouveauté te remet en haut du fil et te redonne une chance dans le classement de la semaine.", shNudgeEmptyK:"SHOP VIDE", shNudgeEmptyT:"Ton shop n'a aucune annonce en ligne", shNudgeEmptyS:"Les visiteurs ne voient rien à acheter. Ajoute une annonce ou un blueprint pour réapparaître sur la marketplace.", shNudgeCta:"NOUVELLE ANNONCE ▸", photoTip:"Les annonces avec photo sont affichées en premier et se vendent mieux.", cropModalTitle:"Recadrer la photo", cropZoomLbl:"Zoom", cropDragHint:"Fais glisser l'image pour la repositionner.", cropConfirmBtn:"VALIDER LE RECADRAGE", photoReady:"Photo prête ✓",
     myListingsTitle:"Mes annonces", noListings:"Tu n'as encore aucune annonce.", deleteListingBtn:"SUPPRIMER", confirmDeleteListing:"Supprimer cette annonce définitivement ?",
     requestDeliveryBtn:"DEMANDER UNE LIVRAISON", requestDeliveryTitle:"Demander une livraison coursier", buyerHandleLbl:"Pseudo RSI de l'acheteur (optionnel)", phBuyerHandle:"ex: Mayco_SC", deliveryRequested:"LIVRAISON DEMANDÉE !", cancelRequest:"ANNULER", confirmDeliveryBtn:"CONFIRMER LA DEMANDE",
     marketplaceDeliveryBadge:"LIVRAISON MARKETPLACE", marketplaceDeliveryNote:"Livraison Marketplace : l'objet part de chez un VENDEUR pour être livré à un client, contrairement aux commandes classiques (client → coursier).",
@@ -4652,7 +4797,7 @@ const T = {
     proposeResourceBtn:"PROPOSE TO SUPPLY", resourceOfferMsgLbl:"Message to the seller", phResourceOfferMsg:"e.g. I have 50 units available, I can deliver to Stanton.", resourceOfferPriceLbl:"Your price (aUEC, optional)", submitResourceOfferBtn:"SEND PROPOSAL", resourceOfferSent:"PROPOSAL SENT!",
     myResourceOffersTitle:"My proposals", noResourceOffers:"You haven't sent any proposal yet.", resourceOfferLabel:"Desired item:",
     shopDescLbl:"Shop description (optional)", phShopDesc:"e.g. Rare ore specialist, fast delivery on Stanton.", shopDescMaxHint:"260 characters max, to keep a clean alignment with your shop photo.",
-    admTitle:"Dashboard", admP7:"7 DAYS", admP30:"30 DAYS", admRefresh:"REFRESH", admSqlTitle:"STATS UNAVAILABLE", admSqlTxt:"run the SQL file 2026-10-16-shops-pour-tous-admin-dashboard.sql in Supabase to enable the dashboard.", admDaily:"VISITORS PER DAY · 30 DAYS", admFunnel:"FUNNEL", admSources:"WHERE VISITORS COME FROM", admRecent:"LATEST SIGN-UPS", admOnP:"over {n} d", admKMembers:"Members", admKVisitors:"Visitors", admKVisitorsS:"unique", admKLogins:"Logins", admKLoginsS:"players logged in", admKShops:"Shops", admKShopsS:"with at least 1 listing", admKListings:"Live listings", admKBlueprints:"Live blueprints", admKSales:"Completed sales", admKReq:"requests", admKOrders:"Orders placed", admKPending:"pending", admKInProg:"in progress", admKDelivered:"Deliveries", admKCouriers:"Couriers", admKCandid:"application(s)", admNoData:"No data yet.", admVis:"visitors", admSign:"sign-ups", admToday:"today", admSum30:"{v} visitors and {s} sign-ups over 30 days", admNoFunnel:"No data yet: tracking starts as soon as the new version is live.", admF_visit:"Visit", admF_login_click:"Login click", admF_signed_in:"Logged in", admF_listing_created:"Listing posted", admF_blueprint_created:"Blueprint posted", admF_inquiry_sent:"Request sent", admF_order_created:"Order placed", admFunnelHint:"Distinct people at each step, and the share of visitors who reached it.", admNoSources:"No visits recorded over this period.", admDirect:"Direct / unknown link", admSrcHint:"Tip: add ?utm_source=discord (or x, spectrum…) to your links to see which channel brings players.", admAgoMin:"{n} min ago", admAgoH:"{n} h ago", admAgoD:"{n} d ago", admMF_all:"ALL", admMF_new:"NEW 7 D", admMF_shop:"WITH SHOP", admMF_active:"LIVE LISTINGS", admMF_couriers:"COURIERS", admMF_candid:"COURIER APPLICANTS", admMF_admins:"ADMINS", admMF_revoked:"SELLING SUSPENDED", admJoined:"joined", admLastLogin:"logged in", admListingsShort:"listings", admCandidCourier:"▲ wants to be a courier", admRCourier:"COURIER", admRSeller:"SELLER", admRSellerOff:"SELLING SUSPENDED", admRAdmin:"ADMIN", admMore:"More actions", admCourierTip:"Grant or remove the courier role", admSellerTip:"Suspend or restore selling rights", admSeeShop:"View their shop", admMoreRes:"+ {n} more members: refine your search.", admConfirmCourierOff:"Remove the courier role from {n}?", admConfirmSellerOff:"Suspend selling for {n}? Their listings stay visible but they can't post new ones.", admConfirmAdminOn:"Give ADMIN rights to {n}? They'll have access to everything, including this dashboard.", admConfirmAdminOff:"Remove admin rights from {n}?", admToastCourierOn:"{n} is now a courier", admToastCourierOff:"{n} is no longer a courier", admToastSellerOn:"{n} can sell again", admToastSellerOff:"Selling suspended for {n}", admToastAdminOn:"{n} is now an admin", admToastAdminOff:"{n} is no longer an admin", admUpdated:"Updated at {t}", admLast7:"Last 7 days", admLast30:"Last 30 days", admTodoApps:"Courier applications to review", admTodoAppsS:"These players are waiting for your answer to start delivering.", admTodoOrders:"Orders without a courier", admTodoOrdersS:"Clients are waiting for a courier to accept their order.", admTodoOrdersBtn:"SEE ORDERS", admTodoNone:"Nothing to handle right now.", admVsPrev:"vs before", admK1:"Visitors", admK1f:"different people who came to the site", admK2:"New members", admK2f:"{n} members in total", admK3:"Completed sales", admK3f:"{v} traded · {r} requests received", admK4:"Completed deliveries", admK4f:"{v} delivered · {n} orders placed", admInsDrop:"WHERE PEOPLE DROP", admInsDropClick:"{p} of visitors leave without clicking “Sign in”. That's the step to improve first.", admInsDropLogin:"{p} of people who click “Sign in” don't finish the Discord login.", admInsSrc:"TOP SOURCE", admInsSrcT:"{s} brings {p} of identified visitors over this period.", admInsShops:"SLEEPING SHOPS", admInsShopsT:"{n} out of {t} shops have no live listing: the “Your shop is waiting” ad nudges them.", admDailyT:"Visitors per day", admDailyS:"Last 30 days", admHealthT:"Marketplace health", admFunnelT:"Visitor journey", admSourcesT:"Where they come from", admVis30:"visitors over 30 days", admSign30:"sign-ups", admBest:"Best day:", admOnPeriod:"over the period", admNoneNew:"none new over the period", admHShops:"Active shops", admHShopsS:"{p}% of shops have at least one live listing", admHListings:"Live listings", admHBlueprints:"Live blueprints", admHOrders:"Open orders", admHOrdersS:"{p} without a courier · {c} being delivered", admHCouriers:"Couriers", admHLogins:"{n} players logged in over the period", admContinue:"continue", admStVisit:"Visit the site", admStVisitS:"starting point", admStClick:"Click Sign in", admStLogged:"Log in", admStPct:"{p}% of visitors", admActListings:"listings", admActBlueprints:"blueprints", admActInquiries:"requests sent", admActOrders:"orders", admFunnelHint2:"Distinct people. In red: the step where the most people drop.", admSrcUtm:"Link", admSrcHint2:"Add <code>?utm_source=discord</code> (or x, spectrum…) to your links to see which channel really brings players.", admSearchPh:"Name, RSI handle or shop…", admSortLbl:"Sort", admSortRecent:"Newest", admSortSeen:"Last login", admSortListings:"Listings", admSortName:"Name (A → Z)", admMT_all:"All", admMT_candid:"Courier applicants", admMT_new:"New", admMT_active:"Selling", admMT_shop:"Have a shop", admMT_couriers:"Couriers", admMT_admins:"Admins", admMT_revoked:"Selling suspended", admBAdmin:"ADMIN", admBCourier:"COURIER", admBPending:"WANTS TO BE A COURIER", admBSuspended:"SELLING SUSPENDED", admListingsN:"{n} live listing(s)", admNoShop:"No shop", admManage:"Manage this member", admSwCourier:"Courier", admSwCourierD:"Can accept and deliver orders.", admSwCourierPend:"Applied to become a courier: switch on to accept.", admSwSeller:"Can sell", admSwSellerD:"Switch off to block new listings (abuse, scam).", admSwAdmin:"Admin", admSwAdminD:"Full access, including this dashboard.", admShowMore:"SHOW {n} MORE ({t} LEFT)", admAgoNow:"just now", admAgoMo:"{n} mo ago", loginBrowse:"BROWSE THE MARKETPLACE WITHOUT SIGNING IN ▸", loginH1:"Star Citizen player marketplace & deliveries", loginPt1T:"Buy", loginPt1:"armor, weapons, ship components and crafted items sold by other players.", loginPt2T:"Sell", loginPt2:"open your shop for free and offer your blueprints crafted to order.", loginPt3T:"Get it delivered", loginPt3:"by a courier anywhere in Stanton, Pyro and Nyx.", shNewK:"WELCOME TO YOUR SHOP", shNewT:"Give it a name and a colour", shNewS:"Your shop is already open. Customise it (name, logo, colour, location), then post your first listing: it shows up on the marketplace right away.", shNewCta:"CUSTOMISE ▸", shAdClose:"Hide", shAdOpenK:"OPEN TO EVERYONE · FREE", shAdOpenT:"Open your shop on Couriers United", shAdOpenS:"Sell your crafted items, blueprints and spare gear to the whole community. Your shop is ready in two minutes, no application needed.", shAdOpenCta:"OPEN MY SHOP ▸", shAdResumeK:"YOUR SHOP IS WAITING", shAdResumeT:"{shop} is empty for now", shAdResumeS:"Players walk past without finding anything. One listing is enough to get back into the latest-items feed and this week's leaderboard.", shAdResumeCta:"POST A LISTING ▸", shNudgeK:"SELLER REMINDER", shNudgeT:"{n} days without a new listing", shNudgeS:"Your latest listing dates from {date}. Something new puts you back at the top of the feed and in this week's leaderboard.", shNudgeEmptyK:"EMPTY SHOP", shNudgeEmptyT:"Your shop has no live listings", shNudgeEmptyS:"Visitors have nothing to buy. Add a listing or a blueprint to show up on the marketplace again.", shNudgeCta:"NEW LISTING ▸", photoTip:"Listings with a photo are shown first and sell better.", cropModalTitle:"Crop the photo", cropZoomLbl:"Zoom", cropDragHint:"Drag the image to reposition it.", cropConfirmBtn:"CONFIRM CROP", photoReady:"Photo ready ✓",
+    admTitle:"Dashboard", admP7:"7 DAYS", admP30:"30 DAYS", admRefresh:"REFRESH", admSqlTitle:"STATS UNAVAILABLE", admSqlTxt:"run the SQL file 2026-10-16-shops-pour-tous-admin-dashboard.sql in Supabase to enable the dashboard.", admDaily:"VISITORS PER DAY · 30 DAYS", admFunnel:"FUNNEL", admSources:"WHERE VISITORS COME FROM", admRecent:"LATEST SIGN-UPS", admOnP:"over {n} d", admKMembers:"Members", admKVisitors:"Visitors", admKVisitorsS:"unique", admKLogins:"Logins", admKLoginsS:"players logged in", admKShops:"Shops", admKShopsS:"with at least 1 listing", admKListings:"Live listings", admKBlueprints:"Live blueprints", admKSales:"Completed sales", admKReq:"requests", admKOrders:"Orders placed", admKPending:"pending", admKInProg:"in progress", admKDelivered:"Deliveries", admKCouriers:"Couriers", admKCandid:"application(s)", admNoData:"No data yet.", admVis:"visitors", admSign:"sign-ups", admToday:"today", admSum30:"{v} visitors and {s} sign-ups over 30 days", admNoFunnel:"No data yet: tracking starts as soon as the new version is live.", admF_visit:"Visit", admF_login_click:"Login click", admF_signed_in:"Logged in", admF_listing_created:"Listing posted", admF_blueprint_created:"Blueprint posted", admF_inquiry_sent:"Request sent", admF_order_created:"Order placed", admFunnelHint:"Distinct people at each step, and the share of visitors who reached it.", admNoSources:"No visits recorded over this period.", admDirect:"Direct / unknown link", admSrcHint:"Tip: add ?utm_source=discord (or x, spectrum…) to your links to see which channel brings players.", admAgoMin:"{n} min ago", admAgoH:"{n} h ago", admAgoD:"{n} d ago", admMF_all:"ALL", admMF_new:"NEW 7 D", admMF_shop:"WITH SHOP", admMF_active:"LIVE LISTINGS", admMF_couriers:"COURIERS", admMF_candid:"COURIER APPLICANTS", admMF_admins:"ADMINS", admMF_revoked:"SELLING SUSPENDED", admJoined:"joined", admLastLogin:"logged in", admListingsShort:"listings", admCandidCourier:"▲ wants to be a courier", admRCourier:"COURIER", admRSeller:"SELLER", admRSellerOff:"SELLING SUSPENDED", admRAdmin:"ADMIN", admMore:"More actions", admCourierTip:"Grant or remove the courier role", admSellerTip:"Suspend or restore selling rights", admSeeShop:"View their shop", admMoreRes:"+ {n} more members: refine your search.", admConfirmCourierOff:"Remove the courier role from {n}?", admConfirmSellerOff:"Suspend selling for {n}? Their listings stay visible but they can't post new ones.", admConfirmAdminOn:"Give ADMIN rights to {n}? They'll have access to everything, including this dashboard.", admConfirmAdminOff:"Remove admin rights from {n}?", admToastCourierOn:"{n} is now a courier", admToastCourierOff:"{n} is no longer a courier", admToastSellerOn:"{n} can sell again", admToastSellerOff:"Selling suspended for {n}", admToastAdminOn:"{n} is now an admin", admToastAdminOff:"{n} is no longer an admin", admUpdated:"Updated at {t}", admLast7:"Last 7 days", admLast30:"Last 30 days", admTodoApps:"Courier applications to review", admTodoAppsS:"These players are waiting for your answer to start delivering.", admTodoOrders:"Orders without a courier", admTodoOrdersS:"Clients are waiting for a courier to accept their order.", admTodoOrdersBtn:"SEE ORDERS", admTodoNone:"Nothing to handle right now.", admVsPrev:"vs before", admK1:"Visitors", admK1f:"different people who came to the site", admK2:"New members", admK2f:"{n} members in total", admK3:"Completed sales", admK3f:"{v} traded · {r} requests received", admK4:"Completed deliveries", admK4f:"{v} delivered · {n} orders placed", admInsDrop:"WHERE PEOPLE DROP", admInsDropClick:"{p} of visitors leave without clicking “Sign in”. That's the step to improve first.", admInsDropLogin:"{p} of people who click “Sign in” don't finish the Discord login.", admInsSrc:"TOP SOURCE", admInsSrcT:"{s} brings {p} of identified visitors over this period.", admInsShops:"SLEEPING SHOPS", admInsShopsT:"{n} out of {t} shops have no live listing: the “Your shop is waiting” ad nudges them.", admDailyT:"Visitors per day", admDailyS:"Last 30 days", admHealthT:"Marketplace health", admFunnelT:"Visitor journey", admSourcesT:"Where they come from", admVis30:"visitors over 30 days", admSign30:"sign-ups", admBest:"Best day:", admOnPeriod:"over the period", admNoneNew:"none new over the period", admHShops:"Active shops", admHShopsS:"{p}% of shops have at least one live listing", admHListings:"Live listings", admHBlueprints:"Live blueprints", admHOrders:"Open orders", admHOrdersS:"{p} without a courier · {c} being delivered", admHCouriers:"Couriers", admHLogins:"{n} players logged in over the period", admContinue:"continue", admStVisit:"Visit the site", admStVisitS:"starting point", admStClick:"Click Sign in", admStLogged:"Log in", admStPct:"{p}% of visitors", admActListings:"listings", admActBlueprints:"blueprints", admActInquiries:"requests sent", admActOrders:"orders", admFunnelHint2:"Distinct people. In red: the step where the most people drop.", admSrcUtm:"Link", admSrcHint2:"Add <code>?utm_source=discord</code> (or x, spectrum…) to your links to see which channel really brings players.", admSearchPh:"Name, RSI handle or shop…", admSortLbl:"Sort", admSortRecent:"Newest", admSortSeen:"Last login", admSortListings:"Listings", admSortName:"Name (A → Z)", admMT_all:"All", admMT_candid:"Courier applicants", admMT_new:"New", admMT_active:"Selling", admMT_shop:"Have a shop", admMT_couriers:"Couriers", admMT_admins:"Admins", admMT_revoked:"Selling suspended", admBAdmin:"ADMIN", admBCourier:"COURIER", admBPending:"WANTS TO BE A COURIER", admBSuspended:"SELLING SUSPENDED", admListingsN:"{n} live listing(s)", admNoShop:"No shop", admManage:"Manage this member", admSwCourier:"Courier", admSwCourierD:"Can accept and deliver orders.", admSwCourierPend:"Applied to become a courier: switch on to accept.", admSwSeller:"Can sell", admSwSellerD:"Switch off to block new listings (abuse, scam).", admSwAdmin:"Admin", admSwAdminD:"Full access, including this dashboard.", admShowMore:"SHOW {n} MORE ({t} LEFT)", admAgoNow:"just now", admAgoMo:"{n} mo ago", ttH1Member:"On the market today", ttLeadMember:"The latest listings from player shops. Sell an item in two minutes or tell everyone what you're looking for.", ttCtaSell:"Sell an item", ttCtaWant:"Post a wanted item", ldBackMkt:"Marketplace", ldBackBp:"Blueprints", ldOnSale:"For sale", ldCrafted:"Crafted to order", ldStock:"{n} in stock, buy the quantity you need", ldLot:"Lot of {n}", ldSingle:"Single item", ldOwn:"This is your listing. Edit it from your shop.", ldOwnBp:"This is your blueprint. Edit it from your shop.", ldDeliv:"Don't want to travel? A courier can bring it to you in Stanton, Pyro or Nyx for about {c} in commission.", ldBasedIn:"Shop based in {s}", ldSoldBy:"Sold by", ldSeeShop:"See the shop ›", ldDescT:"Description", ldHowT:"How buying works", ldHowBpT:"How ordering works", ldStep1:"<b>Send your request</b>: quantity, and an offer if you want to negotiate.", ldStep2:"<b>The seller accepts</b> and you chat directly in messages.", ldStep3:"<b>Meet in game</b> for the trade, or get it delivered by a courier.", ldStepBp1:"<b>Pick an option</b>: ready-made, or with your own materials.", ldStepBp2:"<b>The seller crafts it</b> and keeps you posted in messages.", ldStepBp3:"<b>Meet in game</b> to collect the item and pay.", ldOptReady:"Ready-made", ldOptReadyS:"The seller provides everything", ldOptMats:"With your materials", ldOptMatsS:"You bring the materials", ldMatsT:"Materials needed", ldMoreFrom:"More from {s}", ldMoreBpFrom:"More blueprints from {s}", guestLoginBtn:"Sign in", lsLater:"Keep browsing", lsFine:"Free. We never see your password or Discord messages, only your username and avatar.", lsT_buy:"Sign in to contact the seller", lsS_buy:"One click with Discord and you can send your request, chat with the seller and get it delivered. You'll land right back here.", lsT_sell:"Sign in to open your shop", lsS_sell:"Your shop is free and ready in two minutes. Sign in with Discord, pick a name, post your first listing.", lsT_offer:"Sign in to offer this item", lsS_offer:"This player is looking for this item. Sign in with Discord to make them an offer.", lsT_generic:"Sign in with Discord", lsS_generic:"To buy, sell, order a delivery and chat with other players. You'll land right back here.", ttH1:"The players' market of the 'verse", ttLead:"Crafted armor, blueprints, ship components: buy straight from other players, then meet in game or get it delivered across Stanton, Pyro and Nyx.", ttCtaLogin:"Sign in with Discord", ttCtaShop:"Open my shop for free", ttBoardT:"Just landed on the market", ttLive:"live", ttColItem:"Item", ttColShop:"Shop", ttColPrice:"Price aUEC", ttFactItems:"live listings", ttFactShops:"active shops", ttFactSystems:"systems delivered", ttItem:"Item", ttPerUnit:"/ unit", ttReady:"ready-made", ttYourMats:"with your materials", ttCrafted:"Crafted to order", ttMats:"Materials:", ttWanted:"Wanted", ttWantedLocked:"Items wanted by players are visible once you sign in.", ttWantedQty:"wanted", ttOffered:"offered", ttHaveIt:"I have this item", ttBy:"By ", loginBrowse:"BROWSE THE MARKETPLACE WITHOUT SIGNING IN ▸", loginH1:"Star Citizen player marketplace & deliveries", loginPt1T:"Buy", loginPt1:"armor, weapons, ship components and crafted items sold by other players.", loginPt2T:"Sell", loginPt2:"open your shop for free and offer your blueprints crafted to order.", loginPt3T:"Get it delivered", loginPt3:"by a courier anywhere in Stanton, Pyro and Nyx.", shNewK:"WELCOME TO YOUR SHOP", shNewT:"Give it a name and a colour", shNewS:"Your shop is already open. Customise it (name, logo, colour, location), then post your first listing: it shows up on the marketplace right away.", shNewCta:"CUSTOMISE ▸", shAdClose:"Hide", shAdOpenK:"OPEN TO EVERYONE · FREE", shAdOpenT:"Open your shop on Couriers United", shAdOpenS:"Sell your crafted items, blueprints and spare gear to the whole community. Your shop is ready in two minutes, no application needed.", shAdOpenCta:"OPEN MY SHOP ▸", shAdResumeK:"YOUR SHOP IS WAITING", shAdResumeT:"{shop} is empty for now", shAdResumeS:"Players walk past without finding anything. One listing is enough to get back into the latest-items feed and this week's leaderboard.", shAdResumeCta:"POST A LISTING ▸", shNudgeK:"SELLER REMINDER", shNudgeT:"{n} days without a new listing", shNudgeS:"Your latest listing dates from {date}. Something new puts you back at the top of the feed and in this week's leaderboard.", shNudgeEmptyK:"EMPTY SHOP", shNudgeEmptyT:"Your shop has no live listings", shNudgeEmptyS:"Visitors have nothing to buy. Add a listing or a blueprint to show up on the marketplace again.", shNudgeCta:"NEW LISTING ▸", photoTip:"Listings with a photo are shown first and sell better.", cropModalTitle:"Crop the photo", cropZoomLbl:"Zoom", cropDragHint:"Drag the image to reposition it.", cropConfirmBtn:"CONFIRM CROP", photoReady:"Photo ready ✓",
     myListingsTitle:"My listings", noListings:"You have no listings yet.", deleteListingBtn:"DELETE", confirmDeleteListing:"Permanently delete this listing?",
     requestDeliveryBtn:"REQUEST A DELIVERY", requestDeliveryTitle:"Request a courier delivery", buyerHandleLbl:"Buyer's RSI handle (optional)", phBuyerHandle:"e.g. Mayco_SC", deliveryRequested:"DELIVERY REQUESTED!", cancelRequest:"CANCEL", confirmDeliveryBtn:"CONFIRM REQUEST",
     marketplaceDeliveryBadge:"MARKETPLACE DELIVERY", marketplaceDeliveryNote:"Marketplace delivery: the item ships from a SELLER to a client, unlike classic orders (client → courier).",
@@ -4910,6 +5055,90 @@ function openSellerCreateOption(kind){
   }
 }
 
+// --- MODE INVITÉ : on peut tout parcourir sans compte, la connexion n'est demandée qu'au moment d'agir ---
+const LOGIN_GATED = ['openOfferModal','openResourceOfferModal','toggleShopUpvote','upvoteTarget','openMsgThreadWithUser','sendBlueprintContactMsg',
+  'openCreateOrder','toggleClientCreateMenu','openSellerCreateOption','openPublicProfile','openProfile','reorderFrom','onMessagesBtnClick','toggleSettings'];
+function installLoginGates(){
+  LOGIN_GATED.forEach(name => {
+    const fn = window[name];
+    if(typeof fn !== 'function' || fn.__gated) return;
+    const g = function(){ if(!session) return needLogin(name === 'openSellerCreateOption' ? 'sell' : (name.includes('Offer') || name.includes('Contact') || name.includes('Msg')) ? 'buy' : 'generic'); return fn.apply(this, arguments); };
+    g.__gated = true; window[name] = g;
+  });
+}
+function enterGuest(){
+  installLoginGates();
+  document.body.classList.add('is-guest');
+  $('view-login').hidden = true;
+  $('app').hidden = false;
+  hideAllViews();
+  currentView = 'client';
+  if(clientTab === 'deliveries') clientTab = 'marketplace';
+  ['adminViewBar','createOrderBtn','sellerCreateWrap'].forEach(id => { const e = $(id); if(e) e.hidden = true; });
+  const pending = getPendingShop();
+  if(pending){
+    try{ sessionStorage.removeItem('cu_pending_shop'); }catch(e){}
+    openSellerShop(pending);
+    return;
+  }
+  $('view-client-dash').hidden = false;
+  setClientTab(clientTab);
+  const pt = $('pageTitle'); if(pt) pt.hidden = true;
+}
+function needLogin(kind){
+  const d = T[LANG];
+  const k = ['buy','sell','offer'].includes(kind) ? kind : 'generic';
+  $('lsTitle').textContent = d['lsT_' + k];
+  $('lsSub').textContent = d['lsS_' + k];
+  // on retient où était le visiteur pour l'y ramener après la connexion Discord
+  try{
+    if(shopViewingSellerId && !$('view-seller-shop').hidden) sessionStorage.setItem('cu_pending_shop', shopViewingSellerId);
+    sessionStorage.setItem('cu_return_tab', clientTab || 'marketplace');
+    if(k === 'sell') sessionStorage.setItem('cu_return_view', 'seller');
+  }catch(e){}
+  trackEvent('login_prompt');
+  $('loginSheet').hidden = false;
+  const go = document.querySelector('#loginSheet .ls-go'); if(go) go.focus();
+}
+function closeLoginSheet(){ $('loginSheet').hidden = true; }
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && $('loginSheet') && !$('loginSheet').hidden) closeLoginSheet(); });
+function restoreGuestReturn(){
+  try{
+    const v = sessionStorage.getItem('cu_return_view'), t = sessionStorage.getItem('cu_return_tab');
+    sessionStorage.removeItem('cu_return_view'); sessionStorage.removeItem('cu_return_tab');
+    if(getPendingShop()) return;
+    if(v === 'seller' && availableViews().includes('seller')){ setAdminView('seller'); return; }
+    if(t && t !== 'deliveries' && currentView === 'client'){ setClientTab(t); }
+  }catch(e){}
+}
+function renderGuestHero(){
+  const hero = $('guestHero'); if(!hero) return;
+  const d = T[LANG];
+  hero.hidden = false;
+  hero.classList.toggle('member', !!session);
+  if(session){
+    $('ttH1').textContent = d.ttH1Member;
+    $('ttLead').textContent = d.ttLeadMember;
+    $('ttCta').innerHTML = `<button type="button" class="tt-btn" onclick="openSellerCreateOption('listing')">${d.ttCtaSell}</button><button type="button" class="tt-btn ghost" onclick="openSellerCreateOption('resource')">${d.ttCtaWant}</button>`;
+  } else {
+    $('ttH1').textContent = d.ttH1;
+    $('ttLead').textContent = d.ttLead;
+    $('ttCta').innerHTML = `<button type="button" class="tt-btn" onclick="needLogin('generic')">${d.ttCtaLogin}</button><button type="button" class="tt-btn ghost" onclick="needLogin('sell')">${d.ttCtaShop}</button>`;
+  }
+  const rows = (marketplaceFeedCache || []).slice(0, 7);
+  const box = $('ttBoardRows');
+  if(box){
+    const first = !box.dataset.done; box.dataset.done = '1';
+    box.innerHTML = rows.length ? rows.map((l, i) => {
+      const s = marketplaceSellerMapCache[l.seller_id];
+      return `<button type="button" class="tt-row${first ? ' flap' : ''}" style="--d:${(i * 0.09).toFixed(2)}s" onclick="openListingDetail('${l.id}')"><span>${escHtml(l.item_name)}</span><span class="s">${escHtml((s && s.shop_name) || '—')}</span><span class="p">${fmtNum(l.price)}</span></button>`;
+    }).join('') : `<p class="tt-lead" style="margin:10px 0">${d.marketplaceEmpty}</p>`;
+    if(first) setTimeout(() => box.querySelectorAll('.tt-row.flap').forEach(r => r.classList.remove('flap')), 1600);
+  }
+  const shops = new Set((marketplaceFeedCache || []).map(l => l.seller_id)).size;
+  const f = $('ttFacts');
+  if(f) f.innerHTML = `<li><b>${fmtNum((marketplaceFeedCache || []).length)}</b>${d.ttFactItems}</li><li><b>${fmtNum(shops)}</b>${d.ttFactShops}</li><li><b>3</b>${d.ttFactSystems}</li>`;
+}
 // --- MESURE D'AUDIENCE (entonnoir : visite -> connexion -> 1re action) -------------------------------------------
 // Sans cookie ni donnée personnelle : un identifiant aléatoire local, et le nom du site d'où vient le visiteur.
 // Respecte "Ne pas me suivre" (DNT). Échoue en silence si la table funnel_events n'existe pas encore.
@@ -4951,6 +5180,7 @@ function effectiveView(){
 }
 
 function updatePageTitle(){
+  if(!session){ const p0 = $('pageTitle'); if(p0) p0.hidden = true; return; }
   const v = effectiveView();
   const d = T[LANG];
   const pt = $('pageTitle');
@@ -4963,10 +5193,10 @@ function routeApp(){
   trackEvent('visit', true);
   if(!session){
     removedOrdersChecked = false;
-    $('view-login').hidden = false;
-    $('app').hidden = true;
+    enterGuest();
     return;
   }
+  document.body.classList.remove('is-guest');
   $('view-login').hidden = true;
   $('app').hidden = false;
   hideAllViews();
@@ -5870,6 +6100,7 @@ function enterAppRoute(){
   window.__keepFormState = false;
   const hadPending = !!getPendingShop();
   openPendingShop();
+  if(!hadPending) restoreGuestReturn();
   if(snap && !hadPending) restoreFormState(snap);
 }
 function enterApp(){
@@ -6861,7 +7092,8 @@ const RESOURCE_PROPOSE_ICON = `<svg class="icon" viewBox="0 0 16 16" shape-rende
 // réutilisé à l'identique sur la carte ET sur la page détail (evite d'avoir deux fois la même logique).
 function mktInterestBtnHtml(listing, stopProp){
   const d = T[LANG];
-  const canBuy = session && session.user.id !== listing.seller_id;
+  if(!session) return `<button type="button" class="tt-guest-btn" onclick="event.stopPropagation(); needLogin('buy')">${d.imInterested}</button>`;
+  const canBuy = session.user.id !== listing.seller_id;
   if(!canBuy) return '';
   return `<button type="button" class="mkt-interest-btn" data-listing-id="${listing.id}" data-item-name="${listing.item_name}" data-price="${listing.price}" data-is-stock="${listing.is_stock ? '1' : '0'}" data-stock="${listing.quantity}" onclick="${stopProp ? 'event.stopPropagation(); ' : ''}pixelSwoosh(this); openOfferModal(this)">
     <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
@@ -6875,6 +7107,22 @@ function mktInterestBtnHtml(listing, stopProp){
 // que la page détail (openListingDetail) puisse retrouver l'annonce cliquée quel que soit l'écran d'où
 // elle vient (feed client, boutique d'un vendeur, catalogue de blueprints...) sans refaire de requête.
 const listingDetailIndex = {};
+// --- CARTES « ÉTIQUETTE DE CARGO » (annonces, blueprints, objets recherchés) ---
+const TT_SYS = { Stanton:'var(--sys-stanton)', Pyro:'var(--sys-pyro)', Nyx:'var(--sys-nyx)' };
+function ttStrip(catId, sys, label){
+  const c = ITEM_CATEGORY_BY_ID[catId];
+  const icon = c ? mktPhSvg(c.group.key).replace('class="mkt-photo-placeholder"', 'aria-hidden="true"') : '';
+  const name = label || (c ? categoryGroupLabel(c.group) : T[LANG].ttItem);
+  return `<div class="tt-strip"><span class="tt-cat">${icon}${escHtml(name)}</span>${sys && TT_SYS[sys] ? `<span class="tt-sys" style="--s:${TT_SYS[sys]}">${escHtml(sys)}</span>` : ''}</div>`;
+}
+function ttSellerBtn(sellerId, seller, prefix){
+  const name = (seller && seller.shop_name) || (seller ? displayName(seller) : '—');
+  const color = seller && /^#[0-9a-f]{6}$/i.test(seller.theme_color || '') ? seller.theme_color : '';
+  return `<button type="button" class="tt-seller"${color ? ` style="--c:${color}"` : ''} onclick="event.stopPropagation(); openSellerShop('${sellerId}')" title="${T[LANG].viewShopBtn}"><i></i><span>${prefix || ''}${escHtml(name)}</span></button>`;
+}
+function ttPriceHtml(amount, sub, right){
+  return `<div class="tt-price"><b>${fmtNum(amount)}</b><small>aUEC${sub ? ' ' + sub : ''}</small>${right ? `<em>${right}</em>` : ''}</div>`;
+}
 function mktCardHtml(listing, sellerMap, unreadSet){
   const d = T[LANG];
   const seller = sellerMap[listing.seller_id];
@@ -6883,19 +7131,21 @@ function mktCardHtml(listing, sellerMap, unreadSet){
   const isNew = !!(unreadSet && unreadSet.has(listing.id));
   const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
   const hoverAttr = isNew ? ` onmouseenter="markListingSeen('${listing.id}', this)"` : '';
+  const price = listing.is_stock
+    ? ttPriceHtml(listing.price, d.ttPerUnit, `${d.stockLbl} ${listing.quantity}`)
+    : ttPriceHtml(listing.price, '', listing.quantity > 1 ? '×' + listing.quantity : '');
   return `
-    <div class="mkt-card mkt-card-clickable" onclick="openListingDetail('${listing.id}')"${hoverAttr}>
+    <article class="mkt-card mkt-card-clickable tt-card" onclick="openListingDetail('${listing.id}')"${hoverAttr}>
       ${newDot}
+      ${ttStrip(listing.category_id, seller && seller.location_system)}
       <div class="mkt-photo-wrap">${photo}${listingTagsHtml(listing.tags)}</div>
-      <div class="mkt-info">
-        <div class="mkt-item-name">${listing.item_name}</div>
-        ${mktPriceRowHtml(listing)}
-        <div class="courier-box" onclick="event.stopPropagation(); openSellerShop('${listing.seller_id}')" title="${d.viewShopBtn}">
-          <div class="courier-box-name">${d.mktByLbl} ${(seller && seller.shop_name) || (seller ? displayName(seller) : '—')}</div>
-        </div>
+      <div class="tt-body">
+        <h3 class="tt-name">${escHtml(listing.item_name)}</h3>
+        ${price}
+        ${ttSellerBtn(listing.seller_id, seller)}
         ${mktInterestBtnHtml(listing, true)}
       </div>
-    </div>`;
+    </article>`;
 }
 let offerModalListingId = null;
 let offerModalListingPrice = 0;
@@ -6983,17 +7233,19 @@ async function loadMarketplaceFeed(){
   const { data, error } = await sb.from('marketplace_listings').select('*').eq('is_deleted', false).order('created_at',{ascending:false}).limit(200);
   if(error){ box.textContent = error.message; return; }
   marketplaceFeedCache = data || [];
-  if(!marketplaceFeedCache.length){ box.innerHTML = `<p class="muted">${d.marketplaceEmpty}</p>`; return; }
+  if(!marketplaceFeedCache.length){ box.innerHTML = `<p class="muted">${d.marketplaceEmpty}</p>`; renderGuestHero(); return; }
   const currentIds = new Set(marketplaceFeedCache.map(l=>l.id));
   const sellerIds = [...new Set(marketplaceFeedCache.map(l=>l.seller_id))];
   const [{ data: sellers }, { data: shops }, unreadRows] = await Promise.all([
     sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds),
-    sb.from('marketplace_shops').select('id,shop_name').in('id', sellerIds),
+    sb.from('marketplace_shops').select('id,shop_name,theme_color,location_system').in('id', sellerIds),
     session ? sb.from('notifications').select('id,ref_id').eq('user_id',session.user.id).eq('category','client_new_listing').eq('read',false).then(r=>r.data||[]) : Promise.resolve([])
   ]);
   const shopNameMap = {}; (shops||[]).forEach(s=>shopNameMap[s.id]=s.shop_name);
   const sellerMap = {}; (sellers||[]).forEach(s=>sellerMap[s.id]={ ...s, shop_name: shopNameMap[s.id] || null });
+  (shops||[]).forEach(sh=>{ sellerMap[sh.id] = { id:sh.id, ...(sellerMap[sh.id]||{}), shop_name: sh.shop_name, theme_color: sh.theme_color, location_system: sh.location_system }; });
   marketplaceSellerMapCache = sellerMap;
+  renderGuestHero();
   if(session){
     // Nettoie les notifs "nouvelle annonce" orphelines (annonce supprimée depuis) pour que la pastille
     // de l'onglet ne reste pas bloquée sur une carte qui n'existe plus.
@@ -7027,10 +7279,11 @@ async function loadBlueprintsFeed(){
   const sellerIds = [...new Set(blueprintsFeedCache.map(bp=>bp.seller_id))];
   const [{ data: sellers }, { data: shops }] = await Promise.all([
     sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds),
-    sb.from('marketplace_shops').select('id,shop_name').in('id', sellerIds)
+    sb.from('marketplace_shops').select('id,shop_name,theme_color,location_system').in('id', sellerIds)
   ]);
   const shopNameMap = {}; (shops||[]).forEach(s=>shopNameMap[s.id]=s.shop_name);
   blueprintsSellerMapCache = {}; (sellers||[]).forEach(s=>blueprintsSellerMapCache[s.id]={ ...s, shop_name: shopNameMap[s.id] || null });
+  (shops||[]).forEach(sh=>{ blueprintsSellerMapCache[sh.id] = { id:sh.id, ...(blueprintsSellerMapCache[sh.id]||{}), shop_name: sh.shop_name, theme_color: sh.theme_color, location_system: sh.location_system }; });
   applyBlueprintsFilter();
 }
 let blueprintsSearchDebounceTimer = null;
@@ -7176,9 +7429,9 @@ async function lbFetch(off){
   const c = lbCache[off]; if(c && Date.now() - c.at < 60000) return c.data;
   const wk = lbWeek(off), a = new Date(wk.start).toISOString(), z = new Date(wk.end).toISOString();
   const [sRes, uRes, eRes] = await Promise.all([
-    sb.from('marketplace_inquiries').select('seller_id,updated_at').eq('status','completed').gte('updated_at', a).lt('updated_at', z),
+    sb.from(session ? 'marketplace_inquiries' : 'public_completed_sales').select('seller_id,updated_at').eq('status','completed').gte('updated_at', a).lt('updated_at', z),
     sb.from('shop_upvotes').select('seller_id,created_at').gte('created_at', a).lt('created_at', z),
-    sb.from('marketplace_inquiries').select('seller_id,snap_item_name,snap_price').eq('status','completed').not('snap_price','is',null).gte('updated_at', a).lt('updated_at', z).order('snap_price',{ascending:false}).limit(300)
+    sb.from(session ? 'marketplace_inquiries' : 'public_completed_sales').select('seller_id,snap_item_name,snap_price').eq('status','completed').not('snap_price','is',null).gte('updated_at', a).lt('updated_at', z).order('snap_price',{ascending:false}).limit(300)
   ]);
   // classement par nombre ; à égalité, celui qui a atteint son score le premier passe devant
   const rank = (rows, col) => {
@@ -7360,6 +7613,7 @@ async function applyMarketplaceFilters(){
       ]);
       const shopNameMap = {}; (shops||[]).forEach(s=>shopNameMap[s.id]=s.shop_name);
       (sellers||[]).forEach(s=>{ marketplaceSellerMapCache[s.id] = { ...s, shop_name: shopNameMap[s.id] || null }; });
+      (shops||[]).forEach(sh=>{ marketplaceSellerMapCache[sh.id] = { id:sh.id, ...(marketplaceSellerMapCache[sh.id]||{}), shop_name: sh.shop_name, theme_color: sh.theme_color, location_system: sh.location_system }; });
     }
     sellerMap = marketplaceSellerMapCache;
   } else {
@@ -7398,32 +7652,36 @@ function resourceRequestCardHtml(r){
   const d = T[LANG];
   const seller = resourceRequestsSellerMapCache[r.seller_id];
   const shop = resourceRequestsShopMapCache[r.seller_id];
-  const sellerName = (shop && shop.shop_name) || (seller && (seller.rsi_handle || seller.discord_username)) || '—';
+  const who = { ...(seller || {}), ...(shop || {}) };
   const isNew = resourceRequestsUnreadSetCache.has(r.id);
   const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
   const hoverAttr = isNew ? ` onmouseenter="markResourceRequestSeen('${r.id}', this)"` : '';
-  const canPropose = session && session.user.id !== r.seller_id;
-  const proposeBtn = canPropose ? `<button type="button" class="mkt-interest-btn" onclick="openResourceOfferModal(this)" data-request-id="${r.id}" data-item-name="${r.item_name}" data-qty="${r.quantity}" data-seller-id="${r.seller_id}">${RESOURCE_PROPOSE_ICON}${d.proposeResourceBtn}</button>` : '';
+  const proposeBtn = !session
+    ? `<button type="button" class="tt-guest-btn" onclick="needLogin('offer')">${d.ttHaveIt}</button>`
+    : (session.user.id !== r.seller_id ? `<button type="button" class="mkt-interest-btn" onclick="openResourceOfferModal(this)" data-request-id="${r.id}" data-item-name="${r.item_name}" data-qty="${r.quantity}" data-seller-id="${r.seller_id}">${RESOURCE_PROPOSE_ICON} ${d.ttHaveIt}</button>` : '');
   return `
-    <div class="mkt-card resource-request-card"${hoverAttr}>
+    <article class="mkt-card resource-request-card tt-card tt-want"${hoverAttr}>
       ${newDot}
-      <div class="mkt-info">
-        <div class="mkt-item-name">${r.item_name}</div>
-        ${resourceRequestPriceRowHtml(r)}
-        <div class="courier-box" onclick="openSellerShop('${r.seller_id}')" title="${d.viewShopBtn}">
-          <div class="courier-box-name">${d.resourceRequestedBy}${sellerName}</div>
-        </div>
-        ${r.note ? `<div class="resource-request-note">${r.note}</div>` : ''}
+      ${ttStrip(r.category_id, who.location_system, d.ttWanted)}
+      <div class="tt-body">
+        <h3 class="tt-name">${escHtml(r.item_name)}</h3>
+        <div class="tt-want-q"><b>×${r.quantity || 1}</b><span>${d.ttWantedQty}</span></div>
+        ${r.price ? ttPriceHtml(r.price, '', d.ttOffered) : `<div class="tt-price tbd"><b>${d.resourcePriceNone}</b></div>`}
+        ${r.note ? `<div class="tt-note">${escHtml(r.note)}</div>` : ''}
+        ${ttSellerBtn(r.seller_id, who, d.ttBy)}
         ${proposeBtn}
       </div>
-    </div>`;
+    </article>`;
 }
 async function loadResourceRequestsFeed(){
   const box = $('resourceRequestsFeed'); if(!box) return;
   const d = T[LANG];
   box.innerHTML = `<p class="muted">…</p>`;
   const { data, error } = await sb.from('resource_requests').select('*').eq('status','open').order('created_at',{ascending:false}).limit(50);
-  if(error){ box.textContent = error.message; return; }
+  if(error){
+    if(!session){ box.innerHTML = `<div class="tt-lock"><p>${d.ttWantedLocked}</p><button type="button" class="tt-btn" onclick="needLogin('offer')">${d.ttCtaLogin}</button></div>`; return; }
+    box.textContent = error.message; return;
+  }
   const rows = (data || []).filter(r => !session || r.seller_id !== session.user.id);
   resourceRequestsFeedCache = rows;
   const currentIds = new Set(rows.map(r=>r.id));
@@ -7441,7 +7699,7 @@ async function loadResourceRequestsFeed(){
   const sellerIds = [...new Set(rows.map(r=>r.seller_id))];
   const [{ data: sellers }, { data: shops }, unreadRows] = await Promise.all([
     sb.from('profiles').select('id,discord_username,rsi_handle').in('id', sellerIds),
-    sb.from('marketplace_shops').select('id,shop_name').in('id', sellerIds),
+    sb.from('marketplace_shops').select('id,shop_name,theme_color,location_system').in('id', sellerIds),
     session ? sb.from('notifications').select('ref_id').eq('user_id',session.user.id).eq('category','client_resources').eq('read',false).then(r=>r.data||[]) : []
   ]);
   resourceRequestsSellerMapCache = {}; (sellers||[]).forEach(s=>resourceRequestsSellerMapCache[s.id]=s);
@@ -10144,6 +10402,7 @@ function blueprintPriceRowsHtml(bp){
 // sur la page détail.
 function blueprintContactBtnHtml(bp, canOrder, stopProp){
   const d = T[LANG];
+  if(!session) return `<button type="button" class="tt-guest-btn" onclick="event.stopPropagation(); needLogin('buy')">${d.imInterested}</button>`;
   if(!canOrder) return '';
   return `<button type="button" class="mkt-interest-btn" data-blueprint-id="${bp.id}" data-seller-id="${bp.seller_id}" data-item-name="${encodeURIComponent(bp.item_name)}" data-price-turnkey="${bp.price_turnkey||''}" data-price-mats="${bp.price_client_mats||''}" onclick="${stopProp ? 'event.stopPropagation(); ' : ''}pixelSwoosh(this); openBlueprintContactModal(this)">
     <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges"><g fill="currentColor">
@@ -10164,19 +10423,23 @@ function blueprintCardHtml(bp, sellerMap, isOwner){
       <button type="button" class="btn-secondary" onclick="event.stopPropagation(); openEditBlueprint('${bp.id}')" data-i18n="editListingBtn">${d.editListingBtn}</button>
       <button type="button" class="btn-secondary" onclick="event.stopPropagation(); deleteBlueprint('${bp.id}')" data-i18n="deleteListingBtn">${d.deleteListingBtn}</button>
     </div>` : '';
+  const prices = [];
+  if(bp.price_turnkey) prices.push(ttPriceHtml(bp.price_turnkey, '', d.ttReady));
+  if(bp.price_client_mats) prices.push(ttPriceHtml(bp.price_client_mats, '', d.ttYourMats));
   return `
-    <div class="mkt-card mkt-card-clickable blueprint-card" onclick="openListingDetail('${bp.id}')">
+    <article class="mkt-card mkt-card-clickable blueprint-card tt-card tt-bp" onclick="openListingDetail('${bp.id}')">
+      ${ttStrip(bp.category_id, seller && seller.location_system, d.ttCrafted)}
       <div class="mkt-photo-wrap">${photo}</div>
-      <div class="mkt-info">
-        <div class="mkt-item-name">${bp.item_name}</div>
-        ${bp.description ? `<div class="bp-description">${escapeHtml(bp.description)}</div>` : ''}
-        <div class="bp-materials">${escapeHtml(bp.materials||'')}</div>
-        ${blueprintPriceRowsHtml(bp)}
-        ${seller ? `<div class="courier-box" onclick="event.stopPropagation(); openSellerShop('${bp.seller_id}')"><div class="courier-box-name">${d.mktByLbl} ${seller.shop_name || displayName(seller)}</div></div>` : ''}
+      <div class="tt-body">
+        <h3 class="tt-name">${escHtml(bp.item_name)}</h3>
+        ${bp.description ? `<div class="bp-description">${escHtml(bp.description)}</div>` : ''}
+        <div class="tt-prices">${prices.join('')}</div>
+        ${bp.materials ? `<div class="tt-mats">${d.ttMats} ${escHtml(bp.materials)}</div>` : ''}
+        ${seller ? ttSellerBtn(bp.seller_id, seller) : ''}
         ${blueprintContactBtnHtml(bp, canOrder, true)}
         ${ownerActions}
       </div>
-    </div>`;
+    </article>`;
 }
 
 // --- PAGE DÉTAIL D'ANNONCE (marketplace / blueprint) --------------------------------------------------------
@@ -10237,58 +10500,120 @@ function renderListingDetailDeliveryAd(l){
     <div class="courier-ad-text"><strong>${d.deliveryAdTitle}</strong><p>${d.deliveryAdText.replace('{price}', fmt(commission))}</p></div>
   `;
 }
-function renderListingDetailView(entry){
-  const d = T[LANG];
-  const l = entry.data;
+// Fiche détail d'une annonce ou d'un blueprint : photo à gauche, achat à droite, puis description, déroulé
+// d'un échange et autres annonces du même shop. Couleur du shop sur le bloc d'achat et la carte vendeur.
+const LD_DELIV_ICON = `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><g fill="currentColor"><rect x="1" y="4" width="9" height="7"/><rect x="10" y="6" width="3" height="5"/><rect x="13" y="8" width="2" height="3"/><rect x="3" y="11" width="2" height="2"/><rect x="11" y="11" width="2" height="2"/></g></svg>`;
+function ldShell(entry, kind){
   hideAllViews();
   $('createOrderBtn').hidden = true;
   $('sellerCreateWrap').hidden = true;
   $('view-listing-detail').hidden = false;
-  $('listingDetailEyebrow').textContent = d.detailEyebrowMarketplace;
-  $('listingDetailPhoto').innerHTML = l.photo_url ? `<img src="${l.photo_url}" alt="" loading="lazy" decoding="async">` : MKT_PHOTO_PLACEHOLDER;
-  $('listingDetailTags').innerHTML = listingTagsHtml(l.tags);
-  $('listingDetailTitle').textContent = l.item_name;
-  $('listingDetailPriceRow').innerHTML = mktPriceRowHtml(l);
-  $('listingDetailMaterialsWrap').hidden = true;
-  const descEl = $('listingDetailDescription');
-  if(l.description){ descEl.textContent = l.description; descEl.classList.remove('muted'); }
-  else { descEl.textContent = d.detailNoDescription; descEl.classList.add('muted'); }
-  $('listingDetailSellerBox').innerHTML = sellerBoxHtml(l.seller_id, entry.seller);
-  $('listingDetailActionWrap').innerHTML = mktInterestBtnHtml(l, false);
-  renderListingDetailDeliveryAd(l);
-  applyListingDetailShopTexture(l.seller_id);
+  const pt = $('pageTitle'); if(pt) pt.hidden = true;
   window.scrollTo(0,0);
+}
+function ldBackLabel(kind){ const d = T[LANG]; return kind === 'bp' ? d.ldBackBp : d.ldBackMkt; }
+function ldBack(kind){
+  if(session){ currentView = 'client'; }
+  clientTab = kind === 'bp' ? 'blueprints' : 'marketplace';
+  routeApp();
+}
+function ldSellerHtml(sellerId, seller){
+  const d = T[LANG];
+  if(!sellerId) return '';
+  const name = (seller && seller.shop_name) || (seller ? displayName(seller) : '—');
+  const color = seller && /^#[0-9a-f]{6}$/i.test(seller.theme_color || '') ? seller.theme_color : '';
+  const where = seller && seller.location_system ? d.ldBasedIn.replace('{s}', escHtml(seller.location_system)) : d.ldSoldBy;
+  return `<button type="button" class="ld-seller"${color ? ` style="--c:${color}"` : ''} onclick="openSellerShop('${sellerId}')">
+    <span class="ld-seller-logo" id="ldSellerLogo">${escHtml((name[0] || '?').toUpperCase())}</span>
+    <span class="ld-seller-t"><small>${where}</small><b>${escHtml(name)}</b></span>
+    <span class="ld-seller-go">${d.ldSeeShop}</span></button>`;
+}
+async function ldLoadSellerLogo(sellerId){
+  const { data } = await sb.from('marketplace_shops').select('logo_url').eq('id', sellerId).maybeSingle();
+  const el = $('ldSellerLogo');
+  if(el && data && data.logo_url) el.innerHTML = `<img src="${escHtml(data.logo_url)}" alt="">`;
+}
+function ldMoreHtml(items, render, title){
+  if(!items.length) return '';
+  return `<section class="ld-more"><h2>${title}</h2><div class="marketplace-grid">${items.map(render).join('')}</div></section>`;
+}
+function ldStepsHtml(kind){
+  const d = T[LANG];
+  const steps = kind === 'bp' ? [d.ldStepBp1, d.ldStepBp2, d.ldStepBp3] : [d.ldStep1, d.ldStep2, d.ldStep3];
+  return `<ol class="ld-steps">${steps.map((t, i) => `<li><i>${i + 1}</i><span>${t}</span></li>`).join('')}</ol>`;
+}
+function renderListingDetailView(entry){
+  const d = T[LANG];
+  const l = entry.data, seller = entry.seller;
+  ldShell(entry, 'listing');
+  const c = ITEM_CATEGORY_BY_ID[l.category_id];
+  const color = seller && /^#[0-9a-f]{6}$/i.test(seller.theme_color || '') ? seller.theme_color : '';
+  const sys = seller && seller.location_system && TT_SYS[seller.location_system] ? `<span class="tt-sys" style="--s:${TT_SYS[seller.location_system]}">${escHtml(seller.location_system)}</span>` : '';
+  const photo = l.photo_url ? `<img src="${l.photo_url}" alt="${escHtml(l.item_name)}">` : mktPlaceholderHtml(l.category_id);
+  const own = session && session.user.id === l.seller_id;
+  const qtyLine = l.is_stock ? d.ldStock.replace('{n}', l.quantity) : (l.quantity > 1 ? d.ldLot.replace('{n}', l.quantity) : d.ldSingle);
+  const commission = computeCommission((l.price || 0) * (l.quantity || 1));
+  const others = (marketplaceFeedCache || []).filter(x => x.seller_id === l.seller_id && x.id !== l.id).slice(0, 4);
+  $('ldRoot').innerHTML = `
+    <nav class="ld-crumbs"><button type="button" class="back" onclick="ldBack('listing')">‹ ${ldBackLabel('listing')}</button>${c ? `<span>${escHtml(categoryGroupLabel(c.group))}</span><span>›</span><span>${escHtml(c.name)}</span>` : ''}</nav>
+    <div class="ld-main">
+      <div class="ld-photo">${ttStrip(l.category_id, seller && seller.location_system)}<div class="ld-img">${photo}${listingTagsHtml(l.tags)}</div></div>
+      <div class="ld-side">
+        <div class="ld-kicker"><span>${d.ldOnSale}</span>${sys}</div>
+        <h1 class="ld-title">${escHtml(l.item_name)}</h1>
+        <div class="ld-buy"${color ? ` style="--c:${color}"` : ''}>
+          <div><div class="ld-price"><b>${fmtNum(l.price)}</b><small>aUEC${l.is_stock ? ' ' + d.ttPerUnit : ''}</small></div><div class="ld-price-sub">${qtyLine}</div></div>
+          ${own ? `<div class="ld-self">${d.ldOwn}</div>` : mktInterestBtnHtml(l, false)}
+          <div class="ld-deliv">${LD_DELIV_ICON}<span>${d.ldDeliv.replace('{c}', `<b>${fmt(commission)}</b>`)}</span></div>
+        </div>
+        ${ldSellerHtml(l.seller_id, seller)}
+      </div>
+    </div>
+    <div class="ld-info">
+      <section class="ld-block"><h2>${d.ldDescT}</h2><div class="ld-desc${l.description ? '' : ' muted'}">${l.description ? escHtml(l.description) : d.detailNoDescription}</div></section>
+      <section class="ld-block"><h2>${d.ldHowT}</h2>${ldStepsHtml('listing')}</section>
+    </div>
+    ${ldMoreHtml(others, x => mktCardHtml(x, marketplaceSellerMapCache || {}, null), d.ldMoreFrom.replace('{s}', escHtml((seller && seller.shop_name) || '')))}`;
+  ldLoadSellerLogo(l.seller_id);
 }
 function renderBlueprintDetailView(entry){
   const d = T[LANG];
-  const bp = entry.data;
-  hideAllViews();
-  $('createOrderBtn').hidden = true;
-  $('sellerCreateWrap').hidden = true;
-  $('view-listing-detail').hidden = false;
-  $('listingDetailEyebrow').textContent = d.detailEyebrowBlueprint;
-  $('listingDetailPhoto').innerHTML = bp.photo_url ? `<img src="${bp.photo_url}" alt="" loading="lazy" decoding="async">` : MKT_PHOTO_PLACEHOLDER;
-  $('listingDetailTags').innerHTML = '';
-  $('listingDetailTitle').textContent = bp.item_name;
-  $('listingDetailPriceRow').innerHTML = blueprintPriceRowsHtml(bp);
-  const matWrap = $('listingDetailMaterialsWrap');
-  if(bp.materials){ matWrap.hidden = false; $('listingDetailMaterials').textContent = bp.materials; }
-  else matWrap.hidden = true;
-  const descEl = $('listingDetailDescription');
-  if(bp.description){ descEl.textContent = bp.description; descEl.classList.remove('muted'); }
-  else { descEl.textContent = d.detailNoDescription; descEl.classList.add('muted'); }
-  $('listingDetailSellerBox').innerHTML = sellerBoxHtml(bp.seller_id, entry.seller);
-  // On ignore le drapeau isOwner mis en cache par la carte qui a rempli l'index (il reflète la vue d'où
-  // venait le dernier rendu de CE blueprint, pas forcément la session actuelle) : on recalcule directement
-  // depuis la session, comme le fait déjà mktInterestBtnHtml côté marketplace — c'est ce qui manquait pour
-  // que le bouton "JE SUIS INTÉRESSÉ(E)" apparaisse de façon fiable sur cette page.
+  const bp = entry.data, seller = entry.seller;
+  ldShell(entry, 'bp');
+  const c = ITEM_CATEGORY_BY_ID[bp.category_id];
+  const color = seller && /^#[0-9a-f]{6}$/i.test(seller.theme_color || '') ? seller.theme_color : '';
+  const sys = seller && seller.location_system && TT_SYS[seller.location_system] ? `<span class="tt-sys" style="--s:${TT_SYS[seller.location_system]}">${escHtml(seller.location_system)}</span>` : '';
+  const photo = bp.photo_url ? `<img src="${bp.photo_url}" alt="${escHtml(bp.item_name)}">` : mktPlaceholderHtml(bp.category_id);
+  const own = session && session.user.id === bp.seller_id;
   const canOrder = !!(session && session.user.id !== bp.seller_id);
-  $('listingDetailActionWrap').innerHTML = blueprintContactBtnHtml(bp, canOrder, false);
-  // Pas de pub "livraison par coursier" sur un blueprint : il est fabriqué à la commande par le vendeur,
-  // pas acheté en boutique puis récupéré par un coursier.
-  const adBox = $('listingDetailDeliveryAd'); if(adBox) adBox.hidden = true;
-  applyListingDetailShopTexture(bp.seller_id);
-  window.scrollTo(0,0);
+  const opts = [];
+  if(bp.price_turnkey) opts.push(`<div class="ld-opt"><span><b>${d.ldOptReady}</b>${d.ldOptReadyS}</span><strong>${fmtNum(bp.price_turnkey)}</strong></div>`);
+  if(bp.price_client_mats) opts.push(`<div class="ld-opt"><span><b>${d.ldOptMats}</b>${d.ldOptMatsS}</span><strong>${fmtNum(bp.price_client_mats)}</strong></div>`);
+  const mats = (bp.materials || '').split(/[,;\n]+/).map(x => x.trim()).filter(Boolean);
+  const others = (blueprintsFeedCache || []).filter(x => x.seller_id === bp.seller_id && x.id !== bp.id).slice(0, 4);
+  $('ldRoot').innerHTML = `
+    <nav class="ld-crumbs"><button type="button" class="back" onclick="ldBack('bp')">‹ ${ldBackLabel('bp')}</button>${c ? `<span>${escHtml(categoryGroupLabel(c.group))}</span><span>›</span><span>${escHtml(c.name)}</span>` : ''}</nav>
+    <div class="ld-main">
+      <div class="ld-photo bp">${ttStrip(bp.category_id, seller && seller.location_system, d.ttCrafted)}<div class="ld-img">${photo}</div></div>
+      <div class="ld-side">
+        <div class="ld-kicker"><span>${d.ldCrafted}</span>${sys}</div>
+        <h1 class="ld-title">${escHtml(bp.item_name)}</h1>
+        <div class="ld-buy"${color ? ` style="--c:${color}"` : ''}>
+          <div class="ld-opts">${opts.join('') || `<div class="ld-opt"><span>${d.resourcePriceNone}</span></div>`}</div>
+          ${own ? `<div class="ld-self">${d.ldOwnBp}</div>` : blueprintContactBtnHtml(bp, canOrder, false)}
+        </div>
+        ${ldSellerHtml(bp.seller_id, seller)}
+      </div>
+    </div>
+    <div class="ld-info">
+      <section class="ld-block">
+        ${mats.length ? `<h2>${d.ldMatsT}</h2><div class="ld-mats">${mats.map(m => `<span>${escHtml(m)}</span>`).join('')}</div><div style="height:22px"></div>` : ''}
+        <h2>${d.ldDescT}</h2><div class="ld-desc${bp.description ? '' : ' muted'}">${bp.description ? escHtml(bp.description) : d.detailNoDescription}</div>
+      </section>
+      <section class="ld-block"><h2>${d.ldHowBpT}</h2>${ldStepsHtml('bp')}</section>
+    </div>
+    ${ldMoreHtml(others, x => blueprintCardHtml(x, blueprintsSellerMapCache || {}, false), d.ldMoreBpFrom.replace('{s}', escHtml((seller && seller.shop_name) || '')))}`;
+  ldLoadSellerLogo(bp.seller_id);
 }
 
 function updateBlueprintLivePreview(){

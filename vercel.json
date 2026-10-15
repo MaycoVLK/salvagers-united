@@ -1,6 +1,10 @@
 {
   "rewrites": [
-    { "source": "/s/:id", "destination": "/api/shop?id=:id" }
+    { "source": "/s/:id", "destination": "/api/shop?id=:id" },
+    { "source": "/marketplace", "destination": "/api/explore" },
+    { "source": "/shop/:slug", "destination": "/api/shoppage?slug=:slug" },
+    { "source": "/item/:slug", "destination": "/api/item?slug=:slug" },
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" }
   ],
   "headers": [
     {
@@ -9,5 +13,8 @@
         { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }
       ]
     }
+  ],
+  "crons": [
+    { "path": "/api/cron-digest", "schedule": "0 16 * * 1" }
   ]
 }

@@ -2005,92 +2005,195 @@
 
   /* --- PUB "DEVENIR COURSIER" (dashboard client) --- */
 
-  /* ===== DASHBOARD ADMIN ===== */
-  .adm-wrap{display:flex; flex-direction:column; gap:16px;}
-  .adm-head{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
-  .adm-title{margin:0; font-family:'VT323',monospace; font-weight:400; font-size:2rem; letter-spacing:2px; color:var(--accent);}
-  .adm-title::before{content:"// "; opacity:.7;}
-  .adm-head-r{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
-  .adm-seg{display:inline-flex;}
-  .adm-seg button,.adm-btn{height:32px; padding:0 12px; background:transparent; color:var(--muted); border:1px solid var(--accent-dim); font-family:inherit; font-size:.7rem; letter-spacing:2px; cursor:pointer;}
-  .adm-seg button+button{border-left:0;}
-  .adm-seg button.on{background:var(--accent); color:#000; border-color:var(--accent); font-weight:700;}
-  .adm-btn{color:var(--accent); border-color:var(--accent);}
-  .adm-btn:hover,.adm-seg button:hover:not(.on){background:var(--accent-dim); color:var(--text);}
-  .adm-note{border:1px dashed var(--accent); padding:10px 14px; font-size:.78rem; line-height:1.5; color:var(--text);}
-  .adm-note b{color:var(--accent); font-weight:400; letter-spacing:1px;}
-  .adm-kpis{display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:10px;}
-  .adm-kpi{border:1px solid var(--border); background:var(--panel); padding:12px 14px; min-width:0;}
-  .adm-kpi-l{font-size:.62rem; letter-spacing:2px; color:var(--muted); text-transform:uppercase;}
-  .adm-kpi-v{font-family:'VT323',monospace; font-size:2.1rem; line-height:1; color:var(--text); margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .adm-kpi-v.acc{color:var(--accent);}
-  .adm-kpi-s{font-size:.66rem; color:var(--muted); margin-top:5px; letter-spacing:.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .adm-kpi-s b{font-weight:400; color:var(--text);}
-  .adm-up{color:#39ff6a !important;} .adm-down{color:var(--danger) !important;}
-  .adm-row2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px;}
-  @media (max-width:820px){ .adm-row2{grid-template-columns:1fr;} }
-  .adm-card{margin:0;}
-  .adm-ch{font-size:.7rem; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:14px;}
-  .adm-ch .sl{color:var(--accent);}
-  .adm-pd{color:var(--accent); margin-left:4px;}
-  .adm-daily{display:flex; flex-direction:column; gap:6px;}
-  .adm-bars{display:flex; align-items:flex-end; gap:2px; height:130px; border-bottom:1px solid var(--border);}
-  .adm-bar{flex:1; min-width:0; height:100%; display:flex; align-items:flex-end; position:relative; cursor:default;}
-  .adm-bar i{display:block; width:100%; background:var(--accent); min-height:1px; opacity:.85;}
-  .adm-bar.today i{opacity:1; box-shadow:0 0 8px var(--accent);}
-  .adm-bar:hover i{opacity:1; background:var(--text);}
-  .adm-bar b{position:absolute; left:50%; bottom:calc(100% + 4px); transform:translateX(-50%); display:none; white-space:nowrap; font-weight:400; font-size:.66rem; background:#000; border:1px solid var(--accent); color:var(--text); padding:3px 6px; z-index:3;}
-  .adm-bar:hover b{display:block;}
-  .adm-axis{display:flex; justify-content:space-between; font-size:.6rem; letter-spacing:1px; color:var(--muted);}
-  .adm-sum{font-size:.7rem; color:var(--muted); letter-spacing:1px;}
-  .adm-sum b{font-weight:400; color:var(--text);}
-  .adm-fr{display:grid; grid-template-columns:130px 1fr 92px; gap:10px; align-items:center; padding:5px 0; font-size:.75rem;}
-  .adm-fr .t{height:12px; background:var(--bg2); border:1px solid var(--border); position:relative;}
-  .adm-fr .t i{position:absolute; left:0; top:0; bottom:0; background:var(--accent);}
-  .adm-fr .n{text-align:right; color:var(--text); white-space:nowrap;}
-  .adm-fr .n small{color:var(--muted); margin-left:6px;}
-  .adm-fr .l{color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  @media (max-width:520px){ .adm-fr{grid-template-columns:96px 1fr 70px;} }
-  .adm-tbl{width:100%; border-collapse:collapse; font-size:.75rem;}
-  .adm-tbl td{padding:6px 0; border-top:1px dashed var(--border); color:var(--text);}
-  .adm-tbl tr:first-child td{border-top:0;}
-  .adm-tbl td.r{text-align:right; font-family:'VT323',monospace; font-size:1.15rem; color:var(--accent);}
-  .adm-tbl td small{color:var(--muted); margin-left:6px;}
-  .adm-empty{font-size:.75rem; color:var(--muted); line-height:1.5;}
-  .adm-rec{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 0; border-top:1px dashed var(--border); font-size:.78rem;}
-  .adm-rec:first-child{border-top:0;}
-  .adm-rec span{color:var(--muted); font-size:.68rem; white-space:nowrap;}
-  .adm-link{background:none; border:0; padding:0; color:var(--text); font:inherit; cursor:pointer; text-align:left; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .adm-link:hover{color:var(--accent);}
-  .adm-mem-tools{display:flex; flex-direction:column; gap:10px; margin-bottom:12px;}
-  .adm-mem-tools input{margin:0;}
-  .adm-chips{display:flex; gap:6px; flex-wrap:wrap;}
-  .adm-chip{height:28px; padding:0 10px; background:transparent; border:1px solid var(--border); color:var(--muted); font-family:inherit; font-size:.66rem; letter-spacing:1.5px; cursor:pointer;}
-  .adm-chip.on{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
-  .adm-chip em{font-style:normal; opacity:.7; margin-left:5px;}
-  .adm-mem{display:grid; grid-template-columns:36px minmax(0,1fr) auto; gap:12px; align-items:center; padding:10px 0; border-top:1px dashed var(--border);}
-  .adm-mem:first-child{border-top:0;}
-  .adm-av{width:36px; height:36px; background:var(--bg2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:'VT323',monospace; font-size:1.3rem; color:var(--accent); overflow:hidden;}
-  .adm-av img{width:100%; height:100%; object-fit:cover;}
-  .adm-mi{min-width:0;}
-  .adm-mn{font-size:.85rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .adm-mn small{color:var(--muted); margin-left:6px; font-size:.7rem;}
-  .adm-ms{font-size:.66rem; color:var(--muted); margin-top:3px; letter-spacing:.5px; display:flex; gap:10px; flex-wrap:wrap;}
-  .adm-ms .shp{color:var(--accent);}
-  .adm-acts{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;}
-  .adm-pill{height:28px; padding:0 10px; background:transparent; border:1px solid var(--border); color:var(--muted); font-family:inherit; font-size:.64rem; letter-spacing:1.5px; cursor:pointer; white-space:nowrap;}
-  .adm-pill:hover{border-color:var(--accent); color:var(--accent);}
-  .adm-pill.on{border-color:var(--accent); background:var(--accent); color:#000; font-weight:700;}
-  .adm-pill.off{border-color:var(--danger); color:var(--danger);}
-  .adm-pill.adm{border-style:dashed;}
-  .adm-pill.adm.on{background:#fff; border-color:#fff; border-style:solid;}
-  .adm-more{position:relative;}
-  .adm-more-menu{position:absolute; right:0; top:32px; z-index:20; background:#050606; border:1px solid var(--accent); min-width:190px; display:flex; flex-direction:column;}
-  .adm-more-menu button{background:none; border:0; border-top:1px solid var(--border); color:var(--text); font-family:inherit; font-size:.7rem; letter-spacing:1px; text-align:left; padding:9px 12px; cursor:pointer;}
-  .adm-more-menu button:first-child{border-top:0;}
-  .adm-more-menu button:hover{background:var(--accent-dim);}
-  .adm-more-menu button.dng{color:var(--danger);}
-  @media (max-width:640px){ .adm-mem{grid-template-columns:36px minmax(0,1fr);} .adm-acts{grid-column:1 / -1; justify-content:flex-start;} .adm-pill,.adm-chip{height:36px;} }
+  /* ===== DASHBOARD ADMIN (v2 — lisibilité) ===== */
+  .ax{display:flex; flex-direction:column; gap:20px; max-width:1180px; margin:0 auto; width:100%;}
+  .ax-head{display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+  .ax-title{margin:0; font-family:'VT323',monospace; font-weight:400; font-size:2.4rem; line-height:1; letter-spacing:2px; color:var(--accent);}
+  .ax-sub{margin:6px 0 0; font-size:.8rem; color:var(--muted);}
+  .ax-head-r{display:flex; gap:8px; align-items:center;}
+  .ax-seg{display:inline-flex; border:1px solid var(--border); background:var(--bg2); padding:3px; gap:3px;}
+  .ax-seg button{height:34px; padding:0 14px; background:transparent; border:0; color:var(--muted); font-family:inherit; font-size:.78rem; letter-spacing:1px; cursor:pointer;}
+  .ax-seg button.on{background:var(--accent); color:#000; font-weight:700;}
+  .ax-seg button:not(.on):hover{color:var(--text);}
+  .ax-icon{width:42px; height:42px; border:1px solid var(--border); background:var(--bg2); color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .ax-icon svg{width:16px; height:16px;}
+  .ax-icon:hover{color:var(--accent); border-color:var(--accent);}
+  .ax-icon.spin svg{animation:axSpin .8s steps(8) infinite;}
+  @keyframes axSpin{to{transform:rotate(360deg);}}
+  .ax-note{border:1px dashed var(--accent); padding:12px 16px; font-size:.85rem; line-height:1.55;}
+  .ax-note b{color:var(--accent); font-weight:400;}
+
+  /* à traiter */
+  .ax-todo{display:flex; flex-direction:column; gap:8px;}
+  .ax-todo-ok{display:flex; align-items:center; gap:10px; padding:12px 16px; border:1px solid var(--border); background:var(--panel); font-size:.85rem; color:var(--muted);}
+  .ax-todo-ok i{width:10px; height:10px; background:#39ff6a; display:block; flex:none;}
+  .ax-task{display:flex; align-items:center; gap:14px; padding:12px 14px 12px 16px; border:1px solid var(--accent); background:linear-gradient(90deg, var(--accent-dim), transparent 55%), var(--panel); flex-wrap:wrap;}
+  .ax-task-n{font-family:'VT323',monospace; font-size:2rem; line-height:1; color:var(--accent); min-width:34px; text-align:center;}
+  .ax-task-t{flex:1; min-width:180px;}
+  .ax-task-t b{display:block; font-weight:400; font-size:.95rem; color:var(--text);}
+  .ax-task-t span{font-size:.78rem; color:var(--muted);}
+  .ax-apps{display:flex; flex-direction:column; gap:6px; width:100%;}
+  .ax-app{display:flex; align-items:center; gap:10px; padding:8px 0 0; border-top:1px dashed var(--border); flex-wrap:wrap; position:relative;}
+  .ax-app-n{flex:1; min-width:140px; font-size:.88rem;}
+  .ax-app-n small{color:var(--muted); margin-left:6px;}
+
+  /* boutons */
+  .ax-btn{height:36px; padding:0 14px; border:1px solid var(--border); background:transparent; color:var(--text); font-family:inherit; font-size:.78rem; letter-spacing:1px; cursor:pointer; white-space:nowrap;}
+  .ax-btn:hover{border-color:var(--accent); color:var(--accent);}
+  .ax-btn.p{background:var(--accent); border-color:var(--accent); color:#000; font-weight:700;}
+  .ax-btn.p:hover{filter:brightness(1.12); color:#000;}
+  .ax-btn.d{color:var(--danger);}
+  .ax-btn.d:hover{border-color:var(--danger); color:var(--danger);}
+
+  /* 4 chiffres clés */
+  .ax-hero{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px;}
+  @media (max-width:980px){ .ax-hero{grid-template-columns:repeat(2,minmax(0,1fr));} }
+  .ax-kpi{border:1px solid var(--border); background:var(--panel); padding:16px 18px 14px; display:flex; flex-direction:column; gap:6px; min-width:0;}
+  .ax-kpi-l{font-size:.82rem; color:var(--muted);}
+  .ax-kpi-row{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .ax-kpi-v{font-family:'VT323',monospace; font-size:3rem; line-height:.9; color:var(--text);}
+  .ax-kpi.hi .ax-kpi-v{color:var(--accent);}
+  .ax-delta{font-size:.75rem; padding:2px 6px; border:1px solid var(--border); color:var(--muted); max-width:100%;}
+  .ax-delta.up{color:#39ff6a; border-color:rgba(57,255,106,.4);}
+  .ax-delta.down{color:var(--danger); border-color:rgba(255,77,77,.4);}
+  .ax-kpi-f{font-size:.78rem; color:var(--muted); line-height:1.4;}
+  .ax-kpi-f b{color:var(--text); font-weight:400;}
+  .ax-spark{height:30px; margin-top:auto;}
+  .ax-spark svg{width:100%; height:30px; display:block;}
+
+  /* insights */
+  .ax-insights{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px;}
+  .ax-ins{display:flex; gap:12px; padding:14px 16px; border:1px solid var(--border); border-left:3px solid var(--accent); background:var(--panel); font-size:.86rem; line-height:1.5;}
+  .ax-ins.good{border-left-color:#39ff6a;}
+  .ax-ins.warn{border-left-color:var(--danger);}
+  .ax-ins-k{display:block; font-size:.7rem; letter-spacing:2px; color:var(--muted); margin-bottom:3px;}
+  .ax-ins b{color:var(--accent); font-weight:400;}
+
+  /* cartes */
+  .ax-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px;}
+  .ax-span2{grid-column:span 2;}
+  @media (max-width:980px){ .ax-grid{grid-template-columns:1fr;} .ax-span2{grid-column:auto;} }
+  .ax-card{border:1px solid var(--border); background:var(--panel); padding:18px 20px; min-width:0;}
+  .ax-ch{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
+  .ax-ch h3{margin:0; font-family:'VT323',monospace; font-weight:400; font-size:1.55rem; line-height:1; color:var(--text);}
+  .ax-chs{font-size:.76rem; color:var(--muted);}
+  .ax-count{font-family:'Share Tech Mono',monospace; font-size:.8rem; color:var(--muted); margin-left:6px;}
+  .ax-empty{font-size:.85rem; color:var(--muted); line-height:1.55; margin:0;}
+
+  /* graphe jours */
+  .ax-chart{display:grid; grid-template-columns:auto 1fr; gap:8px;}
+  .ax-yax{display:flex; flex-direction:column; justify-content:space-between; font-size:.7rem; color:var(--muted); text-align:right; height:170px;}
+  .ax-plot{position:relative; height:170px;}
+  .ax-grid-l{position:absolute; left:0; right:0; border-top:1px dashed var(--border);}
+  .ax-bars{position:absolute; inset:0; display:flex; align-items:flex-end; gap:3px;}
+  .ax-bar{flex:1; min-width:0; height:100%; display:flex; align-items:flex-end; position:relative;}
+  .ax-bar i{display:block; width:100%; background:var(--accent); opacity:.55; min-height:2px;}
+  .ax-bar.today i{opacity:1;}
+  .ax-bar:hover i,.ax-bar:focus i{opacity:1; background:var(--text);}
+  .ax-tip{position:absolute; left:50%; bottom:calc(100% + 6px); transform:translateX(-50%); display:none; white-space:nowrap; font-size:.75rem; background:#000; border:1px solid var(--accent); color:var(--text); padding:6px 8px; z-index:5; line-height:1.4;}
+  .ax-tip b{color:var(--accent); font-weight:400;}
+  .ax-bar:hover .ax-tip,.ax-bar:focus .ax-tip{display:block;}
+  .ax-bar:first-child .ax-tip,.ax-bar:nth-child(2) .ax-tip{left:0; transform:none;}
+  .ax-bar:last-child .ax-tip,.ax-bar:nth-last-child(2) .ax-tip{left:auto; right:0; transform:none;}
+  .ax-xax{grid-column:2; display:flex; justify-content:space-between; font-size:.7rem; color:var(--muted);}
+  .ax-legend{display:flex; gap:18px; flex-wrap:wrap; margin-top:12px; font-size:.8rem; color:var(--muted);}
+  .ax-legend b{color:var(--text); font-weight:400;}
+
+  /* santé */
+  .ax-hl{display:flex; flex-direction:column;}
+  .ax-hr{display:grid; grid-template-columns:1fr auto; gap:4px 12px; padding:10px 0; border-top:1px dashed var(--border); align-items:baseline;}
+  .ax-hr:first-child{border-top:0; padding-top:0;}
+  .ax-hr-l{font-size:.85rem; color:var(--text);}
+  .ax-hr-v{font-family:'VT323',monospace; font-size:1.6rem; line-height:1; color:var(--text); text-align:right;}
+  .ax-hr-s{grid-column:1 / -1; font-size:.75rem; color:var(--muted);}
+  .ax-hr-s b{color:#39ff6a; font-weight:400;}
+  .ax-meter{grid-column:1 / -1; height:6px; background:var(--bg2); border:1px solid var(--border); position:relative; margin-top:2px;}
+  .ax-meter i{position:absolute; left:0; top:0; bottom:0; background:var(--accent);}
+
+  /* parcours */
+  .ax-steps{display:flex; align-items:stretch; gap:0; flex-wrap:wrap;}
+  .ax-step{flex:1; min-width:120px; border:1px solid var(--border); background:var(--bg2); padding:12px 14px;}
+  .ax-step-l{font-size:.78rem; color:var(--muted);}
+  .ax-step-v{font-family:'VT323',monospace; font-size:2.3rem; line-height:1; color:var(--text); margin-top:6px;}
+  .ax-step-p{font-size:.75rem; color:var(--muted); margin-top:4px;}
+  .ax-arrow{flex:0 0 74px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:.72rem; color:var(--muted); text-align:center;}
+  .ax-arrow b{font-family:'VT323',monospace; font-weight:400; font-size:1.3rem; color:var(--text); line-height:1;}
+  .ax-arrow.worst b{color:var(--danger);}
+  .ax-arrow span{font-size:1rem; color:var(--accent);}
+  @media (max-width:700px){ .ax-steps{flex-direction:column;} .ax-arrow{flex:0 0 auto; flex-direction:row; gap:8px; padding:6px 0;} .ax-arrow span{transform:rotate(90deg);} }
+  .ax-acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;}
+  .ax-act{display:flex; align-items:baseline; gap:8px; padding:8px 12px; border:1px solid var(--border); font-size:.8rem; color:var(--muted);}
+  .ax-act b{font-family:'VT323',monospace; font-weight:400; font-size:1.35rem; color:var(--text); line-height:1;}
+
+  /* sources */
+  .ax-src{display:flex; flex-direction:column; gap:12px;}
+  .ax-src-r{display:grid; grid-template-columns:1fr auto; gap:5px 10px; align-items:baseline;}
+  .ax-src-n{font-size:.88rem; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .ax-src-n small{color:var(--muted); margin-left:6px; font-size:.72rem;}
+  .ax-src-v{font-size:.8rem; color:var(--muted); white-space:nowrap;}
+  .ax-src-v b{font-family:'VT323',monospace; font-weight:400; font-size:1.3rem; color:var(--text); margin-right:6px;}
+  .ax-src-b{grid-column:1 / -1; height:6px; background:var(--bg2); position:relative;}
+  .ax-src-b i{position:absolute; left:0; top:0; bottom:0; background:var(--accent);}
+  .ax-hint{margin:14px 0 0; padding-top:12px; border-top:1px dashed var(--border); font-size:.76rem; color:var(--muted); line-height:1.5;}
+  .ax-hint code{color:var(--accent); font-family:inherit;}
+
+  /* membres */
+  .ax-tools{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:12px;}
+  .ax-search{flex:1; min-width:220px; display:flex; align-items:center; gap:10px; border:1px solid var(--border); background:var(--bg2); padding:0 12px; height:42px;}
+  .ax-search:focus-within{border-color:var(--accent);}
+  .ax-search svg{width:14px; height:14px; color:var(--muted); flex:none;}
+  .ax-search input{flex:1; min-width:0; border:0 !important; background:transparent !important; margin:0 !important; padding:0 !important; height:100%; box-shadow:none !important; outline:none; font-size:.9rem;}
+  .ax-sort{display:flex; align-items:center; gap:8px; font-size:.78rem; color:var(--muted);}
+  .ax-sort select{width:auto; margin:0; height:42px;}
+  .ax-tabs{display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; border-bottom:1px solid var(--border); margin-bottom:6px;}
+  .ax-tabs::-webkit-scrollbar{display:none;}
+  .ax-tab{flex:none; height:40px; padding:0 12px; background:transparent; border:0; border-bottom:2px solid transparent; color:var(--muted); font-family:inherit; font-size:.82rem; cursor:pointer; white-space:nowrap; margin-bottom:-1px;}
+  .ax-tab:hover{color:var(--text);}
+  .ax-tab.on{color:var(--accent); border-bottom-color:var(--accent);}
+  .ax-tab em{font-style:normal; font-size:.72rem; margin-left:6px; padding:1px 6px; background:var(--bg2); border:1px solid var(--border); color:var(--muted);}
+  .ax-tab.on em{border-color:var(--accent); color:var(--accent);}
+  .ax-tab.alert em{background:var(--accent); border-color:var(--accent); color:#000;}
+  .ax-mlist{display:flex; flex-direction:column;}
+  .ax-m{border-bottom:1px solid var(--border);}
+  .ax-m-row{display:grid; grid-template-columns:44px minmax(0,1.6fr) minmax(0,1fr) auto; gap:14px; align-items:center; padding:12px 4px; cursor:pointer;}
+  .ax-m-row:hover{background:rgba(255,255,255,.02);}
+  .ax-m.open .ax-m-row{background:var(--bg2);}
+  .ax-av{width:44px; height:44px; background:var(--bg2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:'VT323',monospace; font-size:1.5rem; color:var(--accent); overflow:hidden;}
+  .ax-av img{width:100%; height:100%; object-fit:cover;}
+  .ax-m-id{min-width:0;}
+  .ax-m-n{font-size:.95rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ax-m-d{font-size:.75rem; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ax-badges{display:flex; gap:5px; flex-wrap:wrap; margin-top:6px;}
+  .ax-b{font-size:.68rem; letter-spacing:1px; padding:2px 7px; border:1px solid var(--border); color:var(--muted); white-space:nowrap;}
+  .ax-b.adm{border-color:#fff; color:#fff;}
+  .ax-b.cour{border-color:var(--accent); color:var(--accent);}
+  .ax-b.pend{background:var(--accent); border-color:var(--accent); color:#000;}
+  .ax-b.off{border-color:var(--danger); color:var(--danger);}
+  .ax-m-shop{min-width:0; font-size:.8rem; color:var(--muted);}
+  .ax-m-shop b{display:block; color:var(--text); font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ax-m-act{display:flex; align-items:center; gap:8px;}
+  .ax-chev{width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:var(--muted); border:1px solid var(--border); background:transparent; cursor:pointer; font-family:inherit;}
+  .ax-m.open .ax-chev{transform:rotate(180deg); color:var(--accent); border-color:var(--accent);}
+  .ax-panel{padding:6px 4px 18px 62px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px;}
+  .ax-sw{display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border:1px solid var(--border); background:var(--panel); cursor:pointer; text-align:left; font-family:inherit; color:var(--text);}
+  .ax-sw:hover{border-color:var(--accent-dim);}
+  .ax-sw-t{flex:1; min-width:0;}
+  .ax-sw-t b{display:block; font-weight:400; font-size:.88rem;}
+  .ax-sw-t span{display:block; font-size:.74rem; color:var(--muted); margin-top:3px; line-height:1.4;}
+  .ax-tg{flex:none; width:42px; height:22px; border:1px solid var(--border); background:var(--bg2); position:relative; margin-top:1px;}
+  .ax-tg::after{content:""; position:absolute; left:3px; top:3px; width:14px; height:14px; background:#3a4a43; transition:left .15s;}
+  .ax-sw[aria-checked="true"] .ax-tg{border-color:var(--accent); background:var(--accent-dim);}
+  .ax-sw[aria-checked="true"] .ax-tg::after{left:23px; background:var(--accent);}
+  .ax-sw.danger[aria-checked="false"] .ax-tg{border-color:var(--danger);}
+  .ax-panel-f{grid-column:1 / -1; display:flex; gap:8px; flex-wrap:wrap; justify-content:space-between; align-items:center; padding-top:6px;}
+  .ax-panel-f .l{display:flex; gap:8px; flex-wrap:wrap;}
+  .ax-more{display:flex; justify-content:center; padding-top:14px;}
+  @media (max-width:760px){
+    .ax-m-row{grid-template-columns:44px minmax(0,1fr) auto;}
+    .ax-m-shop{display:none;}
+    .ax-panel{padding:10px 0 16px; grid-template-columns:1fr;}
+    .ax-title{font-size:2rem;}
+  }
 
   /* ===== PUB "OUVRE / REPRENDS TON SHOP" + RAPPEL VENDEUR ===== */
   .shop-ad{display:flex; align-items:center; gap:16px; flex-wrap:wrap; position:relative; border:1px solid var(--accent); margin-bottom:16px; padding:16px 44px 16px 18px; background:linear-gradient(90deg, var(--accent-dim), transparent 60%), var(--panel); animation:courierAdGlow 2.6s ease-in-out infinite;}
@@ -3048,39 +3151,69 @@ body.sw-medit{padding-bottom:88px;}
 
     <!-- DASHBOARD ADMIN -->
     <section id="view-admin-dash" hidden>
-      <div class="adm-wrap">
-        <div class="adm-head">
-          <h2 class="adm-title" data-i18n="admTitle">TABLEAU DE BORD</h2>
-          <div class="adm-head-r">
-            <div class="adm-seg" id="admPeriod">
+      <div class="ax">
+        <header class="ax-head">
+          <div>
+            <h2 class="ax-title" data-i18n="admTitle">TABLEAU DE BORD</h2>
+            <p class="ax-sub" id="axUpdated"></p>
+          </div>
+          <div class="ax-head-r">
+            <div class="ax-seg" id="admPeriod" role="group">
               <button type="button" class="on" data-d="7" onclick="setAdmPeriod(7)" data-i18n="admP7">7 JOURS</button>
               <button type="button" data-d="30" onclick="setAdmPeriod(30)" data-i18n="admP30">30 JOURS</button>
             </div>
-            <button type="button" class="adm-btn" onclick="loadAdmin()" data-i18n="admRefresh">ACTUALISER</button>
+            <button type="button" class="ax-icon" onclick="loadAdmin()" id="axRefresh" data-i18n-title="admRefresh" title="Actualiser" aria-label="Actualiser">
+              <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><g fill="currentColor"><rect x="3" y="3" width="8" height="2"/><rect x="2" y="5" width="2" height="6"/><rect x="3" y="11" width="8" height="2"/><rect x="12" y="8" width="2" height="4"/><rect x="10" y="1" width="2" height="2"/><rect x="11" y="3" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/></g></svg>
+            </button>
           </div>
+        </header>
+        <div class="ax-note" id="admSqlNote" hidden></div>
+
+        <section class="ax-todo" id="axTodo" aria-live="polite"></section>
+
+        <div class="ax-hero" id="admKpis"></div>
+
+        <div class="ax-insights" id="axInsights" hidden></div>
+
+        <div class="ax-grid">
+          <article class="ax-card ax-span2">
+            <header class="ax-ch"><h3 data-i18n="admDailyT">Visiteurs par jour</h3><span class="ax-chs" data-i18n="admDailyS">30 derniers jours</span></header>
+            <div id="admDaily"></div>
+          </article>
+          <article class="ax-card">
+            <header class="ax-ch"><h3 data-i18n="admHealthT">Santé de la marketplace</h3><span class="ax-chs" id="axHealthPd"></span></header>
+            <div id="axHealth"></div>
+          </article>
+          <article class="ax-card ax-span2">
+            <header class="ax-ch"><h3 data-i18n="admFunnelT">Parcours des visiteurs</h3><span class="ax-chs" id="admFunnelPd"></span></header>
+            <div id="admFunnel"></div>
+          </article>
+          <article class="ax-card">
+            <header class="ax-ch"><h3 data-i18n="admSourcesT">D'où ils viennent</h3><span class="ax-chs" id="axSrcPd"></span></header>
+            <div id="admSources"></div>
+          </article>
         </div>
-        <div class="adm-note" id="admSqlNote" hidden></div>
-        <div class="adm-kpis" id="admKpis"></div>
-        <div class="adm-row2">
-          <div class="card adm-card"><div class="adm-ch"><span class="sl">//</span> <span data-i18n="admDaily">VISITEURS PAR JOUR · 30 JOURS</span></div><div id="admDaily" class="adm-daily"></div></div>
-          <div class="card adm-card"><div class="adm-ch"><span class="sl">//</span> <span data-i18n="admFunnel">ENTONNOIR</span> <span class="adm-pd" id="admFunnelPd"></span></div><div id="admFunnel"></div></div>
-        </div>
-        <div class="adm-row2">
-          <div class="card adm-card"><div class="adm-ch"><span class="sl">//</span> <span data-i18n="admSources">D'OÙ VIENNENT LES VISITEURS</span></div><div id="admSources"></div></div>
-          <div class="card adm-card"><div class="adm-ch"><span class="sl">//</span> <span data-i18n="admRecent">DERNIERS INSCRITS</span></div><div id="admRecent"></div></div>
-        </div>
-        <div class="card adm-card">
-          <div class="adm-ch"><span class="sl">//</span> <span data-i18n="courierApplications">Candidatures Coursier</span></div>
-          <div id="courierAppsList"></div>
-        </div>
-        <div class="card adm-card">
-          <div class="adm-ch"><span class="sl">//</span> <span data-i18n="members">Membres</span> <span class="adm-pd" id="admMemCount"></span></div>
-          <div class="adm-mem-tools">
-            <input type="text" id="memberSearchInput" data-i18n-ph="memberSearchPh" placeholder="Rechercher un membre..." oninput="filterMembers(this.value)">
-            <div class="adm-chips" id="admMemChips"></div>
+
+        <article class="ax-card" id="axMembersCard">
+          <header class="ax-ch ax-ch-mem"><h3><span data-i18n="members">Membres</span> <span class="ax-count" id="admMemCount"></span></h3></header>
+          <div class="ax-tools">
+            <label class="ax-search">
+              <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><g fill="currentColor"><rect x="3" y="1" width="6" height="2"/><rect x="1" y="3" width="2" height="6"/><rect x="9" y="3" width="2" height="6"/><rect x="3" y="9" width="6" height="2"/><rect x="10" y="10" width="2" height="2"/><rect x="12" y="12" width="2" height="2"/></g></svg>
+              <input type="search" id="memberSearchInput" data-i18n-ph="admSearchPh" placeholder="Nom, pseudo RSI ou shop…" oninput="filterMembers(this.value)">
+            </label>
+            <label class="ax-sort"><span data-i18n="admSortLbl">Trier</span>
+              <select id="axSort" onchange="setAdmSort(this.value)">
+                <option value="recent" data-i18n="admSortRecent">Inscription récente</option>
+                <option value="seen" data-i18n="admSortSeen">Dernière connexion</option>
+                <option value="listings" data-i18n="admSortListings">Nombre d'annonces</option>
+                <option value="name" data-i18n="admSortName">Nom (A → Z)</option>
+              </select>
+            </label>
           </div>
-          <div id="membersList"></div>
-        </div>
+          <div class="ax-tabs" id="admMemChips" role="tablist"></div>
+          <div id="membersList" class="ax-mlist"></div>
+          <div id="courierAppsList" hidden></div>
+        </article>
       </div>
     </section>
 
@@ -4317,7 +4450,7 @@ const T = {
     proposeResourceBtn:"PROPOSER DE FOURNIR", resourceOfferMsgLbl:"Message au vendeur", phResourceOfferMsg:"ex: J'en ai 50 unités disponibles, je peux livrer sur Stanton.", resourceOfferPriceLbl:"Ton prix (aUEC, optionnel)", submitResourceOfferBtn:"ENVOYER LA PROPOSITION", resourceOfferSent:"PROPOSITION ENVOYÉE !",
     myResourceOffersTitle:"Mes propositions", noResourceOffers:"Tu n'as envoyé aucune proposition pour le moment.", resourceOfferLabel:"Objet recherché :",
     shopDescLbl:"Description de la boutique (optionnel)", phShopDesc:"ex: Spécialiste minerais rares, livraison rapide sur Stanton.", shopDescMaxHint:"260 caractères max, pour garder un bel alignement avec ta photo de boutique.",
-    admTitle:"TABLEAU DE BORD", admP7:"7 JOURS", admP30:"30 JOURS", admRefresh:"ACTUALISER", admSqlTitle:"STATISTIQUES INDISPONIBLES", admSqlTxt:"lance le fichier SQL 2026-10-16-shops-pour-tous-admin-dashboard.sql dans Supabase pour activer le tableau de bord.", admDaily:"VISITEURS PAR JOUR · 30 JOURS", admFunnel:"ENTONNOIR", admSources:"D'OÙ VIENNENT LES VISITEURS", admRecent:"DERNIERS INSCRITS", admOnP:"sur {n} j", admKMembers:"Membres", admKVisitors:"Visiteurs", admKVisitorsS:"uniques", admKLogins:"Connexions", admKLoginsS:"joueurs connectés", admKShops:"Shops", admKShopsS:"avec au moins 1 annonce", admKListings:"Annonces en ligne", admKBlueprints:"Blueprints en ligne", admKSales:"Ventes conclues", admKReq:"demandes", admKOrders:"Commandes passées", admKPending:"en attente", admKInProg:"en cours", admKDelivered:"Livraisons", admKCouriers:"Coursiers", admKCandid:"candidature(s)", admNoData:"Pas encore de données.", admVis:"visiteurs", admSign:"inscrits", admToday:"aujourd'hui", admSum30:"{v} visiteurs et {s} inscriptions sur 30 jours", admNoFunnel:"Pas encore de données : la mesure démarre dès que la nouvelle version est en ligne.", admF_visit:"Visite", admF_login_click:"Clic connexion", admF_signed_in:"Connecté", admF_listing_created:"Annonce publiée", admF_blueprint_created:"Blueprint publié", admF_inquiry_sent:"Demande envoyée", admF_order_created:"Commande passée", admFunnelHint:"Nombre de personnes différentes à chaque étape, et part des visiteurs qui l'ont atteinte.", admNoSources:"Aucune visite enregistrée sur la période.", admDirect:"Accès direct / lien inconnu", admSrcHint:"Astuce : ajoute ?utm_source=discord (ou x, spectrum…) à tes liens pour savoir quel canal ramène des joueurs.", admAgoMin:"il y a {n} min", admAgoH:"il y a {n} h", admAgoD:"il y a {n} j", admMF_all:"TOUS", admMF_new:"NOUVEAUX 7 J", admMF_shop:"AVEC SHOP", admMF_active:"ANNONCES EN LIGNE", admMF_couriers:"COURSIERS", admMF_candid:"CANDIDATS COURSIER", admMF_admins:"ADMINS", admMF_revoked:"VENTE SUSPENDUE", admJoined:"inscrit", admLastLogin:"connecté", admListingsShort:"annonces", admCandidCourier:"▲ veut devenir coursier", admRCourier:"COURSIER", admRSeller:"VENDEUR", admRSellerOff:"VENTE SUSPENDUE", admRAdmin:"ADMIN", admMore:"Plus d'actions", admCourierTip:"Donner ou retirer le rôle coursier", admSellerTip:"Suspendre ou rétablir le droit de vendre", admSeeShop:"Voir son shop", admMoreRes:"+ {n} autres membres : affine la recherche.", admConfirmCourierOff:"Retirer le rôle coursier à {n} ?", admConfirmSellerOff:"Suspendre le droit de vendre de {n} ? Ses annonces restent visibles mais il ne pourra plus en publier.", admConfirmAdminOn:"Donner les droits ADMIN à {n} ? Il aura accès à tout, y compris ce tableau de bord.", admConfirmAdminOff:"Retirer les droits admin à {n} ?", admToastCourierOn:"{n} est maintenant coursier", admToastCourierOff:"{n} n'est plus coursier", admToastSellerOn:"{n} peut de nouveau vendre", admToastSellerOff:"Vente suspendue pour {n}", admToastAdminOn:"{n} est maintenant admin", admToastAdminOff:"{n} n'est plus admin", shNewK:"BIENVENUE DANS TON SHOP", shNewT:"Donne-lui un nom et une couleur", shNewS:"Ton shop est déjà ouvert. Personnalise-le (nom, logo, couleur, lieu), puis poste ta première annonce : elle apparaîtra tout de suite sur la marketplace.", shNewCta:"PERSONNALISER ▸", shAdClose:"Masquer", shAdOpenK:"OUVERT À TOUS · GRATUIT", shAdOpenT:"Ouvre ton shop sur Couriers United", shAdOpenS:"Vends tes objets craftés, tes blueprints et tes surplus à toute la communauté. Ton shop est prêt en deux minutes, sans demande à faire.", shAdOpenCta:"OUVRIR MON SHOP ▸", shAdResumeK:"TON SHOP T'ATTEND", shAdResumeT:"{shop} est vide pour l'instant", shAdResumeS:"Les joueurs passent devant sans rien trouver. Une annonce suffit pour revenir dans le fil des nouveautés et dans le classement de la semaine.", shAdResumeCta:"POSTER UNE ANNONCE ▸", shNudgeK:"RAPPEL VENDEUR", shNudgeT:"Ça fait {n} jours sans nouvelle annonce", shNudgeS:"Ta dernière annonce date du {date}. Une nouveauté te remet en haut du fil et te redonne une chance dans le classement de la semaine.", shNudgeEmptyK:"SHOP VIDE", shNudgeEmptyT:"Ton shop n'a aucune annonce en ligne", shNudgeEmptyS:"Les visiteurs ne voient rien à acheter. Ajoute une annonce ou un blueprint pour réapparaître sur la marketplace.", shNudgeCta:"NOUVELLE ANNONCE ▸", photoTip:"Les annonces avec photo sont affichées en premier et se vendent mieux.", cropModalTitle:"Recadrer la photo", cropZoomLbl:"Zoom", cropDragHint:"Fais glisser l'image pour la repositionner.", cropConfirmBtn:"VALIDER LE RECADRAGE", photoReady:"Photo prête ✓",
+    admTitle:"Tableau de bord", admP7:"7 JOURS", admP30:"30 JOURS", admRefresh:"ACTUALISER", admSqlTitle:"STATISTIQUES INDISPONIBLES", admSqlTxt:"lance le fichier SQL 2026-10-16-shops-pour-tous-admin-dashboard.sql dans Supabase pour activer le tableau de bord.", admDaily:"VISITEURS PAR JOUR · 30 JOURS", admFunnel:"ENTONNOIR", admSources:"D'OÙ VIENNENT LES VISITEURS", admRecent:"DERNIERS INSCRITS", admOnP:"sur {n} j", admKMembers:"Membres", admKVisitors:"Visiteurs", admKVisitorsS:"uniques", admKLogins:"Connexions", admKLoginsS:"joueurs connectés", admKShops:"Shops", admKShopsS:"avec au moins 1 annonce", admKListings:"Annonces en ligne", admKBlueprints:"Blueprints en ligne", admKSales:"Ventes conclues", admKReq:"demandes", admKOrders:"Commandes passées", admKPending:"en attente", admKInProg:"en cours", admKDelivered:"Livraisons", admKCouriers:"Coursiers", admKCandid:"candidature(s)", admNoData:"Pas encore de données.", admVis:"visiteurs", admSign:"inscrits", admToday:"aujourd'hui", admSum30:"{v} visiteurs et {s} inscriptions sur 30 jours", admNoFunnel:"Pas encore de données : la mesure démarre dès que la nouvelle version est en ligne.", admF_visit:"Visite", admF_login_click:"Clic connexion", admF_signed_in:"Connecté", admF_listing_created:"Annonce publiée", admF_blueprint_created:"Blueprint publié", admF_inquiry_sent:"Demande envoyée", admF_order_created:"Commande passée", admFunnelHint:"Nombre de personnes différentes à chaque étape, et part des visiteurs qui l'ont atteinte.", admNoSources:"Aucune visite enregistrée sur la période.", admDirect:"Accès direct / lien inconnu", admSrcHint:"Astuce : ajoute ?utm_source=discord (ou x, spectrum…) à tes liens pour savoir quel canal ramène des joueurs.", admAgoMin:"il y a {n} min", admAgoH:"il y a {n} h", admAgoD:"il y a {n} j", admMF_all:"TOUS", admMF_new:"NOUVEAUX 7 J", admMF_shop:"AVEC SHOP", admMF_active:"ANNONCES EN LIGNE", admMF_couriers:"COURSIERS", admMF_candid:"CANDIDATS COURSIER", admMF_admins:"ADMINS", admMF_revoked:"VENTE SUSPENDUE", admJoined:"inscrit", admLastLogin:"connecté", admListingsShort:"annonces", admCandidCourier:"▲ veut devenir coursier", admRCourier:"COURSIER", admRSeller:"VENDEUR", admRSellerOff:"VENTE SUSPENDUE", admRAdmin:"ADMIN", admMore:"Plus d'actions", admCourierTip:"Donner ou retirer le rôle coursier", admSellerTip:"Suspendre ou rétablir le droit de vendre", admSeeShop:"Voir son shop", admMoreRes:"+ {n} autres membres : affine la recherche.", admConfirmCourierOff:"Retirer le rôle coursier à {n} ?", admConfirmSellerOff:"Suspendre le droit de vendre de {n} ? Ses annonces restent visibles mais il ne pourra plus en publier.", admConfirmAdminOn:"Donner les droits ADMIN à {n} ? Il aura accès à tout, y compris ce tableau de bord.", admConfirmAdminOff:"Retirer les droits admin à {n} ?", admToastCourierOn:"{n} est maintenant coursier", admToastCourierOff:"{n} n'est plus coursier", admToastSellerOn:"{n} peut de nouveau vendre", admToastSellerOff:"Vente suspendue pour {n}", admToastAdminOn:"{n} est maintenant admin", admToastAdminOff:"{n} n'est plus admin", admUpdated:"Mis à jour à {t}", admLast7:"7 derniers jours", admLast30:"30 derniers jours", admTodoApps:"Candidatures coursier à traiter", admTodoAppsS:"Ces joueurs attendent ta réponse pour livrer.", admTodoOrders:"Commandes sans coursier", admTodoOrdersS:"Des clients attendent qu'un coursier accepte leur commande.", admTodoOrdersBtn:"VOIR LES COMMANDES", admTodoNone:"Rien à traiter pour le moment.", admVsPrev:"vs avant", admK1:"Visiteurs", admK1f:"personnes différentes venues sur le site", admK2:"Nouveaux membres", admK2f:"{n} membres au total", admK3:"Ventes conclues", admK3f:"{v} échangés · {r} demandes reçues", admK4:"Livraisons terminées", admK4f:"{v} livrés · {n} commandes passées", admInsDrop:"OÙ ÇA BLOQUE", admInsDropClick:"{p} des visiteurs repartent sans cliquer sur « Se connecter ». C'est l'étape à améliorer en premier.", admInsDropLogin:"{p} de ceux qui cliquent sur « Se connecter » n'arrivent pas au bout de la connexion Discord.", admInsSrc:"MEILLEURE SOURCE", admInsSrcT:"{s} t'amène {p} des visiteurs identifiés sur la période.", admInsShops:"SHOPS ENDORMIS", admInsShopsT:"{n} shops sur {t} n'ont aucune annonce en ligne : la pub « Reprends ton shop » les relance.", admDailyT:"Visiteurs par jour", admDailyS:"30 derniers jours", admHealthT:"Santé de la marketplace", admFunnelT:"Parcours des visiteurs", admSourcesT:"D'où ils viennent", admVis30:"visiteurs sur 30 jours", admSign30:"inscriptions", admBest:"Record :", admOnPeriod:"sur la période", admNoneNew:"aucune nouvelle sur la période", admHShops:"Shops actifs", admHShopsS:"{p} % des shops ont au moins une annonce en ligne", admHListings:"Annonces en ligne", admHBlueprints:"Blueprints en ligne", admHOrders:"Commandes ouvertes", admHOrdersS:"{p} sans coursier · {c} en cours de livraison", admHCouriers:"Coursiers", admHLogins:"{n} joueurs se sont connectés sur la période", admContinue:"continuent", admStVisit:"Visitent le site", admStVisitS:"point de départ", admStClick:"Cliquent sur Connexion", admStLogged:"Se connectent", admStPct:"{p} % des visiteurs", admActListings:"annonces", admActBlueprints:"blueprints", admActInquiries:"demandes envoyées", admActOrders:"commandes", admFunnelHint2:"Nombre de personnes différentes. En rouge : l'étape où l'on perd le plus de monde.", admSrcUtm:"Lien", admSrcHint2:"Ajoute <code>?utm_source=discord</code> (ou x, spectrum…) à tes liens pour savoir quel canal ramène vraiment des joueurs.", admSearchPh:"Nom, pseudo RSI ou shop…", admSortLbl:"Trier", admSortRecent:"Inscription récente", admSortSeen:"Dernière connexion", admSortListings:"Nombre d'annonces", admSortName:"Nom (A → Z)", admMT_all:"Tous", admMT_candid:"Candidats coursier", admMT_new:"Nouveaux", admMT_active:"Vendent", admMT_shop:"Ont un shop", admMT_couriers:"Coursiers", admMT_admins:"Admins", admMT_revoked:"Vente suspendue", admBAdmin:"ADMIN", admBCourier:"COURSIER", admBPending:"VEUT ÊTRE COURSIER", admBSuspended:"VENTE SUSPENDUE", admListingsN:"{n} annonce(s) en ligne", admNoShop:"Pas de shop", admManage:"Gérer ce membre", admSwCourier:"Coursier", admSwCourierD:"Peut accepter et livrer des commandes.", admSwCourierPend:"A demandé à devenir coursier : active pour accepter.", admSwSeller:"Peut vendre", admSwSellerD:"Désactive pour suspendre ses annonces futures (abus, arnaque).", admSwAdmin:"Admin", admSwAdminD:"Accès total, dont ce tableau de bord.", admShowMore:"AFFICHER {n} DE PLUS ({t} RESTANTS)", admAgoNow:"à l'instant", admAgoMo:"il y a {n} mois", shNewK:"BIENVENUE DANS TON SHOP", shNewT:"Donne-lui un nom et une couleur", shNewS:"Ton shop est déjà ouvert. Personnalise-le (nom, logo, couleur, lieu), puis poste ta première annonce : elle apparaîtra tout de suite sur la marketplace.", shNewCta:"PERSONNALISER ▸", shAdClose:"Masquer", shAdOpenK:"OUVERT À TOUS · GRATUIT", shAdOpenT:"Ouvre ton shop sur Couriers United", shAdOpenS:"Vends tes objets craftés, tes blueprints et tes surplus à toute la communauté. Ton shop est prêt en deux minutes, sans demande à faire.", shAdOpenCta:"OUVRIR MON SHOP ▸", shAdResumeK:"TON SHOP T'ATTEND", shAdResumeT:"{shop} est vide pour l'instant", shAdResumeS:"Les joueurs passent devant sans rien trouver. Une annonce suffit pour revenir dans le fil des nouveautés et dans le classement de la semaine.", shAdResumeCta:"POSTER UNE ANNONCE ▸", shNudgeK:"RAPPEL VENDEUR", shNudgeT:"Ça fait {n} jours sans nouvelle annonce", shNudgeS:"Ta dernière annonce date du {date}. Une nouveauté te remet en haut du fil et te redonne une chance dans le classement de la semaine.", shNudgeEmptyK:"SHOP VIDE", shNudgeEmptyT:"Ton shop n'a aucune annonce en ligne", shNudgeEmptyS:"Les visiteurs ne voient rien à acheter. Ajoute une annonce ou un blueprint pour réapparaître sur la marketplace.", shNudgeCta:"NOUVELLE ANNONCE ▸", photoTip:"Les annonces avec photo sont affichées en premier et se vendent mieux.", cropModalTitle:"Recadrer la photo", cropZoomLbl:"Zoom", cropDragHint:"Fais glisser l'image pour la repositionner.", cropConfirmBtn:"VALIDER LE RECADRAGE", photoReady:"Photo prête ✓",
     myListingsTitle:"Mes annonces", noListings:"Tu n'as encore aucune annonce.", deleteListingBtn:"SUPPRIMER", confirmDeleteListing:"Supprimer cette annonce définitivement ?",
     requestDeliveryBtn:"DEMANDER UNE LIVRAISON", requestDeliveryTitle:"Demander une livraison coursier", buyerHandleLbl:"Pseudo RSI de l'acheteur (optionnel)", phBuyerHandle:"ex: Mayco_SC", deliveryRequested:"LIVRAISON DEMANDÉE !", cancelRequest:"ANNULER", confirmDeliveryBtn:"CONFIRMER LA DEMANDE",
     marketplaceDeliveryBadge:"LIVRAISON MARKETPLACE", marketplaceDeliveryNote:"Livraison Marketplace : l'objet part de chez un VENDEUR pour être livré à un client, contrairement aux commandes classiques (client → coursier).",
@@ -4493,7 +4626,7 @@ const T = {
     proposeResourceBtn:"PROPOSE TO SUPPLY", resourceOfferMsgLbl:"Message to the seller", phResourceOfferMsg:"e.g. I have 50 units available, I can deliver to Stanton.", resourceOfferPriceLbl:"Your price (aUEC, optional)", submitResourceOfferBtn:"SEND PROPOSAL", resourceOfferSent:"PROPOSAL SENT!",
     myResourceOffersTitle:"My proposals", noResourceOffers:"You haven't sent any proposal yet.", resourceOfferLabel:"Desired item:",
     shopDescLbl:"Shop description (optional)", phShopDesc:"e.g. Rare ore specialist, fast delivery on Stanton.", shopDescMaxHint:"260 characters max, to keep a clean alignment with your shop photo.",
-    admTitle:"DASHBOARD", admP7:"7 DAYS", admP30:"30 DAYS", admRefresh:"REFRESH", admSqlTitle:"STATS UNAVAILABLE", admSqlTxt:"run the SQL file 2026-10-16-shops-pour-tous-admin-dashboard.sql in Supabase to enable the dashboard.", admDaily:"VISITORS PER DAY · 30 DAYS", admFunnel:"FUNNEL", admSources:"WHERE VISITORS COME FROM", admRecent:"LATEST SIGN-UPS", admOnP:"over {n} d", admKMembers:"Members", admKVisitors:"Visitors", admKVisitorsS:"unique", admKLogins:"Logins", admKLoginsS:"players logged in", admKShops:"Shops", admKShopsS:"with at least 1 listing", admKListings:"Live listings", admKBlueprints:"Live blueprints", admKSales:"Completed sales", admKReq:"requests", admKOrders:"Orders placed", admKPending:"pending", admKInProg:"in progress", admKDelivered:"Deliveries", admKCouriers:"Couriers", admKCandid:"application(s)", admNoData:"No data yet.", admVis:"visitors", admSign:"sign-ups", admToday:"today", admSum30:"{v} visitors and {s} sign-ups over 30 days", admNoFunnel:"No data yet: tracking starts as soon as the new version is live.", admF_visit:"Visit", admF_login_click:"Login click", admF_signed_in:"Logged in", admF_listing_created:"Listing posted", admF_blueprint_created:"Blueprint posted", admF_inquiry_sent:"Request sent", admF_order_created:"Order placed", admFunnelHint:"Distinct people at each step, and the share of visitors who reached it.", admNoSources:"No visits recorded over this period.", admDirect:"Direct / unknown link", admSrcHint:"Tip: add ?utm_source=discord (or x, spectrum…) to your links to see which channel brings players.", admAgoMin:"{n} min ago", admAgoH:"{n} h ago", admAgoD:"{n} d ago", admMF_all:"ALL", admMF_new:"NEW 7 D", admMF_shop:"WITH SHOP", admMF_active:"LIVE LISTINGS", admMF_couriers:"COURIERS", admMF_candid:"COURIER APPLICANTS", admMF_admins:"ADMINS", admMF_revoked:"SELLING SUSPENDED", admJoined:"joined", admLastLogin:"logged in", admListingsShort:"listings", admCandidCourier:"▲ wants to be a courier", admRCourier:"COURIER", admRSeller:"SELLER", admRSellerOff:"SELLING SUSPENDED", admRAdmin:"ADMIN", admMore:"More actions", admCourierTip:"Grant or remove the courier role", admSellerTip:"Suspend or restore selling rights", admSeeShop:"View their shop", admMoreRes:"+ {n} more members: refine your search.", admConfirmCourierOff:"Remove the courier role from {n}?", admConfirmSellerOff:"Suspend selling for {n}? Their listings stay visible but they can't post new ones.", admConfirmAdminOn:"Give ADMIN rights to {n}? They'll have access to everything, including this dashboard.", admConfirmAdminOff:"Remove admin rights from {n}?", admToastCourierOn:"{n} is now a courier", admToastCourierOff:"{n} is no longer a courier", admToastSellerOn:"{n} can sell again", admToastSellerOff:"Selling suspended for {n}", admToastAdminOn:"{n} is now an admin", admToastAdminOff:"{n} is no longer an admin", shNewK:"WELCOME TO YOUR SHOP", shNewT:"Give it a name and a colour", shNewS:"Your shop is already open. Customise it (name, logo, colour, location), then post your first listing: it shows up on the marketplace right away.", shNewCta:"CUSTOMISE ▸", shAdClose:"Hide", shAdOpenK:"OPEN TO EVERYONE · FREE", shAdOpenT:"Open your shop on Couriers United", shAdOpenS:"Sell your crafted items, blueprints and spare gear to the whole community. Your shop is ready in two minutes, no application needed.", shAdOpenCta:"OPEN MY SHOP ▸", shAdResumeK:"YOUR SHOP IS WAITING", shAdResumeT:"{shop} is empty for now", shAdResumeS:"Players walk past without finding anything. One listing is enough to get back into the latest-items feed and this week's leaderboard.", shAdResumeCta:"POST A LISTING ▸", shNudgeK:"SELLER REMINDER", shNudgeT:"{n} days without a new listing", shNudgeS:"Your latest listing dates from {date}. Something new puts you back at the top of the feed and in this week's leaderboard.", shNudgeEmptyK:"EMPTY SHOP", shNudgeEmptyT:"Your shop has no live listings", shNudgeEmptyS:"Visitors have nothing to buy. Add a listing or a blueprint to show up on the marketplace again.", shNudgeCta:"NEW LISTING ▸", photoTip:"Listings with a photo are shown first and sell better.", cropModalTitle:"Crop the photo", cropZoomLbl:"Zoom", cropDragHint:"Drag the image to reposition it.", cropConfirmBtn:"CONFIRM CROP", photoReady:"Photo ready ✓",
+    admTitle:"Dashboard", admP7:"7 DAYS", admP30:"30 DAYS", admRefresh:"REFRESH", admSqlTitle:"STATS UNAVAILABLE", admSqlTxt:"run the SQL file 2026-10-16-shops-pour-tous-admin-dashboard.sql in Supabase to enable the dashboard.", admDaily:"VISITORS PER DAY · 30 DAYS", admFunnel:"FUNNEL", admSources:"WHERE VISITORS COME FROM", admRecent:"LATEST SIGN-UPS", admOnP:"over {n} d", admKMembers:"Members", admKVisitors:"Visitors", admKVisitorsS:"unique", admKLogins:"Logins", admKLoginsS:"players logged in", admKShops:"Shops", admKShopsS:"with at least 1 listing", admKListings:"Live listings", admKBlueprints:"Live blueprints", admKSales:"Completed sales", admKReq:"requests", admKOrders:"Orders placed", admKPending:"pending", admKInProg:"in progress", admKDelivered:"Deliveries", admKCouriers:"Couriers", admKCandid:"application(s)", admNoData:"No data yet.", admVis:"visitors", admSign:"sign-ups", admToday:"today", admSum30:"{v} visitors and {s} sign-ups over 30 days", admNoFunnel:"No data yet: tracking starts as soon as the new version is live.", admF_visit:"Visit", admF_login_click:"Login click", admF_signed_in:"Logged in", admF_listing_created:"Listing posted", admF_blueprint_created:"Blueprint posted", admF_inquiry_sent:"Request sent", admF_order_created:"Order placed", admFunnelHint:"Distinct people at each step, and the share of visitors who reached it.", admNoSources:"No visits recorded over this period.", admDirect:"Direct / unknown link", admSrcHint:"Tip: add ?utm_source=discord (or x, spectrum…) to your links to see which channel brings players.", admAgoMin:"{n} min ago", admAgoH:"{n} h ago", admAgoD:"{n} d ago", admMF_all:"ALL", admMF_new:"NEW 7 D", admMF_shop:"WITH SHOP", admMF_active:"LIVE LISTINGS", admMF_couriers:"COURIERS", admMF_candid:"COURIER APPLICANTS", admMF_admins:"ADMINS", admMF_revoked:"SELLING SUSPENDED", admJoined:"joined", admLastLogin:"logged in", admListingsShort:"listings", admCandidCourier:"▲ wants to be a courier", admRCourier:"COURIER", admRSeller:"SELLER", admRSellerOff:"SELLING SUSPENDED", admRAdmin:"ADMIN", admMore:"More actions", admCourierTip:"Grant or remove the courier role", admSellerTip:"Suspend or restore selling rights", admSeeShop:"View their shop", admMoreRes:"+ {n} more members: refine your search.", admConfirmCourierOff:"Remove the courier role from {n}?", admConfirmSellerOff:"Suspend selling for {n}? Their listings stay visible but they can't post new ones.", admConfirmAdminOn:"Give ADMIN rights to {n}? They'll have access to everything, including this dashboard.", admConfirmAdminOff:"Remove admin rights from {n}?", admToastCourierOn:"{n} is now a courier", admToastCourierOff:"{n} is no longer a courier", admToastSellerOn:"{n} can sell again", admToastSellerOff:"Selling suspended for {n}", admToastAdminOn:"{n} is now an admin", admToastAdminOff:"{n} is no longer an admin", admUpdated:"Updated at {t}", admLast7:"Last 7 days", admLast30:"Last 30 days", admTodoApps:"Courier applications to review", admTodoAppsS:"These players are waiting for your answer to start delivering.", admTodoOrders:"Orders without a courier", admTodoOrdersS:"Clients are waiting for a courier to accept their order.", admTodoOrdersBtn:"SEE ORDERS", admTodoNone:"Nothing to handle right now.", admVsPrev:"vs before", admK1:"Visitors", admK1f:"different people who came to the site", admK2:"New members", admK2f:"{n} members in total", admK3:"Completed sales", admK3f:"{v} traded · {r} requests received", admK4:"Completed deliveries", admK4f:"{v} delivered · {n} orders placed", admInsDrop:"WHERE PEOPLE DROP", admInsDropClick:"{p} of visitors leave without clicking “Sign in”. That's the step to improve first.", admInsDropLogin:"{p} of people who click “Sign in” don't finish the Discord login.", admInsSrc:"TOP SOURCE", admInsSrcT:"{s} brings {p} of identified visitors over this period.", admInsShops:"SLEEPING SHOPS", admInsShopsT:"{n} out of {t} shops have no live listing: the “Your shop is waiting” ad nudges them.", admDailyT:"Visitors per day", admDailyS:"Last 30 days", admHealthT:"Marketplace health", admFunnelT:"Visitor journey", admSourcesT:"Where they come from", admVis30:"visitors over 30 days", admSign30:"sign-ups", admBest:"Best day:", admOnPeriod:"over the period", admNoneNew:"none new over the period", admHShops:"Active shops", admHShopsS:"{p}% of shops have at least one live listing", admHListings:"Live listings", admHBlueprints:"Live blueprints", admHOrders:"Open orders", admHOrdersS:"{p} without a courier · {c} being delivered", admHCouriers:"Couriers", admHLogins:"{n} players logged in over the period", admContinue:"continue", admStVisit:"Visit the site", admStVisitS:"starting point", admStClick:"Click Sign in", admStLogged:"Log in", admStPct:"{p}% of visitors", admActListings:"listings", admActBlueprints:"blueprints", admActInquiries:"requests sent", admActOrders:"orders", admFunnelHint2:"Distinct people. In red: the step where the most people drop.", admSrcUtm:"Link", admSrcHint2:"Add <code>?utm_source=discord</code> (or x, spectrum…) to your links to see which channel really brings players.", admSearchPh:"Name, RSI handle or shop…", admSortLbl:"Sort", admSortRecent:"Newest", admSortSeen:"Last login", admSortListings:"Listings", admSortName:"Name (A → Z)", admMT_all:"All", admMT_candid:"Courier applicants", admMT_new:"New", admMT_active:"Selling", admMT_shop:"Have a shop", admMT_couriers:"Couriers", admMT_admins:"Admins", admMT_revoked:"Selling suspended", admBAdmin:"ADMIN", admBCourier:"COURIER", admBPending:"WANTS TO BE A COURIER", admBSuspended:"SELLING SUSPENDED", admListingsN:"{n} live listing(s)", admNoShop:"No shop", admManage:"Manage this member", admSwCourier:"Courier", admSwCourierD:"Can accept and deliver orders.", admSwCourierPend:"Applied to become a courier: switch on to accept.", admSwSeller:"Can sell", admSwSellerD:"Switch off to block new listings (abuse, scam).", admSwAdmin:"Admin", admSwAdminD:"Full access, including this dashboard.", admShowMore:"SHOW {n} MORE ({t} LEFT)", admAgoNow:"just now", admAgoMo:"{n} mo ago", shNewK:"WELCOME TO YOUR SHOP", shNewT:"Give it a name and a colour", shNewS:"Your shop is already open. Customise it (name, logo, colour, location), then post your first listing: it shows up on the marketplace right away.", shNewCta:"CUSTOMISE ▸", shAdClose:"Hide", shAdOpenK:"OPEN TO EVERYONE · FREE", shAdOpenT:"Open your shop on Couriers United", shAdOpenS:"Sell your crafted items, blueprints and spare gear to the whole community. Your shop is ready in two minutes, no application needed.", shAdOpenCta:"OPEN MY SHOP ▸", shAdResumeK:"YOUR SHOP IS WAITING", shAdResumeT:"{shop} is empty for now", shAdResumeS:"Players walk past without finding anything. One listing is enough to get back into the latest-items feed and this week's leaderboard.", shAdResumeCta:"POST A LISTING ▸", shNudgeK:"SELLER REMINDER", shNudgeT:"{n} days without a new listing", shNudgeS:"Your latest listing dates from {date}. Something new puts you back at the top of the feed and in this week's leaderboard.", shNudgeEmptyK:"EMPTY SHOP", shNudgeEmptyT:"Your shop has no live listings", shNudgeEmptyS:"Visitors have nothing to buy. Add a listing or a blueprint to show up on the marketplace again.", shNudgeCta:"NEW LISTING ▸", photoTip:"Listings with a photo are shown first and sell better.", cropModalTitle:"Crop the photo", cropZoomLbl:"Zoom", cropDragHint:"Drag the image to reposition it.", cropConfirmBtn:"CONFIRM CROP", photoReady:"Photo ready ✓",
     myListingsTitle:"My listings", noListings:"You have no listings yet.", deleteListingBtn:"DELETE", confirmDeleteListing:"Permanently delete this listing?",
     requestDeliveryBtn:"REQUEST A DELIVERY", requestDeliveryTitle:"Request a courier delivery", buyerHandleLbl:"Buyer's RSI handle (optional)", phBuyerHandle:"e.g. Mayco_SC", deliveryRequested:"DELIVERY REQUESTED!", cancelRequest:"CANCEL", confirmDeliveryBtn:"CONFIRM REQUEST",
     marketplaceDeliveryBadge:"MARKETPLACE DELIVERY", marketplaceDeliveryNote:"Marketplace delivery: the item ships from a SELLER to a client, unlike classic orders (client → courier).",
@@ -14447,25 +14580,34 @@ async function checkCourierNotification(){
 
 // --- ADMIN : dashboard (stats via la fonction SQL admin_dashboard) + gestion des membres ---
 let allMembersCache = [];
-let admPeriod = 7, admMemFilter = 'all', admMembersFull = false;
+let admPeriod = 7, admMemFilter = 'all', admMembersFull = false, admSort = 'recent', admOpenId = null, admShown = 30, admLast = null, admApps = [];
 function admNum(n){ return (n === null || n === undefined) ? '—' : fmtNum(n); }
+function admCompact(n){
+  if(n === null || n === undefined) return '—';
+  const a = Math.abs(n), loc = LANG === 'fr' ? 'fr-FR' : 'en-GB';
+  if(a >= 1e6) return new Intl.NumberFormat(loc, { maximumFractionDigits: a >= 1e7 ? 0 : 2 }).format(n / 1e6) + ' M';
+  if(a >= 1e4) return new Intl.NumberFormat(loc, { maximumFractionDigits: 0 }).format(n / 1e3) + ' k';
+  return fmtNum(n);
+}
 function admAgo(iso){
   if(!iso) return '—';
   const s = (Date.now() - new Date(iso).getTime()) / 1000, d = T[LANG];
-  if(s < 3600) return d.admAgoMin.replace('{n}', Math.max(1, Math.round(s/60)));
+  if(s < 90) return d.admAgoNow;
+  if(s < 3600) return d.admAgoMin.replace('{n}', Math.round(s/60));
   if(s < 86400) return d.admAgoH.replace('{n}', Math.round(s/3600));
-  return d.admAgoD.replace('{n}', Math.round(s/86400));
+  if(s < 86400*45) return d.admAgoD.replace('{n}', Math.round(s/86400));
+  return d.admAgoMo.replace('{n}', Math.round(s/86400/30));
 }
 function setAdmPeriod(n){
   admPeriod = n;
-  document.querySelectorAll('#admPeriod button').forEach(b => b.classList.toggle('on', +b.dataset.d === n));
+  document.querySelectorAll('#admPeriod button').forEach(b => { const on = +b.dataset.d === n; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
   loadAdminStats();
 }
 async function loadAdmin(){
   if(!profile || profile.role !== 'admin') return;
-  loadCourierApplications();
-  loadAdminStats();
-  loadAdminMembers();
+  const r = $('axRefresh'); if(r) r.classList.add('spin');
+  await Promise.all([loadCourierApplications(), loadAdminStats(), loadAdminMembers()]);
+  if(r) r.classList.remove('spin');
 }
 async function loadAdminStats(){
   const d = T[LANG];
@@ -14473,72 +14615,149 @@ async function loadAdminStats(){
   const { data, error } = await sb.rpc('admin_dashboard', { p_days: admPeriod });
   if(error || !data){
     if(note){ note.hidden = false; note.innerHTML = `<b>${d.admSqlTitle}</b> · ${d.admSqlTxt}`; }
-    $('admKpis').innerHTML = ''; ['admDaily','admFunnel','admSources','admRecent'].forEach(id => { $(id).innerHTML = `<p class="adm-empty">—</p>`; });
+    $('admKpis').innerHTML = ''; $('axInsights').hidden = true;
+    ['admDaily','admFunnel','admSources','axHealth'].forEach(id => { $(id).innerHTML = `<p class="ax-empty">—</p>`; });
+    renderAdminTodo(null);
     return;
   }
   if(note) note.hidden = true;
-  renderAdminKpis(data); renderAdminDaily(data.daily || []); renderAdminFunnel(data.funnel || []);
-  renderAdminSources(data.sources || []); renderAdminRecent(data.recent || []);
+  admLast = data;
+  const upd = $('axUpdated'); if(upd) upd.textContent = d.admUpdated.replace('{t}', new Intl.DateTimeFormat(LANG === 'fr' ? 'fr-FR' : 'en-GB', { hour:'2-digit', minute:'2-digit' }).format(new Date()));
+  const pd = admPeriod === 7 ? d.admLast7 : d.admLast30;
+  ['axHealthPd','admFunnelPd','axSrcPd'].forEach(id => { const e = $(id); if(e) e.textContent = pd; });
+  renderAdminTodo(data); renderAdminKpis(data); renderAdminInsights(data); renderAdminDaily(data.daily || []);
+  renderAdminHealth(data); renderAdminFunnel(data.funnel || []); renderAdminSources(data.sources || []);
+}
+function axSpark(vals){
+  if(!vals || vals.length < 2) return '';
+  const max = Math.max(1, ...vals), w = 100, h = 28;
+  const pts = vals.map((v, i) => `${(i / (vals.length - 1) * w).toFixed(1)},${(h - 2 - v / max * (h - 4)).toFixed(1)}`).join(' ');
+  return `<div class="ax-spark"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg></div>`;
+}
+function renderAdminTodo(x){
+  const d = T[LANG], box = $('axTodo'); if(!box) return;
+  const items = [];
+  if(admApps.length){
+    items.push(`<div class="ax-task"><div class="ax-task-n">${admApps.length}</div><div class="ax-task-t"><b>${d.admTodoApps}</b><span>${d.admTodoAppsS}</span></div>
+      <div class="ax-apps">${admApps.map(p => `<div class="ax-app">${p.isNew ? '<span class="new-order-dot"></span>' : ''}<span class="ax-app-n">${escHtml(displayName(p))}${p.discord_username && p.rsi_handle ? `<small>@${escHtml(p.discord_username)}</small>` : ''}</span>
+        <button type="button" class="ax-btn" onclick="openPublicProfile('${p.id}')">${d.viewProfileBtn}</button>
+        <button type="button" class="ax-btn d" onclick="rejectCourierApp('${p.id}')">${d.rejectApp}</button>
+        <button type="button" class="ax-btn p" onclick="acceptCourierApp('${p.id}')">${d.acceptApp}</button></div>`).join('')}</div></div>`);
+  }
+  const o = x && x.orders;
+  if(o && o.pending){
+    items.push(`<div class="ax-task"><div class="ax-task-n">${o.pending}</div><div class="ax-task-t"><b>${d.admTodoOrders}</b><span>${d.admTodoOrdersS}</span></div><button type="button" class="ax-btn" onclick="setAdminView('courier')">${d.admTodoOrdersBtn}</button></div>`);
+  }
+  box.innerHTML = items.length ? items.join('') : `<div class="ax-todo-ok"><i></i>${d.admTodoNone}</div>`;
 }
 function renderAdminKpis(x){
   const d = T[LANG], m = x.members || {}, k = x.market || {}, o = x.orders || {};
-  const pd = d.admOnP.replace('{n}', x.days);
-  const delta = (cur, prev) => {
-    if(prev === null || prev === undefined) return '';
-    const diff = (cur||0) - prev;
-    if(!diff) return ` · <span>=</span>`;
-    return ` · <span class="${diff > 0 ? 'adm-up' : 'adm-down'}">${diff > 0 ? '▲' : '▼'} ${Math.abs(diff)}</span>`;
-  };
   const visits = (x.funnel || []).find(f => f.event === 'visit');
+  const daily = x.daily || [];
+  const sl = daily.slice(-x.days);
+  let delta = '';
+  if(m.new_prev !== null && m.new_prev !== undefined){
+    const diff = (m.new || 0) - m.new_prev;
+    delta = diff === 0 ? `<span class="ax-delta">= ${d.admVsPrev}</span>` : `<span class="ax-delta ${diff > 0 ? 'up' : 'down'}">${diff > 0 ? '▲ +' : '▼ '}${diff} ${d.admVsPrev}</span>`;
+  }
   const tiles = [
-    [d.admKMembers, admNum(m.total), `<b>+${admNum(m.new)}</b> ${pd}${delta(m.new, m.new_prev)}`, true],
-    [d.admKVisitors, admNum(visits ? visits.people : 0), `${d.admKVisitorsS} ${pd}`],
-    [d.admKLogins, admNum(m.logins), `${d.admKLoginsS} ${pd}`],
-    [d.admKShops, admNum(k.shops), `<b>${admNum(k.shops_active)}</b> ${d.admKShopsS}`],
-    [d.admKListings, admNum(k.listings), `<b>+${admNum(k.listings_new)}</b> ${pd}`],
-    [d.admKBlueprints, admNum(k.blueprints), `<b>+${admNum(k.blueprints_new)}</b> ${pd}`],
-    [d.admKSales, admNum(k.sales), `<b>${admNum(k.sales_volume)}</b> aUEC · <b>${admNum(k.inquiries_new)}</b> ${d.admKReq}`, true],
-    [d.admKOrders, admNum(o.new), `<b>${admNum(o.pending)}</b> ${d.admKPending} · <b>${admNum(o.in_progress)}</b> ${d.admKInProg}`],
-    [d.admKDelivered, admNum(o.delivered), `<b>${admNum(o.volume)}</b> aUEC ${pd}`],
-    [d.admKCouriers, admNum(m.couriers), `<b>${admNum(m.courier_pending)}</b> ${d.admKCandid}`]
+    { l:d.admK1, v:admNum(visits ? visits.people : 0), f:d.admK1f, spark:axSpark(sl.map(r => r.visitors)), hi:true },
+    { l:d.admK2, v:'+' + admNum(m.new), extra:delta, f:d.admK2f.replace('{n}', `<b>${admNum(m.total)}</b>`), spark:axSpark(sl.map(r => r.signups)) },
+    { l:d.admK3, v:admNum(k.sales), f:d.admK3f.replace('{v}', `<b>${admCompact(k.sales_volume)} aUEC</b>`).replace('{r}', `<b>${admNum(k.inquiries_new)}</b>`) },
+    { l:d.admK4, v:admNum(o.delivered), f:d.admK4f.replace('{v}', `<b>${admCompact(o.volume)} aUEC</b>`).replace('{n}', `<b>${admNum(o.new)}</b>`) }
   ];
-  $('admKpis').innerHTML = tiles.map(t => `<div class="adm-kpi"><div class="adm-kpi-l">${t[0]}</div><div class="adm-kpi-v${t[3] ? ' acc' : ''}">${t[1]}</div><div class="adm-kpi-s">${t[2]}</div></div>`).join('');
+  $('admKpis').innerHTML = tiles.map(t => `<div class="ax-kpi${t.hi ? ' hi' : ''}"><div class="ax-kpi-l">${t.l}</div><div class="ax-kpi-row"><span class="ax-kpi-v">${t.v}</span>${t.extra || ''}</div><div class="ax-kpi-f">${t.f}</div>${t.spark || ''}</div>`).join('');
+}
+const ADM_SRC_NAMES = { 'discord.com':'Discord', 'discordapp.com':'Discord', 'ptb.discord.com':'Discord', 't.co':'X (Twitter)', 'x.com':'X (Twitter)', 'twitter.com':'X (Twitter)', 'robertsspaceindustries.com':'RSI · Spectrum', 'www.google.com':'Google', 'google.com':'Google', 'www.bing.com':'Bing', 'www.youtube.com':'YouTube', 'youtube.com':'YouTube', 'www.reddit.com':'Reddit', 'old.reddit.com':'Reddit', 'uexcorp.space':'UEX Corp', 'www.twitch.tv':'Twitch' };
+function admSrcName(r){
+  const d = T[LANG];
+  if(r.origin === '(direct)') return r.utm ? (d.admSrcUtm + ' « ' + r.utm + ' »') : d.admDirect;
+  return ADM_SRC_NAMES[r.origin] || r.origin.replace(/^www\./, '');
+}
+function renderAdminInsights(x){
+  const d = T[LANG], box = $('axInsights'); if(!box) return;
+  const by = {}; (x.funnel || []).forEach(f => by[f.event] = f.people);
+  const out = [];
+  const v = by.visit || 0, c = by.login_click || 0, s = by.signed_in || 0;
+  if(v >= 5){
+    const lossClick = Math.round((1 - c / v) * 100), lossLogin = c ? Math.round((1 - s / c) * 100) : 0;
+    if(lossClick >= lossLogin) out.push(['warn', d.admInsDrop, d.admInsDropClick.replace('{p}', `<b>${lossClick} %</b>`)]);
+    else out.push(['warn', d.admInsDrop, d.admInsDropLogin.replace('{p}', `<b>${lossLogin} %</b>`)]);
+  }
+  const src = (x.sources || []).filter(r => r.origin !== '(direct)' || r.utm);
+  const totSrc = (x.sources || []).reduce((a, r) => a + r.visitors, 0);
+  if(src.length && totSrc) out.push(['good', d.admInsSrc, d.admInsSrcT.replace('{s}', `<b>${escHtml(admSrcName(src[0]))}</b>`).replace('{p}', `<b>${Math.round(src[0].visitors / totSrc * 100)} %</b>`)]);
+  const k = x.market || {};
+  if(k.shops){
+    const idle = Math.max(0, (k.shops || 0) - (k.shops_active || 0));
+    if(idle > 0) out.push(['', d.admInsShops, d.admInsShopsT.replace('{n}', `<b>${idle}</b>`).replace('{t}', k.shops)]);
+  }
+  box.hidden = !out.length;
+  box.innerHTML = out.slice(0, 3).map(([cls, kk, t]) => `<div class="ax-ins ${cls}"><div><span class="ax-ins-k">${kk}</span>${t}</div></div>`).join('');
 }
 function renderAdminDaily(rows){
   const d = T[LANG], box = $('admDaily'); if(!box) return;
-  if(!rows.length){ box.innerHTML = `<p class="adm-empty">${d.admNoData}</p>`; return; }
-  const max = Math.max(1, ...rows.map(r => r.visitors));
+  if(!rows.length){ box.innerHTML = `<p class="ax-empty">${d.admNoData}</p>`; return; }
+  const raw = Math.max(1, ...rows.map(r => r.visitors));
+  const step = raw <= 4 ? 1 : raw <= 10 ? 2 : raw <= 40 ? 10 : raw <= 100 ? 25 : raw <= 400 ? 100 : 250;
+  const max = Math.ceil(raw / step) * step || 1;
   const loc = LANG === 'fr' ? 'fr-FR' : 'en-GB';
-  const lbl = iso => new Intl.DateTimeFormat(loc, { day:'numeric', month:'short' }).format(new Date(iso + 'T12:00:00'));
+  const lbl = iso => new Intl.DateTimeFormat(loc, { weekday:'short', day:'numeric', month:'short' }).format(new Date(iso + 'T12:00:00'));
+  const sh = iso => new Intl.DateTimeFormat(loc, { day:'numeric', month:'short' }).format(new Date(iso + 'T12:00:00'));
   const totV = rows.reduce((a, r) => a + r.visitors, 0), totS = rows.reduce((a, r) => a + r.signups, 0);
+  const best = rows.reduce((a, r) => r.visitors > a.visitors ? r : a, rows[0]);
   box.innerHTML = `
-    <div class="adm-bars" role="img" aria-label="${d.admDaily}">${rows.map((r, i) => `<div class="adm-bar${i === rows.length - 1 ? ' today' : ''}"><i style="height:${Math.round(r.visitors / max * 100)}%"></i><b>${lbl(r.day)} · ${r.visitors} ${d.admVis} · ${r.signups} ${d.admSign}</b></div>`).join('')}</div>
-    <div class="adm-axis"><span>${lbl(rows[0].day)}</span><span>${lbl(rows[Math.floor(rows.length / 2)].day)}</span><span>${d.admToday}</span></div>
-    <div class="adm-sum">${d.admSum30.replace('{v}', `<b>${fmtNum(totV)}</b>`).replace('{s}', `<b>${fmtNum(totS)}</b>`)}</div>`;
+    <div class="ax-chart">
+      <div class="ax-yax"><span>${max}</span><span>${Math.round(max / 2)}</span><span>0</span></div>
+      <div class="ax-plot" role="img" aria-label="${d.admDailyT}">
+        <div class="ax-grid-l" style="top:0"></div><div class="ax-grid-l" style="top:50%"></div>
+        <div class="ax-bars">${rows.map((r, i) => `<div class="ax-bar${i === rows.length - 1 ? ' today' : ''}" tabindex="0"><i style="height:${Math.max(1, Math.round(r.visitors / max * 100))}%"></i><span class="ax-tip">${lbl(r.day)}<br><b>${r.visitors}</b> ${d.admVis} · <b>${r.signups}</b> ${d.admSign}</span></div>`).join('')}</div>
+      </div>
+      <div class="ax-xax"><span>${sh(rows[0].day)}</span><span>${sh(rows[Math.floor(rows.length / 2)].day)}</span><span>${d.admToday}</span></div>
+    </div>
+    <div class="ax-legend"><span><b>${fmtNum(totV)}</b> ${d.admVis30}</span><span><b>${fmtNum(totS)}</b> ${d.admSign30}</span>${best.visitors ? `<span>${d.admBest} <b>${sh(best.day)}</b> (${best.visitors})</span>` : ''}</div>`;
+}
+function renderAdminHealth(x){
+  const d = T[LANG], box = $('axHealth'); if(!box) return;
+  const k = x.market || {}, o = x.orders || {}, m = x.members || {};
+  const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+  const nw = n => n ? `<b>+${admNum(n)}</b> ${d.admOnPeriod}` : d.admNoneNew;
+  box.innerHTML = `<div class="ax-hl">
+    <div class="ax-hr"><span class="ax-hr-l">${d.admHShops}</span><span class="ax-hr-v">${admNum(k.shops_active)}<small style="font-size:.9rem;color:var(--muted)"> / ${admNum(k.shops)}</small></span>
+      <div class="ax-meter"><i style="width:${pct(k.shops_active, k.shops)}%"></i></div><span class="ax-hr-s">${d.admHShopsS.replace('{p}', pct(k.shops_active, k.shops))}</span></div>
+    <div class="ax-hr"><span class="ax-hr-l">${d.admHListings}</span><span class="ax-hr-v">${admNum(k.listings)}</span><span class="ax-hr-s">${nw(k.listings_new)}</span></div>
+    <div class="ax-hr"><span class="ax-hr-l">${d.admHBlueprints}</span><span class="ax-hr-v">${admNum(k.blueprints)}</span><span class="ax-hr-s">${nw(k.blueprints_new)}</span></div>
+    <div class="ax-hr"><span class="ax-hr-l">${d.admHOrders}</span><span class="ax-hr-v">${admNum((o.pending || 0) + (o.in_progress || 0))}</span><span class="ax-hr-s">${d.admHOrdersS.replace('{p}', admNum(o.pending)).replace('{c}', admNum(o.in_progress))}</span></div>
+    <div class="ax-hr"><span class="ax-hr-l">${d.admHCouriers}</span><span class="ax-hr-v">${admNum(m.couriers)}</span><span class="ax-hr-s">${d.admHLogins.replace('{n}', admNum(m.logins))}</span></div>
+  </div>`;
 }
 function renderAdminFunnel(rows){
   const d = T[LANG], box = $('admFunnel'); if(!box) return;
-  $('admFunnelPd').textContent = '· ' + d.admOnP.replace('{n}', admPeriod);
-  const order = ['visit','login_click','signed_in','listing_created','blueprint_created','inquiry_sent','order_created'];
   const by = {}; rows.forEach(r => by[r.event] = r.people);
-  const base = by.visit || 0;
-  if(!base && !rows.length){ box.innerHTML = `<p class="adm-empty">${d.admNoFunnel}</p>`; return; }
-  const max = Math.max(1, ...order.map(e => by[e] || 0));
-  box.innerHTML = order.map(e => {
-    const n = by[e] || 0, pct = base ? Math.round(n / base * 100) : 0;
-    return `<div class="adm-fr"><span class="l">${d['admF_' + e] || e}</span><span class="t"><i style="width:${Math.round(n / max * 100)}%"></i></span><span class="n">${fmtNum(n)}<small>${e === 'visit' ? '' : pct + ' %'}</small></span></div>`;
-  }).join('') + `<p class="adm-empty" style="margin:10px 0 0;">${d.admFunnelHint}</p>`;
+  const v = by.visit || 0, c = by.login_click || 0, s = by.signed_in || 0;
+  if(!v && !rows.length){ box.innerHTML = `<p class="ax-empty">${d.admNoFunnel}</p>`; return; }
+  const rate = (a, b) => b ? Math.round(a / b * 100) : 0;
+  const r1 = rate(c, v), r2 = rate(s, c);
+  const worst = r1 <= r2 ? 1 : 2;
+  const step = (l, n, p) => `<div class="ax-step"><div class="ax-step-l">${l}</div><div class="ax-step-v">${fmtNum(n)}</div><div class="ax-step-p">${p}</div></div>`;
+  const arrow = (r, w) => `<div class="ax-arrow${w ? ' worst' : ''}"><b>${r} %</b>${d.admContinue}<span>▸</span></div>`;
+  const acts = [['listing_created', d.admActListings], ['blueprint_created', d.admActBlueprints], ['inquiry_sent', d.admActInquiries], ['order_created', d.admActOrders]];
+  box.innerHTML = `<div class="ax-steps">
+      ${step(d.admStVisit, v, d.admStVisitS)}${arrow(r1, worst === 1)}
+      ${step(d.admStClick, c, d.admStPct.replace('{p}', rate(c, v)))}${arrow(r2, worst === 2)}
+      ${step(d.admStLogged, s, d.admStPct.replace('{p}', rate(s, v)))}
+    </div>
+    <div class="ax-acts">${acts.map(([e, l]) => `<span class="ax-act"><b>${fmtNum(by[e] || 0)}</b>${l}</span>`).join('')}</div>
+    <p class="ax-hint">${d.admFunnelHint2}</p>`;
 }
 function renderAdminSources(rows){
   const d = T[LANG], box = $('admSources'); if(!box) return;
-  if(!rows.length){ box.innerHTML = `<p class="adm-empty">${d.admNoSources}</p>`; return; }
-  box.innerHTML = `<table class="adm-tbl">${rows.map(r => `<tr><td>${escHtml(r.origin === '(direct)' ? d.admDirect : r.origin)}${r.utm ? `<small>utm: ${escHtml(r.utm)}</small>` : ''}</td><td class="r">${fmtNum(r.visitors)}</td></tr>`).join('')}</table>
-    <p class="adm-empty" style="margin:10px 0 0;">${d.admSrcHint}</p>`;
-}
-function renderAdminRecent(rows){
-  const d = T[LANG], box = $('admRecent'); if(!box) return;
-  if(!rows.length){ box.innerHTML = `<p class="adm-empty">${d.admNoData}</p>`; return; }
-  box.innerHTML = rows.map(r => `<div class="adm-rec"><button type="button" class="adm-link" onclick="openPublicProfile('${r.id}')">${escHtml(r.name)}</button><span>${admAgo(r.created_at)}</span></div>`).join('');
+  if(!rows.length){ box.innerHTML = `<p class="ax-empty">${d.admNoSources}</p><p class="ax-hint">${d.admSrcHint2}</p>`; return; }
+  const tot = rows.reduce((a, r) => a + r.visitors, 0) || 1;
+  box.innerHTML = `<div class="ax-src">${rows.map(r => {
+    const p = Math.round(r.visitors / tot * 100);
+    return `<div class="ax-src-r"><span class="ax-src-n">${escHtml(admSrcName(r))}${r.origin !== '(direct)' && r.utm ? `<small>${escHtml(r.utm)}</small>` : ''}</span><span class="ax-src-v"><b>${fmtNum(r.visitors)}</b>${p} %</span><div class="ax-src-b"><i style="width:${p}%"></i></div></div>`;
+  }).join('')}</div><p class="ax-hint">${d.admSrcHint2}</p>`;
 }
 async function loadAdminMembers(){
   let { data, error } = await sb.rpc('admin_members');
@@ -14554,70 +14773,78 @@ async function loadAdminMembers(){
 }
 const ADM_MEM_FILTERS = [
   ['all', p => true],
-  ['new', p => p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7*86400000],
-  ['shop', p => !!p.shop_name],
-  ['active', p => (p.listings || 0) > 0],
-  ['couriers', p => !!p.is_courier],
   ['candid', p => p.courier_request === 'pending'],
+  ['new', p => p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7*86400000],
+  ['active', p => (p.listings || 0) > 0],
+  ['shop', p => !!p.shop_name],
+  ['couriers', p => !!p.is_courier],
   ['admins', p => p.role === 'admin'],
-  ['revoked', p => p.seller_request === 'revoked']
+  ['revoked', p => p.is_seller === false]
 ];
 function renderAdmMemChips(){
   const d = T[LANG], box = $('admMemChips'); if(!box) return;
   box.innerHTML = ADM_MEM_FILTERS.filter(([k]) => admMembersFull || !['new','shop','active'].includes(k)).map(([k, fn]) => {
     const n = allMembersCache.filter(fn).length;
-    return `<button type="button" class="adm-chip${admMemFilter === k ? ' on' : ''}" onclick="setAdmMemFilter('${k}')">${d['admMF_' + k]}<em>${n}</em></button>`;
+    if(n === 0 && k !== 'all' && k !== admMemFilter && ['candid','revoked'].includes(k)) return '';
+    const alert = k === 'candid' && n > 0;
+    return `<button type="button" role="tab" aria-selected="${admMemFilter === k}" class="ax-tab${admMemFilter === k ? ' on' : ''}${alert ? ' alert' : ''}" onclick="setAdmMemFilter('${k}')">${d['admMT_' + k]}<em>${n}</em></button>`;
   }).join('');
+  const cnt = $('admMemCount'); if(cnt) cnt.textContent = `(${allMembersCache.length})`;
 }
-function setAdmMemFilter(k){ admMemFilter = k; renderAdmMemChips(); renderMembersList(filterMembersList($('memberSearchInput').value)); }
+function setAdmMemFilter(k){ admMemFilter = k; admShown = 30; renderAdmMemChips(); renderMembersList(filterMembersList($('memberSearchInput').value)); }
+function setAdmSort(v){ admSort = v; renderMembersList(filterMembersList($('memberSearchInput').value)); }
 function filterMembersList(query){
   const q = (query || '').trim().toLowerCase();
   const f = (ADM_MEM_FILTERS.find(x => x[0] === admMemFilter) || ADM_MEM_FILTERS[0])[1];
-  return allMembersCache.filter(f).filter(p => !q || ((p.discord_username||'') + ' ' + (p.rsi_handle||'') + ' ' + (p.shop_name||'')).toLowerCase().includes(q));
+  const list = allMembersCache.filter(f).filter(p => !q || ((p.discord_username||'') + ' ' + (p.rsi_handle||'') + ' ' + (p.shop_name||'')).toLowerCase().includes(q));
+  const t = v => v ? new Date(v).getTime() : 0;
+  const nm = p => (p.rsi_handle || p.discord_username || '').toLowerCase();
+  const sorters = { recent:(a,b) => t(b.created_at) - t(a.created_at), seen:(a,b) => t(b.last_sign_in_at) - t(a.last_sign_in_at), listings:(a,b) => (b.listings||0) - (a.listings||0), name:(a,b) => nm(a).localeCompare(nm(b)) };
+  return list.slice().sort(sorters[admSort] || sorters.recent);
 }
-function filterMembers(query){
-  renderMembersList(filterMembersList(query));
-}
+function filterMembers(query){ admShown = 30; renderMembersList(filterMembersList(query)); }
+function admMoreMembers(){ admShown += 30; renderMembersList(filterMembersList($('memberSearchInput').value)); }
+function admToggleMember(id){ admOpenId = admOpenId === id ? null : id; renderMembersList(filterMembersList($('memberSearchInput').value)); }
 function renderMembersList(list){
   const d = T[LANG];
   const box = $('membersList');
-  const cnt = $('admMemCount'); if(cnt) cnt.textContent = `· ${list.length} / ${allMembersCache.length}`;
-  if(!list.length){ box.innerHTML = `<p class="muted">${d.noMembersFound}</p>`; return; }
-  const shown = list.slice(0, 150);
+  if(!list.length){ box.innerHTML = `<p class="ax-empty" style="padding:18px 4px;">${d.noMembersFound}</p>`; return; }
+  const shown = list.slice(0, admShown);
   box.innerHTML = shown.map(p => {
     const name = escHtml(p.rsi_handle || p.discord_username || p.id);
-    const sub = p.rsi_handle && p.discord_username ? `<small>@${escHtml(p.discord_username)}</small>` : '';
+    const handle = p.rsi_handle && p.discord_username ? '@' + escHtml(p.discord_username) : '';
     const av = p.avatar_url ? `<img src="${escHtml(p.avatar_url)}" alt="" loading="lazy">` : escHtml((p.rsi_handle || p.discord_username || '?')[0].toUpperCase());
-    const meta = [];
-    if(p.created_at) meta.push(`${d.admJoined} ${admAgo(p.created_at)}`);
-    if(p.last_sign_in_at) meta.push(`${d.admLastLogin} ${admAgo(p.last_sign_in_at)}`);
-    if(p.shop_name) meta.push(`<span class="shp">▣ ${escHtml(p.shop_name)} · ${p.listings || 0} ${d.admListingsShort}</span>`);
-    if(p.courier_request === 'pending') meta.push(`<span class="shp">${d.admCandidCourier}</span>`);
-    const isAdm = p.role === 'admin', revoked = !p.is_seller;
+    const dates = [];
+    if(p.created_at) dates.push(`${d.admJoined} ${admAgo(p.created_at)}`);
+    if(p.last_sign_in_at) dates.push(`${d.admLastLogin} ${admAgo(p.last_sign_in_at)}`);
+    const badges = [];
+    if(p.role === 'admin') badges.push(`<span class="ax-b adm">${d.admBAdmin}</span>`);
+    if(p.is_courier) badges.push(`<span class="ax-b cour">${d.admBCourier}</span>`);
+    if(p.courier_request === 'pending') badges.push(`<span class="ax-b pend">${d.admBPending}</span>`);
+    if(p.is_seller === false) badges.push(`<span class="ax-b off">${d.admBSuspended}</span>`);
+    const open = admOpenId === p.id;
     const label = JSON.stringify(p.rsi_handle || p.discord_username || p.id).replace(/"/g, '&quot;');
-    return `<div class="adm-mem">
-      <div class="adm-av">${av}</div>
-      <div class="adm-mi"><div class="adm-mn">${name}${sub}</div><div class="adm-ms">${meta.join('<span>·</span>') || '&nbsp;'}</div></div>
-      <div class="adm-acts">
-        <button type="button" class="adm-pill${p.is_courier ? ' on' : ''}" onclick="admSetCourier('${p.id}', ${!p.is_courier}, ${label})" title="${d.admCourierTip}">${d.admRCourier}${p.is_courier ? ' ✓' : ' +'}</button>
-        <button type="button" class="adm-pill${revoked ? ' off' : ''}" onclick="admSetSeller('${p.id}', ${revoked}, ${label})" title="${d.admSellerTip}">${revoked ? d.admRSellerOff : d.admRSeller + ' ✓'}</button>
-        <button type="button" class="adm-pill adm${isAdm ? ' on' : ''}" onclick="admSetAdmin('${p.id}', ${!isAdm}, ${label})">${d.admRAdmin}${isAdm ? ' ✓' : ''}</button>
-        <span class="adm-more"><button type="button" class="adm-pill" onclick="admToggleMore(this)" aria-label="${d.admMore}">⋯</button>
-          <span class="adm-more-menu" hidden>
-            <button type="button" onclick="openPublicProfile('${p.id}')">${d.viewProfileBtn}</button>
-            ${p.shop_name ? `<button type="button" onclick="openSellerShop('${p.id}')">${d.admSeeShop}</button>` : ''}
-            <button type="button" class="dng" onclick="resetMemberProgression('${p.id}', ${label})">${d.resetProgressionBtn}</button>
-          </span></span>
-      </div>
+    const shop = p.shop_name ? `<b>${escHtml(p.shop_name)}</b>${d.admListingsN.replace('{n}', p.listings || 0)}` : (admMembersFull ? `<span>${d.admNoShop}</span>` : '');
+    const sw = (on, title, desc, fn, danger) => `<button type="button" role="switch" aria-checked="${on}" class="ax-sw${danger ? ' danger' : ''}" onclick="${fn}"><span class="ax-tg"></span><span class="ax-sw-t"><b>${title}</b><span>${desc}</span></span></button>`;
+    const panel = open ? `<div class="ax-panel">
+        ${sw(!!p.is_courier, d.admSwCourier, p.courier_request === 'pending' ? d.admSwCourierPend : d.admSwCourierD, `admSetCourier('${p.id}', ${!p.is_courier}, ${label})`)}
+        ${sw(p.is_seller !== false, d.admSwSeller, d.admSwSellerD, `admSetSeller('${p.id}', ${p.is_seller === false}, ${label})`, true)}
+        ${sw(p.role === 'admin', d.admSwAdmin, d.admSwAdminD, `admSetAdmin('${p.id}', ${p.role !== 'admin'}, ${label})`)}
+        <div class="ax-panel-f"><div class="l">
+          <button type="button" class="ax-btn" onclick="openPublicProfile('${p.id}')">${d.viewProfileBtn}</button>
+          ${p.shop_name ? `<button type="button" class="ax-btn" onclick="openSellerShop('${p.id}')">${d.admSeeShop}</button>` : ''}
+        </div><button type="button" class="ax-btn d" onclick="resetMemberProgression('${p.id}', ${label})">${d.resetProgressionBtn}</button></div>
+      </div>` : '';
+    return `<div class="ax-m${open ? ' open' : ''}">
+      <div class="ax-m-row" onclick="admToggleMember('${p.id}')">
+        <div class="ax-av">${av}</div>
+        <div class="ax-m-id"><div class="ax-m-n">${name}</div><div class="ax-m-d">${[handle, ...dates].filter(Boolean).join(' · ') || '&nbsp;'}</div>${badges.length ? `<div class="ax-badges">${badges.join('')}</div>` : ''}</div>
+        <div class="ax-m-shop">${shop}</div>
+        <div class="ax-m-act"><button type="button" class="ax-chev" aria-expanded="${open}" aria-label="${d.admManage}" onclick="event.stopPropagation(); admToggleMember('${p.id}')">▾</button></div>
+      </div>${panel}
     </div>`;
-  }).join('') + (list.length > shown.length ? `<p class="adm-empty" style="margin-top:10px;">${d.admMoreRes.replace('{n}', list.length - shown.length)}</p>` : '');
+  }).join('') + (list.length > shown.length ? `<div class="ax-more"><button type="button" class="ax-btn" onclick="admMoreMembers()">${d.admShowMore.replace('{n}', Math.min(30, list.length - shown.length)).replace('{t}', list.length - shown.length)}</button></div>` : '');
 }
-function admToggleMore(btn){
-  const m = btn.nextElementSibling;
-  document.querySelectorAll('.adm-more-menu').forEach(x => { if(x !== m) x.hidden = true; });
-  m.hidden = !m.hidden;
-}
-document.addEventListener('click', e => { if(!e.target.closest('.adm-more')) document.querySelectorAll('.adm-more-menu').forEach(x => x.hidden = true); });
 async function admUpdateMember(id, patch){
   const { error } = await sb.from('profiles').update(patch).eq('id', id);
   if(error){ alert('Erreur : ' + error.message); return false; }
@@ -14647,28 +14874,17 @@ async function admSetAdmin(id, on, name){
   if(ok) toastShow((on ? d.admToastAdminOn : d.admToastAdminOff).replace('{n}', name));
 }
 async function loadCourierApplications(){
-  const box = $('courierAppsList'); if(!box) return;
-  const d = T[LANG];
   const [{ data, error }, unreadSet] = await Promise.all([
     sb.from('profiles').select('*').eq('courier_request', 'pending'),
     loadMsgUnreadSet('admin_courier_app')
   ]);
-  if(error){ box.textContent = error.message; return; }
+  if(error) return;
   cleanupStaleAdminAppNotifs('admin_courier_app', new Set((data||[]).map(p=>p.id)));
-  if(!data || !data.length){ box.innerHTML = `<p class="muted">${d.noApplications}</p>`; return; }
-  box.innerHTML = data.map(p => {
-    const isNew = unreadSet.has(p.id);
-    const newDot = isNew ? `<span class="new-order-dot"></span>` : '';
-    const hoverAttr = isNew ? ` onmouseenter="markAdminAppSeen('admin_courier_app','${p.id}', this)"` : '';
-    return `
-    <div class="order-card app-list-row"${hoverAttr}>
-      ${newDot}
-      <div style="flex:1; min-width:140px;">${displayName(p)}</div>
-      <button class="btn-secondary" onclick="acceptCourierApp('${p.id}')">${d.acceptApp}</button>
-      <button class="btn-logout" onclick="rejectCourierApp('${p.id}')">${d.rejectApp}</button>
-    </div>
-  `;
-  }).join('');
+  admApps = (data || []).map(p => ({ ...p, isNew: unreadSet.has(p.id) }));
+  if(admApps.some(p => p.isNew) && session){
+    sb.from('notifications').update({ read:true }).eq('user_id', session.user.id).eq('category', 'admin_courier_app').eq('read', false).then(() => refreshNotifBadges());
+  }
+  renderAdminTodo(admLast);
 }
 async function markAdminAppSeen(category, refId, cardEl){
   const dot = cardEl.querySelector('.new-order-dot');
@@ -14682,7 +14898,7 @@ async function markAdminAppSeen(category, refId, cardEl){
 async function acceptCourierApp(id){
   const { error } = await sb.from('profiles').update({ is_courier:true, courier_request:'accepted' }).eq('id', id);
   if(error){ alert('Erreur : '+error.message); return; }
-  sweep(); loadCourierApplications(); loadAdmin();
+  sweep(); loadAdmin();
 }
 async function rejectCourierApp(id){
   const { error } = await sb.from('profiles').update({ courier_request:'rejected' }).eq('id', id);

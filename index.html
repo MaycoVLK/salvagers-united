@@ -130,7 +130,10 @@
   .sotd-tag span + span::before{content:" ";}
   .sotd-t{font-size:10px; letter-spacing:1px; color:var(--muted); margin-top:7px;}
   .sotd-m{flex:1 1 0; min-width:200px;}
-  @media (max-width:1180px){ .sotd-items{display:none;} }
+  #clientTabMarketplace{container-type:inline-size; container-name:mkt;}
+  .sotd-l,.sotd-btn,.sotd-items{flex-shrink:0;}
+  @container mkt (max-width:1100px){ .sotd-items{display:none;} }
+  @container mkt (max-width:860px){ .sotd-desc{display:none;} }
   .sotd-st span{white-space:nowrap;}
   .sotd-name{font-family:'VT323',monospace; font-size:34px; line-height:1; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .sotd-desc{font-size:12px; color:var(--muted); margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}

@@ -23,42 +23,49 @@ module.exports = async (req, res) => {
   [...listings, ...bps].forEach(x => { const k = L.slugify(x.item_name); if (k && !names[k]) names[k] = x.item_name; });
   const itemLinks = Object.values(names).slice(0, 120);
 
+  const board = listings.slice(0, 8).map((x, i) => `<a class="brow" style="--d:${(i * 0.09).toFixed(2)}s" href="${L.itemUrl(x.item_name)}"><span>${L.esc(x.item_name)}</span><span class="s">${L.esc((byId[x.seller_id] || {}).shop_name || '—')}</span><span class="p">${L.fmtNum(x.price)}</span></a>`).join('');
   const body = `
   <p class="crumbs"><a href="/">Couriers United</a> › Marketplace</p>
-  <h1>Star Citizen <em>marketplace</em>: crafted gear, blueprints &amp; rare items from players</h1>
-  <p class="lead">Buy armor, weapons, undersuits, ship components and crafted items directly from other Star Citizen players. Sellers craft blueprints to order, and couriers deliver anywhere in Stanton, Pyro and Nyx. Prices in aUEC.</p>
-  <div class="stats">
-    <div class="stat"><b>${listings.length}</b><span>items for sale</span></div>
-    <div class="stat"><b>${bps.length}</b><span>blueprints crafted to order</span></div>
-    <div class="stat"><b>${activeShops.length}</b><span>player shops</span></div>
-    <div class="stat"><b>3</b><span>systems delivered</span></div>
-  </div>
-  <a class="cta" href="/?utm_source=seo&amp;utm_medium=marketplace">BROWSE &amp; BUY IN THE APP ▸</a>
+  <section class="hero">
+    <div>
+      <h1>The players' market of the 'verse</h1>
+      <p class="lead">Crafted armor, blueprints, ship components: buy straight from other Star Citizen players, then meet in game or get it delivered across Stanton, Pyro and Nyx. Prices in aUEC.</p>
+      <div class="ctas"><a class="cta" href="/?utm_source=seo&amp;utm_medium=marketplace">Browse and buy in the app</a><a class="cta ghost" href="/?utm_source=seo&amp;utm_medium=marketplace_open_shop">Open my shop for free</a></div>
+      <ul class="facts"><li><b>${listings.length}</b>items for sale</li><li><b>${bps.length}</b>blueprints crafted to order</li><li><b>${activeShops.length}</b>player shops</li></ul>
+    </div>
+    <div class="board" aria-label="Latest listings">
+      <div class="board-h"><span>Just landed on the market</span><span class="live"><i></i>live</span></div>
+      <div class="bcols"><span>Item</span><span>Shop</span><span>Price aUEC</span></div>
+      ${board || '<p class="lead">No item listed right now.</p>'}
+    </div>
+  </section>
 
-  ${topGroups.length ? `<h2>Categories</h2><div class="chips">${topGroups.map(([g, n]) => `<span class="chip">${L.esc(g)}<em>${n}</em></span>`).join('')}</div>` : ''}
+  ${topGroups.length ? `<h2>Browse by category</h2><p class="h2s">What players are selling right now.</p><div class="chips">${topGroups.map(([g, n]) => `<span class="chip">${L.esc(g)}<em>${n}</em></span>`).join('')}</div>` : ''}
 
-  <h2>Latest items for sale</h2>
+  <h2>On the shelves now</h2>
+  <p class="h2s">The latest items listed by player shops. Open one to see every offer for it.</p>
   ${listings.length ? `<div class="grid">${listings.slice(0, 48).map(x => L.itemCard(x, byId, 'listing')).join('')}</div>` : '<p class="lead">No item listed right now.</p>'}
 
-  <h2>Blueprints crafted to order</h2>
-  <p class="lead">These sellers own the blueprint and craft the item for you, ready-made or with your own materials.</p>
+  <h2>Crafted to order</h2>
+  <p class="h2s">These sellers own the blueprint and craft the item for you, ready-made or with your own materials.</p>
   ${bps.length ? `<div class="grid">${bps.slice(0, 36).map(x => L.itemCard(x, byId, 'bp')).join('')}</div>` : '<p class="lead">No blueprint listed right now.</p>'}
 
   <h2>Player shops</h2>
-  <div class="shops">${activeShops.slice(0, 60).map(s => `<a class="shop" style="--c:${/^#[0-9a-f]{6}$/i.test(s.theme_color || '') ? s.theme_color : '#ff8c1a'}" href="${L.shopUrl(s)}"><b>${L.esc(s.shop_name)}</b><span>${count[s.id] || 0} items${s.location_system ? ' · ' + L.esc(s.location_system) : ''}</span></a>`).join('')}</div>
+  <p class="h2s">Every shop is run by a player. Pick one and see everything they sell.</p>
+  <div class="shops">${activeShops.slice(0, 60).map(s => `<a class="shop" style="--c:${/^#[0-9a-f]{6}$/i.test(s.theme_color || '') ? s.theme_color : '#ff8c1a'}" href="${L.shopUrl(s)}"><b>${L.esc(s.shop_name)}</b><span>${count[s.id] || 0} items${s.location_system ? ' in ' + L.esc(s.location_system) : ''}</span></a>`).join('')}</div>
 
-  <div class="band"><div><b>Got gear to sell? Open your shop for free.</b><span>Everyone can open a shop on Couriers United: list your items and blueprints in two minutes with your Discord account.</span></div><a class="cta" href="/?utm_source=seo&amp;utm_medium=marketplace_open_shop">OPEN MY SHOP ▸</a></div>
+  <div class="band"><div><b>Your hangar is full of things someone wants.</b><span>Anyone can open a shop on Couriers United. List your items and blueprints in two minutes with your Discord account.</span></div><a class="cta" href="/?utm_source=seo&amp;utm_medium=marketplace_open_shop">Open my shop</a></div>
 
-  <h2>How it works</h2>
+  <h2>How a trade works</h2>
   <div class="steps">
-    <div class="step"><b>1 · Find an item</b><span>Browse items and blueprints from player shops, or post what you are looking for.</span></div>
-    <div class="step"><b>2 · Contact the seller</b><span>Send a request or an offer. Chat with the seller directly in the app.</span></div>
-    <div class="step"><b>3 · Meet or get it delivered</b><span>Meet in game, or let a Couriers United courier deliver it in Stanton, Pyro or Nyx.</span></div>
+    <div class="step"><b>Find it</b><span>Browse items and blueprints from player shops, or post what you are looking for.</span></div>
+    <div class="step"><b>Talk to the seller</b><span>Send a request or an offer and chat with the seller in the app.</span></div>
+    <div class="step"><b>Meet or get it delivered</b><span>Meet in game, or let a courier deliver it in Stanton, Pyro or Nyx.</span></div>
   </div>
 
-  ${itemLinks.length ? `<h2>All items</h2><div class="chips">${itemLinks.map(n => `<a class="chip" href="${L.itemUrl(n)}">${L.esc(n)}</a>`).join('')}</div>` : ''}
+  ${itemLinks.length ? `<h2>Every item on the market</h2><div class="chips">${itemLinks.map(n => `<a class="chip" href="${L.itemUrl(n)}">${L.esc(n)}</a>`).join('')}</div>` : ''}
 
-  <h2>FAQ</h2>
+  <h2>Questions</h2>
   <div class="faq">
     <details><summary>Is Couriers United free?</summary><p>Yes. Browsing, opening a shop and listing items is free. Deliveries by couriers include a commission, shown before you order.</p></details>
     <details><summary>Is this real money trading?</summary><p>No. All prices are in aUEC, the in-game currency. Real-money trading is not allowed.</p></details>

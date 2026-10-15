@@ -2,7 +2,7 @@
 // Les fichiers dont le nom commence par "_" ne deviennent pas des routes sur Vercel.
 const SB_URL = 'https://hdstkdubotlmlndmuwnl.supabase.co';
 const SB_KEY = require('./_key.js');
-const SITE = 'https://couriers-united.space';
+const SITE = 'https://www.couriers-united.space';
 const CATS = require('./_cats.json');
 
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

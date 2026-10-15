@@ -67,7 +67,8 @@ h2{font-family:'VT323',monospace;font-weight:400;font-size:32px;color:var(--text
 .live{display:flex;align-items:center;gap:6px;font-size:17px;color:var(--muted)}
 .live i{width:7px;height:7px;background:#39ff6a;display:block;animation:bl 1.6s steps(2) infinite}
 @keyframes bl{50%{opacity:.25}}
-.bcols,.brow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) auto;gap:12px;align-items:baseline}
+.bcols,.brow{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr) 6.5em;gap:14px;align-items:baseline}
+.bcols span:last-child{text-align:right}
 .bcols{font-size:16px;color:#4f6a5f;padding:8px 0 4px}
 .brow{padding:6px 0;border-top:1px dashed #16211d;font-size:21px;color:#ffb35c}
 .brow:hover{color:#fff;text-decoration:none}

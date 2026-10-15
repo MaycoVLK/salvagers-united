@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script defer src="/_vercel/insights/script.js"></script>
 <style>
   :root{
     --bg:#050606; --bg2:#0a0d0c; --panel:#0d1210; --border:#22302a;
@@ -4625,7 +4626,21 @@ function openSellerCreateOption(kind){
   }
 }
 
+// --- MESURE D'AUDIENCE (entonnoir : visite -> connexion -> 1re action) -------------------------------------------
+// Sans cookie ni donnée personnelle : un identifiant aléatoire local, et le nom du site d'où vient le visiteur.
+// Respecte "Ne pas me suivre" (DNT). Échoue en silence si la table funnel_events n'existe pas encore.
+function trackEvent(name, once){
+  try{
+    if(navigator.doNotTrack === '1' || window.doNotTrack === '1') return;
+    if(once){ const k = 'cuEv_'+name; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k, '1'); }
+    let aid = null; try{ aid = localStorage.getItem('cuAid'); if(!aid){ aid = Math.random().toString(36).slice(2,12) + Date.now().toString(36); localStorage.setItem('cuAid', aid); } }catch(e){}
+    let ref = null; try{ if(document.referrer){ const h = new URL(document.referrer).hostname; if(h && h !== location.hostname) ref = h.slice(0,80); } }catch(e){}
+    let src = null; try{ src = new URLSearchParams(location.search).get('utm_source'); if(src) src = src.slice(0,40); }catch(e){}
+    sb.from('funnel_events').insert({ event: name, anon_id: aid, user_id: (session && session.user) ? session.user.id : null, ref, src, lang: (typeof LANG !== 'undefined' ? LANG : null) }).then(() => {}, () => {});
+  }catch(e){}
+}
 function loginDiscord(){
+  trackEvent('login_click');
   const cleanRedirect = window.location.origin + window.location.pathname;
   sb.auth.signInWithOAuth({ provider:'discord', options:{ redirectTo: cleanRedirect } });
 }
@@ -4661,6 +4676,7 @@ function updatePageTitle(){
 }
 
 function routeApp(){
+  trackEvent('visit', true);
   if(!session){
     removedOrdersChecked = false;
     $('view-login').hidden = false;
@@ -6092,6 +6108,7 @@ $('sendBtn').addEventListener('click', async ()=>{
   const { data: newOrder, error } = await sb.from('orders').insert(payload).select().single();
   $('sendBtn').disabled = false;
   if(error){ await bootOverlayFinish(T[LANG].bootError+': '+error.message, true); return; }
+  trackEvent('order_created');
   notifyAllCouriers(newOrder && newOrder.id);
   sweep();
   pixelBurst($('sendBtn'));
@@ -6661,6 +6678,7 @@ async function submitOfferModal(){
     message, delivery_method, status: 'pending', offer_price, requested_qty
   }).select('id').single();
   if(error){ alert('Erreur : '+error.message); return; }
+  trackEvent('inquiry_sent');
   pushNotification(listing.seller_id, 'seller_marketplace', newInquiry ? newInquiry.id : null);
   pixelBurst($('offerModalSendBtn'));
   toastShow(d.inquirySent);
@@ -9734,6 +9752,7 @@ async function createListing(){
   }
   notifyAllUsersOfNewListing(data.id, session.user.id);
   resetListingForm();
+  trackEvent('listing_created');
   await bootOverlayFinish(d.listingSaved);
   routeApp();
 }
@@ -10090,6 +10109,7 @@ async function createBlueprint(){
     }
   }
   resetBlueprintForm();
+  trackEvent('blueprint_created');
   await bootOverlayFinish(d.blueprintSaved);
   routeApp();
 }
@@ -14555,6 +14575,7 @@ async function initAuth(){
     await loadProfile();
     if(event === 'SIGNED_OUT'){ window.__keepFormState = true; setTimeout(() => { window.__keepFormState = false; }, 0); hasBooted = false; rsiGateState = 'idle'; $('bootOverlay').hidden = true; $('rsiGateOverlay').hidden = true; unsubscribeProfileChannel(); unsubscribeNotifChannel(); unsubscribePresenceChannel(); unsubscribeDataChannels(); routeApp(); return; }
     if(event === 'SIGNED_IN' && !wasLoggedIn){
+      trackEvent('signed_in', true);
       subscribeProfileChannel();
       subscribeNotifChannel();
       subscribePresenceChannel();

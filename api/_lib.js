@@ -86,16 +86,16 @@ a.chip:hover{border-color:var(--accent);text-decoration:none}
 .card:hover{border-color:var(--accent);text-decoration:none}
 .strip{display:flex;justify-content:space-between;align-items:center;gap:8px;height:30px;padding:0 22px 0 10px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);background:#070c0b}
 .strip span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sys{flex:none;font-size:11px;padding:0 6px;border:1px solid var(--s);color:var(--s)}
+.sys{flex:none;font-size:11px;padding:0 6px;border:1px solid var(--line);color:var(--muted)}
 .ph{aspect-ratio:4/3;background:#060a09;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#33463f;font-size:12px}
 .ph img{width:100%;height:100%;object-fit:cover}
-.bp .ph{background-image:linear-gradient(rgba(95,184,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(95,184,255,.07) 1px,transparent 1px);background-size:16px 16px}
+.bp .ph{background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:16px 16px}
 .ci{padding:12px;display:flex;flex-direction:column;gap:6px;flex:1}
-.cn{font-family:'VT323',monospace;font-size:24px;line-height:1.05;color:var(--mint)}
+.cn{font-family:'VT323',monospace;font-size:24px;line-height:1.05;color:var(--text)}
 .cp{font-family:'VT323',monospace;font-size:30px;line-height:.9;color:var(--accent)}
 .cp small{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);margin-left:5px}
-.cs{margin-top:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);border:1px solid var(--line);padding:6px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cs i{width:10px;height:10px;flex:none;background:var(--c,#ff8c1a)}
+.cs{margin-top:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding:8px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs i{display:none}
 .shops{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 .shop{border:1px solid var(--line);border-left:6px solid var(--c,#ff8c1a);background:var(--hull);padding:14px 16px;color:var(--text);display:flex;flex-direction:column;gap:4px}
 .shop:hover{border-color:var(--c,#ff8c1a);text-decoration:none}

@@ -96,7 +96,7 @@ a.chip:hover{border-color:var(--accent);text-decoration:none}
 .cp small{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);margin-left:5px}
 .cs{margin-top:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding:8px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cs i{display:none}
-.shops{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.shops{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px}
 .shop{border:1px solid var(--line);border-left:6px solid var(--c,#ff8c1a);background:var(--hull);padding:14px 16px;color:var(--text);display:flex;flex-direction:column;gap:4px}
 .shop:hover{border-color:var(--c,#ff8c1a);text-decoration:none}
 .shop b{font-family:'VT323',monospace;font-weight:400;font-size:28px;line-height:1;color:#fff}
@@ -116,8 +116,10 @@ a.chip:hover{border-color:var(--accent);text-decoration:none}
 .tbl td{padding:12px 6px;border-bottom:1px dashed var(--line);vertical-align:top}
 .tbl td.p{font-family:'VT323',monospace;font-size:26px;color:var(--accent);white-space:nowrap;text-align:right}
 footer{margin-top:64px;border-top:1px solid var(--line);padding:24px 0 40px;font-size:12px;color:var(--muted)}
-@media (max-width:880px){.hero{grid-template-columns:1fr;gap:20px}}
-@media (max-width:600px){h1{font-size:42px}.brand{font-size:24px}.brand img{width:42px}.nav .cta{height:38px;padding:0 12px;font-size:19px}}
+@media (max-width:880px){.hero{grid-template-columns:minmax(0,1fr);gap:20px}}
+main,.wrap,.hero>*{min-width:0}
+@media (max-width:600px){.cta{white-space:normal;height:auto;min-height:44px;padding:6px 14px;line-height:1.05;text-align:center}.nav .cta{white-space:nowrap;min-height:36px;height:36px;padding:0 10px;font-size:18px}.brand small{display:none}.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.facts li{font-size:11px;line-height:1.25}.facts b{font-size:28px}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat b,.stat span{display:block}.ctas .cta{flex:1 1 100%}.tbl{display:block;overflow-x:auto}.tbl td.p{font-size:22px}.band{flex-direction:column;align-items:stretch}}
+@media (max-width:600px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ci{padding:10px;gap:5px}.cn{font-size:19px}.cp{font-size:24px}.cp small{font-size:10px}.cs{font-size:12px}.strip{padding:0 20px 0 8px;font-size:11px}h1{font-size:42px}.brand{font-size:24px}.brand img{width:42px}.nav .cta{height:38px;padding:0 12px;font-size:19px}}
 `;
 
 function layout({ title, desc, path, body, jsonld, image }) {
@@ -142,7 +144,7 @@ ${(jsonld || []).map(j => `<script type="application/ld+json">${JSON.stringify(j
 </head><body>
 <div class="top"><div class="wrap nav">
   <a class="brand" href="/" aria-label="Couriers United"><img src="/cu-logo.png" alt="" width="54" height="32"><span>COURIERS<small>UNITED</small></span></a>
-  <a class="cta" href="/?utm_source=seo&amp;utm_medium=${encodeURIComponent(path.split('/')[1] || 'home')}">Browse in the app</a>
+  <a class="cta" href="/?utm_source=seo&amp;utm_medium=${encodeURIComponent(path.split('/')[1] || 'home')}">Open the app</a>
 </div></div>
 <main class="wrap">${body}</main>
 <footer><div class="wrap">

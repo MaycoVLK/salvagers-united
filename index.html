@@ -130,7 +130,10 @@
   .sotd-tag span + span::before{content:" ";}
   .sotd-t{font-size:10px; letter-spacing:1px; color:var(--muted); margin-top:7px;}
   .sotd-m{flex:1 1 0; min-width:200px;}
-  @media (max-width:1180px){ .sotd-items{display:none;} }
+  .sotd{container-type:inline-size; container-name:sotd;}
+  .sotd-l,.sotd-btn,.sotd-items{flex-shrink:0;}
+  @container sotd (max-width:1000px){ .sotd .sotd-items{display:none;} }
+  @container sotd (max-width:720px){ .sotd .sotd-desc{display:none;} .sotd .sotd-l{min-width:0;} .sotd .sotd-m{min-width:0;} .sotd{gap:14px;} }
   .sotd-st span{white-space:nowrap;}
   .sotd-name{font-family:'VT323',monospace; font-size:34px; line-height:1; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .sotd-desc{font-size:12px; color:var(--muted); margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
@@ -2083,12 +2086,13 @@
   .mkt-card.tt-card:hover .tt-name{color:#fff;}
   .tt-strip{display:flex; justify-content:space-between; align-items:center; gap:8px; height:30px; padding:0 22px 0 10px; border-bottom:1px solid var(--line); font-size:.72rem; color:var(--muted); background:#070c0b;}
   .tt-cat{display:flex; align-items:center; gap:6px; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .tt-cat svg{width:14px; height:14px; flex:none; color:var(--accent);}
+  .tt-cat svg{width:14px; height:14px; flex:none; color:var(--muted);}
   .tt-sys{flex:none; font-size:.66rem; letter-spacing:1px; padding:1px 6px; border:1px solid var(--s); color:var(--s);}
+  .tt-card .tt-sys{border-color:var(--line); color:var(--muted);}
   .tt-card .mkt-photo-wrap{background:#060a09;}
-  .tt-card.tt-bp .mkt-photo-wrap{background-color:#050909; background-image:linear-gradient(rgba(95,184,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(95,184,255,.07) 1px, transparent 1px); background-size:16px 16px;}
+  .tt-card.tt-bp .mkt-photo-wrap{background-color:#050909; background-image:linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size:16px 16px;}
   .tt-body{padding:12px 12px 14px; display:flex; flex-direction:column; gap:8px; flex:1;}
-  .tt-name{margin:0; font-family:'VT323',monospace; font-weight:400; font-size:1.45rem; line-height:1.05; color:var(--mint, #aef5e0); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.1em;}
+  .tt-name{margin:0; font-family:'VT323',monospace; font-weight:400; font-size:1.45rem; line-height:1.05; color:var(--text); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.1em;}
   .tt-price{display:flex; align-items:baseline; gap:6px; flex-wrap:wrap;}
   .tt-price b{font-family:'VT323',monospace; font-weight:400; font-size:1.9rem; line-height:.9; color:var(--accent);}
   .tt-price small{font-size:.72rem; color:var(--muted);}
@@ -2099,15 +2103,24 @@
   .tt-mats{font-size:.72rem; color:var(--muted); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
   .tt-seller{margin-top:auto; display:flex; align-items:center; gap:8px; width:100%; min-height:34px; padding:0 10px; background:transparent; border:1px solid var(--line); color:var(--text); font-family:inherit; font-size:.78rem; cursor:pointer; text-align:left;}
   .tt-seller{text-transform:none; letter-spacing:0;}
-  .tt-card.tt-want .tt-sys{border-color:#000; color:#000;}
+  .tt-card .tt-seller{justify-content:flex-start; border:0; border-top:1px solid var(--line); padding:8px 0 0; min-height:0; margin-top:auto; color:var(--muted);}
+  .tt-card .tt-seller i{display:none;}
+  .tt-card .tt-seller span::after{content:' ▸'; color:var(--muted);}
+  .tt-card .tt-seller:hover{color:var(--text); border-color:var(--line);}
+  .tt-card .tt-seller:hover span::after{color:var(--accent);}
   .tt-seller i{width:10px; height:10px; flex:none; background:var(--c, var(--accent));}
   .tt-seller span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .tt-seller:hover{border-color:var(--c, var(--accent));}
   .tt-card .mkt-interest-btn{width:100%; margin:0;}
+  /* action secondaire : neutre au repos, orange seulement au survol (l'orange reste réservé au prix) */
+  .tt-card .mkt-interest-btn,.tt-card .tt-guest-btn{background:transparent; border:1px solid #2a3b36; color:var(--text);}
+  .tt-card .mkt-interest-btn:hover,.tt-card .tt-guest-btn:hover{background:var(--accent); border-color:var(--accent); color:#000;}
+  .tt-card .mkt-interest-btn svg{color:currentColor;}
+  .tt-card .mkt-tag,.tt-card .mkt-tag.tag-crafted,.tt-card .mkt-tag.tag-q700,.tt-card .mkt-tag.tag-q800,.tt-card .mkt-tag.tag-q900,.tt-card .mkt-tag.tag-negotiable{color:var(--text); border-color:rgba(255,255,255,.28);}
   .tt-card .new-order-dot{z-index:3;}
   /* objet recherché : affiche « recherché » */
-  .tt-card.tt-want .tt-strip{background:var(--accent); color:#000;}
-  .tt-card.tt-want .tt-strip svg{color:#000;}
+  .mkt-card.tt-card.tt-want{border-style:dashed; border-color:#2a3b36;}
+  .mkt-card.tt-card.tt-want:hover{border-color:var(--accent);}
   .tt-want-q{display:flex; align-items:baseline; gap:8px;}
   .tt-want-q b{font-family:'VT323',monospace; font-weight:400; font-size:2.6rem; line-height:.85; color:var(--text);}
   .tt-want-q span{font-size:.75rem; color:var(--muted);}
@@ -2138,7 +2151,7 @@
   .ld-img img{width:100%; height:100%; object-fit:cover; display:block;}
   .ld-img .mkt-ph .mkt-photo-placeholder{width:96px; height:96px;}
   .ld-img .mkt-tags-overlay{top:12px; left:12px;}
-  .ld-photo.bp .ld-img{background-color:#050909; background-image:linear-gradient(rgba(95,184,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(95,184,255,.07) 1px, transparent 1px); background-size:20px 20px;}
+  .ld-photo.bp .ld-img{background-color:#050909; background-image:linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size:20px 20px;}
   .ld-side{display:flex; flex-direction:column; gap:16px; min-width:0;}
   .ld-kicker{display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:.8rem; color:var(--muted);}
   .ld-kicker .tt-sys{font-size:.72rem;}

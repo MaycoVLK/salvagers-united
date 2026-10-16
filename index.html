@@ -160,7 +160,7 @@
     .shop-leaderboard-card .shops-dir-entry{display:none;}
     .lb-seg button{height:30px; padding:0 10px;}
     .lb-seg .lb-s-d{display:none;} .lb-seg .lb-s-m{display:inline;}
-    .lb-wk{margin:0; flex:1 1 0; min-width:0; justify-content:flex-end; text-align:right; font-size:10px; height:28px; align-items:center; line-height:14px; overflow:hidden;}
+    .lb-wk{margin:0; flex:1 1 0; min-width:0; justify-content:flex-end; text-align:right; font-size:9px; letter-spacing:0; height:28px; align-items:center; line-height:13px; overflow:hidden;}
     .lb-wk i, .lb-wk .d{display:none;} .lb-wk .m{display:inline;}
     .lb-wk b{display:inline;}
     .shop-leaderboard-grid{min-height:140px; display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:10px; margin:12px -14px 0; padding:0 14px 2px; scrollbar-width:none;}
@@ -643,7 +643,23 @@
      donc les cartes s'affichaient en une seule colonne pleine largeur. On force une grille 2x2 sous 640px. */
   @media (max-width:640px){
     #marketplaceFeed.marketplace-grid, #shopListingsGrid.marketplace-grid, #shopListingsGridFull.marketplace-grid,
-    #shopBlueprintsGrid.marketplace-grid, #blueprintsFeed.marketplace-grid{grid-template-columns:1fr 1fr; gap:8px;}
+    #shopBlueprintsGrid.marketplace-grid, #blueprintsFeed.marketplace-grid{grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px;}
+  }
+  /* un « 1fr » seul ne peut pas descendre sous la largeur de son contenu : une carte avec un long nom
+     élargissait sa colonne et toute la page. minmax(0,1fr) + min-width:0 garantit des colonnes égales. */
+  .marketplace-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  @media (min-width:960px){ .marketplace-grid{grid-template-columns:repeat(3,minmax(0,1fr));} }
+  .marketplace-grid > *, .mkt-card.tt-card{min-width:0;}
+  @media (max-width:640px){
+    .tt-body{padding:10px 10px 12px; gap:6px;}
+    .tt-name{font-size:1.2rem;}
+    .tt-price b{font-size:1.55rem;}
+    .tt-price small,.tt-price em{font-size:.66rem;}
+    .tt-price em{margin-left:0; flex-basis:100%;}
+    .tt-strip{padding:0 20px 0 8px; font-size:.66rem;}
+    .tt-card .mkt-interest-btn,.tt-card .tt-guest-btn{min-height:38px; font-size:.7rem; letter-spacing:0; padding:0 4px;}
+    .tt-seller{font-size:.72rem;}
+    .tt-want-q b{font-size:2.1rem;}
   }
   /* --- BLUEPRINTS (catalogue de craft des vendeurs) --- */
   .bp-description{font-size:.78rem; color:var(--text); line-height:1.35; margin:2px 0 4px;
@@ -2071,6 +2087,19 @@
   .tt-board-cols{font-size:.95rem; color:#4f6a5f; padding:8px 0 4px;}
   .tt-row{padding:6px 0; border-top:1px dashed #16211d; font-size:1.25rem; color:#ffb35c; cursor:pointer; background:none; border-left:0; border-right:0; border-bottom:0; width:100%; text-align:left; font-family:inherit; text-transform:none; letter-spacing:0;}
   .tt-row .s{text-align:left;}
+  @media (max-width:560px){
+    .tt-board{padding:12px 12px 6px;}
+    .tt-board-h{font-size:1.05rem; gap:8px;}
+    .tt-board-h > span:first-child{min-width:0;}
+    .tt-board-cols,.tt-row{grid-template-columns:minmax(0,1fr) 6.4rem; gap:10px;}
+    .tt-board-cols span{white-space:nowrap;}
+    .tt-board-cols span:nth-child(2),.tt-row .s{display:none;}
+    .tt-row{font-size:1.15rem;}
+    .tt-facts{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:16px;}
+    .tt-facts li{font-size:.7rem; line-height:1.25;}
+    .tt-facts b{font-size:1.7rem;}
+    .tt-hero-cta{flex-direction:column;} .tt-hero-cta .tt-btn{width:100%;}
+  }
   .tt-row:hover{color:#fff;}
   .tt-row span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .tt-row .s{color:#7d9a8c;}
@@ -2116,7 +2145,6 @@
   .tt-card .mkt-interest-btn,.tt-card .tt-guest-btn{background:transparent; border:1px solid #2a3b36; color:var(--text);}
   .tt-card .mkt-interest-btn:hover,.tt-card .tt-guest-btn:hover{background:var(--accent); border-color:var(--accent); color:#000;}
   .tt-card .mkt-interest-btn svg{color:currentColor;}
-  .tt-card .mkt-tag,.tt-card .mkt-tag.tag-crafted,.tt-card .mkt-tag.tag-q700,.tt-card .mkt-tag.tag-q800,.tt-card .mkt-tag.tag-q900,.tt-card .mkt-tag.tag-negotiable{color:var(--text); border-color:rgba(255,255,255,.28);}
   .tt-card .new-order-dot{z-index:3;}
   /* objet recherché : affiche « recherché » */
   .mkt-card.tt-card.tt-want{border-style:dashed; border-color:#2a3b36;}

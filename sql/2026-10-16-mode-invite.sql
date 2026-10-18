@@ -23,7 +23,7 @@ drop policy if exists funnel_events_insert on public.funnel_events;
 create policy funnel_events_insert on public.funnel_events
   for insert to anon, authenticated
   with check (
-    event in ('visit','login_click','login_prompt','signed_in','listing_created','blueprint_created','order_created','inquiry_sent')
+    event in ('visit','login_click','login_prompt','share','signed_in','listing_created','blueprint_created','order_created','inquiry_sent')
     and (anon_id is null or length(anon_id) <= 40)
     and (ref is null or length(ref) <= 80)
     and (src is null or length(src) <= 40)

@@ -61,6 +61,7 @@ h2{font-family:'VT323',monospace;font-weight:400;font-size:32px;color:var(--text
 .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:32px;align-items:start;margin-top:14px}
 .facts{list-style:none;margin:22px 0 0;padding:0;display:flex;gap:24px;flex-wrap:wrap}
 .facts li{font-size:13px;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin:22px 0}.stat span{font-size:13px;color:var(--muted)}.stat b{display:block;font-family:'VT323',monospace;font-weight:400;font-size:34px;line-height:1;color:var(--text)}
 .facts b{display:block;font-family:'VT323',monospace;font-weight:400;font-size:34px;line-height:1;color:var(--text)}
 .board{background:#020303;border:1px solid var(--line);box-shadow:inset 0 0 0 4px #070b0a,inset 0 0 0 5px var(--line);padding:14px 16px 10px;font-family:'VT323',monospace;min-width:0}
 .board-h{display:flex;justify-content:space-between;align-items:center;font-size:21px;color:var(--accent);padding-bottom:8px;border-bottom:2px solid var(--line)}

@@ -2843,6 +2843,11 @@ body.sw-medit{padding-bottom:88px;}
     .shop-widget-grid:not(.editing) .rowx{flex-wrap:wrap;}
     .shop-widget-grid:not(.editing) .colx{min-width:min(100%, 300px);}
   }
+  /* Téléphone : une seule colonne de widgets, pour que stats, succès et items restent lisibles (hors mode édition). */
+  @media (max-width:600px){
+    .shop-widget-grid:not(.editing):not(.mprev) .rowx{flex-direction:column;}
+    .shop-widget-grid:not(.editing):not(.mprev) .colx{flex:0 0 auto !important; width:100% !important; min-width:0;}
+  }
 </style>
 </head>
 <body>
